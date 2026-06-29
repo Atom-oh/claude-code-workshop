@@ -110,7 +110,7 @@ aws bedrock list-inference-profiles --region ap-northeast-2
 > - 계정에 `global.` 프로파일이 노출되면 **서울에서 가장 단순한 선택**입니다.
 > - 없으면 `apac.`(서울) 또는 `us.`(US 리전 + US `AWS_REGION`)로 대체합니다.
 >
-> 이 문서의 아래 예시는 **`global.anthropic.claude-sonnet-4-5-20250929-v1:0`** 를 사용하지만, **본인 계정의 `list-inference-profiles` 출력값으로 교체**하세요.
+> 이 문서의 아래 예시는 **`global.anthropic.claude-opus-4-8`** 를 사용하지만, **본인 계정의 `list-inference-profiles` 출력값으로 교체**하세요.
 
 ### (c) Bedrock API Key 생성
 
@@ -142,16 +142,17 @@ API Key는 전체 AWS 자격증명 **대신** Bedrock 호출을 인증하는 **b
 export CLAUDE_CODE_USE_BEDROCK=1
 export AWS_REGION=ap-northeast-2
 export AWS_BEARER_TOKEN_BEDROCK=your-bedrock-api-key
-export ANTHROPIC_MODEL='global.anthropic.claude-sonnet-4-5-20250929-v1:0'
-# (선택) 백그라운드 작업(세션 제목 등)용 소형·고속 모델 핀
-export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001-v1:0'
+export ANTHROPIC_MODEL='global.anthropic.claude-opus-4-8'
+export ANTHROPIC_DEFAULT_OPUS_MODEL='global.anthropic.claude-opus-4-8[1m]'
+export ANTHROPIC_SMALL_FAST_MODEL='global.anthropic.claude-haiku-4-5-20251001-v1:0'
+export CLAUDE_CODE_SUBAGENT_MODEL='global.anthropic.claude-opus-4-8'
 ```
 
 - **영속화(persist):**
   - **macOS / WSL2:** 위 `export` 줄을 `~/.bashrc` 또는 `~/.zshrc` 에 추가.
   - **Windows(네이티브):** GUI **환경 변수(Environment Variables)** 편집기 사용.
 - `ANTHROPIC_MODEL` 값은 (b)의 `list-inference-profiles` 결과에 맞춰 **본인 계정의 프로파일 ID(또는 application inference profile ARN)** 로 교체하세요.
-- `ANTHROPIC_DEFAULT_HAIKU_MODEL` 은 **선택**입니다(없어도 동작). Bedrock에서는 옛 `ANTHROPIC_SMALL_FAST_MODEL` 대신 이 변수를 쓰며, 계정에 Haiku 모델 액세스가 켜져 있을 때만 설정하세요. `/setup-bedrock` 마법사를 쓰면 자동으로 핀됩니다.
+- `ANTHROPIC_SMALL_FAST_MODEL`(소형·고속) · `ANTHROPIC_DEFAULT_OPUS_MODEL` · `CLAUDE_CODE_SUBAGENT_MODEL` 은 **선택**입니다(없어도 동작). 계정에 해당 모델 액세스가 켜져 있을 때만 설정하세요. `/setup-bedrock` 마법사를 쓰면 자동으로 핀됩니다.
 
 #### 동작 확인
 
