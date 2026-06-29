@@ -140,7 +140,10 @@ Claude Code Status
 > export CLAUDE_CODE_USE_BEDROCK=1
 > export AWS_REGION=ap-northeast-2
 > export AWS_BEARER_TOKEN_BEDROCK=<발급받은 Bedrock API 키>
-> export ANTHROPIC_MODEL='global.anthropic.claude-sonnet-4-5-20250929-v1:0'   # 본인 계정 프로파일 ID로 교체
+> export ANTHROPIC_MODEL='global.anthropic.claude-opus-4-8'
+> export ANTHROPIC_DEFAULT_OPUS_MODEL='global.anthropic.claude-opus-4-8[1m]'
+> export ANTHROPIC_SMALL_FAST_MODEL='global.anthropic.claude-haiku-4-5-20251001-v1:0'
+> export CLAUDE_CODE_SUBAGENT_MODEL='global.anthropic.claude-opus-4-8'
 > ```
 
 ---
