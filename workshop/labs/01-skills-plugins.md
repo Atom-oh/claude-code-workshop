@@ -1,6 +1,6 @@
-# Lab 0.5 · 스킬·플러그인 설치 및 이해
+# Lab 1 · 스킬·플러그인 설치 및 이해
 
-[← 이전: Lab 0 환경 점검](00-environment.md) · [🏠 목차](README.md) · [다음: Lab 0.7 무엇을 만들지 정하기 →](00c-brainstorming.md)
+[← 이전: Lab 0 환경 점검](00-environment.md) · [🏠 목차](README.md) · [다음: Lab 2 핵심 개념 →](02-concepts.md)
 
 이번 단계에서는 본격적인 차지백 실습에 앞서 **"AI에게 능력을 추가한다"는 감을 잡습니다.** Claude Code에 **플러그인(스킬 묶음)**을 설치하는 표준 방법을 한 번 경험하고, 우리 워크숍 프로젝트(`workshop/mvp/`) 폴더 안에 들어 있는 **스킬·서브에이전트**가 설치 없이도 어떻게 자동으로 인식되는지 확인합니다. 오후 차지백 실습(모듈 03~06)은 모두 이 **로컬 스킬·서브에이전트** 위에서 굴러가므로, 그 동작 원리를 미리 눈으로 봐 두는 것이 목적입니다.
 
@@ -46,9 +46,9 @@ graph TD
     C --> C1[workshop/mvp/.claude/ 폴더]
     C1 --> C2[chargeback-1cb 스킬<br/>document-analyzer 등 서브에이전트]
     C2 --> C3[설치 불필요 = 폴더에 있으면 자동 인식<br/>이번 모듈 6단계]
-    style B fill:#fff3e0
-    style C fill:#e8f5e9
-    style C3 fill:#e8f5e9
+    style B fill:#fff3e0,color:#24292f
+    style C fill:#e8f5e9,color:#24292f
+    style C3 fill:#e8f5e9,color:#24292f
 ```
 
 > ℹ️ **참고(이 모듈의 핵심 한 문장):** 오후 차지백 실습(모듈 03~06)은 **②번(로컬 스킬·서브에이전트)**으로 굴러갑니다. ①번(플러그인 설치)은 "AI에 능력을 더하는 표준 방법"을 **한 번 경험**해 두는 것입니다. 둘의 차이를 아는 것이 오늘의 목표입니다.
@@ -348,6 +348,6 @@ anthropics/claude-plugins-official
 
 ## 다음 단계
 
-이제 "AI에 능력을 추가하는 두 가지 길"과, 우리 프로젝트 폴더가 차지백 전용 스킬·서브에이전트를 **자동으로 들고 있다는 것**을 확인했습니다. 다음 모듈(0.7)에서는 방금 설치한 `superpowers:brainstorming`을 제대로 한 번 써서, **무언가를 만들기 전에 "무엇을·왜" 만들지 AI와 함께 정리하는 법**을 익힙니다.
+이제 "AI에 능력을 추가하는 두 가지 길"과, 우리 프로젝트 폴더가 차지백 전용 스킬·서브에이전트를 **자동으로 들고 있다는 것**을 확인했습니다. 다음(Lab 2)에서는 **스킬·에이전트·Harness·MCP**라는 핵심 개념을 차지백·배포와 연결해 이해합니다. (방금 설치한 `superpowers:brainstorming`은 이후 **Lab 4**에서 "무엇을·왜 만들지"를 설계 한 장으로 정리할 때 본격적으로 씁니다.)
 
-[← 이전: Lab 0 환경 점검](00-environment.md) · [🏠 목차](README.md) · [다음: Lab 0.7 무엇을 만들지 정하기 →](00c-brainstorming.md)
+[← 이전: Lab 0 환경 점검](00-environment.md) · [🏠 목차](README.md) · [다음: Lab 2 핵심 개념 →](02-concepts.md)

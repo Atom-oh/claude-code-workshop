@@ -1,6 +1,6 @@
 # Lab 0 · 환경 확인
 
-[🏠 목차](README.md) · [다음: Lab 0.5 스킬·플러그인 설치 →](00b-skills-plugins.md)
+[🏠 목차](README.md) · [다음: Lab 1 스킬·플러그인 설치 →](01-skills-plugins.md)
 
 이번 단계에서는 내 노트북에서 Claude Code가 실제로 실행되고, AWS(Amazon Bedrock)에 올바르게 연결돼 있는지를 확인합니다. 자동차로 출발하기 전 시동을 걸어보는 것과 같습니다. 오늘 하루 우리는 Claude Code로 실제 차지백 케이스를 처리하므로, 도구가 켜지고 회사 AWS 경유로 연결됐는지를 먼저 점검합니다.
 
@@ -37,8 +37,8 @@ graph LR
     L[내 노트북<br/>Claude Code] -->|❌ 직결| C[상용 Claude 서비스<br/>일반 인터넷]
     L -->|✅ 우리 길| B[Amazon Bedrock<br/>AWS 우리 계정 ap-northeast-2]
     B --> M[Claude 모델]
-    style C fill:#ffebee
-    style B fill:#e8f5e9
+    style C fill:#ffebee,color:#24292f
+    style B fill:#e8f5e9,color:#24292f
 ```
 
 우리는 반드시 **Amazon Bedrock을 경유하는 길(초록색)** 로만 다닙니다. Bedrock 경유는 우리 회사 AWS 계정 안에서, 우리가 통제하는 리전(서울 `ap-northeast-2`)에서 AI를 호출하는 것 — 즉 데이터가 외부 상용 서비스로 새지 않고 회사 통제 안에 머무는, 금융권 컴플라이언스를 위한 길입니다.
@@ -76,7 +76,7 @@ graph LR
 1. 터미널을 열고 아래 **두 줄**을 한 줄씩 입력합니다(각 줄 끝에서 Enter).
 
 ```bash
-cd workshop/mvp
+cd workshop
 claude
 ```
 
@@ -89,7 +89,7 @@ claude
 ▝▜█████▛▘  
   ▘▘ ▝▝    /help 로 도움말 · 한국어로 그냥 질문하세요
 
- cwd: ~/workshop/mvp
+ cwd: ~/workshop
 
 > █
 ```
@@ -119,11 +119,11 @@ claude
 ```text
 Claude Code Status
 
-  Version:   2.1.187 (Claude Code)
+  Version:   2.1.195 (Claude Code)
   Account:   AWS (Amazon Bedrock)
   Provider:  Amazon Bedrock              ← ★ 이 줄이 핵심
   Region:    ap-northeast-2 (Seoul)      ← ★ 서울 리전
-  Model:     us.anthropic.claude-sonnet-4-6
+  Model:     global.anthropic.claude-sonnet-4-6
   Workdir:   ~/workshop/mvp
 ```
 
@@ -140,10 +140,9 @@ Claude Code Status
 > export CLAUDE_CODE_USE_BEDROCK=1
 > export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 > export AWS_REGION=ap-northeast-2
-> export AWS_BEARER_TOKEN_BEDROCK=<발급받은 Bedrock API 키>
 > export ANTHROPIC_MODEL='opusplan'
+> export ANTHROPIC_DEFAULT_SONNET_MODEL="global.anthropic.claude-sonnet-4-6[1m]"
 > export ANTHROPIC_DEFAULT_OPUS_MODEL='global.anthropic.claude-opus-4-8[1m]'
-> export ANTHROPIC_DEFAULT_SONNET_MODEL='global.anthropic.claude-sonnet-4-6[1m]'
 > export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001-v1:0'
 > ```
 
@@ -162,14 +161,14 @@ claude --version
 **예상 결과**
 
 ```text
-2.1.187 (Claude Code)
+2.1.195 (Claude Code)
 ```
 
-전원이 같은 버전을 쓰면 화면·동작이 일치해 강사가 진행을 맞추기 쉽습니다. 숫자가 정확히 `2.1.187`일 필요는 없고 **`2.x`대면 충분**합니다. 버전이 크게 다르면(예: 1.x) D-1 설치가 옛 버전이라는 뜻이니 헬프데스크가 업데이트를 돕습니다.
+전원이 같은 버전을 쓰면 화면·동작이 일치해 강사가 진행을 맞추기 쉽습니다. 숫자가 정확히 `2.1.195`일 필요는 없고 **`2.x`대면 충분**합니다. 버전이 크게 다르면(예: 1.x) D-1 설치가 옛 버전이라는 뜻이니 헬프데스크가 업데이트를 돕습니다.
 
 > ⚠️ **주의:** `--version`은 `claude` **세션 안**이 아니라 **터미널**에서 실행하는 명령입니다. 새 터미널 탭을 열거나, 실행 중인 세션은 그대로 두고 확인하면 됩니다.
 
-> 📸 (스크린샷: claude --version 실행 결과가 2.1.187로 표시된 터미널)
+> 📸 (스크린샷: claude --version 실행 결과가 2.1.195로 표시된 터미널)
 
 ---
 
@@ -256,6 +255,6 @@ CLAUDE.md를 읽고 한국어로 한 문장으로 알려줘.
 
 ## 다음 단계
 
-이제 도구가 켜지고 Bedrock에 연결된 것을 확인했습니다. Lab 0.5에서는 오늘 실습을 더 빠르게 해줄 **스킬과 플러그인**을 살펴보고, 본격적인 차지백 실습으로 들어갈 준비를 마칩니다.
+이제 도구가 켜지고 Bedrock에 연결된 것을 확인했습니다. Lab 1에서는 오늘 실습을 더 빠르게 해줄 **스킬과 플러그인**을 살펴보고, 본격적인 차지백 실습으로 들어갈 준비를 마칩니다.
 
-[🏠 목차](README.md) · [다음: Lab 0.5 스킬·플러그인 설치 →](00b-skills-plugins.md)
+[🏠 목차](README.md) · [다음: Lab 1 스킬·플러그인 설치 →](01-skills-plugins.md)

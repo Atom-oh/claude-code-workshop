@@ -166,7 +166,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001
 
 워크숍 **전날(D-1)까지** 아래를 모두 체크하세요.
 
-- [ ] Claude Code 설치 완료 — `claude --version` 실행 시 버전 출력 (예: `2.1.187 (Claude Code)`)
+- [ ] Claude Code 설치 완료 — `claude --version` 실행 시 버전 출력 (예: `2.1.195 (Claude Code)`)
 - [ ] (Windows 네이티브에서 Bash 도구가 필요하면) Git for Windows 설치 완료
 - [ ] Amazon Bedrock 콘솔에서 **Anthropic 모델 액세스** 활성화 완료
 - [ ] `aws bedrock list-inference-profiles --region ap-northeast-2` 로 사용 가능한 inference profile **prefix 확인** (`global.` / `apac.` / `us.`)

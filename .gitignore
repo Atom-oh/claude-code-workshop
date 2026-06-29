@@ -1,3 +1,8 @@
 .DS_Store
 ._*
 *.log
+# 실(비식별화) 고객 데이터 — 강사가 워크숍 환경에 직접 배치
+workshop/mvp/sample-data/case-1*/
+workshop/mvp/sample-data/case-*-real/
+workshop/mvp/sample-data/**/output/
+workshop/mvp/rules/*.local.md
