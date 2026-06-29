@@ -142,17 +142,18 @@ API Key는 전체 AWS 자격증명 **대신** Bedrock 호출을 인증하는 **b
 export CLAUDE_CODE_USE_BEDROCK=1
 export AWS_REGION=ap-northeast-2
 export AWS_BEARER_TOKEN_BEDROCK=your-bedrock-api-key
-export ANTHROPIC_MODEL='global.anthropic.claude-opus-4-8'
+export ANTHROPIC_MODEL='opusplan'
 export ANTHROPIC_DEFAULT_OPUS_MODEL='global.anthropic.claude-opus-4-8[1m]'
-export ANTHROPIC_SMALL_FAST_MODEL='global.anthropic.claude-haiku-4-5-20251001-v1:0'
-export CLAUDE_CODE_SUBAGENT_MODEL='global.anthropic.claude-opus-4-8'
+export ANTHROPIC_DEFAULT_SONNET_MODEL='global.anthropic.claude-sonnet-4-6[1m]'
+export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001-v1:0'
 ```
 
 - **영속화(persist):**
   - **macOS / WSL2:** 위 `export` 줄을 `~/.bashrc` 또는 `~/.zshrc` 에 추가.
   - **Windows(네이티브):** GUI **환경 변수(Environment Variables)** 편집기 사용.
-- `ANTHROPIC_MODEL` 값은 (b)의 `list-inference-profiles` 결과에 맞춰 **본인 계정의 프로파일 ID(또는 application inference profile ARN)** 로 교체하세요.
-- `ANTHROPIC_SMALL_FAST_MODEL`(소형·고속) · `ANTHROPIC_DEFAULT_OPUS_MODEL` · `CLAUDE_CODE_SUBAGENT_MODEL` 은 **선택**입니다(없어도 동작). 계정에 해당 모델 액세스가 켜져 있을 때만 설정하세요. `/setup-bedrock` 마법사를 쓰면 자동으로 핀됩니다.
+- `ANTHROPIC_MODEL='opusplan'` 은 **Plan 모드에서는 Opus, 실행 시에는 Sonnet**을 쓰는 Claude Code 모델 모드입니다. 각 티어가 어떤 Bedrock 모델로 연결될지는 아래 `ANTHROPIC_DEFAULT_OPUS_MODEL` · `ANTHROPIC_DEFAULT_SONNET_MODEL` 이 결정합니다.
+- `ANTHROPIC_DEFAULT_*_MODEL` 값의 prefix(`global.` / `apac.` / `us.`)는 (b)의 `list-inference-profiles` 결과에 맞춰 **본인 계정 값으로 교체**하세요.
+- `ANTHROPIC_DEFAULT_HAIKU_MODEL`(소형·고속 백그라운드용)은 **선택**입니다(없어도 동작). 계정에 Haiku 모델 액세스가 켜져 있을 때만 설정하세요. `/setup-bedrock` 마법사를 쓰면 자동으로 핀됩니다.
 
 #### 동작 확인
 
