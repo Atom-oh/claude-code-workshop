@@ -138,6 +138,7 @@ Claude Code Status
 > ℹ️ **참고 — `Amazon Bedrock`이 안 보이거나 환경변수가 안 잡혀 있다면:** 권장은 세션에서 **`/setup-bedrock`** 재실행입니다. 직접 설정하려면 아래 환경변수를 쓰세요(자세한 절차는 [`PREWORK.md`](./PREWORK.md) (d) 참고).
 > ```bash
 > export CLAUDE_CODE_USE_BEDROCK=1
+> export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 > export AWS_REGION=ap-northeast-2
 > export AWS_BEARER_TOKEN_BEDROCK=<발급받은 Bedrock API 키>
 > export ANTHROPIC_MODEL='opusplan'

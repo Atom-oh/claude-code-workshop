@@ -140,6 +140,7 @@ API Key는 전체 AWS 자격증명 **대신** Bedrock 호출을 인증하는 **b
 
 ```bash
 export CLAUDE_CODE_USE_BEDROCK=1
+export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 export AWS_REGION=ap-northeast-2
 export AWS_BEARER_TOKEN_BEDROCK=your-bedrock-api-key
 export ANTHROPIC_MODEL='opusplan'
