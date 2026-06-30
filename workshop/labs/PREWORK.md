@@ -80,6 +80,13 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 > Bedrock 환경변수/자격증명은 **두 경로 모두 동일하게** 적용됩니다. `claude` 를 실행하는 셸에서 설정하거나, 설정 파일의 `env` 블록에 넣으면 됩니다.
 
+### (권장) 코드 에디터 — VS Code 설치
+
+워크숍에서 파일을 보고 편집하기 편하도록 **Visual Studio Code** 를 함께 설치하세요(무료).
+
+- 다운로드: <https://code.visualstudio.com/> → 운영체제에 맞는 버전 설치
+- VS Code의 **통합 터미널**(``Ctrl+` `` / ``Cmd+` ``)에서 그대로 `claude` 를 실행할 수 있어 편리합니다.
+
 ---
 
 ## 4. AWS CLI 설치 및 IAM 사용자 로그인
@@ -215,6 +222,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001
 
 - [ ] Claude Code 설치 완료 — `claude --version` 실행 시 버전 출력 (예: `2.1.195 (Claude Code)`)
 - [ ] (Windows 네이티브에서 Bash 도구가 필요하면) Git for Windows 설치 완료
+- [ ] **(권장) VS Code 설치** — <https://code.visualstudio.com/> (통합 터미널에서 `claude` 실행)
 - [ ] **AWS CLI v2 설치** — `aws --version` 확인
 - [ ] **IAM 사용자 로그인** — `aws configure`(또는 `aws sso login`) 후 `aws sts get-caller-identity` 로 ARN 확인
 - [ ] Amazon Bedrock 콘솔에서 **Anthropic 모델 액세스** 활성화 완료
