@@ -207,7 +207,7 @@ CLAUDE.md를 읽고 한국어로 한 문장으로 알려줘.
 | `/status`에 **Amazon Bedrock**이 안 보임 | Bedrock 연결 설정이 빠짐/풀림 | `claude` 세션에서 **`/setup-bedrock`** 재실행 → **3rd-party platform → Amazon Bedrock** 선택 후 안내대로 진행 |
 | 인증/자격증명 에러, `token expired`, `ExpiredToken` | AWS 자격증명(토큰) 만료 | 자격증명을 다시 로그인한 뒤 재시도. SSO 환경이면 `aws sso login`, 그 외엔 SA·헬프데스크 안내대로 갱신 |
 | `AccessDenied` / 모델 응답이 안 옴 | 계정에 **모델 액세스 미허용** | Bedrock 콘솔에서 Anthropic 모델 액세스가 켜져 있어야 함 → 헬프데스크에 알리기(개인이 임의로 손대지 않음) |
-| `claude: command not found` | 설치 또는 PATH 문제 | 오늘은 설치하지 않음 — **헬프데스크/SA에게 손 들기** (D-1 설치 누락 가능성) |
+| `claude: command not found` | 설치됐지만 **PATH 누락** (네이티브 설치 시 `~/.local/bin` 경로 문제) | 터미널에서 `export PATH="$HOME/.local/bin:$PATH"` 실행 → `claude --version` 재시도. 새 터미널에도 적용하려면 `~/.bashrc`(zsh는 `~/.zshrc`) 끝에 같은 줄을 추가하고 `source ~/.bashrc`. 그래도 안 되면 **헬프데스크/SA에게 손 들기** |
 | 인터넷이 아예 안 됨 | WiFi 미연결 | 1단계로 복귀 — `guest` / `〔현장에서 공지〕` 재접속, 브라우저로 실제 접속 확인 |
 | 5단계 답변이 엉뚱함 | `mvp/`가 아닌 다른 폴더에서 실행 | `cd workshop/mvp` 다시 확인 후 `claude` 재실행 |
 
