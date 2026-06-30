@@ -82,9 +82,56 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ---
 
-## 4. Amazon Bedrock 연결 (고객 계정)
+## 4. AWS CLI 설치 및 IAM 사용자 로그인
 
-> 본인(고객)의 **AWS 계정**에서 진행합니다. 노트북에서 `aws configure` / SSO 없이, **Bedrock API Key** 가 자격증명을 대신합니다. 실행 리전 기준은 **ap-northeast-2 (서울)** 입니다.
+> 배포 실습(Lab 5 — AgentCore·S3·Knowledge Bases)과 inference profile 조회(`aws bedrock list-inference-profiles`)에는 **AWS CLI와 IAM 자격증명**이 필요합니다. (5절의 **Bedrock API Key**는 *모델 호출* 인증용으로 별도 — 둘 다 준비하세요.)
+
+### (a) AWS CLI v2 설치
+
+- **macOS:**
+  ```bash
+  curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+  sudo installer -pkg AWSCLIV2.pkg -target /
+  ```
+  (또는 Homebrew: `brew install awscli`)
+- **Windows:**
+  ```powershell
+  winget install Amazon.AWSCLI
+  ```
+  (또는 MSI 설치 관리자 <https://awscli.amazonaws.com/AWSCLIV2.msi> 다운로드·실행)
+- **설치 확인:** `aws --version` → `aws-cli/2.x ...` 가 보이면 성공.
+
+### (b) IAM 사용자 액세스 키 발급
+
+1. 본인 AWS 계정 콘솔 → **IAM → 사용자(Users)** → 본인 사용자 선택 (사용자가 없으면 사내 클라우드 담당에게 요청).
+2. **보안 자격 증명(Security credentials)** 탭 → **액세스 키 만들기(Create access key)** → 용도 **CLI** → **Access key ID** 와 **Secret access key** 복사.
+3. ⚠️ Secret access key는 **생성 시 한 번만** 보입니다. 안전하게 보관하고 **저장소·채팅에 붙여넣지 마세요.**
+
+> 사내가 **IAM Identity Center(SSO)** 환경이면 액세스 키 대신 `aws configure sso` → `aws sso login` 을 사용하세요(사내 안내 방식 우선).
+
+### (c) `aws configure` 로 로그인
+
+```bash
+aws configure
+# AWS Access Key ID     [None]: (b)에서 복사한 Access key ID
+# AWS Secret Access Key [None]: (b)에서 복사한 Secret access key
+# Default region name   [None]: ap-northeast-2
+# Default output format [None]: json
+```
+
+### (d) 로그인 확인
+
+```bash
+aws sts get-caller-identity
+```
+
+→ **Account · UserId · Arn** 이 출력되면 로그인 성공. `ExpiredToken` / `InvalidClientTokenId` 오류면 (b)~(c)를 다시 하거나(SSO면 `aws sso login`) 사내 클라우드 담당에 문의.
+
+---
+
+## 5. Amazon Bedrock 연결 (고객 계정)
+
+> 본인(고객)의 **AWS 계정**에서 진행합니다. **Bedrock API Key** 가 *모델 호출*을 인증하므로 Claude Code 사용 자체엔 `aws configure` 가 필수는 아니지만, **inference profile 조회(아래 b)와 Lab 5 배포에는 4절의 AWS CLI·IAM 자격증명이 필요**합니다. 실행 리전 기준은 **ap-northeast-2 (서울)** 입니다.
 
 ### (a) Anthropic 모델 액세스 활성화
 
@@ -162,12 +209,14 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001
 
 ---
 
-## 5. 사전점검 체크리스트 (zero → working)
+## 6. 사전점검 체크리스트 (zero → working)
 
 워크숍 **전날(D-1)까지** 아래를 모두 체크하세요.
 
 - [ ] Claude Code 설치 완료 — `claude --version` 실행 시 버전 출력 (예: `2.1.195 (Claude Code)`)
 - [ ] (Windows 네이티브에서 Bash 도구가 필요하면) Git for Windows 설치 완료
+- [ ] **AWS CLI v2 설치** — `aws --version` 확인
+- [ ] **IAM 사용자 로그인** — `aws configure`(또는 `aws sso login`) 후 `aws sts get-caller-identity` 로 ARN 확인
 - [ ] Amazon Bedrock 콘솔에서 **Anthropic 모델 액세스** 활성화 완료
 - [ ] `aws bedrock list-inference-profiles --region ap-northeast-2` 로 사용 가능한 inference profile **prefix 확인** (`global.` / `apac.` / `us.`)
 - [ ] Bedrock **API Key** 생성 및 키 값 안전하게 보관
@@ -176,7 +225,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001
 
 ---
 
-## 6. 문의 / 헬프데스크
+## 7. 문의 / 헬프데스크
 
 설치·연결 중 막히면 아래로 문의하세요.
 
