@@ -32,9 +32,11 @@ npm install -g @anthropic-ai/claude-code
 
 ```bash
 curl -fsSL https://claude.ai/install.sh | bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bash_profile && source ~/.bash_profile
 ```
 
 - npm 글로벌 설치와 **동일한 네이티브 바이너리**이며, 자동 업데이트를 지원합니다.
+- 두 번째 줄은 `claude`(설치 위치 `~/.local/bin`)를 PATH에 등록합니다. zsh를 쓰는 최신 macOS라면 `~/.bash_profile` 대신 **`~/.zshrc`** 에 추가하세요.
 
 > 둘 중 하나만 하면 됩니다. 잘 모르겠으면 **방법 B(네이티브 스크립트)** 를 권장합니다.
 
@@ -73,6 +75,7 @@ npm install -g @anthropic-ai/claude-code
 
 ```bash
 curl -fsSL https://claude.ai/install.sh | bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bash_profile && source ~/.bash_profile
 ```
 
 - **샌드박스 지원**, Linux 툴체인을 그대로 사용할 수 있습니다. WSL 환경에서는 **Git for Windows가 필요 없습니다.**
