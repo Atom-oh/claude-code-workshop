@@ -91,7 +91,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ## 4. AWS CLI 설치 및 IAM 사용자 로그인
 
-> 배포 실습(Lab 5 — AgentCore·S3·Knowledge Bases)과 inference profile 조회(`aws bedrock list-inference-profiles`)에는 **AWS CLI와 IAM 자격증명**이 필요합니다. (5절의 **Bedrock API Key**는 *모델 호출* 인증용으로 별도 — 둘 다 준비하세요.)
+> 워크숍은 **IAM 자격증명**으로 인증합니다. 여기서 구성한 `aws configure` 자격증명은 **Claude Code의 Bedrock 모델 호출**과 **Lab 5 배포(AgentCore·S3·Knowledge Bases)**, **inference profile 조회**에 모두 사용됩니다.
 
 ### (a) AWS CLI v2 설치
 
@@ -138,7 +138,7 @@ aws sts get-caller-identity
 
 ## 5. Amazon Bedrock 연결 (고객 계정)
 
-> 본인(고객)의 **AWS 계정**에서 진행합니다. **Bedrock API Key** 가 *모델 호출*을 인증하므로 Claude Code 사용 자체엔 `aws configure` 가 필수는 아니지만, **inference profile 조회(아래 b)와 Lab 5 배포에는 4절의 AWS CLI·IAM 자격증명이 필요**합니다. 실행 리전 기준은 **ap-northeast-2 (서울)** 입니다.
+> 본인(고객)의 **AWS 계정**에서 진행합니다. 인증은 **4절에서 구성한 IAM 자격증명(`aws configure`)** 을 그대로 사용합니다 — 별도 Bedrock API Key는 쓰지 않습니다. 실행 리전 기준은 **ap-northeast-2 (서울)** 입니다.
 
 ### (a) Anthropic 모델 액세스 활성화
 
@@ -166,18 +166,9 @@ aws bedrock list-inference-profiles --region ap-northeast-2
 >
 > 이 문서의 아래 예시는 **`global.anthropic.claude-opus-4-8`** 를 사용하지만, **본인 계정의 `list-inference-profiles` 출력값으로 교체**하세요.
 
-### (c) Bedrock API Key 생성
+### (c) Claude Code 연결
 
-API Key는 전체 AWS 자격증명 **대신** Bedrock 호출을 인증하는 **bearer token** 입니다(별도 `aws configure` 불필요). 키 생성 시 IAM 사용자가 자동 생성되며, 기본적으로 AWS 관리형 정책 **`AmazonBedrockLimitedAccess`** 가 연결됩니다 — 바로 시작하기에 충분합니다.
-
-**콘솔 단계 (장기(long-term) 키 — 비개발자에게 가장 간단):**
-
-1. Amazon Bedrock 콘솔 → 리전 선택을 대상 리전(서울이면 **ap-northeast-2**)으로.
-2. 좌측 메뉴 → **API keys**.
-3. **Long-term API keys** 탭 → **Generate long-term API keys** → **만료일(expiration)** 선택 → (필요 시 **Advanced permissions** 에서 추가 정책 연결) → **Generate**.
-4. **키 값을 지금 복사**하세요. 이 값이 곧 **`AWS_BEARER_TOKEN_BEDROCK`** 입니다. 비밀로 취급하고 저장소에 커밋하지 마세요.
-
-### (d) Claude Code 연결
+인증은 **4절의 IAM 자격증명(`aws configure`)** 을 그대로 사용하므로, **`CLAUDE_CODE_USE_BEDROCK=1`** 과 리전·모델만 설정하면 됩니다(별도 API Key 불필요).
 
 #### 1순위 — `/setup-bedrock` 마법사 (권장)
 
@@ -185,18 +176,17 @@ API Key는 전체 AWS 자격증명 **대신** Bedrock 호출을 인증하는 **b
 
 1. 터미널에서 `claude` 실행.
 2. 로그인 화면 → **3rd-party platform → Amazon Bedrock** 선택.
-3. 인증 방식에서 **Bedrock API key** 선택 후 (c)에서 복사한 키 붙여넣기. 마법사가 리전을 감지하고, 계정에서 호출 가능한 Claude 모델을 확인해 **핀(pin)** 한 뒤 사용자 설정 파일에 저장합니다.
-4. 키/리전/모델을 바꾸려면 언제든 `/setup-bedrock` 을 다시 실행하세요.
+3. 인증 방식에서 **AWS 자격증명(IAM)** 경로 선택 — 4절의 `aws configure` 로 구성한 자격증명을 사용합니다. 마법사가 리전을 감지하고, 계정에서 호출 가능한 Claude 모델을 확인해 **핀(pin)** 한 뒤 사용자 설정 파일에 저장합니다.
+4. 리전/모델을 바꾸려면 언제든 `/setup-bedrock` 을 다시 실행하세요.
 
 #### 2순위 — 환경변수 수동 설정
 
-직접 설정해야 하는 경우:
+직접 설정해야 하는 경우(자격증명은 4절의 `aws configure` 로 이미 구성됨):
 
 ```bash
 export CLAUDE_CODE_USE_BEDROCK=1
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 export AWS_REGION=ap-northeast-2
-export AWS_BEARER_TOKEN_BEDROCK=your-bedrock-api-key
 export ANTHROPIC_MODEL='opusplan'
 export ANTHROPIC_DEFAULT_OPUS_MODEL='global.anthropic.claude-opus-4-8[1m]'
 export ANTHROPIC_DEFAULT_SONNET_MODEL='global.anthropic.claude-sonnet-4-6[1m]'
@@ -227,8 +217,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='global.anthropic.claude-haiku-4-5-20251001
 - [ ] **IAM 사용자 로그인** — `aws configure`(또는 `aws sso login`) 후 `aws sts get-caller-identity` 로 ARN 확인
 - [ ] Amazon Bedrock 콘솔에서 **Anthropic 모델 액세스** 활성화 완료
 - [ ] `aws bedrock list-inference-profiles --region ap-northeast-2` 로 사용 가능한 inference profile **prefix 확인** (`global.` / `apac.` / `us.`)
-- [ ] Bedrock **API Key** 생성 및 키 값 안전하게 보관
-- [ ] Claude Code에 Bedrock 연결 완료 (`/setup-bedrock` 마법사 또는 환경변수 수동 설정)
+- [ ] Claude Code에 Bedrock 연결 완료 (`/setup-bedrock` 마법사 또는 환경변수 수동 설정 — 인증은 IAM 자격증명 사용)
 - [ ] hello 테스트 — `claude` 실행 후 간단한 질문에 응답 확인, `/cost` 에서 `API Usage Billing` 표시 확인
 
 ---
