@@ -98,6 +98,8 @@ claude
 
 > ℹ️ **참고:** `claude`는 슬래시(`/`) 없이 그냥 입력하는 **터미널 명령**입니다. `claude: command not found`가 뜨면 아래 [문제 해결](#문제-해결)을 참고하세요.
 
+> 🔓 **권한 프롬프트:** 이 폴더(`workshop/mvp/`)에는 권한 **허용목록**(`.claude/settings.json`)이 들어 있어, 랩에서 쓰는 명령(npm·aws·git·agentcore·node·python·파일 편집 등)은 **매번 묻지 않고 자동 허용**됩니다. 그 밖의 예상 밖 동작은 **여전히 확인 프롬프트**가 뜹니다 — 그때는 내용을 읽고 승인하세요. 현재 허용 항목은 세션에서 `/permissions` 로 확인·조정할 수 있습니다. (모든 가드를 끄는 `--dangerously-skip-permissions` 는 워크숍에서 쓰지 않습니다.)
+
 > 📸 (스크린샷: claude 환영 화면과 입력 커서가 표시된 터미널)
 
 ---

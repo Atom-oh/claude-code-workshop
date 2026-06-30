@@ -1,0 +1,27 @@
+{
+  "$comment": "워크숍 권한 사전 허용목록. 랩에서 쓰는 명령만 자동 허용하고, 예상 밖 동작은 그대로 프롬프트가 뜹니다. (--dangerously-skip-permissions 대신 사용 — 가드는 유지)",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(uv:*)",
+      "Bash(aws:*)",
+      "Bash(agentcore:*)",
+      "Bash(git:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(cd:*)",
+      "Bash(echo:*)",
+      "Bash(pwd:*)"
+    ]
+  }
+}
