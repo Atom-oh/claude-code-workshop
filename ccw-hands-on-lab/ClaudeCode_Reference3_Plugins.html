@@ -14,7 +14,7 @@
     font-family: "NanumSquareOTF", "나눔스퀘어OTF", "NanumSquare", "나눔스퀘어", "Pretendard", "Noto Sans KR", system-ui, -apple-system, sans-serif; }
   a { color:var(--orange); text-decoration:none; }
   code, code.inline { font-family: "D2Coding", "JetBrains Mono",ui-monospace,monospace; font-size:.86em;
-    background:#232D38; color:#FFC466; padding:2px 7px; border-radius:4px; white-space:normal; overflow-wrap:anywhere; }
+    background:var(--bg-inline, #232D38); color:var(--code-amber, #FFC466); padding:2px 7px; border-radius:4px; white-space:normal; overflow-wrap:anywhere; }
   .hero { position:relative; max-width:1160px; margin:0 auto; padding:44px 28px 30px; overflow:hidden; }
   .hero::after { content:""; position:absolute; top:-150px; right:-170px; width:440px; height:440px;
     background:radial-gradient(circle, rgba(182,0,46,.28), transparent 62%); pointer-events:none; }
@@ -39,12 +39,12 @@
   .co-title { display:block; font-size:12px; font-weight:800; letter-spacing:.1em; margin-bottom:5px; color:var(--orange); }
   .code-wrap { background:var(--code); border:1px solid var(--line); border-radius:10px; margin:14px 0 20px; overflow:hidden; }
   .code-head { display:flex; align-items:center; justify-content:space-between; padding:8px 14px 8px 76px;
-    border-bottom:1px solid var(--line); background:rgba(255,255,255,.02); position:relative; }
+    border-bottom:1px solid var(--line); background:var(--code-head-bg, rgba(255,255,255,.02)); position:relative; }
   .code-head::before { content:""; position:absolute; left:16px; top:50%; transform:translateY(-50%);
     width:11px; height:11px; border-radius:50%; background:#FF5F57; box-shadow:18px 0 0 #FEBC2E, 36px 0 0 #28C840; }
   .code-label { font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--dim); text-transform:uppercase; }
   .code-wrap pre { margin:0; padding:14px 16px; overflow-x:auto; }
-  .code-wrap pre code { background:none; color:#D6DEE8; padding:0; font-size:13px; line-height:1.75; white-space:pre; }
+  .code-wrap pre code { background:none; color:var(--code-text, #D6DEE8); padding:0; font-size:13px; line-height:1.75; white-space:pre; }
   .cmt { color:var(--dim); }
   footer { max-width:1160px; margin:36px auto 0; padding:20px 28px 44px; border-top:1px solid var(--line);
     color:var(--muted); font-size:12.5px; line-height:1.9; }

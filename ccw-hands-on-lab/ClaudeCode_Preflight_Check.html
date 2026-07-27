@@ -280,7 +280,7 @@ code.inline {
   font-family: var(--font-code);
   font-size: 0.88em;
   background: var(--bg-inline);
-  color: #FFC466;
+  color: var(--code-amber, #FFC466);
   padding: 2px 7px;
   border-radius: 4px;
   white-space: nowrap;
@@ -310,7 +310,7 @@ kbd {
   justify-content: space-between;
   padding: 8px 14px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--code-head-bg, rgba(255,255,255,.02));
 }
 .code-label {
   font-size: 11px;
@@ -343,10 +343,10 @@ kbd {
   font-size: 13.5px;
   line-height: 1.7;
 }
-.code-wrap code { font-family: inherit; color: #D8DEE9; }
+.code-wrap code { font-family: inherit; color: var(--code-text, #D8DEE9); }
 .code-wrap.output pre { color: var(--dim); }
-.code-wrap .cmt { color: #5E6B7E; }
-.code-wrap .hl { color: #FFC466; }
+.code-wrap .cmt { color: var(--code-cmt, #5E6B7E); }
+.code-wrap .hl { color: var(--code-amber, #FFC466); }
 .code-wrap .ok { color: var(--green); }
 
 /* ============ Callouts ============ */
@@ -455,7 +455,7 @@ kbd {
 .tbl td { color: var(--muted); vertical-align: middle; }
 .tbl td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
 .tbl tr:last-child td { border-bottom: none; }
-.tbl code { font-family: var(--font-code); font-size: 0.9em; color: #FFC466; }
+.tbl code { font-family: var(--font-code); font-size: 0.9em; color: var(--code-amber, #FFC466); }
 
 /* ============ Wrap-up ============ */
 .wrapup {
