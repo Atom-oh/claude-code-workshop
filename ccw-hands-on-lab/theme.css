@@ -1,0 +1,44 @@
+/* Shared dark/light theme layer for ccw-hands-on-lab pages.
+   Code/terminal panels stay dark in both themes — only page chrome switches. */
+:root {
+  --bg-sticky: rgba(12, 17, 23, 0.92);
+  --line-soft: #FFFFFF14;
+  --row-alt: rgba(255, 255, 255, 0.03);
+  --red: #FF5C85;
+  --green-dim: rgba(63, 185, 80, 0.12);
+  --orange-dim: rgba(255, 153, 0, 0.14);
+  --dim: #7B8198;
+  --pd-bg-a: #1d1433;
+  --pd-bg-b: #12181F;
+  --pd-line: #45306b;
+  --pd-chip: #241a3d;
+  --pd-chip-line: #45306b;
+  --task-line: #3a2a57;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #FFFFFF;      --page: #EEF0F3;    --mail: #FFFFFF;
+  --bg-card: #F5F7FA; --card: #F5F7FA;
+  --bg-code: #0C1117; --code: #0C1117;    /* code panels: dark on purpose */
+  --bg-inline: #232E3A;                    /* inline code chip: dark on purpose */
+  --line: #DDE2E8;    --line-soft: #0000000F; --row-alt: rgba(0, 0, 0, .03);
+  --text: #16202B;    --muted: #55606E;   --dim: #6B7683;  --charcoal: #38424F;
+  --orange: #B36A00;  --crimson: #B6002E; --green: #1A7F37; --red: #C0264A;
+  --purple: #6425D9;  --lavender: #6425D9;
+  --orange-dim: rgba(255, 153, 0, .16); --green-dim: rgba(26, 127, 55, .10);
+  --bg-sticky: rgba(255, 255, 255, .92);
+  --pd-bg-a: #F1ECFB; --pd-bg-b: #FFFFFF; --pd-line: #D6C8F5;
+  --pd-chip: #F1ECFB; --pd-chip-line: #D6C8F5; --task-line: #D6C8F5;
+}
+html[data-theme="dark"] { color-scheme: dark; }
+
+.theme-toggle {
+  position: fixed; right: 18px; bottom: 18px; z-index: 60;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card, var(--card)); border: 1px solid var(--line);
+  color: var(--text); font-size: 18px; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+}
+.theme-toggle:hover { border-color: var(--orange); }

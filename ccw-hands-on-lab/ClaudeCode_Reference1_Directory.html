@@ -29,7 +29,7 @@
   table.tbl { width:100%; border-collapse:collapse; font-size:13.5px; display:block; overflow-x:auto; max-width:100%; }
   .tbl th { text-align:left; color:var(--dim); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
     padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap; }
-  .tbl td { padding:9px 12px; border-bottom:1px solid #202A35; vertical-align:top; }
+  .tbl td { padding:9px 12px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
   .tbl tr:last-child td { border-bottom:0; }
   .tbl td:first-child { white-space:nowrap; }
   .badge { display:inline-block; font-size:11px; font-weight:700; color:var(--bg); background:var(--lavender);
@@ -45,12 +45,14 @@
   .code-label { font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--dim); text-transform:uppercase; }
   .code-wrap pre { margin:0; padding:14px 16px; overflow-x:auto; }
   .code-wrap pre code { background:none; color:#D6DEE8; padding:0; font-size:13px; line-height:1.75; white-space:pre; }
-  .cmt { color:#5A6676; }
+  .cmt { color:var(--dim); }
   footer { max-width:1160px; margin:36px auto 0; padding:20px 28px 44px; border-top:1px solid var(--line);
     color:var(--muted); font-size:12.5px; line-height:1.9; }
   footer .who { color:var(--charcoal); font-weight:700; }
   @media (max-width:620px){ .hero{padding:26px 16px 22px} .wrap,footer{padding-left:16px;padding-right:16px} }
 </style>
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
 </head>
 <body>
 <header class="hero">

@@ -107,7 +107,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(12, 17, 23, 0.92);
+  background: var(--bg-sticky);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -370,7 +370,7 @@ kbd {
   margin-bottom: 5px;
 }
 
-.callout.warn .co-title { color: #FF5C85; }
+.callout.warn .co-title { color: var(--red); }
 
 /* ============ Checkpoint ============ */
 .checkpoint {
@@ -443,14 +443,14 @@ kbd {
 .tbl th, .tbl td {
   text-align: left;
   padding: 10px 16px;
-  border-bottom: 1px solid #FFFFFF14;
+  border-bottom: 1px solid var(--line-soft);
 }
 .tbl th {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--orange);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--row-alt);
 }
 .tbl td { color: var(--muted); vertical-align: middle; }
 .tbl td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
@@ -550,6 +550,8 @@ code.inline { white-space: normal; overflow-wrap: anywhere; }
   box-shadow: 18px 0 0 #FEBC2E, 36px 0 0 #28C840;
 }
 </style>
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
 </head>
 <body>
 
