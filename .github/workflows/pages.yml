@@ -3,10 +3,14 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ["ccw-hands-on-lab/**"]
+    paths:
+      - "ccw-hands-on-lab/**"
+      - "20261116/**"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
+  contents: read
   pages: write
   id-token: write
 
@@ -22,8 +26,14 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Assemble Pages site
+        run: |
+          mkdir -p _site/20261116
+          cp -a ccw-hands-on-lab/. _site/
+          cp -a 20261116/. _site/20261116/
+          touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ccw-hands-on-lab
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
