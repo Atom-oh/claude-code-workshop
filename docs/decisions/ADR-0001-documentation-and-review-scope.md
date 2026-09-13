@@ -19,6 +19,11 @@ Use [AGENTS.md](../../AGENTS.md) as the shared instruction source and make
 teaching content. Keep current architecture separate from release history and
 educational examples.
 
+Scope neutral wording to new project descriptions and exclude internal-only
+organizational/confidentiality labels from public docs. Preserve existing
+attribution, official teaching references, and named event assets; the former
+blanket naming rule did not distinguish these from new internal labels.
+
 Document the two sites and the existing Pages copy/deploy behavior as the
 current architecture. Do not invent backend services, application build steps,
 or PR automation. External reviewers must receive relevant project context

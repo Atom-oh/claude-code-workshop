@@ -28,7 +28,7 @@ Preview `eDM.html` or `fsi-edm.html` in a browser. Copy the subject and preview
 from `eDM.txt` and insert the HTML body into the sending tool. Recipient settings
 and subscription-management text belong in that tool.
 
-Registration URL, contact details, deadline, and room assignments were not
+Registration URL, contact details, deadline, and per-session room assignments were not
 provided. The invitation button opens the source lab Q&A Slack channel; it is
 not registration. Slack and survey URLs retain their imported values; event
 access and survey suitability have not been verified.

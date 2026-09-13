@@ -24,7 +24,7 @@ Open PDFs with a PDF viewer and Markdown with a text editor or GitHub. Browse
 the HTML entry points in a browser. To serve both source sites locally:
 
 ```bash
-git clone git@github.com:Atom-oh/claude-code-workshop.git
+git clone https://github.com/Atom-oh/claude-code-workshop.git
 cd claude-code-workshop
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
@@ -33,6 +33,8 @@ Open `http://127.0.0.1:8000/ccw-hands-on-lab/` or
 `http://127.0.0.1:8000/20261116/`. Python is only needed for this optional
 preview server. The repository has no package installation or compilation step.
 Lab exercises describe tools and services to run in a separate learner environment.
+
+The optional searches below require ripgrep (`rg`).
 
 ```bash
 # Search the teaching archive.

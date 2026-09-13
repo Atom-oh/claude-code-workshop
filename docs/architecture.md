@@ -12,6 +12,8 @@ to the curriculum; they are not repository infrastructure.
 | `ccw-hands-on-lab/index.html` | General lab portal |
 | `ccw-hands-on-lab/theme.css`, `theme.js` | Shared light/dark theme for the general lab site |
 | `20261116/index.html` | November event portal with its own page styling/scripts |
+| `20261116/ClaudeCode_*.html` | November chapter labs, capstones, setup, and references |
+| `20261116/AWS_CCB_Program_Brochure.pdf` | Event brochure included in the Pages artifact |
 | `20261116/eDM.html`, `eDM.txt` | Email HTML and plain-text invitation |
 | `20261116/fsi-edm.html` | Detailed web invitation |
 | `20261116/image/` | Event image assets |

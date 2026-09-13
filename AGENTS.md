@@ -46,7 +46,8 @@ site compilation step, or automated test suite.
 - Preserve existing attribution, license terms, resource URLs, and archived
   filenames unless the task calls for a verified correction. Use neutral
   wording for new project descriptions; official names in teaching material
-  and existing event assets are not prohibited.
+  and existing event assets are not prohibited. Do not add internal-only
+  organizational or confidentiality labels to public documents.
 - Use Conventional Commits. Leave unrelated local files, including imported
   archives, untouched.
 

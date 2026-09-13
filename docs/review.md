@@ -60,9 +60,12 @@ assuming they execute in the Pages runtime.
 
 Run `git diff --check`, verify changed links and claims, and perform checks
 appropriate to affected content. For site changes, use the published-layout
-preview in [architecture](architecture.md). Before deployment,
-`content-review-agent` must report PASS at or above 85% on the applicable scale
-(Markdown: at least 77/90). This review does not replace PR review or CI.
+preview in [architecture](architecture.md). The installed AWS Content Plugin
+provides `agents/content-review-agent.md`: apply that external review procedure
+before deployment and require PASS at or above 85% on the applicable scale
+(Markdown: at least 77/90). This is an orchestrator check, not a job in this
+repository's CI. If the required reviewer is unavailable, report the blocker;
+do not invent a score or waive the gate.
 
 When assigned PR completion:
 
@@ -74,6 +77,8 @@ When assigned PR completion:
 4. Merge without another confirmation once the latest-HEAD review is complete,
    no Critical/Major finding remains unresolved, and required CI and branch
    protection conditions pass. Minor/Info alone do not block this process.
+   Query the target repository's rules and checks explicitly; an absent PR
+   workflow does not establish that no other protection applies.
 5. Immediately before merging, recheck HEAD, target branch, and prerequisite PRs.
    Any new commit returns to review. Never disable required gates.
 6. Report changes, validation, the PR URL, and the merge result.

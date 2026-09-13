@@ -61,6 +61,6 @@ for the current layout. English is the maintenance documentation language.
 - Apply a consistent design system — 16:9 ratio, Black/Navy theme (`#161D26`), accent color (`#FF9900`) — across all six chapter PDFs.
 - Add `Script/workshop-code-README.md` and `Script/workshop-code/README.md` as navigation guides for the snippet archive.
 
-[Unreleased]: https://github.com/Atom-oh/claude-code-workshop/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/Atom-oh/claude-code-workshop/compare/99966d0...HEAD
 [1.0.1]: https://github.com/whchoi98/claude-code-workshop/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/whchoi98/claude-code-workshop/releases/tag/v1.0.0
