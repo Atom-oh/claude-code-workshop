@@ -71,5 +71,6 @@ external redistribution and commercial resale are prohibited.
 ## Attribution
 
 Original workshop maintainer: **Choi WooHyung**, Principal Solutions Architect.
-Email: whchoi@amazon.com. For this checkout, use the issue tracker of the
-repository hosting it.
+Email: whchoi@amazon.com.
+[LinkedIn](https://linkedin.com/in/woohyungchoi).
+For this checkout, use the issue tracker of the repository hosting it.
