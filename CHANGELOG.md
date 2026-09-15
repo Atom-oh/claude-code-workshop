@@ -16,6 +16,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
+- Align the November web invitation with the original workshop eDM design, retain November event details, and route the legacy invitation URL to the same page.
 - Move the original chapter PDFs into `20260525/` and separate supplementary PDFs from chapter editions.
 - Align project documentation with both static sites and the actual Pages workflow.
 - Make `CLAUDE.md` import `AGENTS.md` to avoid duplicate policies.
