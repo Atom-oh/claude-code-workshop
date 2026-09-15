@@ -14,8 +14,8 @@ to the curriculum; they are not repository infrastructure.
 | `20261116/index.html` | November event portal with its own page styling/scripts |
 | `20261116/ClaudeCode_*.html` | November chapter labs, capstones, setup, and references |
 | `20261116/AWS_CCB_Program_Brochure.pdf` | Event brochure included in the Pages artifact |
-| `20261116/eDM.html`, `eDM.txt` | Email HTML and plain-text invitation |
-| `20261116/fsi-edm.html` | Detailed web invitation |
+| `20261116/eDM.html`, `eDM.txt` | Web invitation and plain-text email copy |
+| `20261116/fsi-edm.html` | Compatibility entry forwarding to the web invitation |
 | `20261116/image/` | Event image assets |
 | `20260525/`, `20260703/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
 | `Script/workshop-code/` | Archived Markdown examples, outside the Pages artifact |

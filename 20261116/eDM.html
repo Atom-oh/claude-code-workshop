@@ -1,247 +1,436 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="x-apple-disable-message-reformatting">
-  <meta name="format-detection" content="telephone=no,date=no,address=no,email=no">
-  <meta name="color-scheme" content="light">
-  <title>[초청] 금융 서비스 산업 고객 대상 Claude Code Deep Dive Workshop | 2026.11.16–17</title>
-  <!-- Email edition: table layout, inline styles, no scripts or remote images. -->
-  <!-- Workshop hours follow the agenda supplied in labs.zip. -->
-  <!-- The Slack link is for workshop Q&A, not event registration. -->
-  <!--[if mso]>
-  <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
-  <style>table {border-collapse:collapse;} td, p, h1, h2, h3, a {font-family:"Malgun Gothic",Arial,sans-serif !important;}</style>
-  <![endif]-->
-  <style>
-    body { margin:0; padding:0; }
-    table { border-spacing:0; mso-table-lspace:0pt; mso-table-rspace:0pt; }
-    td { word-break:keep-all; overflow-wrap:break-word; }
-    a[x-apple-data-detectors] { color:inherit !important; text-decoration:none !important; }
-    a:focus-visible { outline:3px solid #0073bb; outline-offset:4px; }
-    @media screen and (max-width:600px) {
-      .outer { padding:0 !important; }
-      .container { width:100% !important; }
-      .pad { padding-left:24px !important; padding-right:24px !important; }
-      .hero-title { font-size:35px !important; line-height:1.15 !important; }
-      .hero-sub { font-size:21px !important; }
-      .brand { font-size:12px !important; letter-spacing:1px !important; }
-      .edition { font-size:10px !important; letter-spacing:1px !important; }
-      .event-date { font-size:24px !important; }
-      .time { width:100px !important; font-size:12px !important; }
-      .session { font-size:13px !important; }
-      .day-title { font-size:19px !important; }
-      .cta { display:block !important; text-align:center !important; padding:15px 12px !important; }
-    }
-    @media print {
-      body, .outer { background:#fff !important; padding:0 !important; }
-      .container { max-width:none !important; }
-      tr { break-inside:avoid; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FSI Claude Code Deep Dive Workshop · 2026.11.16–17</title>
+<meta name="description" content="금융 서비스 산업 고객 대상 Claude Code Deep Dive Workshop. 2026년 11월 16–17일, 센터필드 18층. 교육 환경, 이틀의 아젠다와 실습 자료를 확인하세요.">
+<link rel="icon" type="image/png" href="image/claude-mark.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css">
+<style>
+:root {
+    --page: #080706; --mail: #12181F; --card: #1B242E; --code: #0C1117; --line: #262F3B;
+    --text: #E8ECF1; --muted: #8B96A5; --charcoal: #C7CDD6;
+    --orange: #FF9900; --crimson: #B6002E; --lavender: #c9a2ff; --green: #3FB950;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--page); color: var(--text); padding: 26px 14px 44px;
+    font-family: "NanumSquareOTF", "나눔스퀘어OTF", "NanumSquare", "나눔스퀘어",
+                 "Pretendard", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+    font-size: 16px; line-height: 1.75; word-break: keep-all; overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  code.inline {
+    font-family: "D2Coding", "JetBrains Mono", ui-monospace, monospace; font-size: .86em;
+    background: #232D38; color: #FFC466; padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere;
+  }
+
+
+  .mail {
+    max-width: 940px; margin: 0 auto; background: var(--mail);
+    border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+  }
+
+
+  .head {
+    position: relative; padding: 38px 46px 34px; text-align: center; overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 88% -18%, rgba(182,0,46,.42), transparent 62%),
+      radial-gradient(90% 80% at 6% 108%, rgba(122,63,242,.26), transparent 66%),
+      #0F151C;
+    border-bottom: 1px solid var(--line);
+  }
+  .brandbar { display: flex; align-items: center; justify-content: center; gap: 13px; margin-bottom: 20px; }
+  .brandbar img.logo { height: 24px; width: auto; display: block; }
+  .brandbar .wordmark { color: var(--text); font-size: 15.5px; font-weight: 800; letter-spacing: .18em; }
+  .brandbar .x { color: var(--muted); font-size: 15.5px; }
+  .eyebrow {
+    display: inline-block; background: var(--crimson); color: #fff; font-size: 12px; font-weight: 800;
+    letter-spacing: .16em; padding: 6px 13px; border-radius: 4px; margin-bottom: 15px;
+  }
+  .head h1 {
+    display: flex; align-items: center; justify-content: center; gap: 11px; flex-wrap: wrap;
+    font-size: clamp(26px, 5.6vw, 36px); line-height: 1.3; text-wrap: balance;
+  }
+  .titlemark {
+    flex: none; height: 34px; width: auto; display: block;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+  }
+  .head .when { color: var(--orange); font-weight: 700; font-size: 16.5px; margin-top: 14px; }
+  .head .where { color: var(--charcoal); font-size: 15px; margin-top: 5px; }
+  .head .facts {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 18px;
+  }
+  .head .facts span {
+    font-size: 12.8px; font-weight: 700; color: var(--charcoal);
+    background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 20px; padding: 4px 11px;
+  }
+
+
+  .sec { padding: 32px 46px; border-bottom: 1px solid var(--line); }
+  .sec:last-of-type { border-bottom: 0; }
+  .sec-label {
+    color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .16em; text-align: center;
+  }
+  .sec h2 { font-size: 22px; text-align: center; margin-top: 7px; }
+  .sec .meta { color: var(--muted); font-size: 14px; text-align: center; margin-top: 5px; }
+  .sec .intro { color: var(--charcoal); font-size: 15.8px; margin-top: 16px; }
+  .sec .intro + .intro { margin-top: 10px; }
+  .sec .intro strong { color: var(--text); }
+  .rule { height: 1px; background: var(--line); margin: 20px 0 0; }
+
+
+  .cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 20px; }
+  .btn {
+    font-size: 14.5px; font-weight: 700; border-radius: 24px; padding: 11px 22px;
+    border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--charcoal);
+  }
+  .btn:hover { border-color: var(--orange); color: var(--text); }
+  .btn.primary { background: var(--orange); border-color: var(--orange); color: #16110A; }
+
+
+  .env { display: grid; gap: 7px; margin-top: 16px; }
+  .envrow {
+    display: grid; grid-template-columns: 30px 190px 1fr; gap: 16px; align-items: center;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 17px;
+  }
+  .envrow .n { color: var(--orange); font-weight: 800; font-size: 14px; padding-top: 1px; }
+  .envrow .k { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .14em; }
+  .envrow .v { color: var(--orange); font-weight: 800; font-size: 16.5px; margin-top: 3px; }
+  .envrow .desc p { color: var(--charcoal); font-size: 15.2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .chips span {
+    font-size: 12.8px; font-weight: 700; background: var(--code); border: 1px solid var(--line);
+    color: var(--charcoal); border-radius: 20px; padding: 4px 11px;
+  }
+
+
+  .tl { display: grid; gap: 7px; margin-top: 16px; }
+  .slot {
+    display: grid; grid-template-columns: 110px 1fr; gap: 14px; align-items: center;
+    border: 1px dashed var(--line); border-radius: 10px; padding: 11px 17px;
+  }
+  .slot .time { color: var(--charcoal); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .slot .title { color: var(--muted); font-size: 15px; font-weight: 700; }
+  .slot .title small { display: block; color: var(--muted); font-weight: 400; font-size: 13.8px; margin-top: 3px; }
+  .slot.ops { border-style: solid; background: var(--card); }
+  .slot.ops .title { color: var(--text); }
+
+  .session { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 17px 19px; }
+  .session .top { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 10px; }
+  .session .time { color: var(--text); font-weight: 700; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  .badge {
+    font-size: 12px; font-weight: 800; letter-spacing: .08em; border-radius: 20px; padding: 4px 12px;
+  }
+  .badge.lec { background: rgba(255,153,0,.14); color: var(--orange); border: 1px solid rgba(255,153,0,.35); }
+  .badge.lab { background: rgba(122,63,242,.16); color: var(--lavender); border: 1px solid rgba(122,63,242,.45); }
+  .session .dur { color: var(--muted); font-size: 13px; font-weight: 700; }
+  .session h3 { font-size: 17.5px; line-height: 1.45; margin-top: 10px; }
+  .session h3 .chip { color: var(--orange); font-size: 13.5px; font-weight: 800; letter-spacing: .06em; margin-right: 8px; }
+  .session .steps { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .session .steps b { color: var(--charcoal); font-weight: 700; }
+  .session .syn { color: var(--charcoal); font-size: 15.2px; margin-top: 10px; }
+  .session .out { color: var(--muted); font-size: 14.2px; margin-top: 9px; }
+  .session .out b { color: var(--orange); font-weight: 800; letter-spacing: .06em; margin-right: 7px; font-size: 12.4px; }
+  .session .links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line); }
+  .session .links a {
+    font-size: 13.4px; font-weight: 700; border-radius: 20px; padding: 7px 14px;
+    background: var(--code); border: 1px solid var(--line); color: var(--charcoal);
+  }
+  .session .links a.lab { color: var(--orange); }
+  .session .links a:hover { border-color: var(--orange); color: var(--text); }
+  .session.capstone h3 .chip, .session.capstone .out b { color: var(--lavender); }
+  .session.capstone .links a { color: var(--lavender); }
+  .session.capstone .links a:hover { border-color: var(--lavender); }
+
+
+  .refs { display: grid; gap: 7px; margin-top: 16px; }
+  a.ref {
+    display: grid; grid-template-columns: 58px 1fr auto; gap: 12px; align-items: center;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 15px;
+  }
+  a.ref:hover { border-color: var(--orange); }
+  .ref .tag {
+    font-size: 12.2px; font-weight: 800; letter-spacing: .06em; color: var(--lavender);
+    background: var(--code); border: 1px solid var(--line); border-radius: 7px; text-align: center; padding: 7px 0;
+  }
+  .ref h3 { font-size: 16.2px; }
+  .ref p { color: var(--muted); font-size: 13.8px; margin-top: 3px; }
+  .ref .go { color: var(--orange); font-size: 13.4px; font-weight: 700; white-space: nowrap; }
+
+
+  .banner {
+    text-align: center; padding: 32px 46px;
+    background: radial-gradient(90% 120% at 50% 0%, rgba(122,63,242,.16), transparent 70%), var(--code);
+    border-bottom: 1px solid var(--line);
+  }
+  .banner h3 { font-size: 19px; }
+  .banner p { color: var(--charcoal); font-size: 15px; margin-top: 7px; }
+
+
+  .foot { background: var(--code); padding: 28px 46px 32px; text-align: center; color: var(--muted); font-size: 13.4px; line-height: 1.9; }
+  .foot .who { color: var(--charcoal); font-weight: 700; font-size: 14.5px; }
+  .foot a { color: var(--orange); }
+  .sign { text-align: center; color: var(--muted); font-size: 12.2px; margin-top: 18px; }
+
+  @media (max-width: 820px) {
+    .head, .sec, .banner, .foot { padding-left: 28px; padding-right: 28px; }
+    .envrow { grid-template-columns: 28px 1fr; row-gap: 6px; align-items: start; }
+    .envrow .desc { grid-column: 2; }
+  }
+  @media (max-width: 560px) {
+    body { padding: 14px 10px 30px; }
+    .head, .sec, .banner, .foot { padding-left: 18px; padding-right: 18px; }
+    .slot { grid-template-columns: 1fr; gap: 4px; }
+    a.ref { grid-template-columns: 52px 1fr; }
+    .ref .go { grid-column: 2; }
+  }
+
+
+html[data-theme="light"]{
+  --page:#E9EBEF; --mail:#FFFFFF; --card:#F7F8FA; --code:#EEF1F5; --line:#D7DDE5;
+  --text:#1B2430; --muted:#5B6472; --charcoal:#3A4453;
+  --orange:#B45309; --lavender:#6b46c1; --green:#1F883D;
+  background:#E9EBEF;
+}
+html[data-theme="light"] [style*="#c9a2ff"]{color:#6b46c1 !important}
+html[data-theme="light"] [style*="#A6ABBE"]{color:#5B6472 !important}
+#themeToggle{position:fixed;right:16px;bottom:16px;z-index:9999;
+background:var(--bg-card,var(--card,#1B242E));color:var(--orange,#FF9900);
+border:1px solid var(--line,#2A3542);border-radius:999px;padding:9px 16px;
+font:600 13px/1 sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#themeToggle:hover{border-color:var(--orange,#FF9900)}
+html[data-theme="light"] .code-wrap code{color:#2A3542}
+html[data-theme="light"] .code-wrap.output code{color:#57606E}
+html[data-theme="light"] code{color:#B45309;background:#E4E9EF}
+html[data-theme="light"] .code-wrap code, html[data-theme="light"] pre code{background:transparent}
+html[data-theme="light"] .k.s{background:#DCEEDC}
+html[data-theme="light"] .k.w{background:#E9E2F7}
+html[data-theme="light"] code.inline, html[data-theme="light"] .inline{color:#B45309;background:#E4E9EF;border-color:#D7DDE5}
+html[data-theme="light"] .code-wrap .hl{color:#B45309}
+html[data-theme="light"] .code-wrap .cmt{color:#6E7B8C}
+html[data-theme="light"] .head{--text:#E8ECF1;--muted:#8B96A5;--charcoal:#C7CDD6;--orange:#FF9900;--lavender:#c9a2ff;--line:#262F3B}
+html[data-theme="light"] .head, html[data-theme="light"] .head h1{color:#F2F4F8}
+html[data-theme="light"] .head .when{color:#FF9900}
+html[data-theme="light"] .head .where, html[data-theme="light"] .head .facts span{color:#C7CDD6}
+html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.primary, html[data-theme="light"] .badge.ch{color:#FFFFFF}
+@media print{#themeToggle{display:none}}
+  /* Event-specific links and accessible controls. */
+  .qr-card { display:flex; align-items:center; gap:20px; padding:16px 18px;
+    border:1px solid var(--line); border-radius:12px; background:var(--card); }
+  .qr-card img { width:140px; height:140px; border-radius:8px; flex:none; }
+  .qr-card .copy { flex:1; min-width:0; }
+  .qr-card h3 { font-size:17px; margin:0 0 6px; }
+  .qr-card p { color:var(--charcoal); font-size:14px; }
+  .qr-card .btn { flex:none; text-align:center; }
+  .notice { color:var(--charcoal); background:var(--card); border-left:3px solid var(--orange);
+    padding:14px 18px; margin:18px 0; font-size:15px; }
+  .notice strong { color:var(--text); }
+  .schedule-note { color:var(--muted); font-size:14px; margin-top:16px; }
+  .skip-link { position:fixed; top:8px; left:8px; transform:translateY(-150%); z-index:10000;
+    background:var(--orange); color:#16110A; padding:10px 16px; border-radius:6px; }
+  .skip-link:focus { transform:translateY(0); }
+  html[data-theme="light"] .skip-link { color:#FFFFFF; }
+  a:focus-visible, button:focus-visible { outline:3px solid var(--orange); outline-offset:4px; }
+  [id] { scroll-margin-top:20px; }
+  @media (max-width:560px) {
+    .qr-card { flex-direction:column; text-align:center; }
+    .qr-card .btn { align-self:stretch; }
+    #themeToggle { right:12px; bottom:12px; }
+    body { padding-bottom:72px; }
+  }
+  @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+
+</style>
 </head>
-<body style="margin:0;padding:0;background-color:#edf0f3;color:#232f3e;font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans CJK KR',Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
-  <div style="display:none;font-size:1px;color:#edf0f3;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;" aria-hidden="true">11월 16일(월)–17일(화), 센터필드 18층 300·301·400·401호. 금융 서비스 산업 고객을 위한 Claude Code 이론, 핸즈온, 두 번의 캡스톤.</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#edf0f3" style="width:100%;background-color:#edf0f3;">
-    <tr>
-      <td class="outer" align="center" style="padding:32px 12px 40px;">
-        <!--[if mso]><table role="presentation" width="720" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
-        <table role="presentation" class="container" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="width:100%;max-width:720px;background-color:#ffffff;">
-          <tr><td height="6" bgcolor="#ff9900" style="height:6px;background-color:#ff9900;font-size:0;line-height:0;">&nbsp;</td></tr>
-          <tr>
-            <td class="pad" bgcolor="#172433" style="padding:28px 40px 0;background-color:#172433;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td class="brand" style="color:#ffffff;font-size:14px;line-height:20px;font-weight:700;letter-spacing:1.4px;">AWS · FSI WORKSHOP</td>
-                  <td class="edition" align="right" style="color:#bac6d2;font-size:11px;line-height:20px;letter-spacing:1.6px;">INVITATION / NOV 2026</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" bgcolor="#172433" style="padding:40px 40px 38px;background-color:#172433;">
-              <p style="margin:0 0 18px;color:#ffb84d;font-size:13px;font-weight:700;line-height:21px;letter-spacing:.4px;">금융 서비스 산업 고객 초청</p>
-              <h1 class="hero-title" style="margin:0;color:#ffffff;font-family:Arial,'Malgun Gothic',sans-serif;font-size:48px;line-height:1.12;font-weight:700;letter-spacing:-1.8px;">Claude Code<br>Deep Dive Workshop</h1>
-              <p class="hero-sub" style="margin:24px 0 0;color:#ffffff;font-size:25px;font-weight:700;line-height:1.5;letter-spacing:-.6px;">개인의 도구에서<br>팀의 개발 플랫폼으로</p>
-              <p style="margin:16px 0 0;color:#c3cfda;font-size:15px;line-height:1.85;">권한과 정책, 개발 자동화, AI 서비스 구현까지.<br>이틀 동안 직접 만들며 금융권의 AI 개발 환경을 함께 고민합니다.</p>
-              <p style="margin:26px 0 0;color:#ffb84d;font-size:12px;font-weight:700;line-height:20px;letter-spacing:1px;">2 DAYS &nbsp; / &nbsp; HANDS-ON &nbsp; / &nbsp; 2 CAPSTONE ROUNDS</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" bgcolor="#fff3e0" style="padding:28px 40px;background-color:#fff3e0;border-bottom:1px solid #ecdcc2;">
-              <p style="margin:0 0 7px;color:#80500b;font-size:11px;font-weight:700;line-height:18px;letter-spacing:1.6px;">SAVE THE DATE</p>
-              <p class="event-date" style="margin:0 0 17px;color:#172433;font-size:29px;font-weight:700;line-height:1.4;letter-spacing:-1px;">2026. 11. 16 (월) – 17 (화)</p>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;line-height:1.75;">
-                <tr>
-                  <td width="56" valign="top" style="width:56px;padding:3px 0;color:#80500b;font-weight:700;">시간</td>
-                  <td style="padding:3px 0;color:#232f3e;">양일 10:00–18:00</td>
-                </tr>
-                <tr>
-                  <td width="56" valign="top" style="width:56px;padding:3px 0;color:#80500b;font-weight:700;">장소</td>
-                  <td style="padding:3px 0;color:#232f3e;"><strong>센터필드 18층</strong><br>300 · 301 · 400 · 401호</td>
-                </tr>
-                <tr>
-                  <td width="56" valign="top" style="width:56px;padding:3px 0;color:#80500b;font-weight:700;">대상</td>
-                  <td style="padding:3px 0;color:#232f3e;">금융 서비스 산업 고객<br><span style="color:#5b626b;font-size:12px;">Financial Services Industry · FSI</span></td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" style="padding:34px 40px 30px;">
-              <h2 style="margin:0 0 15px;color:#172433;font-size:23px;font-weight:700;line-height:1.45;letter-spacing:-.6px;">직접 만들고, 팀에 적용할 방법을 찾습니다.</h2>
-              <p style="margin:0;color:#4a5867;font-size:15px;line-height:1.9;">금융 서비스 산업 고객 여러분을 Claude Code Deep Dive Workshop에 초대합니다. 설치와 기본 활용에서 시작해 전문 에이전트, 조직의 권한·정책, 개발 파이프라인 통합까지 실습합니다. 매일 진행하는 캡스톤에서는 배운 내용을 하나의 결과물로 완성하고 공유합니다.</p>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;">
-                <tr>
-                  <td width="35" valign="top" style="width:35px;padding:13px 0;border-top:1px solid #e4e8ec;color:#a85b00;font-size:12px;font-weight:700;line-height:23px;">01</td>
-                  <td style="padding:13px 0;border-top:1px solid #e4e8ec;color:#4a5867;font-size:14px;line-height:1.8;"><strong style="color:#172433;">통제 가능한 활용</strong><br>권한 범위, 관리 정책, 사용량 관측과 비용 관리의 기준을 살펴봅니다.</td>
-                </tr>
-                <tr>
-                  <td width="35" valign="top" style="width:35px;padding:13px 0;border-top:1px solid #e4e8ec;color:#a85b00;font-size:12px;font-weight:700;line-height:23px;">02</td>
-                  <td style="padding:13px 0;border-top:1px solid #e4e8ec;color:#4a5867;font-size:14px;line-height:1.8;"><strong style="color:#172433;">반복 가능한 개발 방식</strong><br>서브에이전트, Hooks, Skills, MCP를 활용해 팀의 작업 흐름을 구성합니다.</td>
-                </tr>
-                <tr>
-                  <td width="35" valign="top" style="width:35px;padding:13px 0;border-top:1px solid #e4e8ec;border-bottom:1px solid #e4e8ec;color:#a85b00;font-size:12px;font-weight:700;line-height:23px;">03</td>
-                  <td style="padding:13px 0;border-top:1px solid #e4e8ec;border-bottom:1px solid #e4e8ec;color:#4a5867;font-size:14px;line-height:1.8;"><strong style="color:#172433;">결과물로 이어지는 실습</strong><br>관심 있는 미션을 선택해 설계부터 구현·검증·공유까지 경험합니다.</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" style="padding:6px 40px 16px;">
-              <p style="margin:0 0 7px;color:#a85b00;font-size:11px;line-height:18px;font-weight:700;letter-spacing:1.6px;">TWO-DAY AGENDA</p>
-              <h2 style="margin:0;color:#172433;font-size:25px;line-height:1.4;font-weight:700;letter-spacing:-.6px;">배운 것을, 그날 완성하는 이틀</h2>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" style="padding:0 40px 22px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #dfe5eb;">
-                <tr>
-                  <td colspan="2" bgcolor="#232f3e" style="padding:20px 22px;background-color:#232f3e;">
-                    <p style="margin:0 0 6px;color:#ffb84d;font-size:12px;line-height:20px;font-weight:700;letter-spacing:.8px;">DAY 1 &nbsp; / &nbsp; 11.16 (월)</p>
-                    <h3 class="day-title" style="margin:0;color:#ffffff;font-size:21px;line-height:1.5;font-weight:700;">기본기부터 첫 서비스 완성까지</h3>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:15px 10px 15px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">10:00–10:40</td>
-                  <td class="session" style="padding:15px 16px 15px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;"><strong>오프닝 · Claude Code 아키텍처</strong><br><span style="color:#647181;font-size:12px;">에이전트 루프와 도구 실행 구조 이해</span></td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">10:40–11:20</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;"><strong>CH 01 · 설치부터 Headless 자동화까지</strong><br><span style="color:#647181;font-size:12px;">인증 경로 · CLAUDE.md · Plan 모드</span></td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:10px 10px 10px 16px;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">11:20–13:00</td>
-                  <td class="session" style="padding:10px 16px 10px 0;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;">점심시간</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">13:00–14:20</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;"><strong>기본 환경 실습 · CH 02 Subagents</strong><br><span style="color:#647181;font-size:12px;">첫 세션 실행 · 전문 에이전트 정의와 위임</span></td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:10px 10px 10px 16px;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">14:20–14:30</td>
-                  <td class="session" style="padding:10px 16px 10px 0;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;">휴식</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">14:30–15:00</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;"><strong>CH 03 · Admin Setup 브리핑</strong><br><span style="color:#647181;font-size:12px;">조직 배포 · IAM/SSO · 관리 정책과 관측</span></td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:10px 10px 10px 16px;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">15:00–15:10</td>
-                  <td class="session" style="padding:10px 16px 10px 0;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;">휴식</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" bgcolor="#fff3e0" style="width:116px;padding:16px 10px 16px 16px;background-color:#fff3e0;color:#80500b;font-size:13px;line-height:1.8;border-bottom:1px solid #ecdcc2;white-space:nowrap;">15:10–17:35</td>
-                  <td class="session" bgcolor="#fff3e0" style="padding:16px 16px 16px 0;background-color:#fff3e0;color:#172433;font-size:14px;line-height:1.8;border-bottom:1px solid #ecdcc2;"><strong>CAPSTONE ROUND 1</strong><br>게임 · 미술관 · 지진 워치 중 택 1</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;white-space:nowrap;">17:35–18:00</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;">쇼케이스 · 결과물 공유</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" style="padding:0 40px 28px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #dfe5eb;">
-                <tr>
-                  <td colspan="2" bgcolor="#232f3e" style="padding:20px 22px;background-color:#232f3e;">
-                    <p style="margin:0 0 6px;color:#ffb84d;font-size:12px;line-height:20px;font-weight:700;letter-spacing:.8px;">DAY 2 &nbsp; / &nbsp; 11.17 (화)</p>
-                    <h3 class="day-title" style="margin:0;color:#ffffff;font-size:21px;line-height:1.5;font-weight:700;">팀의 자동화에서 AI 서비스까지</h3>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">10:00–10:10</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;">첫날 리뷰 · Day 2 안내</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">10:10–11:30</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;"><strong>CH 04 · Settings · Hooks · MCP</strong><br><span style="color:#647181;font-size:12px;">설정과 권한 · Hooks와 Skills를 팀 자산으로</span></td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:10px 10px 10px 16px;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">11:30–13:00</td>
-                  <td class="session" style="padding:10px 16px 10px 0;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;">점심시간</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">13:00–13:40</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;"><strong>CH 05 · CLI와 개발 파이프라인</strong><br><span style="color:#647181;font-size:12px;">구조화 출력 · 리뷰 봇 · CI 통합</span></td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" bgcolor="#fff3e0" style="width:116px;padding:16px 10px 16px 16px;background-color:#fff3e0;color:#80500b;font-size:13px;line-height:1.8;border-bottom:1px solid #ecdcc2;white-space:nowrap;">13:40–17:00</td>
-                  <td class="session" bgcolor="#fff3e0" style="padding:16px 16px 16px 0;background-color:#fff3e0;color:#172433;font-size:14px;line-height:1.8;border-bottom:1px solid #ecdcc2;"><strong>CAPSTONE ROUND 2</strong><br>증시 · 유튜브 · 뉴스룸 렌즈 중 택 1</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:10px 10px 10px 16px;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">17:00–17:10</td>
-                  <td class="session" style="padding:10px 16px 10px 0;color:#647181;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;">휴식</td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;border-bottom:1px solid #e4e8ec;white-space:nowrap;">17:10–17:40</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;border-bottom:1px solid #e4e8ec;"><strong>FinOps · 모델 선택과 사용량 측정</strong><br><span style="color:#647181;font-size:12px;">실습 사용량을 바탕으로 살펴보는 비용 효율</span></td>
-                </tr>
-                <tr>
-                  <td class="time" width="116" valign="top" style="width:116px;padding:13px 10px 13px 16px;color:#5a6674;font-size:13px;line-height:1.8;white-space:nowrap;">17:40–18:00</td>
-                  <td class="session" style="padding:13px 16px 13px 0;color:#232f3e;font-size:14px;line-height:1.8;">쇼케이스 · 마무리</td>
-                </tr>
-              </table>
-              <p style="margin:12px 0 0;color:#647181;font-size:12px;line-height:1.8;">세부 세션과 시간은 운영 상황에 따라 변경될 수 있습니다.</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" bgcolor="#f3f5f7" style="padding:28px 40px;background-color:#f3f5f7;border-top:1px solid #e4e8ec;border-bottom:1px solid #e4e8ec;">
-              <p style="margin:0 0 7px;color:#a85b00;font-size:11px;line-height:18px;font-weight:700;letter-spacing:1.6px;">CHOOSE YOUR MISSION</p>
-              <h2 style="margin:0 0 14px;color:#172433;font-size:22px;line-height:1.45;font-weight:700;letter-spacing:-.5px;">관심사에 맞춰 선택하는 캡스톤</h2>
-              <p style="margin:0 0 10px;color:#4a5867;font-size:14px;line-height:1.85;"><strong style="color:#172433;">Day 1</strong> &nbsp; Press Start · Frame It · Quake Watch<br>게임, 제너러티브 아트 전시, 실시간 지진 지도 중 하나를 만듭니다.</p>
-              <p style="margin:0 0 10px;color:#4a5867;font-size:14px;line-height:1.85;"><strong style="color:#172433;">Day 2</strong> &nbsp; Market Desk · Trend Radar · Newsroom Lens<br>시황 대시보드, 유튜브 트렌드, 뉴스 관점 비교에 AI 분석을 연결합니다.</p>
-              <p style="margin:0;color:#647181;font-size:12px;line-height:1.85;">정규 선택 미션 6종 외에 기술 플레이북을 만드는 Playbook Foundry와 CH 06 Agent SDK를 자율 실습 자료로 제공합니다.</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" style="padding:30px 40px 34px;">
-              <h2 style="margin:0 0 14px;color:#172433;font-size:22px;line-height:1.45;font-weight:700;letter-spacing:-.5px;">노트북과 브라우저를 준비해 주세요.</h2>
-              <p style="margin:0 0 12px;color:#4a5867;font-size:14px;line-height:1.85;">개인 노트북과 충전기를 지참해 주세요. 브라우저로 접속하는 EC2 기반 실습 환경과 사전 설치된 Claude Code를 사용합니다. 실습 접속 정보는 현장에서 안내합니다.</p>
-              <p style="margin:18px 0;padding:16px 18px;background-color:#fff3e0;border-left:3px solid #ff9900;color:#232f3e;font-size:14px;line-height:1.85;"><strong>사전에 Slack 초대 메일을 보내드립니다.</strong><br>메일을 꼭 확인하시고, 워크샵 시작 전 Slack에 참여해 주세요.</p>
-              <p style="margin:0 0 22px;color:#4a5867;font-size:14px;line-height:1.85;">실습 중 질문과 결과물 공유는 워크샵 Slack 채널에서 함께합니다.</p>
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="max-width:100%;">
-                <tr>
-                  <td align="center" bgcolor="#ff9900" style="background-color:#ff9900;border:1px solid #e88a00;mso-padding-alt:15px 28px;">
-                    <a class="cta" href="https://claudecode-workshop.slack.com/archives/C0C0M994P3M" style="display:inline-block;padding:15px 28px;color:#172433;font-size:14px;line-height:20px;font-weight:700;text-decoration:none;">워크샵 Slack 채널 열기 &nbsp; →</a>
-                  </td>
-                </tr>
-              </table>
-              <p style="margin:12px 0 0;color:#647181;font-size:12px;line-height:1.8;">위 링크는 실습 Q&amp;A 및 공유 채널입니다.</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="pad" bgcolor="#172433" style="padding:25px 40px;background-color:#172433;">
-              <p style="margin:0 0 7px;color:#ffffff;font-size:14px;font-weight:700;line-height:1.7;">Claude Code Deep Dive Workshop</p>
-              <p style="margin:0;color:#c3cfda;font-size:12px;line-height:1.9;">금융 서비스 산업 고객 대상 · Financial Services Industry<br>2026년 11월 16일(월)–17일(화) · 양일 10:00–18:00<br>센터필드 18층 · 300 · 301 · 400 · 401호</p>
-            </td>
-          </tr>
-        </table>
-        <!--[if mso]></td></tr></table><![endif]-->
-      </td>
-    </tr>
-  </table>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<main class="mail" id="main">
+  <header class="head">
+    <div class="brandbar"><span class="wordmark">ANTHROPIC</span><span class="x">×</span><img class="logo" src="image/aws-logo-white.png" alt="AWS"></div>
+    <span class="eyebrow">CLAUDE CODE DEEP DIVE WORKSHOP</span>
+    <h1><img class="titlemark" src="image/claude-mark.png" alt=""><span>Claude Code Deep Dive Workshop</span></h1>
+    <div class="when">2026.11.16(월) – 17(화) / 10:00 – 18:00</div>
+    <div class="where">센터필드 18층 · 300 · 301 · 400 · 401호</div>
+    <div class="facts"><span>금융 서비스 산업 고객 · FSI</span><span>이론 + 핸즈온 + 캡스톤</span><span>5 Chapters + 2 Capstone Rounds</span></div>
+  </header>
+
+  <section class="sec" id="flow" aria-label="워크샵 소개">
+    <p class="intro" id="why" style="margin-top:0">Claude Code를 개인의 도구에서 팀의 개발 플랫폼으로 연결하는 이틀입니다. 금융 서비스 산업 고객을 대상으로, <strong>설치와 기본 활용부터 전문 에이전트, 조직의 권한과 정책, 개발 파이프라인 통합</strong>까지 실습하며 익힙니다.</p>
+    <p class="intro"><strong>Day 1은 개인 역량으로 첫 완결까지 가는 흐름입니다.</strong> 아키텍처 소개와 환경 구성에서 시작해 Subagents와 Admin Setup을 살펴봅니다. 오후에는 게임, 미술관, 지진 워치 중 하나를 선택해 설계부터 실행과 공유까지 첫 결과물을 완성합니다.</p>
+    <p class="intro"><strong>Day 2는 팀의 자동화와 AI 통합에 집중합니다.</strong> 설정, Hooks, MCP와 CLI를 개발 흐름에 연결합니다. 증시, 유튜브, 뉴스룸 렌즈 중 하나에 AI 분석을 더해 두 번째 결과물을 만들고, 실습에서 사용한 토큰을 바탕으로 모델 선택과 메터링을 정리합니다.</p>
+    <div class="cta"><a class="btn primary" href="#day1">Day 1 아젠다</a><a class="btn" href="#day2">Day 2 아젠다</a><a class="btn" href="index.html">Hands-on Lab 포털</a></div>
+  </section>
+
+  <section class="sec" id="env">
+    <div class="sec-label">ENVIRONMENT</div><h2>교육 환경</h2><div class="meta">EC2 + code-server / 브라우저 접속</div>
+    <p class="intro">개인 노트북의 설정 차이로 실습이 막히지 않도록, 참가자마다 EC2 기반 환경을 제공합니다. 브라우저로 code-server에 접속하면 사전에 설치된 Claude Code로 실습을 시작할 수 있습니다.</p>
+    <div class="env">
+      <div class="envrow"><div class="n">01</div><div><div class="k">사전 준비물</div><div class="v">노트북 + 브라우저</div></div><div class="desc"><p>최신 브라우저가 설치된 노트북과 충전기를 준비해 주세요. 접속 주소와 계정은 현장에서 안내합니다.</p></div></div>
+      <div class="envrow"><div class="n">02</div><div><div class="k">접속 방식</div><div class="v">브라우저 → code-server</div></div><div class="desc"><p>1인 1대의 EC2에 브라우저로 접속합니다. 편집기와 통합 터미널에서 코드와 <code class="inline">claude</code> 세션을 나란히 보며 실습합니다.</p></div></div>
+      <div class="envrow"><div class="n">03</div><div><div class="k">Claude Code</div><div class="v">사전 설치 완료</div></div><div class="desc"><p>CLI와 플러그인이 준비된 환경을 제공합니다. 터미널에서 <code class="inline">claude</code>를 실행하고 인증 경로를 선택합니다.</p></div></div>
+      <div class="envrow"><div class="n">04</div><div><div class="k">모델 접근</div><div class="v">Enterprise / Bedrock 선택</div></div><div class="desc"><p>Claude Enterprise 또는 Amazon Bedrock 경로를 선택합니다. 두 인증 경로는 Chapter 1에서 비교하고, 조직의 통제와 관측은 Chapter 3에서 다룹니다.</p></div></div>
+      <div class="envrow"><div class="n">05</div><div><div class="k">모델 선택</div><div class="v">실습 환경에서 제공하는 모델</div></div><div class="desc"><p>환경에 제공되는 모델을 사용합니다. 과제에 맞는 모델 선택과 사용량 측정은 FinOps 세션에서 함께 다룹니다.</p></div></div>
+      <div class="envrow"><div class="n">06</div><div><div class="k">질의응답 채널</div><div class="v">Slack, 교육 중 실시간</div></div><div class="desc"><p>실습 질문과 트러블슈팅, 결과물 공유는 워크샵 Slack 채널에서 진행합니다. 사전에 보내드리는 초대 메일을 확인해 주세요.</p></div></div>
+    </div>
+    <div id="slack">
+      <p class="notice"><strong>사전에 Slack 초대 메일을 보내드립니다.</strong><br>메일을 꼭 확인하시고, 워크샵 시작 전 Slack에 참여해 주세요.</p>
+      <a class="qr-card" href="https://claudecode-workshop.slack.com/archives/C0C0M994P3M"><img src="image/SlackQR.png" alt="11월 워크샵 Slack 채널 QR 코드" width="140" height="140"><div class="copy"><h3>워크샵 Slack 채널</h3><p>초대 메일로 참여한 뒤 QR 코드나 이 카드를 눌러 채널을 열어 주세요. 실습 질문과 결과물을 함께 나눕니다.</p></div><span class="btn primary">Slack 열기 →</span></a>
+    </div>
+  </section>
+
+  <section class="sec" id="day1">
+    <div id="agenda"></div><div class="sec-label">DAY 1 · 11/16(월)</div><h2>개인 역량으로 첫 완결</h2><div class="meta">10:00 – 18:00 / 이론 + 핸즈온 + 캡스톤 라운드 1</div>
+    <div class="tl">
+      <div class="slot ops"><div class="time">10:00–10:10</div><div class="title">AWS 인사<small>워크샵 안내와 이틀의 학습 흐름을 함께 확인합니다.</small></div></div>
+      <article class="session">
+        <div class="top"><span class="time">10:10–10:40</span><span class="badge lec">강의</span><span class="dur">30분</span></div>
+        <h3><span class="chip">INTRO</span>Claude Code 아키텍처 소개</h3>
+        <p class="steps"><b>에이전트 루프</b> → <b>맥락과 도구</b> → <b>이틀의 학습 지도</b></p>
+        <p class="syn">에이전트가 맥락을 읽고 도구를 고르며 결과를 다시 판단하는 구조부터 살펴봅니다. 이후의 설정, 권한, 자동화가 어느 부분에 적용되는지 이해하고 워크샵을 시작합니다.</p>
+
+        <div class="links"><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/blob/main/tech_doc/ClaudeCode-Architecture.pdf">아키텍처 PDF</a></div>
+      </article>
+      <article class="session">
+        <div class="top"><span class="time">10:40–11:20</span><span class="badge lec">강의</span><span class="dur">40분</span></div>
+        <h3><span class="chip">CH 01</span>Claude Code, 설치부터 Headless 자동화까지</h3>
+        <p class="steps"><b>설치와 인증 경로</b> → <b>CLAUDE.md</b> → <b>Plan 모드와 헤드리스</b></p>
+        <p class="syn">Claude Enterprise와 Amazon Bedrock 인증 경로를 비교하고, 프로젝트 맥락을 담는 CLAUDE.md와 도구 시스템을 살펴봅니다. 계획을 세워 작업하는 흐름과 같은 작업을 대화 없이 실행하는 패턴을 익힙니다.</p>
+
+        <div class="links"><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">강의자료 PDF</a></div>
+      </article>
+      <div class="slot"><div class="time">11:20–13:00</div><div class="title">점심 식사</div></div>
+      <article class="session">
+        <div class="top"><span class="time">13:00–13:40</span><span class="badge lab">LAB</span><span class="dur">40분</span></div>
+        <h3><span class="chip">LAB 1</span>기본 환경 구성</h3>
+        <p class="steps"><b>설치·인증</b> → <b>첫 세션</b> → <b>헤드리스 한 줄 재현</b></p>
+        <p class="syn">제공된 환경에 접속해 첫 세션을 실행하고 CLAUDE.md의 역할을 직접 확인합니다. 헤드리스 호출까지 재현해 오후 캡스톤에 사용할 환경을 준비합니다.</p>
+        <p class="out"><b>산출물</b>실습에 사용할 Claude Code 환경과 첫 헤드리스 호출</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Hands-on Lab</a></div>
+      </article>
+      <article class="session">
+        <div class="top"><span class="time">13:40–14:20</span><span class="badge lab">강의 + LAB</span><span class="dur">40분</span></div>
+        <h3><span class="chip">CH 02</span>Subagents, 전문 에이전트를 만들고 지휘하기</h3>
+        <p class="steps"><b>역할과 도구 권한 격리</b> → <b>정의와 위임</b> → <b>Lab 2</b></p>
+        <p class="syn">에이전트마다 역할과 도구 권한을 나누고, 정의 파일을 작성해 실행합니다. 자동 위임, @멘션으로 지목하기, 병렬 실행의 차이를 살펴보며 전문 에이전트를 작업 흐름에 연결합니다.</p>
+
+        <div class="links"><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">강의자료 PDF</a></div>
+      </article>
+      <div class="slot"><div class="time">14:20–14:30</div><div class="title">Break</div></div>
+      <article class="session">
+        <div class="top"><span class="time">14:30–15:00</span><span class="badge lec">브리핑</span><span class="dur">30분</span></div>
+        <h3><span class="chip">CH 03</span>Admin Setup 브리핑, 조직의 배포와 통제</h3>
+        <p class="steps"><b>플릿 배포</b> → <b>Bedrock IAM / SSO</b> → <b>managed 정책과 관측</b></p>
+        <p class="syn">조직에서 Claude Code를 운영할 때 필요한 배포, 자격증명, 관리 정책과 관측의 핵심을 정리합니다. 상세 구축 자료와 함께 어떤 통제 지점을 확인해야 하는지 살펴봅니다.</p>
+
+        <div class="links"><a class="lab" href="ClaudeCode_Ch3_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">강의자료 PDF</a></div>
+      </article>
+      <div class="slot"><div class="time">15:00–15:10</div><div class="title">Break</div></div>
+      <article class="session capstone" id="capstone">
+        <div class="top"><span class="time">15:10–17:35</span><span class="badge lab">LAB</span><span class="dur">145분</span></div>
+        <h3><span class="chip">CAPSTONE R1</span>오늘 배운 것으로 첫 완결</h3>
+        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> 빌드와 검증 → <b>③</b> 개장과 Slack 공유</p>
+        <p class="syn"><b>Press Start · 게임</b>, <b>Frame It · 미술관</b>, <b>Quake Watch · 지진 워치</b> 중 하나를 골라 완주합니다. 오전과 오후에 익힌 환경과 에이전트를 활용해 결과물을 만들고, 실행 화면이나 URL을 Slack에 공유합니다.</p>
+        <p class="out"><b>산출물</b>직접 설계하고 실행한 첫 번째 결과물</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Capstone1_HandsOnLab.html">Mission 1 게임</a><a class="lab" href="ClaudeCode_Capstone3_HandsOnLab.html">Mission 3 미술관</a><a class="lab" href="ClaudeCode_Capstone5_HandsOnLab.html">Mission 5 지진 워치</a></div>
+      </article>
+      <div class="slot ops"><div class="time">17:35–18:00</div><div class="title">쇼케이스 1<small>Slack 공유작 하이라이트와 둘째 날 과제 안내</small></div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="day2">
+    <div class="sec-label">DAY 2 · 11/17(화)</div><h2>AI 통합으로 두 번째 완결</h2><div class="meta">10:00 – 18:00 / 이론 + 핸즈온 + 캡스톤 라운드 2</div>
+    <div class="tl">
+      <div class="slot ops"><div class="time">10:00–10:10</div><div class="title">환영인사 / 리캡<small>첫날의 환경, 에이전트, 결과물을 되짚고 출발점을 맞춥니다.</small></div></div>
+      <article class="session">
+        <div class="top"><span class="time">10:10–11:30</span><span class="badge lab">강의 + LAB</span><span class="dur">80분</span></div>
+        <h3><span class="chip">CH 04</span>Settings, 나의 Claude Code를 팀의 플랫폼으로</h3>
+        <p class="steps"><b>설정 스코프와 권한 규칙</b> → <b>Hooks와 MCP</b> → <b>슈퍼랩</b></p>
+        <p class="syn">개인의 설정을 팀에서 함께 쓰는 자산으로 만드는 시간입니다. 설정 계층과 권한을 정리하고, Hooks와 MCP를 작업 흐름에 연결합니다. 훅과 스킬을 팀 자산으로 구성하는 실습을 이어갑니다.</p>
+
+        <div class="links"><a class="lab" href="ClaudeCode_Ch4_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">강의자료 PDF</a></div>
+      </article>
+      <div class="slot"><div class="time">11:30–13:00</div><div class="title">점심 식사</div></div>
+      <article class="session">
+        <div class="top"><span class="time">13:00–13:40</span><span class="badge lab">강의 + LAB</span><span class="dur">40분</span></div>
+        <h3><span class="chip">CH 05</span>CLI Reference, Claude Code를 파이프라인 부품으로</h3>
+        <p class="steps"><b>-p와 구조화 출력</b> → <b>리뷰 봇</b> → <b>CI 통합 데모</b></p>
+        <p class="syn">헤드리스 호출과 구조화된 출력을 이용해 Claude Code를 자동화 흐름에 연결합니다. 리뷰 봇의 실행 과정을 살펴보고 CI 통합 데모를 통해 개발 파이프라인에서 활용하는 방식을 확인합니다.</p>
+
+        <div class="links"><a class="lab" href="ClaudeCode_Ch5_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">강의자료 PDF</a></div>
+      </article>
+      <article class="session capstone">
+        <div class="top"><span class="time">13:40–17:00</span><span class="badge lab">LAB</span><span class="dur">200분</span></div>
+        <h3><span class="chip">CAPSTONE R2</span>AI를 품은 두 번째 완결</h3>
+        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> AI 분석과 하네스 연결 → <b>③</b> 검증과 공유</p>
+        <p class="syn"><b>Market Desk · 증시</b>, <b>Trend Radar · 유튜브</b>, <b>Newsroom Lens · 뉴스룸 렌즈</b> 중 하나를 선택합니다. AI 분석을 서비스에 연결하고, 이틀 동안 익힌 설정과 자동화를 적용해 두 번째 결과물을 완성합니다.</p>
+        <p class="out"><b>산출물</b>AI 분석을 연결한 두 번째 결과물</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Capstone2_HandsOnLab.html">Mission 2 증시</a><a class="lab" href="ClaudeCode_Capstone4_HandsOnLab.html">Mission 4 유튜브</a><a class="lab" href="ClaudeCode_Capstone6_HandsOnLab.html">Mission 6 뉴스룸 렌즈</a></div>
+      </article>
+      <div class="slot"><div class="time">17:00–17:10</div><div class="title">Break</div></div>
+      <article class="session">
+        <div class="top"><span class="time">17:10–17:40</span><span class="badge lec">강의 + 데모</span><span class="dur">30분</span></div>
+        <h3><span class="chip">FINOPS</span>토큰을 효율적으로 쓰는 법, 모델 라우팅과 메터링</h3>
+        <p class="steps"><b>실습 사용량</b> → <b>과제별 모델 선택</b> → <b>OpenTelemetry 대시보드</b></p>
+        <p class="syn">캡스톤에서 사용한 토큰을 바탕으로 캐싱과 모델 선택, 비용 효율을 살펴봅니다. OpenTelemetry로 사용량을 수집하고 대시보드에서 확인하는 흐름을 통해 팀의 사용량을 측정값으로 이야기하는 방법을 익힙니다.</p>
+
+        <div class="links"><a class="lab" href="ClaudeCode_Ch3_HandsOnLab.html">참고 랩 · OTel</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/blob/main/tech_doc/Claude_Cost_Efficiency.pdf">비용 효율화 PDF</a></div>
+      </article>
+      <div class="slot ops"><div class="time">17:40–18:00</div><div class="title">쇼케이스 2 &amp; Closing<small>이틀의 결과물 공유와 마무리</small></div></div>
+    </div>
+    <p class="schedule-note">세부 세션과 시간은 운영 상황에 따라 변경될 수 있습니다.</p>
+  </section>
+
+  <section class="sec" id="references">
+    <div class="sec-label">SELF-PACED / REFERENCE</div><h2>자율 실습과 참고 자료</h2><div class="meta">정규 세션 밖에서 이어 갈 랩과 실습 중 찾아볼 자료</div>
+    <div class="refs">
+      <a class="ref" href="ClaudeCode_Ch6_HandsOnLab.html"><span class="tag">CH 06</span><div><h3>Agent SDK, Claude Code를 코드에서 부른다</h3><p>대화 메모리와 커스텀 도구 등, 정규 세션 밖에서 이어 가는 자율 실습 트랙입니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="ClaudeCode_Capstone7_HandsOnLab.html"><span class="tag">CAP 7</span><div><h3>Playbook Foundry · 기술 플레이북</h3><p>반복해서 활용할 기술 플레이북을 만드는 자율 캡스톤 미션입니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="ClaudeCode_Reference1_Directory.html"><span class="tag">REF 1</span><div><h3>디렉토리 구조, 무엇이 어디에 있는가</h3><p>사용자·프로젝트·관리 설정의 구조와 CLAUDE.md 계층을 확인합니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="ClaudeCode_Reference2_Commands.html"><span class="tag">REF 2</span><div><h3>슬래시 커맨드, 세션을 조종하는 레버</h3><p>작업 흐름과 세션 관리를 위한 주요 명령을 찾아볼 수 있습니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="ClaudeCode_Reference3_Plugins.html"><span class="tag">REF 3</span><div><h3>플러그인, 팀의 하네스를 배포하는 단위</h3><p>플러그인 설치와 워크샵에서 쓰는 도구의 역할을 정리한 자료입니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703"><span class="tag">PDF</span><div><h3>강의자료 PDF 전체</h3><p>챕터별 슬라이드 PDF가 모여 있는 저장소 폴더입니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="https://github.com/whchoi98/claude-code-workshop/tree/main/tech_doc"><span class="tag">DOC</span><div><h3>기타 Tech Doc</h3><p>아키텍처와 비용 효율화 등 워크샵을 보완하는 기술 자료입니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="AWS_CCB_Program_Brochure.pdf"><span class="tag">CCB</span><div><h3>AWS 사전교육 CCB 프로그램 브로셔</h3><p>워크샵과 함께 안내하는 사전교육 프로그램 자료입니다.</p></div><span class="go">열기 →</span></a>
+    </div>
+  </section>
+
+  <a class="banner" href="index.html" id="start" style="display:block"><h3>Hands-on Lab 포털 열기</h3><p>챕터별 랩, 선택 미션 6종과 자율 미션 1종, Reference 3부작을 한곳에서 확인합니다.</p><div class="cta"><span class="btn primary">Lab 포털 열기 →</span></div></a>
+
+  <section class="sec" id="after">
+    <div id="survey"><div class="sec-label">AFTER THE WORKSHOP</div><h2>교육 후 설문</h2><div class="meta">이틀 과정에 대한 의견을 들려주세요.</div>
+    <a class="qr-card" href="https://pulse.amazon/survey/GUOZDPW6?p=0" style="margin-top:16px"><img src="image/QRCode.png" alt="11월 워크샵 교육 후 설문 QR 코드" width="140" height="140"><div class="copy"><h3>여러분의 의견을 기다립니다</h3><p>카메라로 QR 코드를 비추거나 이 카드를 눌러 참여해 주세요. 다음 워크샵을 준비하는 데 반영하겠습니다.</p></div><span class="btn primary">설문 열기 →</span></a>
+    </div>
+  </section>
+
+  <footer class="foot"><div class="who">Claude Code Deep Dive Workshop</div><div>금융 서비스 산업 고객 대상 / 2026.11.16 – 17 / 센터필드 18층 300·301·400·401호</div><div>실습 환경: Amazon EC2 + code-server (Claude Code 사전 설치)</div><div><a href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">강의자료 PDF</a> / <a href="https://github.com/whchoi98/claude-code-workshop/tree/main/tech_doc">기타 Tech Doc</a> / <a href="AWS_CCB_Program_Brochure.pdf">CCB 프로그램 브로셔</a> / <a href="ClaudeCode_Preflight_Check.html">실습 시작 전 확인</a></div></footer>
+</main>
+<div class="sign">Claude Code Deep Dive Workshop · 11월 세션 소개</div>
+<button id="themeToggle" type="button" aria-label="라이트 모드 전환" aria-pressed="false" hidden>라이트 모드</button>
+<script>
+(function () {
+  var key = 'hol-theme', root = document.documentElement;
+  var button = document.getElementById('themeToggle');
+  button.hidden = false;
+  function apply(light) {
+    if (light) root.setAttribute('data-theme', 'light');
+    else root.removeAttribute('data-theme');
+    button.textContent = light ? '다크 모드' : '라이트 모드';
+    button.setAttribute('aria-pressed', String(light));
+    button.setAttribute('aria-label', light ? '다크 모드 전환' : '라이트 모드 전환');
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(key); } catch (error) {}
+  apply(saved === 'light');
+  button.addEventListener('click', function () {
+    var light = root.getAttribute('data-theme') !== 'light';
+    apply(light);
+    try { localStorage.setItem(key, light ? 'light' : 'dark'); } catch (error) {}
+  });
+})();
+</script>
 </body>
 </html>
