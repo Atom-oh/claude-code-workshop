@@ -25,8 +25,8 @@ The invitation identifies November 16–17, 2026, Centerfield floor 18, rooms
 
 The 10:00–18:00 schedule and detailed agenda came from `labs/fsi-edm.html` in the
 original import archive (`labs.zip`). Those hours were not independently
-confirmed by the organizer. If they change, update the email HTML, text, and web
-invitation together. The email groups some consecutive sessions.
+confirmed by the organizer. If they change, update `eDM.html` and `eDM.txt`
+together. The plain-text email groups some consecutive sessions.
 
 The portal distinguishes six regular elective missions from the self-directed
 Playbook Foundry mission; Chapter 6 Agent SDK is also self-directed. Imported
