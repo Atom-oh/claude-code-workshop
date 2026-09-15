@@ -14,9 +14,11 @@
 Reference: `https://whchoi98.github.io/ccw-hands-on-lab/eDM.html`, inspected on
 2026-09-15. Reuse its centered 940px layout, palette, typography, session cards,
 and local copies of its AWS/Claude marks. NanumSquare loads from the same CDN.
-Retain November dates, venue, agenda, missions, Slack/survey destinations, and
-existing QR images. Reference-event speakers, model versions, Wi-Fi credentials,
-and other event-specific details are not November event data.
+Use November dates, venue, agenda, missions, and current event channels.
+When the Slack channel changes, update `eDM.html`, `eDM.txt`, and
+`image/SlackQR.png` together and verify the decoded QR destination.
+Reference-event speakers, model versions, Wi-Fi credentials, and other
+event-specific details are not November event data.
 
 ## Event Details and Provenance
 
@@ -42,8 +44,9 @@ text belong in the sending tool.
 
 Registration URL, contact details, deadline, and per-session room assignments were not
 provided. The invitation button opens the source lab Q&A Slack channel; it is
-not registration. Slack and survey URLs retain their imported values; event
-access and survey suitability have not been verified.
+not registration. The Slack URL was supplied for this event; the survey URL
+retains its imported value. Channel membership and survey suitability have not
+been verified.
 
 Labs were imported from the archive. In the November copy of Capstone 3, the
 import removed one missing local webfont stylesheet and two browser-extension

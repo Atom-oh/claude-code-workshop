@@ -55,7 +55,7 @@ Day 2 · 11월 17일(화)
 메일을 꼭 확인하시고, 워크샵 시작 전 Slack에 참여해 주세요.
 
 실습 중 질문과 결과물 공유는 워크샵 Slack 채널에서 함께합니다.
-https://claudecode-workshop.slack.com/archives/C0C0M994P3M
+https://claudecode-workshop.slack.com/archives/C0C1X0Z1MPU
 위 링크는 실습 Q&A 및 공유 채널입니다.
 
 세부 세션과 시간은 운영 상황에 따라 변경될 수 있습니다.
