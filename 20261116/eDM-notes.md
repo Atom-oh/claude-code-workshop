@@ -13,7 +13,8 @@
 
 Reference: `https://whchoi98.github.io/ccw-hands-on-lab/eDM.html`, inspected on
 2026-09-15. Reuse its centered 940px layout, palette, typography, session cards,
-and local copies of its AWS/Claude marks. NanumSquare loads from the same CDN.
+and Claude mark. The dark header uses the supplied white AWS for Financial
+Services logo. NanumSquare loads from the same CDN.
 Use November dates, venue, agenda, missions, and current event channels.
 When the Slack channel changes, update `eDM.html`, `eDM.txt`, and
 `image/SlackQR.png` together and verify the decoded QR destination.
