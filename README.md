@@ -9,13 +9,15 @@ examples, and static HTML labs. Project maintenance documentation is English.
 | --- | --- |
 | [20260525](20260525/) | Original six-chapter PDF edition |
 | [20260703](20260703/) | July six-chapter PDF edition, authored against Claude Code 2.1.198 |
+| [20260905](20260905/) | Latest six-chapter PDF edition, revised against Claude Code v2.1.261 |
+| [20260901](20260901/) | Session-ordered (D1/D2) delivery build of the decks |
 | [General labs](ccw-hands-on-lab/index.html) | Chapter labs, capstones, setup, preflight, and reference pages |
 | [November event](20261116/index.html) | Materials for the November 16–17, 2026 workshop |
 | [Code archive](Script/workshop-code/README.md) | 502 numbered slide examples organized by chapter and part |
 | [Technical documents](tech_doc/) | Architecture and cost-efficiency PDFs |
 
 The six chapters cover Overview, Agents & Subagents, Admin Setup, Settings,
-CLI Reference, and Agent SDK. July is the latest **chapter PDF edition**;
+CLI Reference, and Agent SDK. `20260905/` is the latest **chapter PDF edition**;
 the November directory contains event materials and HTML labs.
 
 ## Use

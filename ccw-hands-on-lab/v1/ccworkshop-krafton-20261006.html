@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krafton을 위한 Claude Code Workshop - 세션 소개</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHkAAABOCAYAAAAEhblcAAABcklEQVR42u3cPUrDUADA8ZfSuZPURXHQSezkIKgn8AAOrt28gIujKN3FI3TwAJ5ABQehEOkuFlHrYrCDi/EE/SAxTa2/3xoeIe+fj+HxEoUpOD1bSFfXvsNnUgnN5nsUmKpcE368t50eNJYyjb1/fAubK/V/NNVp5ulux71wcnWbuVXFfT7/RBYZkREZkREZkREZkUVGZERGZKauWtaJnz4G4e76Yejxw92NPzeZFyOuZ2u5XtrSammRn5NBOL/pzlXkUdcTdkJpkb2ufZMRGZERGZERGZERWWRERmRERmR+X5Rn+2me7ZhMLn5NQmOxlmlsO+55kr2uERmRERmRERmREVlkREZkREZkClDt9JMQ4l6mwY16LfMSGJN7GXyFOGOjTj8p71fITM6vkBEZkUVGZERGZERGZERGZJERGZGZPYXuO+0e7afDjo1bPssztijjllbXW5dREWM9yYiMyCIjMiIjMiIjMiIjssiIjMjMnh/r21dNDgflUAAAAABJRU5ErkJggg==">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css">
+<style>
+  :root {
+    --page: #080706; --mail: #12181F; --card: #1B242E; --code: #0C1117; --line: #262F3B;
+    --text: #E8ECF1; --muted: #8B96A5; --charcoal: #C7CDD6;
+    --orange: #FF9900; --crimson: #B6002E; --lavender: #c9a2ff; --green: #3FB950;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--page); color: var(--text); padding: 26px 14px 44px;
+    font-family: "NanumSquareOTF", "나눔스퀘어OTF", "NanumSquare", "나눔스퀘어",
+                 "Pretendard", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+    font-size: 16px; line-height: 1.75; word-break: keep-all; overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  code.inline {
+    font-family: "D2Coding", "JetBrains Mono", ui-monospace, monospace; font-size: .86em;
+    background: #232D38; color: #FFC466; padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere;
+  }
+
+  /* ── 메일 컨테이너 ── */
+  .mail {
+    max-width: 940px; margin: 0 auto; background: var(--mail);
+    border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+  }
+
+  /* ── 헤더 ── */
+  .head {
+    position: relative; padding: 38px 46px 34px; text-align: center; overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 88% -18%, rgba(182,0,46,.42), transparent 62%),
+      radial-gradient(90% 80% at 6% 108%, rgba(122,63,242,.26), transparent 66%),
+      #0F151C;
+    border-bottom: 1px solid var(--line);
+  }
+  .brandbar { display: flex; align-items: center; justify-content: center; gap: 13px; margin-bottom: 20px; }
+  .brandbar img.logo { height: 24px; width: auto; display: block; }
+  .brandbar .wordmark { color: var(--text); font-size: 15.5px; font-weight: 800; letter-spacing: .18em; }
+  .brandbar .x { color: var(--muted); font-size: 15.5px; }
+  .eyebrow {
+    display: inline-block; background: var(--crimson); color: #fff; font-size: 12px; font-weight: 800;
+    letter-spacing: .16em; padding: 6px 13px; border-radius: 4px; margin-bottom: 15px;
+  }
+  .head h1 {
+    display: flex; align-items: center; justify-content: center; gap: 11px; flex-wrap: wrap;
+    font-size: clamp(26px, 5.6vw, 36px); line-height: 1.3; text-wrap: balance;
+  }
+  .titlemark {
+    flex: none; height: 34px; width: auto; display: block;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+  }
+  .head .when { color: var(--orange); font-weight: 700; font-size: 16.5px; margin-top: 14px; }
+  .head .where { color: var(--charcoal); font-size: 15px; margin-top: 5px; }
+  .head .facts {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 18px;
+  }
+  .head .facts span {
+    font-size: 12.8px; font-weight: 700; color: var(--charcoal);
+    background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 20px; padding: 4px 11px;
+  }
+
+  /* ── 섹션 공통 ── */
+  .sec { padding: 32px 46px; border-bottom: 1px solid var(--line); }
+  .sec:last-of-type { border-bottom: 0; }
+  .sec-label {
+    color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .16em; text-align: center;
+  }
+  .sec h2 { font-size: 22px; text-align: center; margin-top: 7px; }
+  .sec .meta { color: var(--muted); font-size: 14px; text-align: center; margin-top: 5px; }
+  .sec .intro { color: var(--charcoal); font-size: 15.8px; margin-top: 16px; }
+  .sec .intro + .intro { margin-top: 10px; }
+  .sec .intro strong { color: var(--text); }
+  .rule { height: 1px; background: var(--line); margin: 20px 0 0; }
+
+  /* ── CTA ── */
+  .cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 20px; }
+  .btn {
+    font-size: 14.5px; font-weight: 700; border-radius: 24px; padding: 11px 22px;
+    border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--charcoal);
+  }
+  .btn:hover { border-color: var(--orange); color: var(--text); }
+  .btn.primary { background: var(--orange); border-color: var(--orange); color: #16110A; }
+
+  /* ── 교육 환경 ── */
+  .env { display: grid; gap: 7px; margin-top: 16px; }
+  .envrow {
+    display: grid; grid-template-columns: 30px 190px 1fr; gap: 16px; align-items: center;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 17px;
+  }
+  .envrow .n { color: var(--orange); font-weight: 800; font-size: 14px; padding-top: 1px; }
+  .envrow .k { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .14em; }
+  .envrow .v { color: var(--orange); font-weight: 800; font-size: 16.5px; margin-top: 3px; }
+  .envrow .desc p { color: var(--charcoal); font-size: 15.2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .chips span {
+    font-size: 12.8px; font-weight: 700; background: var(--code); border: 1px solid var(--line);
+    color: var(--charcoal); border-radius: 20px; padding: 4px 11px;
+  }
+
+  /* ── 아젠다 ── */
+  .tl { display: grid; gap: 7px; margin-top: 16px; }
+  .slot {
+    display: grid; grid-template-columns: 110px 1fr; gap: 14px; align-items: center;
+    border: 1px dashed var(--line); border-radius: 10px; padding: 11px 17px;
+  }
+  .slot .time { color: var(--charcoal); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .slot .title { color: var(--muted); font-size: 15px; font-weight: 700; }
+  .slot .title small { display: block; color: var(--muted); font-weight: 400; font-size: 13.8px; margin-top: 3px; }
+  .slot.ops { border-style: solid; background: var(--card); }
+  .slot.ops .title { color: var(--text); }
+
+  .session { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 17px 19px; }
+  .session .top { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 10px; }
+  .session .time { color: var(--text); font-weight: 700; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  .badge {
+    font-size: 12px; font-weight: 800; letter-spacing: .08em; border-radius: 20px; padding: 4px 12px;
+  }
+  .badge.lec { background: rgba(255,153,0,.14); color: var(--orange); border: 1px solid rgba(255,153,0,.35); }
+  .badge.lab { background: rgba(122,63,242,.16); color: var(--lavender); border: 1px solid rgba(122,63,242,.45); }
+  .session .dur { color: var(--muted); font-size: 13px; font-weight: 700; }
+  .session h3 { font-size: 17.5px; line-height: 1.45; margin-top: 10px; }
+  .session h3 .chip { color: var(--orange); font-size: 13.5px; font-weight: 800; letter-spacing: .06em; margin-right: 8px; }
+  .session .steps { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .session .steps b { color: var(--charcoal); font-weight: 700; }
+  .session .syn { color: var(--charcoal); font-size: 15.2px; margin-top: 10px; }
+  .session .out { color: var(--muted); font-size: 14.2px; margin-top: 9px; }
+  .session .out b { color: var(--orange); font-weight: 800; letter-spacing: .06em; margin-right: 7px; font-size: 12.4px; }
+  .session .links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line); }
+  .session .links a {
+    font-size: 13.4px; font-weight: 700; border-radius: 20px; padding: 7px 14px;
+    background: var(--code); border: 1px solid var(--line); color: var(--charcoal);
+  }
+  .session .links a.lab { color: var(--orange); }
+  .session .links a:hover { border-color: var(--orange); color: var(--text); }
+  .session.capstone h3 .chip, .session.capstone .out b { color: var(--lavender); }
+  .session.capstone .links a { color: var(--lavender); }
+  .session.capstone .links a:hover { border-color: var(--lavender); }
+
+  /* ── 자료 목록 ── */
+  .refs { display: grid; gap: 7px; margin-top: 16px; }
+  a.ref {
+    display: grid; grid-template-columns: 58px 1fr auto; gap: 12px; align-items: center;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 15px;
+  }
+  a.ref:hover { border-color: var(--orange); }
+  .ref .tag {
+    font-size: 12.2px; font-weight: 800; letter-spacing: .06em; color: var(--lavender);
+    background: var(--code); border: 1px solid var(--line); border-radius: 7px; text-align: center; padding: 7px 0;
+  }
+  .ref h3 { font-size: 16.2px; }
+  .ref p { color: var(--muted); font-size: 13.8px; margin-top: 3px; }
+  .ref .go { color: var(--orange); font-size: 13.4px; font-weight: 700; white-space: nowrap; }
+
+  /* ── 포털 배너 ── */
+  .banner {
+    text-align: center; padding: 32px 46px;
+    background: radial-gradient(90% 120% at 50% 0%, rgba(122,63,242,.16), transparent 70%), var(--code);
+    border-bottom: 1px solid var(--line);
+  }
+  .banner h3 { font-size: 19px; }
+  .banner p { color: var(--charcoal); font-size: 15px; margin-top: 7px; }
+
+  /* ── 푸터 ── */
+  .foot { background: var(--code); padding: 28px 46px 32px; text-align: center; color: var(--muted); font-size: 13.4px; line-height: 1.9; }
+  .foot .who { color: var(--charcoal); font-weight: 700; font-size: 14.5px; }
+  .foot a { color: var(--orange); }
+  .sign { text-align: center; color: #4A535F; font-size: 12.2px; margin-top: 18px; }
+
+  @media (max-width: 820px) {
+    .head, .sec, .banner, .foot { padding-left: 28px; padding-right: 28px; }
+    .envrow { grid-template-columns: 28px 1fr; row-gap: 6px; align-items: start; }
+    .envrow .desc { grid-column: 2; }
+  }
+  @media (max-width: 560px) {
+    body { padding: 14px 10px 30px; }
+    .head, .sec, .banner, .foot { padding-left: 18px; padding-right: 18px; }
+    .slot { grid-template-columns: 1fr; gap: 4px; }
+    a.ref { grid-template-columns: 52px 1fr; }
+    .ref .go { grid-column: 2; }
+  }
+</style>
+<style id="hol-theme">
+html[data-theme="light"]{
+  --page:#E9EBEF; --mail:#FFFFFF; --card:#F7F8FA; --code:#EEF1F5; --line:#D7DDE5;
+  --text:#1B2430; --muted:#5B6472; --charcoal:#3A4453;
+  --orange:#B45309; --lavender:#6b46c1; --green:#1F883D;
+  background:#E9EBEF;
+}
+html[data-theme="light"] [style*="#c9a2ff"]{color:#6b46c1 !important}
+html[data-theme="light"] [style*="#A6ABBE"]{color:#5B6472 !important}
+.head{position:relative}
+#themeToggle{position:absolute;right:20px;top:20px;z-index:9999;
+background:var(--bg-card,var(--card,#1B242E));color:var(--orange,#FF9900);
+border:1px solid var(--line,#2A3542);border-radius:999px;padding:9px 16px;
+font:600 13px/1 sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#themeToggle:hover{border-color:var(--orange,#FF9900)}
+html[data-theme="light"] .code-wrap code{color:#2A3542}
+html[data-theme="light"] .code-wrap.output code{color:#57606E}
+html[data-theme="light"] code{color:#B45309;background:#E4E9EF}
+html[data-theme="light"] .code-wrap code, html[data-theme="light"] pre code{background:transparent}
+html[data-theme="light"] .k.s{background:#DCEEDC}
+html[data-theme="light"] .k.w{background:#E9E2F7}
+html[data-theme="light"] code.inline, html[data-theme="light"] .inline{color:#B45309;background:#E4E9EF;border-color:#D7DDE5}
+html[data-theme="light"] .code-wrap .hl{color:#B45309}
+html[data-theme="light"] .code-wrap .cmt{color:#6E7B8C}
+html[data-theme="light"] .head{--text:#E8ECF1;--muted:#8B96A5;--charcoal:#C7CDD6;--orange:#FF9900;--lavender:#c9a2ff;--line:#262F3B}
+html[data-theme="light"] .head, html[data-theme="light"] .head h1{color:#F2F4F8}
+html[data-theme="light"] .head .when{color:#FF9900}
+html[data-theme="light"] .head .where, html[data-theme="light"] .head .facts span{color:#C7CDD6}
+html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.primary, html[data-theme="light"] .badge.ch{color:#FFFFFF}
+@media print{#themeToggle{display:none}}
+</style>
+
+</head>
+<body>
+<div class="mail">
+
+  <header class="head">
+    <button id="themeToggle" type="button" aria-label="테마 전환">라이트 모드</button>
+    <div class="brandbar">
+      <span class="wordmark">KRAFTON</span>
+      <span class="x">×</span>
+      
+      <img class="logo" alt="AWS" src="data:image/png;base64,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">
+    </div>
+
+    <span class="eyebrow">CLAUDE CODE WORKSHOP FOR KRAFTON</span>
+    <h1>
+      <img class="titlemark" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHkAAABOCAYAAAAEhblcAAABcklEQVR42u3cPUrDUADA8ZfSuZPURXHQSezkIKgn8AAOrt28gIujKN3FI3TwAJ5ABQehEOkuFlHrYrCDi/EE/SAxTa2/3xoeIe+fj+HxEoUpOD1bSFfXvsNnUgnN5nsUmKpcE368t50eNJYyjb1/fAubK/V/NNVp5ulux71wcnWbuVXFfT7/RBYZkREZkREZkREZkUVGZERGZKauWtaJnz4G4e76Yejxw92NPzeZFyOuZ2u5XtrSammRn5NBOL/pzlXkUdcTdkJpkb2ufZMRGZERGZERGZERWWRERmRERmR+X5Rn+2me7ZhMLn5NQmOxlmlsO+55kr2uERmRERmRERmREVlkREZkREZkClDt9JMQ4l6mwY16LfMSGJN7GXyFOGOjTj8p71fITM6vkBEZkUVGZERGZERGZERGZJERGZGZPYXuO+0e7afDjo1bPssztijjllbXW5dREWM9yYiMyCIjMiIjMiIjMiIjssiIjMjMnh/r21dNDgflUAAAAABJRU5ErkJggg==" alt="">
+      <span>Krafton을 위한 Claude Code Workshop</span>
+    </h1>
+    <div class="when">2026.10.06(화) / 09:30 - 18:00</div>
+    <div class="where">센터필드 EAST 18층 300, 301, 400, 401호</div>
+    <div class="facts">
+      <span>KRAFTON 맞춤 1-Day</span><span>이론 + 핸즈온 + 캡스톤</span>
+    </div>
+  </header>
+
+  <section class="sec">
+    <p class="intro" style="margin-top:0">
+      Claude Code는 개인의 생산성 도구를 넘어, 팀의 개발 프로세스를 구성하는 핵심 요소로 진화하고 있습니다.
+      본 워크샵은 KRAFTON을 위해 설계된 <strong>1일 집중 과정</strong>으로,
+      오전에는 아키텍처와 핵심 워크플로우로 기초를 세우고, 오후에는 Subagents·Settings·CLI로 확장한 뒤
+      <strong>캡스톤 랩에서 설계부터 배포까지 하나의 완결</strong>을 직접 경험합니다.
+      전 과정은 사전 준비된 EC2 실습 환경에서 진행되어 세팅 없이 바로 몰입할 수 있습니다.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#day1">아젠다 보기</a>
+      <a class="btn" href="https://whchoi98.github.io/ccw-hands-on-lab/index.html">Hands-on Lab 포털</a>
+    </div>
+  </section>
+
+  
+
+  <section class="sec">
+    <div class="sec-label">ENVIRONMENT</div>
+    <h2>교육 환경</h2>
+    <div class="meta">EC2 + code-server / 브라우저 접속</div>
+    <p class="intro">
+      개인 노트북 설정 차이로 실습이 막히지 않도록, 모든 참가자에게 동일한 EC2 인스턴스를 제공합니다.
+      별도 설치나 SSH 없이 브라우저로 code-server에 접속하면 사전에 설치된 Claude Code가 바로 준비되어 있습니다.
+    </p>
+    </section>
+
+  <section class="sec" id="day1">
+    <div class="sec-label">AGENDA - 10/6(화)</div>
+    <h2>하루에 완성하는 Claude Code</h2>
+    <div class="meta">09:30 - 18:00 / 이론 + 핸즈온 + 캡스톤</div>
+        <div class="tl">
+      <div class="slot ops">
+        <div class="time">09:30 - 09:40</div>
+        <div class="title">인사말</div>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">09:40 - 10:20</span><span class="badge lec">강의</span><span class="dur">40분</span></div>
+        <h3><span class="chip">INTRO</span>Claude Code 아키텍처 Deep Dive</h3>
+        <p class="steps">에이전트 루프가 맥락을 읽고 도구를 선택하는 과정을 8개 레이어로 해부하며, 하루 학습의 기준이 될 아키텍처 지도를 세웁니다.</p>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">10:20 - 11:00</span><span class="badge lec">강의</span><span class="dur">40분</span></div>
+        <h3><span class="chip">CH 01</span>설치·인증 & 핵심 워크플로우</h3>
+        <p class="steps">Enterprise·Bedrock 인증 경로 비교부터 CLAUDE.md, Plan 모드, 헤드리스 실행까지 — 핵심 사용법을 한 흐름으로 익힙니다.</p>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">11:00 - 11:40</span><span class="badge lab">LAB</span><span class="dur">40분</span></div>
+        <h3><span class="chip">LAB 1</span>기본 환경 구성</h3>
+        <p class="steps">설치와 인증, 첫 세션, CLAUDE.md, 헤드리스 한 줄 실행까지 직접 구성하며 오후 캡스톤의 발판이 될 실습 환경을 완성합니다.</p>
+      </div>
+      <div class="slot">
+        <div class="time">11:40 - 12:40</div>
+        <div class="title">점심 식사</div>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">12:40 - 13:40</span><span class="badge lec">강의 + LAB</span><span class="dur">60분</span></div>
+        <h3><span class="chip">CH 02</span>Subagents, 전문 에이전트를 만들고 지휘하기</h3>
+        <p class="steps">역할별 전문 에이전트 정의와 도구 권한 격리, 자동 위임·@멘션·병렬 디스패치 세 패턴을 배우고, 커스텀 Subagent를 직접 작성해 실행합니다.</p>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">13:40 - 14:00</span><span class="badge lec">브리핑</span><span class="dur">20분</span></div>
+        <h3><span class="chip">CH 03</span>Admin Setup 브리핑, 통제 가능한 Enterprise 배포</h3>
+        <p class="steps">플릿 배포와 버전 통제, IAM/SSO 자격증명, managed-settings 정책과 사용량 관측까지 조직 도입의 통제선을 20분으로 정리합니다.</p>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">14:00 - 15:00</span><span class="badge lec">강의 + LAB</span><span class="dur">60분</span></div>
+        <h3><span class="chip">CH 04</span>Settings, 나의 Claude Code를 팀의 플랫폼으로</h3>
+        <p class="steps">설정 계층과 권한 규칙을 정리하고, Hooks로 세션에 규율을 심고 스킬·MCP를 팀 공용 자산으로 승격시키는 실습을 진행합니다.</p>
+      </div>
+      <div class="slot">
+        <div class="time">15:00 - 15:10</div>
+        <div class="title">Break</div>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">15:10 - 15:50</span><span class="badge lec">강의 + LAB</span><span class="dur">40분</span></div>
+        <h3><span class="chip">CH 05</span>CLI Reference, Claude Code를 파이프라인 부품으로</h3>
+        <p class="steps">-p 플래그와 구조화 출력으로 자동화 부품으로 전환하고, 커밋 범위를 인자로 받는 리뷰 봇 하나를 끝까지 완성합니다.</p>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">15:50 - 17:25</span><span class="badge lab">CAPSTONE</span><span class="dur">95분</span></div>
+        <h3><span class="chip">LAB</span>캡스톤, 오늘 배운 것으로 하나의 완결</h3>
+        <p class="steps">전체 트랙(게임·미술관·지진 워치·증시·유튜브·뉴스룸 렌즈) 중 자유롭게 선택해 설계 → 빌드 → 배포 → 공유까지, 하루의 학습을 하나의 서비스로 완결합니다.</p>
+      </div>
+      <div class="session">
+        <div class="top"><span class="time">17:25 - 17:45</span><span class="badge lec">강의 + 데모</span><span class="dur">20분</span></div>
+        <h3><span class="chip">FINOPS</span>엔터프라이즈 토큰경제 - 토큰을 효율적으로 사용하고 모니터링/메터링하는 방법</h3>
+        <p class="steps">방금 캡스톤에서 사용한 토큰을 소재로 Opus/Sonnet/Haiku 라우팅 기준과 캐싱 포인트를 정리하고, 사용량 대시보드를 데모로 확인합니다.</p>
+      </div>
+      <div class="slot ops">
+        <div class="time">17:45 - 18:00</div>
+        <div class="title">캡스톤 결과 시상 및 클로징</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-label">VOICES</div>
+    <h2>지난 워크샵 참가자 피드백</h2>
+    <div class="meta">동일 커리큘럼으로 진행된 이전 워크샵 참가 기업의 후기입니다</div>
+    <div class="env">
+      <div class="envrow">
+        <div class="n">01</div>
+        <div class="left"><div class="k">실험 환경</div><div class="v">제한 없는 토큰과 모델</div></div>
+        <div class="desc"><p>"제한 없는 토큰과 모델 지원 환경 덕분에 최근 참여한 AWS 세션 중 가장 좋았습니다. 비용 걱정 없이 최신 모델을 마음껏 실험하며 실무에 적용할 아이디어를 충분히 검증할 수 있었습니다."</p></div>
+      </div>
+      <div class="envrow">
+        <div class="n">02</div>
+        <div class="left"><div class="k">캡스톤</div><div class="v">직접 커밋까지 완성</div></div>
+        <div class="desc"><p>"데모를 보는 것과 직접 커밋까지 완성하는 것은 완전히 다른 경험이었습니다. 캡스톤으로 실제 리포지토리에서 만들며 배우는 구성이 특히 인상적이었습니다."</p></div>
+      </div>
+      <div class="envrow">
+        <div class="n">03</div>
+        <div class="left"><div class="k">몰입</div><div class="v">세팅 없이 바로 실습</div></div>
+        <div class="desc"><p>"전용 환경이 준비되어 있어 세팅 없이 바로 실습에 들어갈 수 있었습니다. 하루 종일 막힘 없이 몰입할 수 있었던 워크샵은 처음이었습니다."</p></div>
+      </div>
+      <div class="envrow">
+        <div class="n">04</div>
+        <div class="left"><div class="k">도입 경로</div><div class="v">Bedrock과 Enterprise 비교</div></div>
+        <div class="desc"><p>"Claude Code on Bedrock과 Claude Enterprise를 모두 비교 체험한 것이 가장 큰 수확이었습니다. 우리 조직에 맞는 도입 경로를 구체적으로 그려볼 수 있게 됐습니다."</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-label">SELF-PACED / REFERENCE</div>
+    <h2>자율 실습과 참고 자료</h2>
+    <div class="meta">정규 세션 밖에서 이어 갈 랩과, 랩 진행 중 옆에 띄워 두는 문서</div>
+    <div class="refs">
+      <a class="ref" href="https://whchoi98.github.io/ccw-hands-on-lab/index.html">
+        <span class="tag" style="color:var(--orange)">LAB</span>
+        <span><h3>Hands-on Lab 포털 열기</h3><p>챕터 랩 전체와 Capstone Mission 4종, Reference 3부작을 한 화면에서 진행 상황과 함께 관리합니다.</p></span>
+        <span class="go">포털 열기 →</span>
+      </a>
+      <a class="ref" href="ClaudeCode_Reference1_Directory.html">
+        <span class="tag">REF 1</span>
+        <span><h3>디렉토리 구조, 무엇이 어디에 있는가</h3><p>~/.claude와 .claude, managed의 세 층 지도와 설정 우선순위, CLAUDE.md 계층 합산.</p></span>
+        <span class="go">열기 →</span>
+      </a>
+      <a class="ref" href="ClaudeCode_Reference2_Commands.html">
+        <span class="tag">REF 2</span>
+        <span><h3>슬래시 커맨드, 세션을 조종하는 레버</h3><p>작업 흐름, 병렬, 검수, 세션 이동, 상태로 묶은 선별 목록과 워크샵 등장 위치.</p></span>
+        <span class="go">열기 →</span>
+      </a>
+      <a class="ref" href="ClaudeCode_Reference3_Plugins.html">
+        <span class="tag">REF 3</span>
+        <span><h3>플러그인, 팀의 하네스를 배포하는 단위</h3><p>설치 3동사와 워크샵 3종(superpowers, project-init, harness-eval)의 역할, 신뢰 가드.</p></span>
+        <span class="go">열기 →</span>
+      </a>
+      <a class="ref" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">
+        <span class="tag" style="color:var(--green)">PDF</span>
+        <span><h3>강의자료 PDF 전체</h3><p>Chapter 1-5 슬라이드 PDF와 랩 문서 원본이 모여 있는 저장소 폴더입니다.</p></span>
+        <span class="go">GitHub →</span>
+      </a>
+      <a class="ref" href="https://github.com/whchoi98/claude-code-workshop/tree/main/tech_doc">
+        <span class="tag" style="color:var(--green)">DOC</span>
+        <span><h3>기타 Tech Doc</h3><p>워크샵 본편 밖의 기술 문서 모음 (tech_doc 폴더).</p></span>
+        <span class="go">GitHub →</span>
+      </a>
+    </div>
+  </section>
+
+  
+
+  <footer class="foot">
+    <div class="who">Krafton을 위한 Claude Code Workshop</div>
+    <div>2026.10.06(화) 09:30 - 18:00</div>
+    <div>실습 환경: Amazon EC2 + code-server (Claude Code 사전 설치) / 모델: Claude Fable 5, Opus 5, Sonnet 5</div>
+    <div><a href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260703">강의자료 PDF</a> / <a href="https://github.com/whchoi98/claude-code-workshop/tree/main/tech_doc">기타 Tech Doc</a> / 기준: Claude Code 2.1.x, 2026.07</div>
+  </footer>
+</div>
+<div class="sign">Krafton을 위한 Claude Code Workshop - 세션 소개</div>
+<script>
+(function(){
+  var KEY='hol-theme', root=document.documentElement, btn=document.getElementById('themeToggle');
+  function label(){ btn.textContent = root.getAttribute('data-theme')==='light' ? '다크 모드' : '라이트 모드'; }
+  // 초대 페이지는 저장된 선호와 무관하게 항상 다크 모드로 시작합니다.
+  root.removeAttribute('data-theme');
+  label();
+  btn.addEventListener('click',function(){
+    var light = root.getAttribute('data-theme')==='light';
+    if(light){ root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme','light'); }
+    try{ localStorage.setItem(KEY, light ? 'dark' : 'light'); }catch(e){}
+    label();
+  });
+})();
+</script>
+</body>
+</html>

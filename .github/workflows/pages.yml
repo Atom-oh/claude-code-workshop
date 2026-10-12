@@ -31,6 +31,13 @@ jobs:
           mkdir -p _site/20261116
           cp -a ccw-hands-on-lab/. _site/
           cp -a 20261116/. _site/20261116/
+          # Offline archive linked from every lab toolbar: top-level pages,
+          # START_HERE.txt and assets/ (no v1/), with the ZIP button removed.
+          offline=$(mktemp -d)
+          cp -a ccw-hands-on-lab/. "$offline/"
+          rm -rf "$offline/v1"
+          sed -i 's#<!-- zip-download -->.*<!-- /zip-download -->##' "$offline"/*.html
+          (cd "$offline" && zip -qr "$GITHUB_WORKSPACE/_site/ClaudeCode_Workshop_HandsOnLab.zip" .)
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:

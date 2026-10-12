@@ -10,14 +10,15 @@ to the curriculum; they are not repository infrastructure.
 | Source | Behavior |
 | --- | --- |
 | `ccw-hands-on-lab/index.html` | General lab portal |
-| `ccw-hands-on-lab/theme.css`, `theme.js` | Shared light/dark theme for the general lab site |
+| `ccw-hands-on-lab/assets/` | Shared reader/workshop CSS and JS, theme script, fonts, per-page legacy CSS; pages must stay beside it |
+| `ccw-hands-on-lab/v1/` | Archived previous lab build, including legacy capstones A–D |
 | `20261116/index.html` | November event portal with its own page styling/scripts |
 | `20261116/ClaudeCode_*.html` | November chapter labs, capstones, setup, and references |
 | `20261116/AWS_CCB_Program_Brochure.pdf` | Event brochure included in the Pages artifact |
 | `20261116/eDM.html`, `eDM.txt` | Web invitation and plain-text email copy |
 | `20261116/fsi-edm.html` | Compatibility entry forwarding to the web invitation |
 | `20261116/image/` | Event image assets |
-| `20260525/`, `20260703/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
+| `20260525/`, `20260703/`, `20260901/`, `20260905/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
 | `Script/workshop-code/` | Archived Markdown examples, outside the Pages artifact |
 
 The November site was imported separately and is not generated from the general

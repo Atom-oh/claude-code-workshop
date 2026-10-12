@@ -33,7 +33,7 @@ html[data-theme="light"] {
   --line: #8D9AA9;    --line-soft: #00000033; --row-alt: rgba(0, 0, 0, .05);
   --text: #0B1219;    --muted: #3D4753;   --dim: #4A5563;  --charcoal: #232C36;
   --orange: #9A5B00;  --crimson: #A8002B; --green: #14682D; --red: #B01238;
-  --purple: #5B21C7;  --lavender: #5B21C7;
+  --purple: #5B21C7;  --lavender: #5B21C7; --accent: #9A5B00;
   --orange-dim: rgba(255, 153, 0, .22); --green-dim: rgba(20, 104, 45, .14);
   --bg-sticky: rgba(255, 255, 255, .94);
   --pd-bg-a: #EAE1FB; --pd-bg-b: #FFFFFF; --pd-line: #B79CEF;

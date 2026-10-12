@@ -11,3 +11,6 @@
 # OS / temp
 Thumbs.db
 *.tmp
+
+# Claude Code machine-local settings (per-user permission allowlist)
+.claude/settings.local.json

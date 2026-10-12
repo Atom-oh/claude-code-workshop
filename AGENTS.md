@@ -9,8 +9,8 @@ site compilation step, or automated test suite.
 
 | Path | Role |
 | --- | --- |
-| `20260525/`, `20260703/` | Chapter PDF editions; July is the latest chapter PDF edition |
-| `ccw-hands-on-lab/` | General lab site, with shared `theme.css` and `theme.js` |
+| `20260525/`, `20260703/`, `20260901/`, `20260905/` | Chapter PDF editions; `20260905/` is the latest, `20260901/` is a session-ordered delivery build |
+| `ccw-hands-on-lab/` | General lab site (reader build) with shared `assets/`; `v1/` archives the previous build |
 | `20261116/` | November event site, labs, invitation, brochure, and image assets |
 | `Script/workshop-code/` | Archived slide examples and Korean speaker notes |
 | `tech_doc/` | Supplementary PDFs |
@@ -57,7 +57,7 @@ site compilation step, or automated test suite.
   against tracked files and history.
 - For site changes, check local links/assets and preview the affected pages at
   the published paths. Test changed browser behavior; use
-  `node --check ccw-hands-on-lab/theme.js` when changing that script.
+  `node --check ccw-hands-on-lab/assets/theme.js` when changing that script.
 - No `npm test` or application build exists here; deployment is limited to
   Pages. Workshop commands may require separate learner environments; do not
   run them as repository checks.

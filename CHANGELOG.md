@@ -10,12 +10,16 @@ for the current layout. English is the maintenance documentation language.
 - Add the July chapter PDF edition under `20260703/` and architecture/cost references under `tech_doc/`.
 - Add the general HTML lab portal, chapter labs, capstones, setup, preflight, and reference pages under `ccw-hands-on-lab/`.
 - Add a shared light/dark theme for the general lab site.
+- Add the 2026-09-05 chapter PDF edition under `20260905/` (revised against Claude Code v2.1.261) and the session-ordered `20260901/` delivery build.
+- Add a ZIP download button to every general lab page toolbar; the Pages workflow now builds the offline archive.
 - Add the November 16–17, 2026 event materials under `20261116/`, including labs, invitation variants, brochure, and images.
 - Add the GitHub Pages workflow: publish general labs at the site root and November materials at `/20261116/`.
 - Add shared `AGENTS.md` instructions, architecture and PR review guidance, and ADR-0001 documenting their scope.
 
 ### Changed
 
+- Rebuild `ccw-hands-on-lab/` from the 2026-09-19 reader build with a shared `assets/` directory; move the previous build, including legacy capstones A–D, to `ccw-hands-on-lab/v1/`.
+- Add Capstones 4–6 (Trend Radar, Quake Watch, Newsroom Lens) and live result-sample links to the general labs.
 - Align the November web invitation with the original workshop eDM design, retain November event details, and route the legacy invitation URL to the same page.
 - Move the original chapter PDFs into `20260525/` and separate supplementary PDFs from chapter editions.
 - Align project documentation with both static sites and the actual Pages workflow.
@@ -25,6 +29,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Fixed
 
+- Fix the Chapter 2 lab JSON post-processing to read `.result` from the `--output-format json` envelope, and the same fabricated structure in the snippet archive (slides 56, 79, 179, 195).
 - Correct code-panel contrast in the general site's light theme and keep its theme toggle visible inside the content column.
 
 ## [1.0.1] - 2026-05-27
