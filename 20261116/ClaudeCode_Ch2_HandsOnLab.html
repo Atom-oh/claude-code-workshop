@@ -680,7 +680,7 @@ git log --oneline <span class="cmt"># 커밋 2개 이상이어야 합니다</spa
 
 cat &gt; package.json &lt;&lt; 'EOF'
 {
-  "name": "user-service-lab",
+  "name": "account-service-lab",
   "version": "1.0.0",
   "description": "Claude Code Workshop sample project",
   "type": "module",
@@ -688,40 +688,40 @@ cat &gt; package.json &lt;&lt; 'EOF'
 }
 EOF
 
-cat &gt; src/users.js &lt;&lt; 'EOF'
-// 사용자 데이터 저장소
-// 주의: 일부 사용자는 profile 필드가 없음 (마이그레이션 미수행 상황)
-export const users = [
-  { id: 1, name: "Kim", profile: { email: "kim@example.com", plan: "pro" } },
-  { id: 2, name: "Lee", profile: { email: "lee@example.com", plan: "free" } },
+cat &gt; src/accounts.js &lt;&lt; 'EOF'
+// 계좌 데이터 저장소
+// 주의: 일부 계좌는 kyc 필드가 없음 (KYC 마이그레이션 미수행 상황, 실제 고객정보 아님)
+export const accounts = [
+  { id: 1, name: "Kim", kyc: { grade: "premium" } },
+  { id: 2, name: "Lee", kyc: { grade: "basic" } },
   { id: 3, name: "Park" }
 ];
 EOF
 
-cat &gt; src/userService.js &lt;&lt; 'EOF'
-import { users } from "./users.js";
+cat &gt; src/accountService.js &lt;&lt; 'EOF'
+import { accounts } from "./accounts.js";
 
-export function getUser(id) {
-  return users.find((u) =&gt; u.id === id);
+export function getAccount(id) {
+  return accounts.find((a) =&gt; a.id === id);
 }
 
-export function getUserPlan(id) {
-  const user = getUser(id);
-  return user.profile.plan;
+export function getAccountGrade(id) {
+  const account = getAccount(id);
+  return account.kyc.grade;
 }
 EOF
 
 cat &gt; test.js &lt;&lt; 'EOF'
-import { getUserPlan } from "./src/userService.js";
+import { getAccountGrade } from "./src/accountService.js";
 
 function check(name, fn, expected) {
   const actual = fn();
   console.log(`${name}: ${actual === expected ? "PASS" : `FAIL (got ${actual})`}`);
 }
 
-check("Test 1 - pro 플랜 사용자", () =&gt; getUserPlan(1), "pro");
-check("Test 2 - free 플랜 사용자", () =&gt; getUserPlan(2), "free");
-check("Test 3 - profile 없는 사용자", () =&gt; getUserPlan(3), "unknown");
+check("Test 1 - premium 등급 계좌", () =&gt; getAccountGrade(1), "premium");
+check("Test 2 - basic 등급 계좌", () =&gt; getAccountGrade(2), "basic");
+check("Test 3 - kyc 없는 계좌", () =&gt; getAccountGrade(3), "unknown");
 EOF
 
 git init -q
@@ -729,20 +729,20 @@ git config user.name  &gt;/dev/null 2&gt;&amp;1 || git config user.name "lab"
 git config user.email &gt;/dev/null 2&gt;&amp;1 || git config user.email "lab@example.com"
 git add -A &amp;&amp; git commit -q -m "chore: initial lab project (with bug)"
 
-cat &gt; src/userService.js &lt;&lt; 'EOF'
-import { users } from "./users.js";
+cat &gt; src/accountService.js &lt;&lt; 'EOF'
+import { accounts } from "./accounts.js";
 
-export function getUser(id) {
-  return users.find((u) =&gt; u.id === id);
+export function getAccount(id) {
+  return accounts.find((a) =&gt; a.id === id);
 }
 
-export function getUserPlan(id) {
-  const user = getUser(id);
-  return user?.profile?.plan ?? "unknown";
+export function getAccountGrade(id) {
+  const account = getAccount(id);
+  return account?.kyc?.grade ?? "unknown";
 }
 EOF
 
-git add -A &amp;&amp; git commit -q -m "fix: handle users without profile"
+git add -A &amp;&amp; git commit -q -m "fix: handle accounts without kyc"
 npm test &amp;&amp; git log --oneline</code></pre>
   </div>
 
@@ -862,9 +862,9 @@ EOF</code></pre>
     <pre><code>[메인] code-reviewer 에이전트를 호출합니다.
   → Agent(code-reviewer, "Review git diff HEAD~1")
 [reviewer] Bash  git diff HEAD~1
-[reviewer] Read  src/userService.js
+[reviewer] Read  src/accountService.js
 [메인] 결과 요약:
-  - low  src/userService.js:9, 옵셔널 체이닝 적용 적절
+  - low  src/accountService.js:9, 옵셔널 체이닝 적용 적절
   - medium test.js, 존재하지 않는 id 케이스 테스트 부재 ...</code></pre>
   </div>
   <p class="body">
@@ -919,13 +919,13 @@ EOF</code></pre>
   <p class="body">tools에 <strong>Edit이 없는 상태</strong>에서 파일 수정을 요청합니다. Claude Code가 <code class="inline">.claude/agents/</code>를 감시하므로 파일 저장 후 몇 초 안에 자동 인식됩니다(Task 1에서 디렉토리를 만든 뒤 세션을 시작했기 때문에 재시작 불필요).</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>dangerous-test 에이전트를 사용해서 src/users.js의 Park 사용자에게 profile 필드를 추가해 주세요</code></pre>
+    <pre><code>dangerous-test 에이전트를 사용해서 src/accounts.js의 Park 계좌에 kyc 필드를 추가해 주세요</code></pre>
   </div>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">관찰 포인트</span></div>
-    <pre><code>[dangerous-test] Read src/users.js
+    <pre><code>[dangerous-test] Read src/accounts.js
 [dangerous-test] 파일 수정이 필요하지만 Edit 도구 권한이 없습니다.
-  분석 결과만 보고합니다: Park(id 3)에 profile 필드가 없습니다.
+  분석 결과만 보고합니다: Park(id 3)에 kyc 필드가 없습니다.
   → 수정은 Edit 권한이 있는 에이전트 또는 메인에서 수행해야 합니다.</code></pre>
   </div>
 
@@ -960,13 +960,13 @@ grep '^tools:' .claude/agents/dangerous-test.md   <span class="cmt"># tools: Rea
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 재시도</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>dangerous-test 에이전트를 사용해서 src/users.js의 Park 사용자에게 profile 필드를 추가해 주세요</code></pre>
+    <pre><code>dangerous-test 에이전트를 사용해서 src/accounts.js의 Park 계좌에 kyc 필드를 추가해 주세요</code></pre>
   </div>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">관찰 포인트</span></div>
-    <pre><code>[dangerous-test] Read src/users.js
-[dangerous-test] Edit src/users.js   <span class="cmt"># 이번에는 Edit 도구 사용 (승인 요청 표시)</span>
-  Park(id 3)에 profile 필드를 추가했습니다.</code></pre>
+    <pre><code>[dangerous-test] Read src/accounts.js
+[dangerous-test] Edit src/accounts.js   <span class="cmt"># 이번에는 Edit 도구 사용 (승인 요청 표시)</span>
+  Park(id 3)에 kyc 필드를 추가했습니다.</code></pre>
   </div>
   <p class="body">
     이것이 <strong>의도적 권한 부여와 무분별한 전체 권한의 차이</strong>입니다.
@@ -978,7 +978,7 @@ grep '^tools:' .claude/agents/dangerous-test.md   <span class="cmt"># tools: Rea
   <div class="step-title"><span class="step-no">5</span>실습 프로젝트 원상 복구</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 데이터 원복</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>git checkout -- src/users.js
+    <pre><code>git checkout -- src/accounts.js
 rm -f .claude/agents/dangerous-test.md .claude/agents/dangerous-test.md.bak</code></pre>
   </div>
 
@@ -1126,7 +1126,7 @@ ls .claude/agents/</code></pre>
   <p class="body">이름으로 직접 지정하면 메인은 다른 에이전트를 검토하지 않고 <strong>예측 가능하게</strong> 해당 에이전트를 호출합니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>test-writer 에이전트를 사용해서 src/userService.js의 테스트 커버리지를 분석하고, 존재하지 않는 사용자 id 같은 누락된 엣지 케이스 테스트를 추가해 주세요</code></pre>
+    <pre><code>test-writer 에이전트를 사용해서 src/accountService.js의 테스트 커버리지를 분석하고, 존재하지 않는 계좌 id 같은 누락된 엣지 케이스 테스트를 추가해 주세요</code></pre>
   </div>
   <p class="body">test-writer가 테스트를 추가하고 <strong>npm test를 직접 실행해 통과를 확인</strong>하는지 지켜보세요(시스템 프롬프트의 작업 절차 4번).
     특정 에이전트 실행을 <strong>보장</strong>하고 싶다면 자연어 대신 <code class="inline">@</code>를 입력해 typeahead에서

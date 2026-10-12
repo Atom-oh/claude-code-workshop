@@ -998,6 +998,14 @@ unset CLAUDE_PROJECT_DIR</code></pre>
     프로덕션에서는 이 자리에 <code class="inline">prettier --write</code>나 <code class="inline">eslint --fix</code>를 넣는 것이 auto-format 패턴입니다.
   </div>
 
+  <div class="callout warn">
+    <span class="co-title">금융권 권한 모드 운영, v2.1.283 이후 기본값 변화</span>
+    v2.1.283부터 대화형 터미널과 VS Code 세션은 <strong>auto 모드로 시작</strong>합니다(분류기 모델이 행동을 검토). 규제 환경에서 기본값을 바꾸려면 관리형 설정에서 통제합니다.
+    <code class="inline">permissions.defaultMode</code>로 시작 모드를 정하고, <code class="inline">permissions.disableAutoMode: "disable"</code>로 auto를 Shift+Tab 순환에서 제거하며,
+    <code class="inline">permissions.disableBypassPermissionsMode: "disable"</code>로 모든 확인을 건너뛰는 <code class="inline">bypassPermissions</code>를 막습니다.
+    deny 규칙은 어떤 모드에서도 적용되므로, 운영 계정 접근과 고객 데이터 경로는 모드와 무관하게 deny로 먼저 잠그세요.
+  </div>
+
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox" data-cp="a3a"><span>단독 검증에서 정상 파일 exit 0, 오류 파일 exit 2를 확인했다</span></label>

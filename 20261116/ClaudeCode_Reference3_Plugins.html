@@ -80,7 +80,7 @@
 <header class="hero">
   <span class="eyebrow">REFERENCE 3 / PLUGINS</span>
   <h1>플러그인, 팀의 하네스를 배포하는 단위</h1>
-  <div class="subtitle">워크샵 사용 플러그인 3종과 설치, 운영 요령</div>
+  <div class="subtitle">워크샵 사용 플러그인 3종과 설치, mods, 금융권 통제 요령</div>
   <p class="lede">스킬 하나를 복사해 나르던 시대에서, 스킬과 훅과 에이전트를 <strong>한 묶음으로 설치</strong>하는 시대로 넘어가는 장치가 플러그인입니다. 마켓 등록 → 설치 → 세션 재시작, 세 박자면 끝납니다.</p>
 </header>
 <section class="wrap">
@@ -146,13 +146,74 @@ claude plugin install &lt;플러그인&gt;@&lt;마켓&gt;                  <span
   </div>
 </section>
 <section class="wrap">
+  <h2>Mods, Claude Code 안에서 실행되는 플러그인</h2>
+  <p class="sec-desc">mod는 JavaScript/TypeScript 이벤트 핸들러로 이루어진 플러그인입니다. 스킬이나 설정 훅이 밖에서 스크립트를 부르는 것과 달리 <strong>Claude Code 프로세스 안에서</strong> 실행되어, 프롬프트 위 밴드와 옆 패널을 그리거나 도구 호출을 가로채 확인 창을 띄울 수 있습니다. <strong>Claude Code v2.1.287 이상</strong>에서 기본으로 켜져 있습니다.</p>
+  <table class="tbl">
+    <tr><th>구분</th><th>내용</th></tr>
+    <tr><td>구성 파일</td><td><code>.claude-plugin/plugin.json</code>, <code>hooks/hooks.json</code>, <code>hooks/register.js</code> 세 개로 시작</td></tr>
+    <tr><td>대표 이벤트</td><td><code>tool.call</code>(도구 호출 직전), <code>prompt.submit</code>(프롬프트 제출), <code>ui.render</code>(화면 그리기)</td></tr>
+    <tr><td>내장 mod</td><td><code>/diff</code> 패널, <code>AGENTS.md</code> 로드, 보안 가드(<code>cc-plugin-sec-default</code>)가 mod로 구현. <code>/plugin</code>의 Installed 탭 Built-in에서 확인</td></tr>
+    <tr><td>샘플</td><td>github.com/anthropics/claude-code-playground 의 <code>claude-code/mods</code>: <code>token-weather</code>, <code>blast-radius</code>(위험한 셸 명령을 잡아 확인 버튼 표시), <code>replay-theater</code></td></tr>
+    <tr><td>실행 위치</td><td>터미널과 Desktop 앱 Code 탭에서 화면까지 표시. VS Code 확장, <code>claude -p</code>, Agent SDK에서는 훅만 실행되고 그리지 않음</td></tr>
+  </table>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, mod 시험과 사전 점검</span></div>
+    <pre><code>claude --plugin-dir ./first-mod        <span class="cmt"># 이번 세션에만 로드해 시험</span>
+claude plugin validate ./some-mod      <span class="cmt"># 실행 없이 hooks:, calls: 목록만 확인</span>
+/plugin                                <span class="cmt"># "1 mod active" 줄로 로드 여부 확인</span>
+/reload-plugins                        <span class="cmt"># 셸에서 설치한 뒤 세션에 반영</span></code></pre>
+  </div>
+  <div class="callout">
+    <span class="co-title">샌드박스 밖에서 사용자 권한으로 실행</span>
+    mod는 사용자와 같은 권한으로 파일을 읽고 쓰고 프로세스를 시작하며 네트워크를 호출할 수 있고, 모든 프롬프트와 도구 호출을 볼 수 있습니다. Bash 샌드박스를 켜도 mod가 띄운 프로세스는 샌드박스 밖에서 실행됩니다.
+    설치 전에 <code>claude plugin validate</code>의 <code>calls:</code> 줄에서 <code>$.process.run</code>, <code>$.http.fetch</code>, <code>$.fs.write</code>, <code>$.env.get</code> 같은 호출이 있는지 확인하세요.
+  </div>
+</section>
+<section class="wrap">
+  <h2>금융권 환경의 플러그인과 mod 통제</h2>
+  <p class="sec-desc">규제 환경에서는 개인이 마켓을 추가하거나 로컬 디렉터리의 플러그인을 로드하지 못하게 하고, 심사를 마친 사내 마켓만 허용하는 구성이 기본입니다. 아래 설정은 관리형 설정(managed settings)에 넣으며 사용자가 덮어쓸 수 없습니다. 파일 위치는 Linux <code>/etc/claude-code/managed-settings.json</code>, macOS <code>/Library/Application Support/ClaudeCode/managed-settings.json</code>이고, MDM이나 claude.ai 관리 콘솔로도 배포할 수 있습니다.</p>
+  <table class="tbl">
+    <tr><th>키</th><th>효과</th></tr>
+    <tr><td><code>strictKnownMarketplaces</code></td><td>허용할 마켓 출처 목록. 목록 밖 출처는 추가와 설치가 차단되며 <code>[]</code>이면 공식 마켓까지 모두 차단</td></tr>
+    <tr><td><code>enabledPlugins</code></td><td><code>true</code>는 강제 설치, <code>false</code>는 모든 범위에서 차단하고 목록에서 숨김</td></tr>
+    <tr><td><code>disableSideloadFlags</code></td><td><code>--plugin-dir</code>, <code>--plugin-url</code>, <code>--agents</code> 등 목록 밖 로드 경로를 시작 시점에 거부</td></tr>
+    <tr><td><code>allowManagedModsOnly</code></td><td>내장 보안 가드의 옵션. 조직이 배포한 mod와 내장 mod만 훅을 실행하고 사용자가 가져온 mod는 거부. 사용자 설정 파일에 넣어도 효과 없음</td></tr>
+    <tr><td><code>prependPlugins</code></td><td>조직 정책 mod를 사용자 mod보다 먼저 실행. 감사 로그나 위험 호출 거부에 사용</td></tr>
+  </table>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">managed-settings.json, 사내 마켓만 허용하고 사용자 mod 차단</span></div>
+    <pre><code>{
+  "strictKnownMarketplaces": [
+    { "source": "github", "repo": "your-org/*" },
+    { "source": "skills-dir" }
+  ],
+  "extraKnownMarketplaces": {
+    "your-marketplace": {
+      "source": { "source": "github", "repo": "your-org/your-marketplace" }
+    }
+  },
+  "disableSideloadFlags": true,
+  "pluginConfigs": {
+    "cc-plugin-sec-default@builtin": {
+      "options": { "allowManagedModsOnly": true }
+    }
+  }
+}</code></pre>
+  </div>
+  <div class="callout">
+    <span class="co-title">공식 마켓의 금융 관련 플러그인</span>
+    공식 마켓에는 금융 서비스 파트너가 올린 연동 플러그인도 있지만 <strong>Anthropic이 심사한 것이 아니므로</strong> 설치 전 각 제공사 페이지와 저장소를 확인해야 합니다. 위 예시처럼 허용 목록을 쓰면 공식 마켓도 명시적으로 허용한 경우에만 쓸 수 있습니다.
+    사용 현황은 OpenTelemetry의 <code>claude_code.plugin_installed</code>, <code>claude_code.plugin_loaded</code> 이벤트로 감사할 수 있고, 서드파티 플러그인 이름은 <code>OTEL_LOG_TOOL_DETAILS=1</code>을 켜야 기록됩니다. 허용 목록 예시는 code.claude.com/docs/en/plugins/org, mod 통제는 code.claude.com/docs/en/plugins/mods/admin 기준입니다.
+  </div>
+</section>
+<section class="wrap">
   <h2>더 찾아보기</h2>
   <p class="sec-desc">전체 라인업은 세션에서 <code>/plugin</code>을 열거나 github.com/anthropics/claude-plugins-official 저장소에서 확인하는 것이 가장 정확합니다. 설치한 플러그인의 스킬과 커맨드는 설치 직후 새 세션부터 슬래시 목록에 합류합니다.</p>
 </section>
 
 <footer>
   <div class="who">Claude Code Deep Dive Workshop, Reference 3, 플러그인</div>
-  <div>기준: Claude Code 2.1.x, 2026.07 / 플러그인 문서: code.claude.com/docs/en/plugins</div>
+  <div>기준: Claude Code 2.1.296, 2026.10 / 플러그인 문서: code.claude.com/docs/en/plugins</div>
 </footer>
 <script>
 (function () {

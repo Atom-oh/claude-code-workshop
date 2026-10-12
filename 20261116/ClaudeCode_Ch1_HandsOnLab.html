@@ -728,10 +728,10 @@ git --version    <span class="cmt"># 2.x 이상 권장</span></code></pre>
     <div class="code-head"><span class="code-label">출력 예시</span></div>
     <pre><code>$ claude doctor
 Claude Code doctor
-Running: native (2.1.220)
+Running: native (2.1.296)
 Commit: 4073f59596e2
 Platform: linux-arm64
-Path: /home/ec2-user/.local/share/claude/versions/2.1.220
+Path: /home/ec2-user/.local/share/claude/versions/2.1.296
 Config install method: native
 Search: OK (bundled)
 Auto-updates: disabled (set by env: DISABLE_AUTOUPDATER)
@@ -882,7 +882,7 @@ Usage (this session)
 
 cat &gt; package.json &lt;&lt; 'EOF'
 {
-  "name": "user-service-lab",
+  "name": "account-service-lab",
   "version": "1.0.0",
   "description": "Claude Code Workshop Chapter 1 sample project",
   "type": "module",
@@ -892,40 +892,40 @@ cat &gt; package.json &lt;&lt; 'EOF'
 }
 EOF
 
-cat &gt; src/users.js &lt;&lt; 'EOF'
-// 사용자 데이터 저장소
-// 주의: 일부 사용자는 profile 필드가 없음 (마이그레이션 미수행 상황)
-export const users = [
-  { id: 1, name: "Kim", profile: { email: "kim@example.com", plan: "pro" } },
-  { id: 2, name: "Lee", profile: { email: "lee@example.com", plan: "free" } },
+cat &gt; src/accounts.js &lt;&lt; 'EOF'
+// 계좌 데이터 저장소
+// 주의: 일부 계좌는 kyc 필드가 없음 (KYC 마이그레이션 미수행 상황, 실제 고객정보 아님)
+export const accounts = [
+  { id: 1, name: "Kim", kyc: { grade: "premium" } },
+  { id: 2, name: "Lee", kyc: { grade: "basic" } },
   { id: 3, name: "Park" }
 ];
 EOF
 
-cat &gt; src/userService.js &lt;&lt; 'EOF'
-import { users } from "./users.js";
+cat &gt; src/accountService.js &lt;&lt; 'EOF'
+import { accounts } from "./accounts.js";
 
-export function getUser(id) {
-  return users.find((u) =&gt; u.id === id);
+export function getAccount(id) {
+  return accounts.find((a) =&gt; a.id === id);
 }
 
-export function getUserPlan(id) {
-  const user = getUser(id);
-  return user.profile.plan;
+export function getAccountGrade(id) {
+  const account = getAccount(id);
+  return account.kyc.grade;
 }
 EOF
 
 cat &gt; test.js &lt;&lt; 'EOF'
-import { getUserPlan } from "./src/userService.js";
+import { getAccountGrade } from "./src/accountService.js";
 
 function check(name, fn, expected) {
   const actual = fn();
   console.log(`${name}: ${actual === expected ? "PASS" : `FAIL (got ${actual})`}`);
 }
 
-check("Test 1 - pro 플랜 사용자", () =&gt; getUserPlan(1), "pro");
-check("Test 2 - free 플랜 사용자", () =&gt; getUserPlan(2), "free");
-check("Test 3 - profile 없는 사용자", () =&gt; getUserPlan(3), "unknown");
+check("Test 1 - premium 등급 계좌", () =&gt; getAccountGrade(1), "premium");
+check("Test 2 - basic 등급 계좌", () =&gt; getAccountGrade(2), "basic");
+check("Test 3 - kyc 없는 계좌", () =&gt; getAccountGrade(3), "unknown");
 EOF
 
 git init -q
@@ -955,15 +955,15 @@ claude</code></pre>
     <pre><code>[Claude calls tools]
   Read  package.json
   Glob  src/**/*.js
-  Read  src/userService.js
+  Read  src/accountService.js
   ...
-이 프로젝트는 사용자 조회 서비스로... (요약 응답)</code></pre>
+이 프로젝트는 계좌 조회 서비스로... (요약 응답)</code></pre>
   </div>
 
   <div class="callout tip">
     <span class="co-title">좋은 프롬프트의 4단계 구조</span>
     <strong>맥락 - 목표 - 제약 - 검증 방법</strong> 순서로 쓰면 정확도가 올라갑니다.
-    "코드 좀 봐줘" 대신 "src/userService.js의 getUserPlan을 검토하고, null 안전성 문제가 있으면 고쳐줘.
+    "코드 좀 봐줘" 대신 "src/accountService.js의 getAccountGrade을 검토하고, null 안전성 문제가 있으면 고쳐줘.
     수정 후 npm test가 모두 PASS 해야 해" 처럼 대상 / 목표 / 검증을 명시하세요.
   </div>
 
@@ -1019,11 +1019,11 @@ Write to ./CLAUDE.md? (y/N) <span class="hl">y</span></code></pre>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cat &gt; CLAUDE.md &lt;&lt; 'EOF'
-# Project: user-service-lab
+# Project: account-service-lab
 
 ## Project Overview
-Claude Code 워크샵 실습용 사용자 서비스 모듈.
-사용자 조회와 요금제(plan) 확인 기능을 제공한다.
+Claude Code 워크샵 실습용 계좌 서비스 모듈.
+계좌 조회와 KYC 등급(grade) 확인 기능을 제공한다.
 
 ## Tech Stack
 - Node.js 18+ (ES Modules), 외부 의존성 없음
@@ -1037,7 +1037,7 @@ Claude Code 워크샵 실습용 사용자 서비스 모듈.
 - 모든 수정에는 test.js의 테스트 통과가 동반되어야 함
 
 ## Don't
-- src/users.js의 데이터 구조를 임의로 변경하지 않기
+- src/accounts.js의 데이터 구조를 임의로 변경하지 않기
 - 새 npm 패키지를 추가하지 않기
 EOF
 cat CLAUDE.md</code></pre>
@@ -1093,10 +1093,10 @@ cat CLAUDE.md</code></pre>
   </div>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">출력 예시</span></div>
-    <pre><code>Test 1 - pro 플랜 사용자: <span class="ok">PASS</span>
-Test 2 - free 플랜 사용자: <span class="ok">PASS</span>
-TypeError: Cannot read properties of undefined (reading 'plan')
-    at getUserPlan (file:///.../src/userService.js:9:23)</code></pre>
+    <pre><code>Test 1 - premium 등급 계좌: <span class="ok">PASS</span>
+Test 2 - basic 등급 계좌: <span class="ok">PASS</span>
+TypeError: Cannot read properties of undefined (reading 'grade')
+    at getAccountGrade (file:///.../src/accountService.js:9:23)</code></pre>
   </div>
 
   <div class="step-title"><span class="step-no">2</span>에러를 그대로 전달</div>
@@ -1105,10 +1105,10 @@ TypeError: Cannot read properties of undefined (reading 'plan')
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>npm test 실행 시 다음 에러가 발생합니다. 원인을 찾고 수정해 주세요.
 
-TypeError: Cannot read properties of undefined (reading 'plan')
-    at getUserPlan (src/userService.js:9)
+TypeError: Cannot read properties of undefined (reading 'grade')
+    at getAccountGrade (src/accountService.js:9)
 
-기대 동작: profile이 없는 사용자는 "unknown"을 반환해야 합니다.
+기대 동작: kyc가 없는 계좌는 "unknown"을 반환해야 합니다.
 수정 후 npm test로 3개 테스트가 모두 PASS 하는지 직접 확인해 주세요.</code></pre>
   </div>
 
@@ -1116,9 +1116,9 @@ TypeError: Cannot read properties of undefined (reading 'plan')
   <p class="body">Claude가 도구를 연쇄 호출하는 과정을 지켜보세요. 파일 수정(Edit)과 명령 실행(Bash)은 승인을 요청합니다.</p>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">관찰 포인트</span></div>
-    <pre><code>Read  src/userService.js        <span class="cmt"># 에러 지점 확인</span>
-Grep  "profile"                 <span class="cmt"># 영향 범위 검색</span>
-Edit  src/userService.js        <span class="cmt"># 옵셔널 체이닝 + 기본값 (승인 요청)</span>
+    <pre><code>Read  src/accountService.js        <span class="cmt"># 에러 지점 확인</span>
+Grep  "kyc"                 <span class="cmt"># 영향 범위 검색</span>
+Edit  src/accountService.js        <span class="cmt"># 옵셔널 체이닝 + 기본값 (승인 요청)</span>
 Bash  npm test                  <span class="cmt"># 수정 검증 (승인 요청)</span>
 
 Test 1 ~ 3: <span class="ok">PASS PASS PASS</span></code></pre>
@@ -1137,10 +1137,10 @@ Test 1 ~ 3: <span class="ok">PASS PASS PASS</span></code></pre>
   </p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, Plan 모드 ON 상태</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>사용자 soft delete 기능을 추가해 주세요.
-- users 데이터에 deletedAt 필드 (기본 null)
+    <pre><code>계좌 soft delete(해지 처리) 기능을 추가해 주세요.
+- accounts 데이터에 deletedAt 필드 (기본 null)
 - removeUser(id): deletedAt에 현재 시각 기록
-- getUser / getUserPlan은 삭제된 사용자를 제외해야 함
+- getAccount / getAccountGrade은 삭제된 계좌를 제외해야 함
 - test.js에 삭제 시나리오 테스트 추가
 구현 전에 계획을 먼저 보여 주세요.</code></pre>
   </div>
@@ -1168,11 +1168,11 @@ npm test</code></pre>
     <div class="code-head"><span class="code-label">출력 예시</span></div>
     <pre><code>$ npm test
 
-&gt; user-service-lab@1.0.0 test
+&gt; account-service-lab@1.0.0 test
 &gt; node test.js
 
-Test 1 - pro 플랜 사용자: PASS
-Test 2 - free 플랜 사용자: PASS</code></pre>
+Test 1 - premium 등급 계좌: PASS
+Test 2 - basic 등급 계좌: PASS</code></pre>
   </div>
 
 <div class="checkpoint">

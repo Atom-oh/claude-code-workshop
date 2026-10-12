@@ -18,6 +18,8 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
+- Refresh the November labs for Claude Code v2.1.296: add a mods section and a financial-services plugin/mod governance section to Reference 3, add a permission-mode callout (auto mode is the default start mode since v2.1.283) to Ch4, and update the Ch1 sample output version.
+- Re-theme the November Ch1/Ch2 sample project from a user service to an account service with a missing KYC grade, and the Ch6 notes agent to fictional internal-control policy notes; replace the Capstone 7 domain examples with financial-services domains.
 - Rebuild `ccw-hands-on-lab/` from the 2026-09-19 reader build with a shared `assets/` directory; move the previous build, including legacy capstones A–D, to `ccw-hands-on-lab/v1/`.
 - Add Capstones 4–6 (Trend Radar, Quake Watch, Newsroom Lens) and live result-sample links to the general labs.
 - Align the November web invitation with the original workshop eDM design, retain November event details, and route the legacy invitation URL to the same page.
@@ -29,6 +31,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Fixed
 
+- Correct the November Capstone 5 and 6 superpowers commands to `/superpowers:writing-plans` and `/superpowers:executing-plans`, matching the other capstones and Reference 3.
 - Fix the Chapter 2 lab JSON post-processing to read `.result` from the `--output-format json` envelope, and the same fabricated structure in the snippet archive (slides 56, 79, 179, 195).
 - Correct code-panel contrast in the general site's light theme and keep its theme toggle visible inside the content column.
 

@@ -833,7 +833,7 @@ node chat.mjs</code></pre>
     <span class="time-badge">14분</span>
   </div>
   <p class="task-goal">
-    에이전트에게 <strong>여러분의 코드가 가진 능력</strong>(DB 조회, 사내 API, 이 랩에서는 노트 검색)을 쥐여 줍니다.
+    에이전트에게 <strong>여러분의 코드가 가진 능력</strong>(DB 조회, 사내 API, 이 랩에서는 가상의 사내 정책 노트 검색)을 쥐여 줍니다.
     <code class="inline">tool()</code>로 함수를 정의하고 <code class="inline">createSdkMcpServer()</code>로 감싸면
     <strong>별도 프로세스 없는 in-process MCP 서버</strong>가 됩니다.
   </p>
@@ -847,14 +847,14 @@ import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk"
 import { z } from "zod";
 
 const NOTES = [
-  "7월 회식은 24일 목요일 19시, 장소는 을지로 골뱅이집",
-  "배포 원칙: 금요일 오후에는 프로덕션 배포를 하지 않는다",
-  "신규 입사자 온보딩: 버디가 2주간 매일 30분 페어링",
+  "변경 동결: 월말 결산 마감 3영업일 동안에는 프로덕션 배포를 하지 않는다",
+  "이체 한도 변경은 담당 부서장과 준법감시인의 이중 승인이 필요하다",
+  "고객 식별정보는 마스킹 없이 로그에 남기지 않는다",
 ];
 
 const searchNote = tool(
   "search_note",
-  "사내 노트에서 키워드가 포함된 문장을 찾는다",
+  "사내 정책 노트에서 키워드가 포함된 문장을 찾는다",
   { keyword: z.string().describe("찾을 키워드") },
   async ({ keyword }) =&gt; ({
     content: [{
@@ -867,12 +867,12 @@ const searchNote = tool(
 const shelf = createSdkMcpServer({ name: "shelf", version: "1.0.0", tools: [searchNote] });
 
 const q = query({
-  prompt: process.argv[2] ?? "다음 회식이 언제 어디서인지 노트에서 찾아 알려줘",
+  prompt: process.argv[2] ?? "결산 마감 기간에 배포해도 되는지 노트에서 찾아 알려줘",
   options: {
     mcpServers: { shelf },
     allowedTools: ["mcp__shelf__search_note"],
     maxTurns: 5,
-    systemPrompt: "당신은 사내 노트 사서다. 반드시 search_note 도구로 찾은 내용만 근거로 답한다.",
+    systemPrompt: "당신은 사내 정책 노트 사서다. 반드시 search_note 도구로 찾은 내용만 근거로 답하고, 노트에 없으면 없다고 답한다.",
   },
 });
 
@@ -884,13 +884,13 @@ for await (const m of q) {
 }
 NOTESEOF
 node notes-agent.mjs
-node notes-agent.mjs "금요일에 배포해도 돼?"</code></pre>
+node notes-agent.mjs "이체 한도를 바꾸려면 누구 승인이 필요해?"</code></pre>
   </div>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">출력 예시</span></div>
-    <pre><code>노트에 따르면 다음 회식은 7월 24일 목요일 19시, 을지로 골뱅이집입니다.
+    <pre><code>노트에 따르면 월말 결산 마감 3영업일 동안에는 프로덕션 배포를 하지 않으므로 이 기간의 배포는 불가합니다.
 --- turns=3
-노트의 배포 원칙상 금요일 오후 프로덕션 배포는 하지 않습니다.
+노트상 이체 한도 변경은 담당 부서장과 준법감시인의 이중 승인이 필요합니다.
 --- turns=3</code></pre>
   </div>
   <div class="callout tip">
