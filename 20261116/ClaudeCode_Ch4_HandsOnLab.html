@@ -1003,7 +1003,7 @@ unset CLAUDE_PROJECT_DIR</code></pre>
     v2.1.283부터 대화형 터미널과 VS Code 세션은 <strong>auto 모드로 시작</strong>합니다(분류기 모델이 행동을 검토). 규제 환경에서 기본값을 바꾸려면 관리형 설정에서 통제합니다.
     <code class="inline">permissions.defaultMode</code>로 시작 모드를 정하고, <code class="inline">permissions.disableAutoMode: "disable"</code>로 auto를 Shift+Tab 순환에서 제거하며,
     <code class="inline">permissions.disableBypassPermissionsMode: "disable"</code>로 모든 확인을 건너뛰는 <code class="inline">bypassPermissions</code>를 막습니다.
-    deny 규칙은 어떤 모드에서도 적용되므로, 운영 계정 접근과 고객 데이터 경로는 모드와 무관하게 deny로 먼저 잠그세요.
+    Bedrock, Google Cloud Agent Platform, Foundry에서는 Sonnet 5 이상, Opus 4.7 이상, Haiku 5.5, Fable 모델에서만 auto가 동작하고 그 밖의 모델은 Manual로 시작합니다. deny 규칙은 어떤 모드에서도 적용되므로, 운영 계정 접근과 고객 데이터 경로는 모드와 무관하게 deny로 먼저 잠그세요.
   </div>
 
   <div class="checkpoint">

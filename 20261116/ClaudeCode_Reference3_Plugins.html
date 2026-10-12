@@ -171,21 +171,20 @@ claude plugin validate ./some-mod      <span class="cmt"># 실행 없이 hooks:,
 </section>
 <section class="wrap">
   <h2>금융권 환경의 플러그인과 mod 통제</h2>
-  <p class="sec-desc">규제 환경에서는 개인이 마켓을 추가하거나 로컬 디렉터리의 플러그인을 로드하지 못하게 하고, 심사를 마친 사내 마켓만 허용하는 구성이 기본입니다. 아래 설정은 관리형 설정(managed settings)에 넣으며 사용자가 덮어쓸 수 없습니다. 파일 위치는 Linux <code>/etc/claude-code/managed-settings.json</code>, macOS <code>/Library/Application Support/ClaudeCode/managed-settings.json</code>이고, MDM이나 claude.ai 관리 콘솔로도 배포할 수 있습니다.</p>
+  <p class="sec-desc">규제 환경에서는 개인이 마켓을 추가하거나 <code>--plugin-dir</code>로 플러그인을 로드하지 못하게 하고, 심사를 마친 사내 마켓만 허용하는 구성이 기본입니다. 아래 설정은 관리형 설정(managed settings)에 넣으며 사용자가 덮어쓸 수 없습니다. 파일 위치는 Linux <code>/etc/claude-code/managed-settings.json</code>, Windows <code>C:\Program Files\ClaudeCode\managed-settings.json</code>, macOS <code>/Library/Application Support/ClaudeCode/managed-settings.json</code>이고, MDM이나 claude.ai 관리 콘솔로도 배포할 수 있습니다.</p>
   <table class="tbl">
     <tr><th>키</th><th>효과</th></tr>
     <tr><td><code>strictKnownMarketplaces</code></td><td>허용할 마켓 출처 목록. 목록 밖 출처는 추가와 설치가 차단되며 <code>[]</code>이면 공식 마켓까지 모두 차단</td></tr>
     <tr><td><code>enabledPlugins</code></td><td><code>true</code>는 강제 설치, <code>false</code>는 모든 범위에서 차단하고 목록에서 숨김</td></tr>
     <tr><td><code>disableSideloadFlags</code></td><td><code>--plugin-dir</code>, <code>--plugin-url</code>, <code>--agents</code> 등 목록 밖 로드 경로를 시작 시점에 거부</td></tr>
-    <tr><td><code>allowManagedModsOnly</code></td><td>내장 보안 가드의 옵션. 조직이 배포한 mod와 내장 mod만 훅을 실행하고 사용자가 가져온 mod는 거부. 사용자 설정 파일에 넣어도 효과 없음</td></tr>
-    <tr><td><code>prependPlugins</code></td><td>조직 정책 mod를 사용자 mod보다 먼저 실행. 감사 로그나 위험 호출 거부에 사용</td></tr>
+    <tr><td><code>allowManagedModsOnly</code></td><td>내장 보안 가드의 옵션. 조직 mod와 내장 mod만 훅을 실행하고 사용자가 가져온 mod는 거부. 사용자 설정 파일에 넣어도 효과 없음. 조직 mod로 인정되는 조건은 아래 안내 참고</td></tr>
+    <tr><td><code>prependPlugins</code></td><td>조직 정책 mod를 사용자 mod보다 먼저 실행. 감사 로그나 위험 호출 거부에 사용. 이 키를 쓰면 기본 순서가 대체되므로 목록에 <code>sec-default@builtin</code>을 반드시 포함해야 내장 가드가 유지되고 <code>allowManagedModsOnly</code>가 계속 적용됨</td></tr>
   </table>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">managed-settings.json, 사내 마켓만 허용하고 사용자 mod 차단</span></div>
     <pre><code>{
   "strictKnownMarketplaces": [
-    { "source": "github", "repo": "your-org/*" },
-    { "source": "skills-dir" }
+    { "source": "github", "repo": "your-org/*" }
   ],
   "extraKnownMarketplaces": {
     "your-marketplace": {
@@ -201,8 +200,13 @@ claude plugin validate ./some-mod      <span class="cmt"># 실행 없이 hooks:,
 }</code></pre>
   </div>
   <div class="callout">
+    <span class="co-title">조직 mod로 인정받는 조건</span>
+    <code>allowManagedModsOnly</code>가 허용하는 "조직 mod"는 세 조건을 모두 만족해야 합니다: 관리형 <code>enabledPlugins</code>에서 <code>true</code>, 마켓이 <strong>머신의 로컬 디렉터리(절대 경로)</strong>로 선언됨, 마켓이 플러그인을 상대 경로로 나열해 제자리에서 로드됨. GitHub, git, URL, npm에서 복사되는 mod는 관리형 설정으로 켜도 사용자 mod로 취급되어 거부됩니다. 위 예시의 GitHub 마켓은 플러그인 설치 허용용이며, 사내 mod를 쓰려면 MDM 등으로 디렉터리를 모든 머신의 같은 경로에 배포하고 관리자만 쓰기 가능하게 하세요.
+    허용 목록에 <code>skills-dir</code> 항목이 없으면 사용자의 <code>~/.claude/skills/</code>, <code>.claude/skills/</code> 아래 플러그인도 로드되지 않습니다.
+  </div>
+  <div class="callout">
     <span class="co-title">공식 마켓의 금융 관련 플러그인</span>
-    공식 마켓에는 금융 서비스 파트너가 올린 연동 플러그인도 있지만 <strong>Anthropic이 심사한 것이 아니므로</strong> 설치 전 각 제공사 페이지와 저장소를 확인해야 합니다. 위 예시처럼 허용 목록을 쓰면 공식 마켓도 명시적으로 허용한 경우에만 쓸 수 있습니다.
+    공식 마켓에는 금융 서비스 파트너가 올린 연동 플러그인도 있지만 <strong>Anthropic이 내용과 동작을 보증하지 않으므로</strong> 설치 전 각 제공사 페이지와 저장소를 확인해야 합니다. 위 예시처럼 허용 목록을 쓰면 공식 마켓도 명시적으로 허용한 경우에만 쓸 수 있습니다.
     사용 현황은 OpenTelemetry의 <code>claude_code.plugin_installed</code>, <code>claude_code.plugin_loaded</code> 이벤트로 감사할 수 있고, 서드파티 플러그인 이름은 <code>OTEL_LOG_TOOL_DETAILS=1</code>을 켜야 기록됩니다. 허용 목록 예시는 code.claude.com/docs/en/plugins/org, mod 통제는 code.claude.com/docs/en/plugins/mods/admin 기준입니다.
   </div>
 </section>
