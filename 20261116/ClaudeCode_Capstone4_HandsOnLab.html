@@ -883,7 +883,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
    (시계열: 시각별 카테고리 점유율과 진입/이탈 수), POST /api/brief?mode=now|daily
    (now=현재 스냅샷 요약, daily=기준선과의 비교 브리핑)
 6) 브리핑(LLM): Bedrock Converse를 SDK 없이 httpx 직접 REST로 호출한다.
-   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-4-6/converse
+   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
    Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), body는 system + messages + inferenceConfig
    (maxTokens 800). 타임아웃/파싱 실패는 상태 코드만 담은 에러로. 결과는 같은 시각 버킷 동안 캐시.
    브리핑 내용: 주제 클러스터 3~4개와 왜 뜨는지, 카테고리 분포에서 읽히는 흐름,
@@ -1017,7 +1017,7 @@ class SnapshotStore:
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 본 Bedrock 라우팅과 자격의 배경, 그 위에서 도는 REST 계약.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(브리핑)를 구현해줘. llm 모듈: httpx로 POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-4-6/converse, Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), body는 system+messages+inferenceConfig(maxTokens 800), 타임아웃은 504/파싱 실패는 502로. POST /api/brief?mode=now|daily(요구 6의 내용 구성), 같은 시각 버킷 캐시. 화면 브리핑 카드에 now/daily 버튼과 결과 렌더까지.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(브리핑)를 구현해줘. llm 모듈: httpx로 POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse, Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), body는 system+messages+inferenceConfig(maxTokens 800), 타임아웃은 504/파싱 실패는 502로. POST /api/brief?mode=now|daily(요구 6의 내용 구성), 같은 시각 버킷 캐시. 화면 브리핑 카드에 now/daily 버튼과 결과 렌더까지.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 브리핑 스모크</span><button class="copy-btn" type="button">복사</button></div>
@@ -1218,7 +1218,7 @@ claude plugin list</code></pre>
 </div>
 <footer>
   <div class="who">Claude Code Deep Dive Workshop, Capstone 4</div>
-  <div>기준: Claude Code 2.1.x + FastAPI + YouTube Data API v3 + Bedrock REST, Sonnet 4.6, 2026.08</div>
+  <div>기준: Claude Code 2.1.x + FastAPI + YouTube Data API v3 + Bedrock REST, sonnet-5.5, 2026.08</div>
 </footer>
 
 <script>

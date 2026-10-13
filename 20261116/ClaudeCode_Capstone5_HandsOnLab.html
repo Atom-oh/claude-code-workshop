@@ -812,7 +812,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
    x=(경도+180)/360*폭, y=(90-위도)/180*높이. 하단에 최근 이벤트 테이블(시각 KST 변환, 규모, 지역, 깊이)과
    규모 필터 슬라이더(2.5~6.0)
 6) 브리핑(LLM): Bedrock Converse를 SDK 없이 httpx 직접 REST로.
-   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-4-6/converse
+   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
    Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), maxTokens 700.
    입력은 최근 24h 요약 통계와 상위 이벤트 목록, 출력은 한국어 "지난 24시간, 지구는" 브리핑:
    전체 흐름 한 문단, 주목 이벤트 2~3개 해설, 활동 급증 지역. 같은 10분 버킷 동안 결과 캐시
@@ -1049,7 +1049,7 @@ curl -s "https://$DOMAIN/healthz" &amp;&amp; echo " &lt;- 열렸습니다, 이 U
 </div>
 <footer>
   <div class="who">Claude Code Deep Dive Workshop, Capstone 5</div>
-  <div>기준: Claude Code 2.1.x + FastAPI + Bedrock REST, Sonnet 4.6, 2026.08</div>
+  <div>기준: Claude Code 2.1.x + FastAPI + Bedrock REST, sonnet-5.5, 2026.08</div>
 </footer>
 
 <script>

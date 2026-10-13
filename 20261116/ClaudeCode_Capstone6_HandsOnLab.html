@@ -820,7 +820,7 @@ aws sts get-caller-identity --query Account --output text</code></pre>
 5) API 계약: GET /healthz, GET /api/articles(소스별 최신 목록 + 소스 상태),
    POST /api/lens (아래 6, 같은 10분 버킷 캐시)
 6) 렌즈(LLM, 이 캡스톤의 심장): Bedrock Converse를 SDK 없이 httpx 직접 REST로.
-   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-4-6/converse
+   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
    Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), maxTokens 1500.
    입력은 4개 소스의 최신 헤드라인+요약 묶음. 출력은 반드시 JSON만:
    {"clusters":[{"topic":"한국어 토픽명","summary":"공통 사실 2문장",
@@ -1076,7 +1076,7 @@ Slack에 붙여넣기 좋은 플레인 텍스트(토픽별 3줄 + 링크)로 만
 </div>
 <footer>
   <div class="who">Claude Code Deep Dive Workshop, Capstone 6</div>
-  <div>기준: Claude Code 2.1.x + FastAPI + Bedrock REST, Sonnet 4.6, 2026.08</div>
+  <div>기준: Claude Code 2.1.x + FastAPI + Bedrock REST, sonnet-5.5, 2026.08</div>
 </footer>
 
 <script>
