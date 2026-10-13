@@ -815,7 +815,7 @@ node chat.mjs</code></pre>
   <p class="body">
     핵심은 result 메시지에서 <code class="inline">sessionId = m.session_id</code>를 갱신해
     다음 루프의 <code class="inline">resume</code>으로 넘기는 세 줄입니다.
-    <code class="inline">tools: []</code>로 도구 목록을 비우고 <code class="inline">maxTurns: 1</code>로 한 턴만 허용해 순수 대화만 남겼습니다.
+    <code class="inline">tools: []</code>로 내장 도구 목록을 비우고(MCP 서버가 없을 때 순수 대화) <code class="inline">maxTurns: 1</code>로 한 턴만 허용해 순수 대화만 남겼습니다.
   </p>
 
   <div class="checkpoint">
