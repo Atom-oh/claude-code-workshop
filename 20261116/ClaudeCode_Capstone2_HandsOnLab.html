@@ -750,7 +750,7 @@ Browser ── react-query ──> FastAPI ──> TTL Cache ──(miss, single
    +──── JSON 완결 응답 ──────+      (hit) 즉시 반환, 업스트림 무호출
 
 [스트리밍 경로]  버튼 눌렀을 때만
-Browser ── fetch(SSE) ──> FastAPI ── converse_stream ──> Bedrock (Sonnet 4.6)
+Browser ── fetch(SSE) ──> FastAPI ── converse_stream ──> Bedrock (sonnet-5.5)
    ^                          |
    +── phase → delta* → final +   (한 글자씩, react-query를 쓰지 않는 유일한 경로)</code></pre>
   </div>
@@ -821,7 +821,7 @@ ENVEOF</code></pre>
     <pre><code>set -a; source ~/capstone/.env; set +a
 aws bedrock-runtime converse \
   --region ap-northeast-2 \
-  --model-id global.anthropic.claude-sonnet-4-6 \
+  --model-id global.anthropic.claude-sonnet-5-5 \
   --messages '[{"role":"user","content":[{"text":"ping"}]}]' \
   --inference-config '{"maxTokens":30}' \
   --query 'output.message.content[0].text' --output text</code></pre>
@@ -862,7 +862,7 @@ aws bedrock-runtime converse \
    캔들 차트(1W/1M/3M/1Y 기간 탭), ReturnsRow(기간 수익률 4종), Week52Bar(52주 범위 내 현재 위치),
    뒤로 가기로 대시보드 복귀
 7) AI 분석(SSE 스트리밍): POST /api/ai/stocks/{symbol}가 Bedrock converse_stream
-   (global.anthropic.claude-sonnet-4-6, maxTokens 1024)으로 기술적 분석/투자 포인트/리스크를 한국어로
+   (global.anthropic.claude-sonnet-5-5, maxTokens 1024)으로 기술적 분석/투자 포인트/리스크를 한국어로
    생성하며 text/event-stream으로 흘린다. 이벤트는 phase → delta(부분 텍스트)* → final 순서.
    프론트 AIPanel은 델타를 누적해 타자기처럼 렌더하고, 이 호출만 react-query 대신 fetch를 직접 쓴다
    (react-query는 완결된 결과 캐시 모델이라 점진 델타에 맞지 않는다).
@@ -1053,7 +1053,7 @@ def get_or_fetch(key: str, ttl: int, fetch):
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 본 Bedrock 라우팅과 자격의 배경, 그 위에서 도는 스트리밍 계약.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(AI SSE)를 구현해줘. POST /api/ai/stocks/{symbol}: Bedrock converse_stream(global.anthropic.claude-sonnet-4-6, maxTokens 1024, 리전 ap-northeast-2, 자격 인자 없이 환경변수 AWS_BEARER_TOKEN_BEDROCK, IAM 정책 금지)으로 기술적 분석/투자 포인트/리스크 3절을 text/event-stream으로: 이벤트 phase → delta* → final. 프론트 AIPanel은 fetch 직접 + 델타 누적 타자기 렌더 + phase 배지. 키 없으면 503과 패널 비활성. 마지막으로 npm run build 산출물을 backend/static으로 넣어 :8000 통합 서빙(make run 또는 스크립트)까지.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(AI SSE)를 구현해줘. POST /api/ai/stocks/{symbol}: Bedrock converse_stream(global.anthropic.claude-sonnet-5-5, maxTokens 1024, 리전 ap-northeast-2, 자격 인자 없이 환경변수 AWS_BEARER_TOKEN_BEDROCK, IAM 정책 금지)으로 기술적 분석/투자 포인트/리스크 3절을 text/event-stream으로: 이벤트 phase → delta* → final. 프론트 AIPanel은 fetch 직접 + 델타 누적 타자기 렌더 + phase 배지. 키 없으면 503과 패널 비활성. 마지막으로 npm run build 산출물을 backend/static으로 넣어 :8000 통합 서빙(make run 또는 스크립트)까지.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 키 로드 후 통합 실행</span><button class="copy-btn" type="button">복사</button></div>
@@ -1310,7 +1310,7 @@ claude plugin list</code></pre>
 </div>
 <footer>
   <div class="who">Claude Code Deep Dive Workshop, Capstone 2</div>
-  <div>기준: Claude Code 2.1.x + FastAPI + React(Vite) + Bedrock SSE, Sonnet 4.6, 2026.08</div>
+  <div>기준: Claude Code 2.1.x + FastAPI + React(Vite) + Bedrock SSE, sonnet-5.5, 2026.08</div>
 </footer>
 
 <script>
