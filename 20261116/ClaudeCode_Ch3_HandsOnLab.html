@@ -933,7 +933,7 @@ echo "배포 완료"</code></pre>
 
   <div class="step-title"><span class="step-no">+</span>더 알아 둘 관리형 통제 (v2.1.283 이후 중심)</div>
   <p class="body">관리형 설정은 <strong>서버 관리(claude.ai 관리 콘솔) → MDM 정책 → managed-settings.json</strong> 순으로 먼저 값을 주는 하나의 출처만 적용되는 것이 기본입니다. 같은 키는 높은 스코프가 이기고, <code class="inline">permissions.allow/ask/deny</code> 같은 목록은 스코프를 가로질러 병합됩니다.
-  아래 키는 모두 관리형 설정에서만 효력이 있습니다.</p>
+  아래 키는 주로 관리형 설정에서 쓰며, <code>deniedModels</code>, <code>availableModelsMatch</code>, <code>allowManagedHooksOnly</code>, <code>allowManagedPermissionRulesOnly</code>, <code>allowedProviders</code>, <code>forceRemoteSettingsRefresh</code>는 <strong>관리형 설정에서만</strong> 효력이 있습니다. <code>permissions.disableAutoMode</code>, <code>disableBypassPermissionsMode</code>, <code>enforceAvailableModels</code>는 어느 설정 파일에서도 쓸 수 있지만 관리형에 두면 사용자가 바꿀 수 없습니다.</p>
   <table class="tbl">
     <tr><th>키</th><th>효과</th></tr>
     <tr><td><code>permissions.disableAutoMode</code> / <code>disableBypassPermissionsMode</code></td><td><code>"disable"</code>이면 auto 모드를 순환에서 빼고, <code>bypassPermissions</code>를 막음</td></tr>

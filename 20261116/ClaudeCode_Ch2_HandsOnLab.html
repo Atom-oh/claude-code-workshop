@@ -847,7 +847,7 @@ EOF</code></pre>
     <tr><td><code>color</code>, <code>initialPrompt</code>, <code>experimental</code></td><td>표시 색상, 메인 세션 에이전트로 쓸 때 자동 제출되는 첫 턴, <code>cacheTtl: 5m | 1h</code>(v2.1.248+)</td></tr>
   </table>
   <div class="code-wrap">
-    <div class="code-head"><span class="code-label">예시 정의, 격리 실행과 프로젝트 메모리</span><button class="copy-btn" type="button">복사</button></div>
+    <div class="code-head"><span class="code-label">예시 정의, 읽기 전용 점검과 격리 실행</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>---
 name: repo-auditor
 description: 저장소를 읽기 전용으로 점검하고 결과를 보고한다. 감사 요청 시 사용.
@@ -855,7 +855,6 @@ model: inherit
 maxTurns: 20
 disallowedTools: Write, Edit
 isolation: worktree
-memory: project
 ---
 저장소를 점검하고 발견 사항만 보고한다. 파일을 수정하지 않는다.</code></pre>
   </div>
@@ -1149,7 +1148,7 @@ ls .claude/agents/</code></pre>
 
   <div class="callout tip">
     <span class="co-title">이름이 비슷한 세 가지, /agents, claude agents, /fork</span>
-    <code class="inline">/agents</code>는 <strong>서브에이전트 정의</strong>를 보여 줍니다(v2.1.198에서 대화형 마법사가 제거되어, 정의는 <code class="inline">.claude/agents/</code> 파일을 편집하거나 Claude에게 요청해 만듭니다).
+    <code class="inline">/agents</code>는 <strong>서브에이전트 정의에 관한 안내 문구만 출력</strong>합니다(v2.1.198에서 대화형 마법사가 제거되어, 정의는 <code class="inline">.claude/agents/</code> 파일을 직접 편집하거나 Claude에게 요청해 만듭니다).
     반면 터미널의 <code class="inline">claude agents</code>는 <strong>백그라운드 세션을 관리하는 에이전트 뷰</strong>입니다.
     <code class="inline">claude --bg "작업 설명"</code>으로 세션을 백그라운드에 띄우고 id를 받은 뒤 <code class="inline">claude agents</code>로 목록을 보며,
     <code class="inline">claude attach &lt;id|name&gt;</code>, <code class="inline">claude logs</code>, <code class="inline">claude stop</code>(별칭 kill), <code class="inline">claude rm</code>, <code class="inline">claude respawn</code>으로 다룹니다. 세션은 연결을 닫아도 계속 실행됩니다.
@@ -1306,7 +1305,7 @@ jobs:
   <div class="callout tip">
     <span class="co-title">CI에서의 안전장치</span>
     무인 실행에서는 API Key를 <strong>반드시 Secrets로 주입</strong>하고,
-    읽기 전용 검사라면 <code class="inline">--tools "Read,Grep,Glob"</code>으로 사용 가능한 도구를 제한하세요(<code class="inline">--allowed-tools</code>는 승인 없이 실행할 도구를 정할 뿐 제한하지 않습니다).
+    읽기 전용 검사라면 <code class="inline">--tools "Read,Grep,Glob"</code>으로 내장 도구를 제한하세요(MCP 도구는 <code class="inline">--disallowedTools "mcp__*"</code>로 따로 막습니다. <code class="inline">--allowed-tools</code>는 승인 없이 실행할 도구를 정할 뿐 제한하지 않습니다).
     Chapter 5(CLI Reference)에서 권한 플래그와 파이프라인 패턴을 심화합니다.
   </div>
 
