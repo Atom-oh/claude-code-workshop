@@ -607,8 +607,8 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="hero-meta">
     <span>소요 시간 <strong>40분 내외</strong></span>
     <span>Task <strong>준비 + 5개</strong></span>
-    <span>기준 버전 <strong>Claude Code 2.1.x</strong></span>
-    <span>Update <strong>2026.07</strong></span>
+    <span>검증 버전 <strong>Claude Code 2.1.296</strong></span>
+    <span>Update <strong>2026.10</strong></span>
   </div>
 </header>
 
@@ -786,8 +786,8 @@ npm test &amp;&amp; git log --oneline</code></pre>
 
   <div class="step-title"><span class="step-no">1</span>에이전트 정의 파일 작성</div>
   <p class="body">
-    정의 파일은 <strong>YAML frontmatter 핵심 4필드</strong>(name / description / tools / model, 필수는 name과 description)와
-    시스템 프롬프트 본문으로 구성됩니다. 프로젝트 루트에서 아래 블록을 실행하세요.
+    정의 파일은 <strong>YAML frontmatter</strong>와 시스템 프롬프트 본문으로 구성됩니다. 필수 필드는 <code class="inline">name</code>과 <code class="inline">description</code> 둘뿐이고,
+    이번 실습은 대표 4필드(name / description / tools / model)를 씁니다. 사용할 수 있는 전체 필드는 아래 표 뒤의 "frontmatter 전체 필드"에 정리했습니다. 프로젝트 루트에서 아래 블록을 실행하세요.
   </p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -823,8 +823,42 @@ EOF</code></pre>
     <tr><td><code>name</code></td><td>고유 식별자, kebab-case 영문 소문자</td><td>code-reviewer</td></tr>
     <tr><td><code>description</code></td><td>자동 디스패치의 판단 기준, 사용 시점까지 명시</td><td>리뷰 요청 / git diff 검토 시</td></tr>
     <tr><td><code>tools</code></td><td>도구 화이트리스트, Bash는 명령 패턴으로 제한</td><td>읽기 전용 + git diff / log만</td></tr>
-    <tr><td><code>model</code></td><td>별칭 sonnet / opus / haiku, 전체 모델 ID, 또는 inherit. 생략 시 inherit(메인 모델 상속)</td><td>sonnet, 일상 리뷰의 표준</td></tr>
+    <tr><td><code>model</code></td><td>별칭 sonnet / opus / haiku / fable, 전체 모델 ID, 또는 inherit(메인 모델 사용). 생략하면 아래 결정 순서를 따름</td><td>sonnet, 일상 리뷰의 표준</td></tr>
   </table>
+  <div class="callout tip">
+    <span class="co-title">서브에이전트 모델은 이 순서로 결정됩니다</span>
+    ① 위임 시점에 지정한 <code class="inline">model</code> 파라미터 → ② 정의 파일의 <code class="inline">model</code>(<code class="inline">inherit</code>는 메인 대화의 모델) →
+    ③ 환경 변수 <code class="inline">CLAUDE_CODE_SUBAGENT_MODEL</code>(별칭 또는 ID) → ④ 메인 대화의 모델.
+    v2.1.251 이전에는 ③이 가장 앞에서 ①과 ②를 덮어썼습니다. 모든 서브에이전트에 한 모델을 강제하려면 <code class="inline">CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1</code>(v2.1.257+)을 함께 설정합니다.
+  </div>
+  <div class="step-title"><span class="step-no">+</span>frontmatter 전체 필드</div>
+  <p class="body">알 수 없는 필드는 오류 없이 무시되므로 오타가 나도 조용히 동작하지 않습니다. 필드명은 camelCase입니다.</p>
+  <table class="tbl">
+    <tr><th>필드</th><th>역할</th></tr>
+    <tr><td><code>tools</code>, <code>disallowedTools</code></td><td>허용 목록과 거부 목록. 거부 목록이 먼저 적용되며 <code>Bash(git push *)</code>처럼 패턴을 쓰면 도구 전체가 제거됨</td></tr>
+    <tr><td><code>permissionMode</code></td><td><code>default</code>(=<code>manual</code>), <code>acceptEdits</code>, <code>auto</code>, <code>dontAsk</code>, <code>bypassPermissions</code>, <code>plan</code>. 플러그인 서브에이전트에서는 무시됨</td></tr>
+    <tr><td><code>maxTurns</code></td><td>최대 에이전트 턴 수. 넘으면 부분 결과로 표시되고 이어서 재개 가능</td></tr>
+    <tr><td><code>skills</code>, <code>mcpServers</code>, <code>hooks</code></td><td>시작 시 스킬 전체 내용 미리 로드, 전용 MCP 서버, 이 서브에이전트가 활성인 동안만 도는 훅. 플러그인 서브에이전트에서는 mcpServers와 hooks가 무시됨</td></tr>
+    <tr><td><code>memory</code></td><td><code>user</code>, <code>project</code>, <code>local</code> 범위의 영속 메모리. 각각 <code>~/.claude/agent-memory/&lt;이름&gt;/</code>, <code>.claude/agent-memory/&lt;이름&gt;/</code>, <code>.claude/agent-memory-local/&lt;이름&gt;/</code>. 자동 메모리를 끄면 효과 없음</td></tr>
+    <tr><td><code>background</code></td><td><code>true</code>면 메인이 포그라운드를 요청해도 항상 백그라운드로 실행</td></tr>
+    <tr><td><code>isolation</code></td><td><code>worktree</code>면 임시 git worktree에서 실행해 메인 작업 트리와 분리</td></tr>
+    <tr><td><code>effort</code></td><td><code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, <code>max</code>. 세션 effort를 덮어쓰지만 <code>CLAUDE_CODE_EFFORT_LEVEL</code>은 이기지 못함</td></tr>
+    <tr><td><code>omitClaudeMd</code></td><td><code>true</code>면 사용자, 프로젝트, 로컬 CLAUDE.md를 건너뜀(v2.1.271+)</td></tr>
+    <tr><td><code>color</code>, <code>initialPrompt</code>, <code>experimental</code></td><td>표시 색상, 메인 세션 에이전트로 쓸 때 자동 제출되는 첫 턴, <code>cacheTtl: 5m | 1h</code>(v2.1.248+)</td></tr>
+  </table>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">예시 정의, 격리 실행과 프로젝트 메모리</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>---
+name: repo-auditor
+description: 저장소를 읽기 전용으로 점검하고 결과를 보고한다. 감사 요청 시 사용.
+model: inherit
+maxTurns: 20
+disallowedTools: Write, Edit
+isolation: worktree
+memory: project
+---
+저장소를 점검하고 발견 사항만 보고한다. 파일을 수정하지 않는다.</code></pre>
+  </div>
 
   <div class="step-title"><span class="step-no">2</span>등록 확인</div>
   <div class="code-wrap">
@@ -916,7 +950,7 @@ EOF</code></pre>
   </div>
 
   <div class="step-title"><span class="step-no">2</span>일부러 권한을 벗어난 요청</div>
-  <p class="body">tools에 <strong>Edit이 없는 상태</strong>에서 파일 수정을 요청합니다. Claude Code가 <code class="inline">.claude/agents/</code>를 감시하므로 파일 저장 후 몇 초 안에 자동 인식됩니다(Task 1에서 디렉토리를 만든 뒤 세션을 시작했기 때문에 재시작 불필요).</p>
+  <p class="body">tools에 <strong>Edit이 없는 상태</strong>에서 파일 수정을 요청합니다. Claude Code가 <code class="inline">~/.claude/agents/</code>와 <code class="inline">.claude/agents/</code>를 감시하므로 파일 저장 후 몇 초 안에 자동 인식됩니다(Task 1에서 디렉토리를 만든 뒤 세션을 시작했기 때문에 재시작 불필요). 재시작이 필요한 경우는 세 가지입니다: 세션 시작 뒤 <strong>새로 만든 agents 디렉토리</strong>의 첫 파일, <code class="inline">--add-dir</code>/<code class="inline">/add-dir</code>로 추가한 디렉토리 안의 정의 수정, <code class="inline">--disable-slash-commands</code>로 시작한 세션입니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>dangerous-test 에이전트를 사용해서 src/accounts.js의 Park 계좌에 kyc 필드를 추가해 주세요</code></pre>
@@ -931,7 +965,7 @@ EOF</code></pre>
 
   <div class="callout warn">
     <span class="co-title">tools 필드 생략의 위험</span>
-    tools 필드를 <strong>아예 생략하면 메인의 모든 도구를 상속</strong>합니다(지양).
+    tools 필드를 <strong>아예 생략하면 서브에이전트가 쓸 수 있는 모든 도구(MCP 도구 포함)를 상속</strong>합니다(지양). 질문 도구 등 일부는 항상 제외됩니다.
     화이트리스트를 명시하는 습관이 안전의 기본입니다. 반대로 대부분을 상속하되 일부만 빼려면 <code class="inline">disallowedTools: Write, Edit</code>처럼 거부 목록을 쓸 수 있습니다.
   </div>
 
@@ -945,10 +979,10 @@ grep '^tools:' .claude/agents/dangerous-test.md   <span class="cmt"># tools: Rea
   <div class="step-title"><span class="step-no">4</span>/exit로 나갔다 들어와 새 위임으로 재시도</div>
   <div class="callout warn">
     <span class="co-title">중요, 같은 요청을 그냥 반복하면 여전히 거부됩니다</span>
-    정의 파일 변경은 <strong>다음 새 위임부터</strong> 적용됩니다. 그런데 메인은 직전 턴에서
-    "이 에이전트는 수정 불가"를 이미 학습했기 때문에, 같은 요청을 반복하면 재위임 없이 기존 맥락으로
-    답하거나 이전 인스턴스를 재개(resume)할 수 있습니다. 재개된 서브에이전트는 <strong>스폰 시점의 도구 권한을 그대로 유지</strong>합니다.
-    <code class="inline">/exit</code>로 세션을 완전히 나갔다가 <code class="inline">claude</code>로 다시 들어오세요. 갱신된 정의로 새 인스턴스가 뜹니다(같은 세션에서 <code class="inline">/clear</code>로 맥락만 비워도 동일 효과).
+    정의 파일 변경은 수 초 안에 반영되고 <strong>다음 새 위임부터</strong> 적용됩니다. 그런데 메인은 직전 턴에서
+    "이 에이전트는 수정 불가"라는 결과를 이미 받았기 때문에, 같은 요청을 반복하면 다시 위임하지 않고 기존 맥락으로
+    답할 수 있습니다. 맥락을 비우고 새 위임이 일어나게 하세요.
+    <code class="inline">/exit</code>로 세션을 나갔다가 <code class="inline">claude</code>로 다시 들어오거나, 같은 세션에서 <code class="inline">/clear</code>로 맥락만 비워도 됩니다.
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 세션 종료</span><button class="copy-btn" type="button">복사</button></div>
@@ -1105,8 +1139,21 @@ ls .claude/agents/</code></pre>
   <div class="callout tip">
     <span class="co-title">현재 버전 참고, Agent 도구와 백그라운드 실행</span>
     위임에 쓰이는 내부 도구 이름이 <strong>Task에서 Agent로 변경</strong>되었습니다(구 Task 표기는 별칭으로 동작).
-    또한 서브에이전트는 <strong>기본적으로 백그라운드로 실행</strong>됩니다. 진행 상황은 프롬프트 아래 패널과
-    <code class="inline">/tasks</code>에서 확인하고, 권한 요청은 메인 세션에 표시되며, <kbd>Ctrl</kbd> + <kbd>B</kbd>로 실행 중 작업을 백그라운드로 보낼 수 있습니다.
+    대화형 세션에서는 <strong>fork 모드가 기본으로 켜져 있어 서브에이전트가 항상 백그라운드로 실행</strong>되고 Claude가 포그라운드를 요청할 수 없습니다(fork 모드가 꺼진 환경에서는 결과가 필요할 때만 포그라운드).
+    진행 상황은 프롬프트 아래 패널과 <code class="inline">/tasks</code>에서 확인하고, 권한 요청은 어느 서브에이전트의 것인지 이름과 함께 메인 세션에 표시되며, <kbd>Ctrl</kbd> + <kbd>B</kbd>로 실행 중 작업을 백그라운드로 보낼 수 있습니다.
+    <code class="inline">CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1</code>이면 모두 포그라운드로 실행됩니다.
+    <br><br>동시에 실행할 수 있는 서브에이전트는 기본 20개(<code class="inline">CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</code>), 서브에이전트가 다시 서브에이전트를 부르는 중첩은 기본 3단계(<code class="inline">CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code>, <code class="inline">1</code>이면 중첩 끔)까지입니다.
+    <br><br>기본 제공 서브에이전트는 Explore(읽기 전용 탐색, 메인 모델 사용), Plan, general-purpose, claude(기본 범용), statusline-setup(Sonnet), claude-code-guide(Haiku)입니다.
+    Explore와 Plan만 끄려면 <code class="inline">CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1</code>, 특정 유형만 막으려면 permissions의 <code class="inline">deny</code>에 <code class="inline">Agent(Explore)</code>를 넣습니다.
+  </div>
+
+  <div class="callout tip">
+    <span class="co-title">이름이 비슷한 세 가지, /agents, claude agents, /fork</span>
+    <code class="inline">/agents</code>는 <strong>서브에이전트 정의</strong>를 보여 줍니다(v2.1.198에서 대화형 마법사가 제거되어, 정의는 <code class="inline">.claude/agents/</code> 파일을 편집하거나 Claude에게 요청해 만듭니다).
+    반면 터미널의 <code class="inline">claude agents</code>는 <strong>백그라운드 세션을 관리하는 에이전트 뷰</strong>입니다.
+    <code class="inline">claude --bg "작업 설명"</code>으로 세션을 백그라운드에 띄우고 id를 받은 뒤 <code class="inline">claude agents</code>로 목록을 보며,
+    <code class="inline">claude attach &lt;id|name&gt;</code>, <code class="inline">claude logs</code>, <code class="inline">claude stop</code>(별칭 kill), <code class="inline">claude rm</code>, <code class="inline">claude respawn</code>으로 다룹니다. 세션은 연결을 닫아도 계속 실행됩니다.
+    <code class="inline">/fork</code>는 현재 대화를 새 백그라운드 세션으로 복사하고(v2.1.212), 같은 세션 안에서 서브에이전트에게 맡기는 기능은 <code class="inline">/subtask</code>로 이름이 바뀌었습니다.
   </div>
 
   <div class="step-title"><span class="step-no">1</span>패턴 A, 자동 디스패치</div>
@@ -1299,7 +1346,7 @@ jobs:
 
 <footer>
   <div class="who">Claude Code Deep Dive Workshop, Chapter 2 Hands-on Lab</div>
-  <div>기준: Claude Code 2.1.x, 2026.07 / 명령어와 출력은 버전에 따라 일부 다를 수 있습니다</div>
+  <div>기준: Claude Code 2.1.296, 2026.10 / 명령어와 출력은 버전에 따라 일부 다를 수 있습니다</div>
 </footer>
 
 <script>
