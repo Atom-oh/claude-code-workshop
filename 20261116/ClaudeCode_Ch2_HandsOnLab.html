@@ -1306,7 +1306,7 @@ jobs:
   <div class="callout tip">
     <span class="co-title">CI에서의 안전장치</span>
     무인 실행에서는 API Key를 <strong>반드시 Secrets로 주입</strong>하고,
-    읽기 전용 검사라면 <code class="inline">--allowed-tools "Read,Grep,Glob"</code>으로 도구를 제한하세요.
+    읽기 전용 검사라면 <code class="inline">--tools "Read,Grep,Glob"</code>으로 사용 가능한 도구를 제한하세요(<code class="inline">--allowed-tools</code>는 승인 없이 실행할 도구를 정할 뿐 제한하지 않습니다).
     Chapter 5(CLI Reference)에서 권한 플래그와 파이프라인 패턴을 심화합니다.
   </div>
 

@@ -766,7 +766,7 @@ cat &gt; .claude/settings.json &lt;&lt; 'EOF'
       "Read(**)", "Grep", "Glob",
       "Bash(npm test:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git status)"
     ],
-    "ask": ["Edit(**)", "Write(**)", "Bash(git push:*)"],
+    "ask": ["Edit(**)", "Bash(git push:*)"],
     "deny": ["Bash(rm -rf:*)", "Bash(curl:*)", "Read(**/.env*)"]
   }
 }
@@ -946,7 +946,7 @@ cat &gt; .claude/settings.json &lt;&lt; 'EOF'
       "Read(**)", "Grep", "Glob",
       "Bash(npm test:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git status)"
     ],
-    "ask": ["Edit(**)", "Write(**)", "Bash(git push:*)"],
+    "ask": ["Edit(**)", "Bash(git push:*)"],
     "deny": ["Bash(rm -rf:*)", "Bash(curl:*)", "Read(**/.env*)"]
   },
   "hooks": {
@@ -997,6 +997,19 @@ unset CLAUDE_PROJECT_DIR</code></pre>
     실전 조합: deny로 큰 금지선 → PreToolUse로 내용 기반 DLP(Ch3) → PostToolUse로 lint/format/로그.
     프로덕션에서는 이 자리에 <code class="inline">prettier --write</code>나 <code class="inline">eslint --fix</code>를 넣는 것이 auto-format 패턴입니다.
   </div>
+
+  <div class="step-title"><span class="step-no">+</span>훅의 현재 범위, 이 실습 밖에서 알아 둘 것</div>
+  <p class="body">이 랩은 <code class="inline">PostToolUse</code> 하나만 다루지만, 훅은 <strong>이벤트 33개</strong>(SessionStart, UserPromptSubmit, PreToolUse, PermissionRequest, PostToolUse, SubagentStart/Stop, Stop, ConfigChange, FileChanged, WorktreeCreate, PreCompact, PreModelSwitch, SessionEnd 등)에 걸 수 있습니다.</p>
+  <table class="tbl">
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>핸들러 유형</td><td><code>command</code>(셸), <code>http</code>, <code>mcp_tool</code>, <code>prompt</code>(모델 한 번 평가), <code>agent</code>(실험적, 변경될 수 있음)</td></tr>
+    <tr><td>matcher</td><td>PreToolUse 등에서는 도구 이름으로 거릅니다. 글자, 숫자, <code>_</code>, <code>-</code>, <code>|</code>, <code>,</code>만 있으면 정확히 일치하는 이름 목록(<code>"Edit|Write"</code>), 다른 문자가 있으면 정규식(<code>"mcp__memory__.*"</code>), 비우거나 <code>"*"</code>이면 전부</td></tr>
+    <tr><td><code>if</code> 필드</td><td>권한 규칙 문법 <strong>하나</strong>로 더 좁힙니다(예: <code>"Bash(git *)"</code>). 도구 이벤트(PreToolUse, PostToolUse, PostToolUseFailure, PermissionRequest, PermissionDenied)에서만 평가되고 다른 이벤트에서는 실행되지 않습니다</td></tr>
+    <tr><td><code>onFailure</code></td><td><code>command</code>와 <code>http</code> 훅에 <code>"block"</code>을 주면 훅이 실패했을 때 exit 2처럼 차단합니다(기본 <code>continue</code>, v2.1.295+). 시간 초과된 훅은 기본적으로 도구 호출을 막지 않습니다</td></tr>
+    <tr><td>PreToolUse 결정</td><td><code>hookSpecificOutput.permissionDecision</code>에 allow, deny, ask, defer. 출력 없이 exit 0이면 승인이 아니라 일반 권한 흐름으로 넘어가고, <strong>훅이 allow를 반환해도 deny/ask 규칙은 그대로 적용</strong>됩니다. exit 2는 항상 차단합니다</td></tr>
+    <tr><td>설정 위치</td><td>사용자, 프로젝트, 로컬 settings.json, 관리형 설정, 플러그인 <code>hooks/hooks.json</code>, 스킬 frontmatter(호출된 뒤 세션 동안), 서브에이전트 frontmatter(그 서브에이전트가 실행되는 동안)</td></tr>
+    <tr><td>조직 통제</td><td>관리형 설정의 <code>allowManagedHooksOnly</code>는 조직이 배포한 훅만 실행하고, <code>allowedHttpHookUrls</code>는 HTTP 훅이 부를 수 있는 URL을 제한합니다</td></tr>
+  </table>
 
   <div class="callout warn">
     <span class="co-title">금융권 권한 모드 운영, v2.1.283 이후 기본값 변화</span>

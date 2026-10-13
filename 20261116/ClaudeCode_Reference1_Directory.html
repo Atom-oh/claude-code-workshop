@@ -94,24 +94,37 @@
 ├─ skills/<이름>/SKILL.md               #   개인 스킬 (커스텀 슬래시 커맨드의 표준)
 ├─ commands/*.md                        #   (legacy) 구식 개인 커맨드
 ├─ agents/*.md                          #   개인 서브에이전트 정의
+├─ agent-memory/<에이전트>/             #   memory: user 서브에이전트의 영속 메모리
+├─ rules/*.md                           #   개인 규칙 (paths: frontmatter로 범위 지정 가능)
+├─ workflows/                           #   저장한 워크플로 (/workflows 에서 s로 저장)
+├─ output-styles/  themes/              #   개인 출력 스타일, 커스텀 테마
+├─ keybindings.json                     #   /keybindings 로 만드는 단축키 재정의
 ├─ plugins/                             #   설치된 플러그인 본체
 ├─ projects/<프로젝트별>/               #   세션 대화 기록, /resume과 --resume의 저장소
 └─ feedback-bundles/                    #   /bug 로컬 아카이브 (서드파티 연결 시)
 
 <프로젝트 루트>/
 ├─ CLAUDE.md                            # 프로젝트 메모리 (커밋, 팀 공유)
+├─ AGENTS.md                            # CLAUDE.md, CLAUDE.local.md가 없을 때만 지침으로 로드 (v2.1.277+)
+├─ CLAUDE.local.md                      # 개인 프로젝트 지침 (gitignore 대상, 있으면 AGENTS.md는 안 읽힘)
 ├─ .mcp.json                            # 프로젝트 MCP 서버 (커밋, 팀 공유)
+├─ .worktreeinclude                     # 새 worktree에 복사할 gitignore 파일 목록 (.env 등)
 └─ .claude/
    ├─ settings.json                     #   프로젝트 설정 (커밋, 팀 공유)
    ├─ settings.local.json               #   개인 오버라이드 (gitignore 대상)
    ├─ skills/  agents/                  #   팀 공유 스킬과 서브에이전트
+   ├─ rules/  workflows/                #   경로별 규칙, 팀 워크플로 (프로젝트 쪽이 개인보다 우선)
+   ├─ agent-memory/  agent-memory-local/ #   memory: project / local 서브에이전트 메모리
    ├─ commands/                         #   (legacy) 팀 커맨드
    └─ loop.md                           #   /loop 기본 프롬프트
 
 # 조직 강제 (managed-settings, Chapter 3)
-Linux, WSL   /etc/claude-code/managed-settings.json
+Linux, WSL   /etc/claude-code/managed-settings.json   (+ 같은 위치의 managed-settings.d/ 드롭인)
 macOS        /Library/Application Support/ClaudeCode/managed-settings.json
-Windows      C:\Program Files\ClaudeCode\managed-settings.json</code></pre>
+Windows      C:\Program Files\ClaudeCode\managed-settings.json
+# 파일 외에 MDM 정책, claude.ai 관리 콘솔(서버 관리 설정)로도 배포. 하나의 출처만 적용이 기본
+
+# ~/.claude 를 다른 곳에 두려면 환경 변수 CLAUDE_CONFIG_DIR, 사용자 MCP와 앱 상태는 ~/.claude.json</code></pre>
   </div>
 </section>
 <section class="wrap">
@@ -129,11 +142,11 @@ Windows      C:\Program Files\ClaudeCode\managed-settings.json</code></pre>
 </section>
 <section class="wrap">
   <h2>우선순위, 충돌하면 누가 이기나</h2>
-  <p class="sec-desc">같은 키가 여러 곳에 있으면 위가 아래를 덮습니다.</p>
+  <p class="sec-desc">같은 키가 여러 곳에 있으면 위가 아래를 덮습니다. 단 <code>permissions.allow/ask/deny</code> 같은 <strong>목록 설정은 덮어쓰지 않고 스코프를 가로질러 병합</strong>되며, 규칙 평가는 deny, ask, allow 순이라 어느 스코프의 deny든 allow보다 먼저 적용됩니다.</p>
   <table class="tbl">
     <tr><th>순위</th><th>출처</th><th>메모</th></tr>
-    <tr><td>1</td><td>managed-settings (조직)</td><td>사용자가 뒤집을 수 없음, Chapter 3의 통제선</td></tr>
-    <tr><td>2</td><td>CLI 인자</td><td>--model, --allowed-tools 같은 실행 시 지정</td></tr>
+    <tr><td>1</td><td>managed-settings (조직)</td><td>서버 관리(claude.ai 콘솔), MDM, managed-settings.json 중 먼저 값을 주는 출처. 사용자가 뒤집을 수 없음, Chapter 3의 통제선</td></tr>
+    <tr><td>2</td><td>명령줄 <code>--settings</code></td><td>파일 경로나 인라인 JSON으로 이번 세션만 덮어씀. <code>--model</code> 같은 개별 플래그는 이 순위표와 별개로 그 세션의 값을 고름</td></tr>
     <tr><td>3</td><td><code>.claude/settings.local.json</code></td><td>개인 로컬</td></tr>
     <tr><td>4</td><td><code>.claude/settings.json</code></td><td>프로젝트 공유</td></tr>
     <tr><td>5</td><td><code>~/.claude/settings.json</code></td><td>사용자 전역</td></tr>
@@ -194,7 +207,7 @@ Windows      C:\Program Files\ClaudeCode\managed-settings.json</code></pre>
 
 <footer>
   <div class="who">Claude Code Deep Dive Workshop, Reference 1, 디렉토리 구조</div>
-  <div>기준: Claude Code 2.1.x, 2026.07 / 설정 문서: code.claude.com/docs/en/settings</div>
+  <div>기준: Claude Code 2.1.296, 2026.10 / 설정 문서: code.claude.com/docs/en/settings</div>
 </footer>
 <script>
 (function () {

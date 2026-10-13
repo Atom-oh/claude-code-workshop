@@ -18,6 +18,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
+- Update the November labs against the Claude Code 2.1.296 documentation and CLI: Ch2 subagent frontmatter, model resolution, background and concurrency defaults, and built-in agents; Ch3 managed controls, Bedrock IAM policy and MCP lockdown; Ch4 hook scope and the permission-mode default; Ch5 and Ch6 tool-restriction semantics (`--tools` and SDK `tools` restrict, `--allowed-tools` and `allowedTools` only auto-approve); Ch1 install and Bedrock model pinning; Reference 1 directory map and settings precedence; Reference 2 command rows; Reference 3 plugin CLI.
 - Refresh the November labs for Claude Code v2.1.296: add a mods section and a financial-services plugin/mod governance section to Reference 3, add a permission-mode callout (auto mode is the default start mode since v2.1.283) to Ch4, and update the Ch1 sample output version.
 - Re-theme the November Ch1/Ch2 sample project from a user service to an account service with a missing KYC grade, and the Ch6 notes agent to fictional internal-control policy notes; replace the Capstone 7 domain examples with financial-services domains.
 - Rebuild `ccw-hands-on-lab/` from the 2026-09-19 reader build with a shared `assets/` directory; move the previous build, including legacy capstones A–D, to `ccw-hands-on-lab/v1/`.
@@ -31,6 +32,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Fixed
 
+- Correct statements the current documentation contradicts: `Write(**)` permission rules are never evaluated, `/review` is an alias of `/code-review` since v2.1.223, SDK `settingSources` defaults to all sources, `--bare` requires an API key, and subscription defaults to Opus 5.5.
 - Correct the November Capstone 5 and 6 superpowers commands to `/superpowers:writing-plans` and `/superpowers:executing-plans`, matching the other capstones and Reference 3.
 - Fix the Chapter 2 lab JSON post-processing to read `.result` from the `--output-format json` envelope, and the same fabricated structure in the snippet archive (slides 56, 79, 179, 195).
 - Correct code-panel contrast in the general site's light theme and keep its theme toggle visible inside the content column.
