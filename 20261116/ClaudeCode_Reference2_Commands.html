@@ -109,7 +109,7 @@
     <tr><td><code>/memory</code></td><td>CLAUDE.md 메모리 파일 편집, 자동 메모리(auto-memory) 켜고 끄기와 항목 열람</td><td><span class="badge ch">Ch1</span></td></tr>
     <tr><td><code>/config [key=value ...]</code><br><span class="alias">별칭 /settings</span></td><td>설정 화면. key=value를 붙이면 화면 없이 즉시 변경(/config thinking=false, /config model=sonnet). /config --help가 설정 가능한 전체 키를 출력</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/model [모델]</code></td><td>모델 전환과 기본값 저장. 피커에서 s를 누르면 이 세션만 전환. 대화 이력이 있으면 캐시 재구축 비용을 확인 후 적용</td><td><span class="badge ch">Ch1</span></td></tr>
-    <tr><td><code>/effort [레벨]</code></td><td>추론 강도. low, medium, high, xhigh에 세션 한정 max까지, 가용 레벨은 모델별. 인자 없이 실행하면 좌우 화살표 슬라이더</td><td><span style="color:#5A6676">-</span></td></tr>
+    <tr><td><code>/effort [레벨|auto|status|ultracode [on|off]]</code></td><td>추론 강도. low~xhigh, 세션 한정 max, auto, 가용 레벨은 모델별. status로 현재 값 출력. ultracode는 워크플로 자동 판단을 켜고 끔(on/off 인자는 v2.1.284+). 인자 없이 실행하면 슬라이더</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/permissions</code><br><span class="alias">별칭 /allowed-tools</span></td><td>도구 allow, ask, deny 규칙을 스코프별로 열람/추가/삭제. 작업 디렉토리 관리와 자동 모드 거부 이력 검토 포함</td><td><span class="badge ch">Ch3</span></td></tr>
     <tr><td><code>/mcp [reconnect|enable|disable]</code></td><td>MCP 서버 연결과 OAuth 관리. reconnect 서버명으로 재접속, enable/disable에 서버명이나 all</td><td><span class="badge ch">Ch4</span></td></tr>
     <tr><td><code>/plugin [서브커맨드]</code></td><td>플러그인 메뉴. list, install, enable, disable을 직접 지정 가능 (market은 marketplace 축약)</td><td><span class="badge ch">Ch4, 캡스톤 M0</span></td></tr>
@@ -141,6 +141,8 @@
     <tr><td><code>/tasks</code></td><td>현재 세션의 백그라운드 작업과 완료된 서브에이전트 목록. 응답 중에도 즉시 실행되는 조회 커맨드</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/background [프롬프트]</code><br><span class="alias">별칭 /bg</span></td><td>세션을 백그라운드 에이전트로 분리해 터미널 해방. 분리 전 마지막 지시 전달 가능, claude agents로 모니터</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/fork [프롬프트]</code></td><td>지금까지의 대화를 복사해 별도 백그라운드 세션으로. 프롬프트를 주면 복사본이 즉시 작업 시작</td><td><span style="color:#5A6676">-</span></td></tr>
+    <tr><td><code>/subtask &lt;작업&gt;</code></td><td>현재 대화를 물려받는 백그라운드 서브에이전트를 띄우고 계속 작업. 끝나면 결과가 이 대화로 돌아옴 (v2.1.212+, v2.1.161~211에서는 이 동작이 /fork)</td><td><span style="color:#5A6676">-</span></td></tr>
+    <tr><td><code>/workflows</code></td><td>워크플로 진행 화면. 실행 중이거나 끝난 워크플로를 보고, 일시정지, 재개, 저장</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/branch [이름]</code></td><td>현재 지점에서 대화를 분기해 다른 방향 시도. 원본은 보존되어 /resume으로 복귀</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><span class="k s">SKILL</span><code>/batch <지시></code></td><td>대규모 변경을 5~30개 독립 단위로 분해해 승인 후 단위별 worktree에서 병렬 구현, 테스트, PR까지. git 저장소 필요</td><td><span style="color:#5A6676">-</span></td></tr>
   </table>
@@ -150,8 +152,9 @@
   <p class="sec-desc">출하 직전의 관문. Chapter 5 리뷰 봇의 내장판.</p>
   <table class="tbl">
     <tr><th>커맨드</th><th>하는 일</th><th>워크샵</th></tr>
-    <tr><td><span class="k s">SKILL</span><code>/code-review [레벨] [--fix] [대상]</code></td><td>현재 diff의 정확성 리뷰. 레벨 low~max, --fix로 자동 반영, --comment로 GitHub 인라인 코멘트, ultra는 클라우드 다중 에이전트 심층</td><td><span class="badge ch">Ch5 연계</span></td></tr>
-    <tr><td><code>/review [PR]</code></td><td>GitHub PR을 읽기 전용 단일 패스로 빠르게 리뷰</td><td><span style="color:#5A6676">-</span></td></tr>
+    <tr><td><span class="k s">SKILL</span><code>/code-review [레벨] [--fix] [--comment] [--max-findings n|all|default] [PR#|브랜치|경로]</code></td><td>현재 diff, 또는 지정한 PR, 브랜치, 경로의 정확성 리뷰. 레벨 low~max, --fix로 자동 반영, --comment로 GitHub PR이나 GitLab MR에 코멘트(GitLab은 v2.1.257+), --max-findings로 보고 개수 조절(v2.1.288+), ultra는 클라우드 다중 에이전트 심층(--post로 PR에 게시, v2.1.227+)</td><td><span class="badge ch">Ch5 연계</span></td></tr>
+    <tr><td><code>/review [레벨] [PR#|브랜치|경로]</code></td><td>/code-review의 별칭으로 같은 레벨과 플래그를 받음(v2.1.223+). 그 이전에는 GitHub PR을 읽기 전용 단일 패스로 보던 별개 명령이었음</td><td><span style="color:#5A6676">-</span></td></tr>
+    <tr><td><code>/ultrareview [PR 또는 브랜치]</code></td><td>클라우드 샌드박스의 심층 다중 에이전트 리뷰. 권장 호출은 /code-review ultra이며 /ultrareview는 별칭. Pro, Max는 3회 무료 후 사용 크레딧. 비대화형은 터미널의 claude ultrareview [대상] --json --timeout 분</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/security-review</code></td><td>현재 diff의 보안 취약점 점검</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><span class="k s">SKILL</span><code>/verify</code></td><td>변경이 의도대로인지 검증하는 내장 스킬. 명시 호출 시에만 동작</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/export [파일명]</code></td><td>대화를 텍스트로 내보내기. 파일명을 주면 바로 저장, 없으면 클립보드/파일 선택</td><td><span style="color:#5A6676">-</span></td></tr>
@@ -176,7 +179,7 @@
     <tr><th>커맨드</th><th>하는 일</th><th>워크샵</th></tr>
     <tr><td><code>/status</code></td><td>인증, 모델, 컨텍스트, 설정 출처를 한눈에. 즉시 실행 커맨드</td><td><span class="badge ch">Ch1</span></td></tr>
     <tr><td><code>/usage</code><br><span class="alias">별칭 /cost</span></td><td>사용량과 비용</td><td><span style="color:#5A6676">-</span></td></tr>
-    <tr><td><span class="k s">SKILL</span><code>/doctor</code><br><span class="alias">별칭 /checkup</span></td><td>설치/설정 건강검진과 수리 제안: 중복 설치, PATH, 깨진 설정, 미사용 스킬/MCP/플러그인의 컨텍스트 비용, 느린 훅, CLAUDE.md 다이어트까지. 변경 전 항상 확인을 받음</td><td><span style="color:#5A6676">-</span></td></tr>
+    <tr><td><span class="k s">SKILL</span><code>/doctor</code><br><span class="alias">별칭 /checkup</span></td><td>설치/설정 건강검진과 수리 제안: 중복 설치, PATH, 깨진 설정, 미사용 스킬/MCP/플러그인의 컨텍스트 비용, 느린 훅, CLAUDE.md 다이어트까지. 변경 전 항상 확인을 받음. <code>/doctor prompt-audit [경로]</code>는 지침 파일을 점검(v2.1.283+). 터미널의 <code>claude doctor</code>는 세션 없이 읽기 전용 진단만 출력</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><span class="k s">SKILL</span><code>/debug [설명]</code></td><td>이 세션의 디버그 로깅을 켜고 로그를 읽어 문제 진단</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/help</code></td><td>사용 가능한 전체 커맨드 목록</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/release-notes</code></td><td>버전별 변경 사항 뷰어</td><td><span style="color:#5A6676">-</span></td></tr>
@@ -191,6 +194,7 @@
   <table class="tbl">
     <tr><th>커맨드</th><th>하는 일</th><th>워크샵</th></tr>
     <tr><td><code>/reload-skills</code></td><td>디스크에서 추가/변경된 스킬을 재스캔해 재시작 없이 반영 (v2.1.152+)</td><td><span class="badge ch">Ch4</span></td></tr>
+    <tr><td><code>/skill-doctor</code></td><td>스킬별 컨텍스트 비용과 사용 빈도를 보여 줘 끌 스킬을 찾게 함 (v2.1.252+, 기능 플래그 조회가 켜져 있어야 함)</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/reload-plugins [--force]</code></td><td>플러그인 변경 반영. MCP 도구 구성이 바뀌어 캐시가 무효화될 상황이면 경고 후 --force 요구</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><span class="k s">SKILL</span><code>/fewer-permission-prompts</code></td><td>지난 기록에서 자주 승인한 읽기 전용 명령을 찾아 프로젝트 설정에 허용 목록으로 제안</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/install-github-app</code></td><td>저장소에 Claude GitHub App 설치, Actions 워크플로와 시크릿 구성까지 안내</td><td><span class="badge ch">Ch5 연계</span></td></tr>

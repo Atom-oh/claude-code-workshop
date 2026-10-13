@@ -163,6 +163,14 @@ claude plugin validate ./some-mod      <span class="cmt"># 실행 없이 hooks:,
 /plugin                                <span class="cmt"># "1 mod active" 줄로 로드 여부 확인</span>
 /reload-plugins                        <span class="cmt"># 셸에서 설치한 뒤 세션에 반영</span></code></pre>
   </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 플러그인 개발과 CI 점검 명령</span></div>
+    <pre><code>claude plugin init my-plugin                 <span class="cmt"># ~/.claude/skills/my-plugin/ 에 골격 생성, 다음 세션에 my-plugin@skills-dir 로 자동 로드</span>
+claude plugin details &lt;이름&gt;                 <span class="cmt"># 구성 요소 목록과 예상 토큰 비용</span>
+claude plugin validate ./my-plugin --strict --json   <span class="cmt"># 경고도 오류로 처리, CI에서 사용</span>
+claude plugin eval [대상]                    <span class="cmt"># evals/ 의 케이스를 실행해 점수 보고 (내 권한으로 실행되므로 신뢰하는 플러그인만)</span>
+claude plugin install &lt;이름&gt;@&lt;마켓&gt; --json --config 키=값   <span class="cmt"># 기계 판독 출력, 매니페스트의 userConfig 값 지정</span></code></pre>
+  </div>
   <div class="callout">
     <span class="co-title">샌드박스 밖에서 사용자 권한으로 실행</span>
     mod는 사용자와 같은 권한으로 파일을 읽고 쓰고 프로세스를 시작하며 네트워크를 호출할 수 있고, 모든 프롬프트와 도구 호출을 볼 수 있습니다. Bash 샌드박스를 켜도 mod가 띄운 프로세스는 샌드박스 밖에서 실행됩니다.

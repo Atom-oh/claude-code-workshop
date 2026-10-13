@@ -807,18 +807,35 @@ cat "$AWS_CONFIG_FILE"</code></pre>
     <div class="code-head"><span class="code-label">IAM Policy, 참고용</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>{
   "Version": "2012-10-17",
-  "Statement": [{
-    "Effect": "Allow",
-    "Action": [
-      "bedrock:InvokeModel",
-      "bedrock:InvokeModelWithResponseStream",
-      "bedrock:ListFoundationModels"
-    ],
-    "Resource": [
-      "arn:aws:bedrock:*::foundation-model/anthropic.*",
-      "arn:aws:bedrock:*:*:inference-profile/*"
-    ]
-  }]
+  "Statement": [
+    {
+      "Sid": "AllowModelAndInferenceProfileAccess",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream",
+        "bedrock:ListInferenceProfiles",
+        "bedrock:GetInferenceProfile"
+      ],
+      "Resource": [
+        "arn:aws:bedrock:*:*:inference-profile/*",
+        "arn:aws:bedrock:*:*:application-inference-profile/*",
+        "arn:aws:bedrock:*:*:foundation-model/*"
+      ]
+    },
+    {
+      "Sid": "AllowMarketplaceSubscription",
+      "Effect": "Allow",
+      "Action": [
+        "aws-marketplace:ViewSubscriptions",
+        "aws-marketplace:Subscribe"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": { "aws:CalledViaLast": "bedrock.amazonaws.com" }
+      }
+    }
+  ]
 }</code></pre>
   </div>
   <p class="body">
@@ -896,7 +913,7 @@ sudo tee /etc/claude-code/managed-settings.json &gt; /dev/null &lt;&lt; 'EOF'
 {
   "permissions": {
     "allow": ["Read(**)", "Grep", "Glob", "Bash(npm test:*)"],
-    "ask": ["Edit(**)", "Write(**)"],
+    "ask": ["Edit(**)"],
     "deny": ["Bash(rm -rf:*)", "Read(./.env)", "Read(./.env.*)"]
   },
   "companyAnnouncements": [
@@ -905,6 +922,46 @@ sudo tee /etc/claude-code/managed-settings.json &gt; /dev/null &lt;&lt; 'EOF'
 }
 EOF
 echo "배포 완료"</code></pre>
+  </div>
+
+  <div class="callout tip">
+    <span class="co-title">파일 권한 규칙은 Edit 하나로 충분합니다</span>
+    파일 수정 권한은 <code class="inline">Edit(경로)</code>와 <code class="inline">Read(경로)</code> 규칙만 검사합니다.
+    <code class="inline">Write(**)</code>, <code class="inline">NotebookEdit</code>, <code class="inline">Glob</code> 규칙은 받아들여지지만 <strong>평가되지 않고 시작 시 경고</strong>가 출력됩니다.
+    위 정책의 <code class="inline">ask</code>에 Edit만 있는 이유입니다. 규칙은 deny, ask, allow 순으로 평가되고 먼저 일치한 것이 적용되며, 어느 스코프에서든 deny가 allow보다 앞섭니다.
+  </div>
+
+  <div class="step-title"><span class="step-no">+</span>더 알아 둘 관리형 통제 (v2.1.283 이후 중심)</div>
+  <p class="body">관리형 설정은 <strong>서버 관리(claude.ai 관리 콘솔) → MDM 정책 → managed-settings.json</strong> 순으로 먼저 값을 주는 하나의 출처만 적용되는 것이 기본입니다. 같은 키는 높은 스코프가 이기고, <code class="inline">permissions.allow/ask/deny</code> 같은 목록은 스코프를 가로질러 병합됩니다.
+  아래 키는 주로 관리형 설정에서 쓰며, <code>deniedModels</code>, <code>availableModelsMatch</code>, <code>allowManagedHooksOnly</code>, <code>allowManagedPermissionRulesOnly</code>, <code>allowedProviders</code>, <code>forceRemoteSettingsRefresh</code>는 <strong>관리형 설정에서만</strong> 효력이 있습니다. <code>permissions.disableAutoMode</code>, <code>disableBypassPermissionsMode</code>, <code>enforceAvailableModels</code>는 어느 설정 파일에서도 쓸 수 있지만 관리형에 두면 사용자가 바꿀 수 없습니다.</p>
+  <table class="tbl">
+    <tr><th>키</th><th>효과</th></tr>
+    <tr><td><code>permissions.disableAutoMode</code> / <code>disableBypassPermissionsMode</code></td><td><code>"disable"</code>이면 auto 모드를 순환에서 빼고, <code>bypassPermissions</code>를 막음</td></tr>
+    <tr><td><code>allowManagedPermissionRulesOnly</code></td><td>권한 규칙의 출처를 관리형 설정 하나로 제한</td></tr>
+    <tr><td><code>allowManagedHooksOnly</code></td><td>사용자, 프로젝트, 로컬, 플러그인 훅을 막고 조직이 배포한 훅만 실행(관리형 <code>enabledPlugins</code>로 강제한 플러그인의 훅은 예외)</td></tr>
+    <tr><td><code>deniedModels</code>, <code>availableModelsMatch</code></td><td>사용 금지 모델 목록, 허용 목록의 매칭 방식(기본 <code>prefix</code>). 둘 다 v2.1.283부터이며 사용자, 프로젝트, 로컬 설정과 <code>--settings</code>에서는 경고와 함께 무시됨</td></tr>
+    <tr><td><code>enforceAvailableModels</code></td><td><code>availableModels</code> 허용 목록을 기본 모델 선택에도 강제(v2.1.175부터, 관리형 설정이 있으면 관리형 출처만 읽음)</td></tr>
+    <tr><td><code>allowedProviders</code></td><td>이 머신이 쓸 수 있는 API 제공자 제한</td></tr>
+    <tr><td><code>forceRemoteSettingsRefresh</code></td><td>서버 관리 설정을 새로 받을 때까지 시작을 막아 실패 시 닫힘(fail-closed)으로 운영</td></tr>
+  </table>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">managed-settings.json, MCP 서버를 조직 허용 목록으로 제한</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>{
+  "allowManagedMcpServersOnly": true,
+  "allowedMcpServers": [
+    { "serverUrl": "https://api.githubcopilot.com/*" },
+    { "serverUrl": "https://*.internal.example.com/*" }
+  ],
+  "deniedMcpServers": [
+    { "serverUrl": "https://*.untrusted.example.com/*" }
+  ]
+}</code></pre>
+  </div>
+  <div class="callout warn">
+    <span class="co-title">MCP 통제 요점</span>
+    <code class="inline">serverName</code> 항목은 사용자가 붙이는 이름일 뿐이라 <strong>보안 통제가 아닙니다</strong>. 강제하려면 <code class="inline">serverUrl</code>이나 <code class="inline">serverCommand</code>로 쓰세요.
+    서버 목록 자체를 고정하려면 <code class="inline">managed-mcp.json</code>(Linux <code class="inline">/etc/claude-code/</code>, macOS <code class="inline">/Library/Application Support/ClaudeCode/</code>, Windows <code class="inline">C:\Program Files\ClaudeCode\</code>)을 배포하며, 이 파일은 서버 관리 설정으로는 전달할 수 없습니다.
+    v2.1.259부터 <code class="inline">allowedMcpServers</code>는 <code class="inline">managed-mcp.json</code> 서버를 걸러내지 않고 <code class="inline">deniedMcpServers</code>만 적용됩니다. 원하는 서버를 사용자에게 추가로 제공하려면 <code class="inline">managedMcpServers</code>(https 원격 서버만, command 불가)를 쓰세요.
   </div>
 
   <div class="step-title"><span class="step-no">3</span>적용 검증 A, 배너와 설정 소스 확인</div>
@@ -1001,7 +1058,7 @@ echo "DLP 스크립트 준비 완료"</code></pre>
 {
   "permissions": {
     "allow": ["Read(**)", "Grep", "Glob", "Bash(npm test:*)"],
-    "ask": ["Edit(**)", "Write(**)"],
+    "ask": ["Edit(**)"],
     "deny": ["Bash(rm -rf:*)", "Read(./.env)", "Read(./.env.*)"]
   },
   "hooks": {

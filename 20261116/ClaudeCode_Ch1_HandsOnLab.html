@@ -700,7 +700,8 @@ git --version    <span class="cmt"># 2.x 이상 권장</span></code></pre>
   아래 명령은 나중에 본인 PC 등 다른 환경에 직접 설치할 때의 참고입니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
+    <pre><code>curl -fsSL https://claude.ai/install.sh | bash       <span class="cmt"># macOS, Linux, WSL 권장 (네이티브 설치, 백그라운드 자동 업데이트)</span>
+npm install -g @anthropic-ai/claude-code             <span class="cmt"># 대안, Node.js 22 이상 필요</span></code></pre>
   </div>
 
   <div class="callout tip">
@@ -816,8 +817,11 @@ export AWS_REGION=us-west-2
 <span class="cmt"># 2. AWS 자격증명 (택1: AWS_PROFILE 또는 Access Key, EC2/EKS는 IAM Role 자동 감지)</span>
 export AWS_PROFILE=본인-프로필명
 
-<span class="cmt"># 3. 모델 ID 지정 (Cross-Region Inference Profile 권장)</span>
+<span class="cmt"># 3. 모델 고정 (Cross-Region Inference Profile 권장)</span>
 export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-5-5
+export ANTHROPIC_DEFAULT_OPUS_MODEL=us.anthropic.claude-opus-5-5
+export ANTHROPIC_DEFAULT_SONNET_MODEL=us.anthropic.claude-sonnet-5-5
+export ANTHROPIC_DEFAULT_HAIKU_MODEL=us.anthropic.claude-haiku-5-5
 
 <span class="cmt"># 4. 실행</span>
 claude</code></pre>
@@ -830,6 +834,9 @@ claude</code></pre>
         <span class="co-title">사전 조건</span>
         AWS 콘솔의 Bedrock, Model access에서 Anthropic Claude 모델 액세스가 승인되어 있어야 합니다.
         리전과 모델 ID가 일치하지 않으면 모델 호출이 실패합니다.
+        Bedrock에서는 고정하지 않으면 <code class="inline">sonnet</code>, <code class="inline">haiku</code> 별칭이 각각 Sonnet 4.5, Haiku 4.5로 해석되고 <code class="inline">opus</code>만 Opus 5.5입니다.
+        서브에이전트의 <code class="inline">model: sonnet</code>이나 <code class="inline">--model haiku</code>가 의도한 모델이 되도록 위 세 변수로 배포 전에 고정하세요.
+        접두사만 바꾸려면 <code class="inline">ANTHROPIC_BEDROCK_REGION_PREFIX</code>(<code class="inline">us</code>, <code class="inline">eu</code>, <code class="inline">apac</code>, <code class="inline">global</code> 등, v2.1.224+)를 씁니다.
       </div>
     </div>
   </div>
@@ -845,9 +852,9 @@ claude</code></pre>
     <pre><code>Auth
   Method: OAuth (Claude Max)
 Model
-  Default: claude-sonnet-5-5
+  Default: claude-opus-5-5
 Usage (this session)
-  Context used: 3% of 200K</code></pre>
+  Context used: 3% of 1M</code></pre>
   </div>
 
   <div class="checkpoint">
@@ -1211,7 +1218,7 @@ Test 2 - basic 등급 계좌: PASS</code></pre>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>claude -p "src 디렉토리의 코드 품질 이슈를 분석해 주세요" \
-  --allowed-tools "Read,Grep,Glob" \
+  --tools "Read,Grep,Glob" \
   --output-format json &gt; report.json
 
 <span class="cmt"># jq가 있다면</span>
@@ -1219,8 +1226,9 @@ jq '.' report.json | head -30</code></pre>
   </div>
   <div class="callout tip">
     <span class="co-title">자동화 안전장치</span>
-    <code class="inline">--allowed-tools "Read,Grep,Glob"</code>처럼 도구를 읽기 전용으로 제한하면
-    무인 실행 중 파일 수정이나 명령 실행을 원천 차단할 수 있습니다.
+    <code class="inline">--tools "Read,Grep,Glob"</code>처럼 <strong>내장 도구</strong>를 읽기 전용으로 제한하면
+    무인 실행 중 내장 도구로 하는 파일 수정이나 명령 실행을 막을 수 있습니다. 이 플래그는 MCP 도구에는 적용되지 않으니, 설정된 MCP 서버까지 막으려면
+    <code class="inline">--disallowedTools "mcp__*"</code>를 함께 쓰세요.
     간단한 작업은 <code class="inline">--model haiku</code>로 비용을 절감하세요.
   </div>
 
@@ -1232,7 +1240,7 @@ jq '.' report.json | head -30</code></pre>
 #!/bin/bash
 DIFF=$(git diff HEAD~1)
 echo "$DIFF" | claude -p "이 diff를 코드 리뷰해 주세요. 심각도별로 정리해 주세요." \
-  --allowed-tools "" --output-format text &gt; review.md
+  --tools "" --output-format text &gt; review.md
 EOF
 chmod +x review.sh
 ./review.sh
