@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개념 9가지 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">개념 9가지</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">REFERENCE</span>
+  <h1>개념 9가지</h1>
+  <div class="sub">하루에 꺼내는 개념을 9개로 제한합니다</div>
+  <p class="lede">개념은 쓰는 순간에 소개합니다. 이 표는 참가자가 옆에 띄워 두는 한 장짜리 지도입니다.</p>
+  <div class="meta"><span>참가자용 한 장</span><span>코어 1~3과 Day 2 연결</span></div>
+</header>
+<main>
+<section><h2>하루에 꺼내는 개념은 9개뿐</h2><p>각 개념은 <b>쓰기 직전에 하나씩</b> 소개하고, 15분에 하나를 넘지 않게 합니다. 용어가 늘어나서 어렵다는 피드백에 대한 장치입니다.</p><table class="tbl"><tr><th>#</th><th>개념</th><th>한 줄 정의</th><th>처음 쓰는 곳</th><th>주의할 점</th></tr><tr><td>1</td><td>맥락 (CLAUDE.md)</td><td>Claude가 세션을 시작할 때 읽는 프로젝트 지침. 규칙, 금지사항, 실행 명령을 적는다.</td><td><a href="core1.html">코어 1</a></td><td>길수록 좋다는 오해. 짧고 구체적일수록 잘 지켜진다.</td></tr><tr><td>2</td><td>Plan·권한 모드</td><td>실행 전에 계획을 승인받는 모드(Plan)와, 승인 없이 할 수 있는 범위를 정하는 권한 모드.</td><td><a href="core1.html">코어 1</a></td><td>v2.1.283부터 대화형 세션은 auto 모드로 시작한다(모델 조건 있음).</td></tr><tr><td>3</td><td>서브에이전트</td><td>자기 맥락, 도구 권한, 모델을 가진 도우미. 정의 파일(.claude/agents/*.md)로 만든다.</td><td><a href="core2.html">코어 2</a></td><td><code>tools</code>는 쓸 수 있는 도구, 승인 없이 실행하는 것은 허용 규칙(별개).</td></tr><tr><td>4</td><td>훅·게이트</td><td>특정 이벤트에 자동 실행되는 스크립트. Stop 훅이 exit 2를 내면 Claude가 멈추지 못한다.</td><td><a href="core2.html">코어 2</a></td><td>PostToolUse의 exit 2는 이미 실행된 뒤라 차단이 아니다.</td></tr><tr><td>5</td><td>Skill</td><td>반복 업무를 이름 붙인 절차(SKILL.md)로 저장해 한 줄로 다시 실행한다.</td><td><a href="day2-skills.html">Day 2 확산</a></td><td>프롬프트 저장이 아니라 검증 단계까지 포함한 절차다.</td></tr><tr><td>6</td><td>모델·effort</td><td>작업마다 모델(haiku, sonnet, opus)과 추론 강도를 고르는 비용 레버.</td><td><a href="core3.html">코어 3</a></td><td>비싼 모델이 항상 낫다는 오해. 작업 크기에 맞춘다.</td></tr><tr><td>7</td><td>관리형 설정</td><td>조직이 강제하는 정책. 사용자·프로젝트 설정보다 우선한다.</td><td><a href="day2-governance.html">Day 2 통제</a></td><td>목록 설정은 덮어쓰지 않고 병합된다.</td></tr><tr><td>8</td><td>OTel 가시화</td><td>사용량·비용 지표를 팀 태그와 함께 사내 수집기로 보낸다.</td><td><a href="day2-governance.html">Day 2 통제</a></td><td>네이티브 하드 캡이 아니라 관측 수단이다.</td></tr><tr><td>9</td><td>헤드리스 (-p)</td><td>사람 없이 한 번 실행하고 종료한다. 구조화 출력, 예산 상한, 자동 거부 옵션과 함께 쓴다.</td><td><a href="track-b2.html">트랙 B-2</a>, <a href="track-a2.html">A-2</a></td><td>승인이 필요한 동작은 --permission-prompts none이면 자동 거부된다.</td></tr></table></section><section><h2>일부러 뺀 것</h2><table class="tbl"><tr><th>심화로 미룬 것</th><th>이유</th></tr><tr><td>MCP 서버</td><td>연동 대상마다 준비가 달라 코어에서 제외. 관리형 허용 목록은 Day 2 통제에서 다룸</td></tr><tr><td>플러그인·mods</td><td>Skill 배포 단계(Day 2)에서 필요한 만큼만 사용. mods는 기존 자료의 Reference 3</td></tr><tr><td>워크플로·ultracode, 에이전트 팀</td><td>비용이 크게 늘 수 있어(문서상 팀은 계획 모드 기준 약 7배 토큰) 기본 과정에서는 제외</td></tr><tr><td>Agent SDK</td><td>자율 실습(기존 Ch6)</td></tr><tr><td>클라우드·원격 세션</td><td>고객 네트워크 조건 확인 전에는 제외</td></tr></table></section><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">표의 동작 설명은 공식 문서(sub-agents, hooks, permission-modes, skills)와 로컬 실행으로 대조했습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="index.html">← 포털</a><a href="preflight.html">사전 점검 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

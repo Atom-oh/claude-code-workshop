@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>트랙 B-1 · 병렬 리뷰와 격리 실험 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">트랙 B-1 · 병렬 리뷰와 격리 실험</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">TRACK B · R1</span>
+  <h1>트랙 B-1 · 병렬 리뷰와 격리 실험</h1>
+  <div class="sub">개발: 금액 계산, null 처리, 서브에이전트 병렬화</div>
+  <p class="lede">리뷰와 테스트 작성을 동시에 돌리고, 위험한 수정은 격리해서 실험합니다.</p>
+  <div class="meta"><span><strong>130분</strong></span><span>개발 직군 대상</span></div>
+</header>
+<main>
+<section><h2>이 트랙에서 하는 일</h2><p>개발 직군이 매일 하는 일(코드 이해, 버그 수정, 테스트 추가, 리뷰)을 서브에이전트로 <b>병렬화</b>하고 격리합니다. 금융 코드에서 가장 위험한 <b>금액 계산과 null 처리</b>가 주제입니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>130분 (실습 120분 + 여유 10분)</td></tr><tr><td>필요</td><td>Node.js 22 (프리플라이트), git</td></tr><tr><td>완료 기준</td><td>버그를 고치고 테스트가 전부 통과하며, 리뷰·테스트 작성이 병렬로 돌고, 격리 실험이 메인 트리를 건드리지 않는다</td></tr></table><div class="callout tip"><span class="t">트랙 실습의 공통 규칙</span>모든 데이터는 가상입니다. 막히면 <a href="facilitator.html">힌트 정책</a>대로 '기본 레일 → 보너스 → 힌트' 순서를 따르고, 먼저 끝나면 보너스 카드로 갑니다. 마지막 10분은 쇼케이스 카드를 채웁니다.</div></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>프로젝트 만들고 계획부터 받기 (20분)</span></div><div class="code"><div class="head"><span>Terminal, 전체 복사</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p ~/workshop/account-service/{src,scripts,.claude/agents,.claude/rules} &amp;&amp; cd ~/workshop/account-service
+
+cat &gt; package.json &lt;&lt;'WV2EOF'
+{
+  "name": "account-service-lab",
+  "version": "1.0.0",
+  "description": "Claude Code workshop practice project (fictional data)",
+  "type": "module",
+  "scripts": { "test": "node test.js" }
+}
+WV2EOF
+
+mkdir -p src
+cat &gt; src/accounts.js &lt;&lt;'WV2EOF'
+// 계좌 데이터 저장소 (가상 데이터, 실제 고객정보 아님)
+// 주의: 일부 계좌는 kyc 필드가 없음 (KYC 마이그레이션 미수행 상황)
+export const accounts = [
+  { id: 1, name: "Kim", kyc: { grade: "premium" } },
+  { id: 2, name: "Lee", kyc: { grade: "basic" } },
+  { id: 3, name: "Park" },
+];
+WV2EOF
+
+mkdir -p src
+cat &gt; src/accountService.js &lt;&lt;'WV2EOF'
+import { accounts } from "./accounts.js";
+
+export function getAccount(id) {
+  return accounts.find((a) =&gt; a.id === id);
+}
+
+export function getAccountGrade(id) {
+  const account = getAccount(id);
+  return account.kyc.grade;
+}
+WV2EOF
+
+mkdir -p src
+cat &gt; src/fees.js &lt;&lt;'WV2EOF'
+// 이체 수수료 계산 (연습용)
+const RATE = { premium: 0.001, basic: 0.003 };
+
+export function calcFee(amount, grade) {
+  const rate = RATE[grade];
+  return amount * rate;
+}
+WV2EOF
+
+cat &gt; test.js &lt;&lt;'WV2EOF'
+import { getAccountGrade } from "./src/accountService.js";
+import { calcFee } from "./src/fees.js";
+
+let failed = 0;
+function check(name, fn, expected) {
+  let actual;
+  try { actual = fn(); } catch (e) { actual = `throws ${e.constructor.name}`; }
+  const ok = actual === expected;
+  if (!ok) failed++;
+  console.log(`${name}: ${ok ? "PASS" : `FAIL (got ${actual})`}`);
+}
+
+check("Test 1 - premium 등급 계좌", () =&gt; getAccountGrade(1), "premium");
+check("Test 2 - basic 등급 계좌", () =&gt; getAccountGrade(2), "basic");
+check("Test 3 - kyc 없는 계좌", () =&gt; getAccountGrade(3), "unknown");
+check("Test 4 - premium 수수료 100000원", () =&gt; calcFee(100000, "premium"), 100);
+process.exit(failed ? 1 : 0);
+WV2EOF
+
+cat &gt; CLAUDE.md &lt;&lt;'WV2EOF'
+# account-service-lab (연습용)
+
+계좌 조회와 이체 수수료 계산 샘플. 데이터는 모두 가상이다.
+
+- 테스트는 `npm test`로 실행한다. 코드를 바꾸면 항상 실행해 결과를 확인한다.
+- `src/accounts.js`의 데이터 구조는 임의로 바꾸지 않는다.
+- 금액 계산은 부동소수점 오류가 없는지 확인한다(원 단위 정수로 반올림).
+- 새 함수에는 반드시 테스트를 추가한다.
+WV2EOF
+
+mkdir -p .claude/agents
+cat &gt; .claude/agents/code-reviewer.md &lt;&lt;'WV2EOF'
+---
+name: code-reviewer
+description: 코드 변경을 읽기 전용으로 검토하고 심각도별 지적 사항을 보고한다. 코드 리뷰 요청이나 diff 검토 시 사용한다.
+tools: Read, Grep, Glob
+model: haiku
+maxTurns: 8
+---
+읽기 전용 리뷰어다. 파일을 수정하지 않는다.
+금액 계산의 정확성(부동소수점, 반올림), null·undefined 처리, 테스트 누락을 우선 본다.
+출력은 `severity(high|medium|low) | 파일:줄 | 문제 | 권장 수정` 표로 한다.
+WV2EOF
+
+mkdir -p .claude/agents
+cat &gt; .claude/agents/test-writer.md &lt;&lt;'WV2EOF'
+---
+name: test-writer
+description: 지정한 함수에 대한 누락된 엣지 케이스 테스트를 test.js에 추가한다. 테스트 보강 요청 시 사용한다.
+tools: Read, Grep, Glob, Edit, Bash(npm test)
+model: haiku
+maxTurns: 10
+---
+test.js의 기존 `check(...)` 형식을 그대로 따라 테스트만 추가한다. 소스 코드는 수정하지 않는다.
+추가한 뒤 `npm test`를 정확히 이 한 줄로 실행해 결과를 보고한다.
+WV2EOF
+
+mkdir -p .claude/rules
+cat &gt; .claude/rules/money.md &lt;&lt;'WV2EOF'
+---
+paths:
+  - "src/fees.js"
+---
+금액 계산 파일 규칙: 수수료는 원 단위 정수로 반올림해서 반환한다(`Math.round`). 부동소수점 결과를 그대로 반환하지 않는다.
+WV2EOF
+
+git init -q -b main &amp;&amp; git add -A &amp;&amp; git commit -qm baseline
+npm test</code></pre></div><div class="code out"><div class="head"><span>기대 출력</span></div><pre><code>Test 1 - premium 등급 계좌: PASS
+Test 2 - basic 등급 계좌: PASS
+Test 3 - kyc 없는 계좌: FAIL (got throws TypeError)
+Test 4 - premium 수수료 100000원: PASS
+npm test exit=1   # 의도된 실패 1건</code></pre></div><div class="code"><div class="head"><span>Claude 세션 입력 (Plan 모드)</span><button class="copy" type="button">복사</button></div><pre><code>이 프로젝트의 구조와 getAccountGrade가 호출되는 흐름을 설명하고, kyc가 없는 계좌에서 실패하는 원인과 고칠 계획을 세워줘. 아직 고치지 마.</code></pre></div><div class="step"><span class="no">2</span><span>버그 수정과 테스트 (20분)</span></div><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>계획대로 고쳐줘. kyc가 없는 계좌는 'unknown'을 반환해야 해. 고친 뒤 npm test를 실행해서 결과를 알려줘.</code></pre></div><div class="step"><span class="no">3</span><span>리뷰어와 테스트 작성자를 동시에 (40분)</span></div><p>두 서브에이전트(읽기 전용 리뷰어, 테스트만 쓰는 작성자)를 병렬로 돌립니다.</p><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>code-reviewer와 test-writer 서브에이전트를 동시에(병렬로) 실행해줘. code-reviewer는 src/fees.js의 calcFee를 검토하고, test-writer는 test.js에 calcFee 엣지 케이스 테스트를 추가해. 둘 다 끝나면 각 결과를 한 줄씩 요약해줘.</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (sonnet-5.5 메인, haiku-5.5 서브에이전트, 43초, 0.30달러)</span></div><pre><code>- code-reviewer: calcFee에 high 3건 (반올림 없음, 알 수 없는 등급/prototype 키에서 조용히 NaN, amount 검증 없음)
+- test-writer: test.js에 엣지 케이스 테스트 16개 추가. npm test 결과 20개 중 16 통과, 4 실패
+  (실패 중 3개는 리뷰어가 지적한 반올림 누락, 1개는 기존 kyc 실패)
+둘 다 백그라운드로 시작되어 병렬로 실행됨</code></pre></div><p>관찰: <b>리뷰어의 지적이 테스트 실패로 교차 확인</b>됩니다. 수정은 둘 다 한 뒤에 합니다. 리뷰어의 <code>tools</code>는 <code>Read, Grep, Glob</code>(쓰기 도구 없음)입니다. 테스트 작성자의 <code>Bash(npm test)</code> 지정은 문서에 기재되지 않은 형식이므로 제한은 허용 규칙으로 확인하세요.</p><div class="step"><span class="no">4</span><span>격리해서 실험하기: worktree (30분)</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>cat &gt; .claude/agents/fee-fixer.md &lt;&lt;'WV2EOF'
+---
+name: fee-fixer
+description: 수수료 계산 코드를 격리된 worktree에서 고치고 테스트로 확인한다. 메인 작업 트리를 건드리지 않고 실험하고 싶을 때 사용한다.
+tools: Read, Edit, Bash(npm test)
+model: sonnet
+isolation: worktree
+maxTurns: 10
+---
+격리된 복사본(worktree)에서만 작업한다. src/fees.js의 calcFee가 원 단위 정수로 반올림해 반환하도록 고친다.
+고친 뒤 `npm test`를 정확히 이 한 줄로 실행하고, 변경한 파일과 테스트 결과를 보고한다.
+WV2EOF</code></pre></div><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>fee-fixer 서브에이전트에게 calcFee 반올림 수정을 맡기고, 그 결과를 한 문단으로 알려줘.</code></pre></div><div class="code out"><div class="head"><span>참고 측정값</span></div><pre><code>fee-fixer는 src/fees.js의 calcFee에서 `return amount * rate;`를 `return Math.round(amount * rate);`로 바꿨습니다.
+변경은 격리된 worktree(.claude/worktrees/agent-..., 브랜치 worktree-agent-...)에 커밋 없이 남아 있습니다.
+그러나 Bash 권한이 거부되어 npm test를 실행하지 못했습니다. 메인 작업 트리는 건드리지 않았습니다.</code></pre></div><div class="code"><div class="head"><span>Terminal, 확인</span><button class="copy" type="button">복사</button></div><pre><code>git status --short            # 메인 트리: src/fees.js 변경 없음
+git worktree list             # 격리된 worktree 목록
+cd .claude/worktrees/agent-*/ &amp;&amp; git diff &amp;&amp; npm test</code></pre></div><div class="callout warn"><span class="t">worktree에서는 허용 규칙이 안 맞을 수 있습니다</span>측정에서 서브에이전트가 worktree 안에서 <code>npm test</code>를 승인받지 못해 실행하지 못했습니다. 이럴 때는 <b>사람이 그 worktree에서 직접 테스트</b>하면 됩니다. 메인 트리가 깨끗하게 남는 것이 격리의 요점입니다. <code>.claude/worktrees/</code>는 <code>.gitignore</code>에 넣으세요.</div><div class="step"><span class="no">5</span><span>쇼케이스 카드 (10분)</span></div><div class="code"><div class="head"><span>쇼케이스 카드 (1분 발표)</span><button class="copy" type="button">복사</button></div><pre><code>입력: ____________________ (어떤 자료)
+규칙: ____________________ (CLAUDE.md 또는 Skill에 적은 것)
+검증: ____________________ (무엇이 무엇을 확인하나)
+한계: ____________________ (이 방식이 못 잡는 것)
+병렬로 돌린 것: ____________________</code></pre></div></section><div class="checkpoint"><span class="t">트랙 B-1 체크포인트</span><label><input type="checkbox"><span>kyc 없는 계좌 버그를 고치고 npm test가 통과했다</span></label><label><input type="checkbox"><span>리뷰어와 테스트 작성자를 병렬로 실행했다</span></label><label><input type="checkbox"><span>리뷰 지적이 테스트 실패와 교차 확인되는 것을 봤다</span></label><label><input type="checkbox"><span>worktree 격리 실험이 메인 트리를 바꾸지 않는 것을 확인했다</span></label><label><input type="checkbox"><span>읽기 전용 리뷰어와 쓰기 가능한 작성자의 도구 차이를 설명할 수 있다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li><code>/code-review</code>(문서 기준: 현재 diff의 정확성 리뷰, <code>--fix</code>, <code>--comment</code> 옵션)로 같은 변경을 리뷰하고 서브에이전트 리뷰와 비교합니다.</li><li>test-writer가 만든 실패 테스트를 근거로 calcFee를 고치고 전부 통과시킵니다.</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>test-writer가 승인 대기</b>: 허용 규칙(<code>Bash(npm test)</code>)과 폴더 신뢰를 확인하세요.</li><li><b>서브에이전트가 순차로 실행됨</b>: 요청에 '동시에(병렬로)'를 명시하세요.</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">병렬 서브에이전트 2개를 실제로 실행해 둘 다 백그라운드로 시작되고 결과가 교차 확인되는 것을 확인했습니다(43초, 0.30달러).</p><p class="ran"><code>isolation: worktree</code> 서브에이전트가 메인 트리를 바꾸지 않고 별도 worktree와 브랜치에 변경을 남기는 것을 확인했습니다.</p><p class="not">worktree 안에서의 <code>npm test</code> 실행은 권한 거부로 확인하지 못했습니다(위 주의 참고).</p><p class="not"><code>/code-review</code>는 실행하지 않았습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="track-a2.html">← 트랙 A-2</a><a href="track-b2.html">트랙 B-2 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

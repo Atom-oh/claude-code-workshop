@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>한화금융 Claude Code Deep Dive Workshop</title>
-<meta name="description" content="한화금융 임직원 대상 1일 Claude Code 워크샵. 설치와 Headless 자동화, Subagents, Settings, CLI Reference, Capstone 미션까지의 교육 아젠다를 확인하세요. 일정과 장소는 추후 안내드립니다.">
+<meta name="description" content="한화금융 임직원 대상 1일 Claude Code 워크샵. 월간 보고서 자동화, 검증 게이트, 비용·통제, 직군별 캡스톤까지의 교육 아젠다를 확인하세요. 일정과 장소는 추후 안내드립니다.">
 <style>
   :root {
     --ink: #231f20; --brand: #f37321; --accent: #b8470b; --dim: #5b6572;
@@ -134,7 +134,7 @@
   <div class="logo"><img src="image/hanwha-logo-ko.jpg" alt="(주)한화 로고"></div>
   <div><span class="badge">1-Day Hands-on Workshop</span></div>
   <h1>한화금융 Claude Code Deep Dive Workshop</h1>
-  <p class="sub">설치부터 Subagents, 그리고 Capstone 미션까지 — 하루에 완성하는 에이전틱 코딩</p>
+  <p class="sub">내 업무에서 출발해 믿고 맡기는 법까지 — 하루에 완성하는 Claude Code</p>
   <div class="meta">
     <span>시간 <strong>09:30 – 17:30</strong></span>
     <span>일정 <strong>추후 안내</strong></span>
@@ -148,7 +148,7 @@
 <section>
   <h2>워크샵 개요</h2>
   <div class="card">
-    <p>Amazon Bedrock에서 동작하는 AI 코딩 에이전트 <strong>Claude Code</strong>를 하루 동안 직접 설치하고 사용해 보는 실습 워크샵입니다. 설치부터 자동화, 팀 설정까지 실무에 바로 적용할 수 있는 내용을 다루며, 실습 예제는 금융 업무 맥락(계좌·KYC 서비스, 시황 대시보드 등)으로 구성되어 있습니다.</p>
+    <p>Amazon Bedrock에서 동작하는 AI 코딩 에이전트 <strong>Claude Code</strong>를 하루 동안 직접 사용해 보는 실습 워크샵입니다. 기능 소개가 아니라 매일 하는 일(월간 보고서, 검증, 비용 관리)에서 출발하며, 숫자가 틀리면 안 되는 일에 믿고 맡기는 방법과 비용·보안 통제를 다룹니다. 모든 실습은 가상 데이터로 진행합니다.</p>
     <div class="callout">
       <strong>진행 방식</strong> — 실습 환경은 사전에 준비되어 제공됩니다. 참가자는 <strong>노트북과 웹 브라우저(Chrome 권장)만</strong> 준비하시면 됩니다. 실습 진행은 AWS 담당자가 맡으며, 화면의 가이드를 따라 함께 진행합니다.
     </div>
@@ -159,106 +159,59 @@
   <h2>교육 아젠다</h2>
   <div class="agenda">
     <div class="slot">
-      <div class="when">09:30 <br>– 09:40</div>
+      <div class="when">09:30 <br>– 10:00</div>
       <div class="what">
-        <h3><span class="tag">PRE</span>오프닝 <span class="dur">10분</span></h3>
-        <p>워크샵 소개와 하루 진행 방식을 안내합니다.</p>
+        <h3><span class="tag">PRE</span>오프닝과 데모 3컷 <span class="dur">30분</span></h3>
+        <p>월간 보고서 자동 생성·검증, 코드 수정·테스트, 비용·통제 화면을 먼저 보여드립니다. 하루 진행 방식을 안내합니다.</p>
       </div>
     </div>
     <div class="slot">
-      <div class="when">09:40 <br>– 10:20</div>
+      <div class="when">10:00 <br>– 11:30</div>
       <div class="what">
-        <h3><span class="tag">Ch1</span>설치와 Headless 자동화 (이론) <span class="dur">40분</span></h3>
-        <p>Claude Code의 기본 사용법을 익힙니다. 프로젝트 맥락을 설정하는 CLAUDE.md 파일을 작성하고, 작업 계획(Plan) 모드와 사람 개입 없이 실행하는 Headless 모드를 체험합니다.</p>
-        <p>Amazon Bedrock 연결 설정과 모델 고정(pin), 읽기 전용 자동화를 위한 도구 제한(<code>--tools</code>, MCP 도구에는 적용되지 않음)도 짚습니다.</p>
+        <h3><span class="tag">CORE 1</span>일 맡기는 법 <span class="dur">90분</span></h3>
+        <p>맥락(CLAUDE.md), Plan 모드, 권한 모드로 월간 보고서를 만들어 봅니다. 개념은 쓰기 직전에 하나씩만 소개합니다.</p>
+      </div>
+    </div>
+    <div class="slot rest"><div class="when">11:30 – 11:40</div><div class="what"><h3>휴식 <span class="dur">10분</span></h3></div></div>
+    <div class="slot">
+      <div class="when">11:40 <br>– 12:30</div>
+      <div class="what">
+        <h3><span class="tag">CORE 2</span>믿을 수 있게 만들기 (전반) <span class="dur">50분</span></h3>
+        <p>숫자가 틀리면 안 되는 산출물을 검증하는 법: 결정적 대조 스크립트와 읽기 전용 검증 서브에이전트.</p>
+      </div>
+    </div>
+    <div class="slot rest"><div class="when">12:30 – 13:30</div><div class="what"><h3>점심 <span class="dur">60분</span></h3></div></div>
+    <div class="slot">
+      <div class="when">13:30 <br>– 14:20</div>
+      <div class="what">
+        <h3><span class="tag">CORE 2</span>믿을 수 있게 만들기 (후반) <span class="dur">50분</span></h3>
+        <p>Stop 훅 게이트로 검증을 통과하기 전에는 끝내지 못하게 만듭니다. 모델의 자체 검증이 왜 충분하지 않은지 직접 확인합니다.</p>
       </div>
     </div>
     <div class="slot">
-      <div class="when">10:20 <br>– 10:50</div>
+      <div class="when">14:20 <br>– 15:10</div>
       <div class="what">
-        <h3><span class="tag">LAB</span>실습 환경 준비 (Lab Setting) <span class="dur">30분</span></h3>
-        <p>실습 환경에 접속하고, 개발 도구와 Claude Code가 정상적으로 동작하는지 확인합니다. Capstone에 필요한 사전 설정(플러그인 설치 등)도 함께 점검합니다.</p>
+        <h3><span class="tag">CORE 3</span>비용과 통제 <span class="dur">50분</span></h3>
+        <p>모델·effort별 실제 비용을 내 환경에서 측정하고, 예산 상한이 어떻게 동작하는지 봅니다..</p>
       </div>
     </div>
-    <div class="slot rest"><div class="when">10:50 – 11:00</div><div class="what"><h3>휴식 <span class="dur">10분</span></h3></div></div>
-    <div class="slot">
-      <div class="when">11:00 <br>– 11:20</div>
-      <div class="what">
-        <h3><span class="tag">Ch1</span>설치와 Headless 자동화 (실습) <span class="dur">20분</span></h3>
-        <p>계좌 서비스 샘플 프로젝트에서 CLAUDE.md 작성, Plan 모드, Headless 모드를 직접 실행해 봅니다.</p>
-      </div>
-    </div>
-    <div class="slot">
-      <div class="when">11:20 <br>– 12:00</div>
-      <div class="what">
-        <h3><span class="tag">Ch2</span>Subagents (이론) <span class="dur">40분</span></h3>
-        <p>하나의 에이전트가 여러 하위 에이전트에게 작업을 나눠 맡기는 구조를 만들어 봅니다. 각 에이전트의 역할과 접근 권한을 분리하는 방법을 실습합니다.</p>
-        <p>정의 파일 필드, 모델 선택 순서, 백그라운드 실행과 동시 실행 한도 등 최신 동작을 반영합니다.</p>
-      </div>
-    </div>
-    <div class="slot rest"><div class="when">12:00 – 13:00</div><div class="what"><h3>점심 <span class="dur">60분</span></h3></div></div>
-    <div class="slot">
-      <div class="when">13:00 <br>– 13:20</div>
-      <div class="what">
-        <h3><span class="tag">Ch2</span>Subagents (실습) <span class="dur">20분</span></h3>
-        <p>역할과 권한을 분리한 하위 에이전트를 직접 만들고 작업을 위임해 봅니다.</p>
-      </div>
-    </div>
-    <div class="slot">
-      <div class="when">13:20 <br>– 14:00</div>
-      <div class="what">
-        <h3><span class="tag">Ch4</span>Settings (이론) <span class="dur">40분</span></h3>
-        <p>설정 계층 구조를 이해하고, 권한 규칙과 권한 모드, 이벤트 기반 자동화(Hooks), 외부 도구 연동(MCP)의 핵심을 압축 실습합니다.</p>
-        <p>v2.1.283부터 달라진 기본 권한 모드(auto)와 이를 조직 정책으로 제한하는 방법을 짚습니다. 관리형 설정과 플러그인·mod 통제 등 금융권 조직 통제의 요점은 참고 자료(REF 3)로 안내합니다.</p>
-      </div>
-    </div>
-    <div class="slot rest"><div class="when">14:00 – 14:10</div><div class="what"><h3>휴식 <span class="dur">10분</span></h3></div></div>
-    <div class="slot">
-      <div class="when">14:10 <br>– 14:30</div>
-      <div class="what">
-        <h3><span class="tag">Ch4</span>Settings (실습) <span class="dur">20분</span></h3>
-        <p>설정 계층과 Hooks, MCP 연동을 직접 구성해 봅니다.</p>
-      </div>
-    </div>
-    <div class="slot">
-      <div class="when">14:30 <br>– 15:10</div>
-      <div class="what">
-        <h3><span class="tag">Ch5</span>CLI Reference (이론) <span class="dur">40분</span></h3>
-        <p>명령줄 자동화 패턴(코드 리뷰 봇, CI/CD 통합)을 데모 중심으로 빠르게 훑습니다. 오후 Capstone에서 직접 적용할 수 있는 수준의 이해를 목표로 합니다.</p>
-      </div>
-    </div>
-    <div class="slot">
-      <div class="when">15:10 <br>– 15:30</div>
-      <div class="what">
-        <h3><span class="tag">Ch5</span>CLI Reference (실습) <span class="dur">20분</span></h3>
-        <p>명령줄 자동화 패턴을 직접 실행해 봅니다.</p>
-      </div>
-    </div>
+    <div class="slot rest"><div class="when">15:10 – 15:20</div><div class="what"><h3>휴식 <span class="dur">10분</span></h3></div></div>
     <div class="slot main-event">
-      <div class="when">15:30 <br>– 17:20</div>
+      <div class="when">15:20 <br>– 17:00</div>
       <div class="what">
-        <h3><span class="tag">CAP</span>Capstone Missions 실습 <span class="dur">110분</span></h3>
-        <p>오늘의 메인 이벤트입니다. 앞서 배운 내용을 종합하여 아래 미션 중 <strong>하나를 선택</strong>해 수행합니다(M7은 먼저 마친 분과 복습을 위한 자율 라운드). 각 미션은 120~135분 분량으로 설계되어 있어 이 시간에는 핵심 단계까지 진행하는 것을 목표로 하고, AWS 담당자가 상주하면서 막히는 부분을 지원합니다. 마치지 못한 과제는 제공되는 실습 자료로 워크샵 이후에도 이어서 진행할 수 있습니다.</p>
-        <div class="missions">
-          <div class="mission"><span class="mnum">M1</span><div><strong>Clawd Jump</strong><em>에이전틱 게임 개발</em></div></div>
-          <div class="mission"><span class="mnum">M2</span><div><strong>Market Desk</strong><em>웹 주식 시황 대시보드</em></div></div>
-          <div class="mission"><span class="mnum">M3</span><div><strong>Generative Hours</strong><em>인터랙티브 미디어 아트</em></div></div>
-          <div class="mission"><span class="mnum">M4</span><div><strong>Trend Radar</strong><em>유튜브 급상승 30 트렌드 레이더</em></div></div>
-          <div class="mission"><span class="mnum">M5</span><div><strong>Quake Watch</strong><em>실시간 지진 워치</em></div></div>
-          <div class="mission"><span class="mnum">M6</span><div><strong>Newsroom Lens</strong><em>4개 매체 관점 비교</em></div></div>
-          <div class="mission"><span class="mnum">M7</span><div><strong>Playbook Foundry</strong><em>내 기술분야 플레이북 (자율 라운드)</em></div></div>
-        </div>
+        <h3><span class="tag">CAP</span>캡스톤 R1: 월간 컴플라이언스 보고서 <span class="dur">100분</span></h3>
+        <p>오늘 배운 것을 묶어 직접 만드는 시간입니다. 가상 데이터로 사내 양식을 지키는 보고서를 만들고, 자동 검증을 통과시킵니다. 진행자가 상주하며 막히는 부분을 지원합니다.</p>
       </div>
     </div>
     <div class="slot">
-      <div class="when">17:20 <br>– 17:30</div>
+      <div class="when">17:00 <br>– 17:30</div>
       <div class="what">
-        <h3>Wrap-up <span class="dur">10분</span></h3>
-        <p>오늘 배운 내용을 정리하고 마무리합니다.</p>
+        <h3><span class="tag">Q&A</span>질문 클리닉과 마무리 <span class="dur">30분</span></h3>
+        <p>사전 설문의 질문(비용, 보안·폐쇄망, 검증, 확산)에 가능 / 불가능 / 검증 필요로 답합니다.</p>
       </div>
     </div>
   </div>
-  <p class="note">※ 챕터 번호는 워크샵 자료 기준이며, Ch3 Admin Setup(SSO 연동·보안 정책·DLP 등 관리 설정)은 본 워크샵에서 제외되어 관리자 대상 별도 자료로 안내드립니다. 세부 세션과 시간은 운영 상황에 따라 변경될 수 있습니다.</p>
+  <p class="note">※ 세부 세션과 시간은 운영 상황에 따라 변경될 수 있습니다.</p>
 </section>
 
 <div class="edm">

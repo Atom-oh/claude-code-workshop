@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>코어 3 · 비용과 통제 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">코어 3 · 비용과 통제</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">DAY 1 · CORE 3</span>
+  <h1>코어 3 · 비용과 통제</h1>
+  <div class="sub">모델과 effort, 컨텍스트, 하드 스톱</div>
+  <p class="lede">비용은 모델 단가, 캐시, 컨텍스트가 함께 만듭니다. 측정으로 확인하고, 가능한 것과 불가능한 것을 구분합니다.</p>
+  <div class="meta"><span><strong>70분</strong></span><span>개념 1개 (모델·effort)</span></div>
+</header>
+<main>
+<section><h2>이 블록에서 하는 일</h2><p>설문에서 가장 많았던 주제(비용·토큰 8건)에 답합니다. "서브에이전트를 쓰면 비용이 기하급수적으로 늘어난다", "Bedrock이 구독보다 훨씬 비싸다", "비용을 엄격히 통제할 수 있나"를 <b>측정값으로</b> 봅니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>70분 (설명 15 + 실습 55)</td></tr><tr><td>완료 기준</td><td>모델별 비용 차이와 캐시 상태에 따른 요동을 측정하고, '가능 / 불가능 / 검증 필요'를 구분해 내 팀 규칙 3줄을 쓴다</td></tr></table></section><section><h2>설명 15분: 비용은 이렇게 생깁니다</h2><ul><li>비용은 <b>입력, 출력, 캐시 생성, 캐시 읽기</b> 토큰의 합입니다. 사소한 작업도 시스템 프롬프트, 도구 설명, CLAUDE.md, 스킬 목록이 실려 컨텍스트가 큽니다.</li><li>같은 작업이라도 <b>모델 단가</b>, <b>effort</b>, <b>캐시 상태</b>에 따라 크게 달라집니다.</li><li>서브에이전트는 별도 컨텍스트를 가지므로 호출마다 비용이 추가됩니다. 모델과 턴 수를 제한하지 않으면 늘어납니다.</li></ul></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>같은 작업을 모델별로, 두 번씩 측정</span></div><p>스크립트가 haiku, sonnet, opus로 같은 작은 작업을 두 번씩 실행해 비용과 토큰 구성을 표로 보여 줍니다. 모델 호출이 실제로 일어납니다.</p><div class="code"><div class="head"><span>Terminal, 코어 1의 폴더에서</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p scripts
+cat &gt; scripts/cost_compare.py &lt;&lt;'WV2EOF'
+#!/usr/bin/env python3
+"""같은 작업을 모델별로 두 번씩 실행해 비용과 토큰 구성을 비교한다. 모델 호출이 실제로 일어난다.
+사용: python3 scripts/cost_compare.py [--safe-mode]    (--safe-mode: 플러그인·CLAUDE.md 등을 끄고 깨끗한 기준으로 측정)
+출력의 비용은 Claude Code의 클라이언트 측 추정치이며 실제 청구액과 다를 수 있다."""
+import json, subprocess, sys
+
+PROMPT = "data/gangnam.csv의 판매건수 합계를 Python으로 계산해서 숫자만 답해."
+extra = ["--safe-mode"] if "--safe-mode" in sys.argv else []
+print("모델 | 회차 | 비용(USD) | 캐시 생성 토큰 | 캐시 읽기 토큰 | 출력 토큰 | 턴")
+for model in ["haiku", "sonnet", "opus"]:
+    for n in (1, 2):
+        p = subprocess.run(
+            ["claude", "-p", PROMPT, *extra, "--model", model, "--effort", "low", "--permission-mode", "acceptEdits",
+             "--allowedTools", "Bash(python3:*)", "Read", "--max-budget-usd", "1.5", "--output-format", "json"],
+            capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=300)
+        try:
+            d = json.loads(p.stdout); u = next(iter(d["modelUsage"].values()))
+        except Exception:
+            print(f"{model} | {n} | 실패: {p.stderr.strip()[:100]}"); continue
+        print(f"{model} | {n} | {u['costUSD']:.4f} | {u['cacheCreationInputTokens']} | {u['cacheReadInputTokens']} | {u['outputTokens']} | {d['num_turns']}", flush=True)
+WV2EOF
+chmod +x scripts/cost_compare.py
+
+python3 scripts/cost_compare.py --safe-mode</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (2026-10-21, 구독 계정 목록가 추정, USD)</span></div><pre><code>모델 | 회차 | 비용 | 캐시 생성 | 캐시 읽기 | 출력 | 턴
+haiku  | 1 | 0.0020 | 6724 | 48348 | 382 | 3
+haiku  | 2 | 0.0009 |  650 | 54434 | 454 | 3
+sonnet | 1 | 0.0272 | 5626 | 29180 | 179 | 2
+sonnet | 2 | 0.0064 |  287 | 34516 | 179 | 2
+opus   | 1 | 0.0544 | 5625 | 28388 | 184 | 2
+opus   | 2 | 0.0127 |  286 | 33718 | 183 | 2</code></pre></div><table class="tbl"><tr><th>모델</th><th>첫 호출</th><th>같은 호출 재실행</th><th>캐시 생성 → 재실행</th><th>비고</th></tr><tr><td>haiku-5.5</td><td>0.0020</td><td>0.0009</td><td>6,724 → 650 토큰</td><td>턴 3</td></tr><tr><td>sonnet-5.5</td><td>0.0272</td><td>0.0064</td><td>5,626 → 287 토큰</td><td>턴 2</td></tr><tr><td>opus-5.5</td><td>0.0544</td><td>0.0127</td><td>5,625 → 286 토큰</td><td>턴 2</td></tr></table><div class="code out"><div class="head"><span>같은 스크립트를 한 시간쯤 뒤에 다시 실행한 값 (캐시가 남아 있던 상태)</span></div><pre><code>haiku  | 1 | 0.0008 |  598 | 54454 | 366 | 3
+haiku  | 2 | 0.0008 |  245 | 54803 | 366 | 3
+sonnet | 1 | 0.0066 |  302 | 34516 | 190 | 2
+sonnet | 2 | 0.0192 | 3591 | 30007 | 179 | 2   # 캐시 생성이 다시 늘어 비용이 3배
+opus   | 1 | 0.0136 |  313 | 33718 | 215 | 2
+opus   | 2 | 0.0127 |  281 | 33718 | 183 | 2</code></pre></div><p>관찰 질문: ① 같은 모델끼리 비교하면 <b>어느 회차가 비싼지 매번 다릅니다</b>. 비용 차이를 만드는 열은 어느 것인가? (캐시 생성 토큰) ② 모델 사이의 비율은 어떤가? (캐시가 따뜻할 때 haiku : sonnet : opus는 약 1 : 8 : 16, 처음 값은 약 1 : 14 : 27) ③ 작업이 사소한데도 왜 수만 토큰이 읽히는가?</p><div class="callout tip"><span class="t">캐시는 믿을 수 있는 할인이 아니라 변수입니다</span>기본 캐시 유지 시간이 지나거나 앞부분(시스템 프롬프트, 도구 설명, CLAUDE.md)이 바뀌면 캐시가 다시 만들어져 비용이 뛰어오릅니다. 그래서 '같은 작업의 비용'은 한 번의 측정이 아니라 <b>여러 번의 범위</b>로 말해야 합니다.</div><div class="step"><span class="no">2</span><span>컨텍스트가 비용을 좌우한다</span></div><p>이번에는 <code>--safe-mode</code>를 빼고 실행해 보세요. 플러그인, 스킬, MCP가 많을수록 기준 컨텍스트가 커집니다. 세션 안에서는 <code>/context</code>로 내용을 볼 수 있습니다.</p><table class="tbl"><tr><th>환경</th><th>컨텍스트(캐시 생성 + 읽기)</th><th>sonnet-5.5 1회 비용</th></tr><tr><td>깨끗한 기준 (<code>--safe-mode</code>)</td><td>약 5,600 + 29,000 토큰</td><td>0.0272</td></tr><tr><td>플러그인·스킬이 많은 개발 환경</td><td>약 49,600 + 70,000 토큰</td><td>0.207 (같은 호출 재실행 0.076)</td></tr></table><div class="callout warn"><span class="t">숫자를 그대로 믿지 마세요</span>위 표는 이 자료를 준비한 환경의 값입니다. 가격표와 환경이 다르면 숫자가 달라집니다. 배울 것은 <b>비율, 캐시 효과, 컨텍스트의 영향</b>입니다.</div><div class="step"><span class="no">3</span><span>서브에이전트에 모델과 턴 상한 두기</span></div><p>코어 2의 검증자는 <code>model: haiku</code>, <code>maxTurns: 6</code>입니다. 메인이 sonnet일 때 서브에이전트 비용이 얼마나 다른지 확인합니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>claude -p "report-verifier 서브에이전트에게 output/월간보고.xlsx 검증을 맡기고, 그 결과 표를 그대로 보여줘." \
+  --model sonnet --effort low --permission-mode acceptEdits \
+  --allowedTools "Read" "Agent" "Bash(python3 scripts/reconcile.py *)" \
+  --output-format json | jq '{total_cost_usd, modelUsage: (.modelUsage | map_values(.costUSD))}'</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (플러그인이 많은 환경)</span></div><pre><code>메인 claude-sonnet-5-5: 0.235 USD / 서브에이전트 claude-haiku-5-5: 0.0028 USD</code></pre></div><div class="step"><span class="no">4</span><span>하드 스톱: 예산 상한 체험</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>claude -p "data 폴더의 CSV 3개와 template 양식으로 월간 점검 보고서를 만들어 output/월간보고.xlsx로 저장해줘." \
+  --safe-mode --model sonnet --effort low --permission-mode acceptEdits \
+  --allowedTools "Bash(python3:*)" "Read" "Write" --max-budget-usd 0.004 --output-format json &gt; stop.json; echo "exit=$?"
+jq '{subtype, num_turns, total_cost_usd, terminal_reason}' stop.json</code></pre></div><div class="code out"><div class="head"><span>참고 측정값</span></div><pre><code>exit=1
+{ "subtype": "error_max_budget_usd", "num_turns": 1, "total_cost_usd": 0.0198, "terminal_reason": "budget_exhausted" }</code></pre></div><div class="callout warn"><span class="t">상한 0.004달러에 0.0198달러가 나갔습니다</span>예산은 턴이 끝난 뒤 검사하므로 <b>한도를 넘겨서 멈춥니다</b>(이 측정에서 약 5배). 상한은 작업 하나의 비용보다 여유 있게 잡고(공식 문서도 headroom을 권장), 서브에이전트 비용도 합산됩니다. 사용자·팀 단위의 한도가 아니라 <b>실행 한 번</b>의 안전장치입니다.</div><div class="step"><span class="no">5</span><span>가능한 것, 불가능한 것, 검증이 필요한 것</span></div><table class="tbl"><tr><th>항목</th><th>라벨</th><th>근거와 한계</th></tr><tr><td>모델 허용·금지 목록 (<code>availableModels</code>, <code>deniedModels</code>)</td><td><span class="pill yes">가능</span></td><td>관리형 설정. deniedModels는 v2.1.283+</td></tr><tr><td>서브에이전트 모델 고정 (<code>CLAUDE_CODE_SUBAGENT_MODEL</code>, 정의 파일의 <code>model</code>)</td><td><span class="pill yes">가능</span></td><td>정의 파일의 model이 환경 변수보다 우선(v2.1.251+)</td></tr><tr><td>효과적인 컨텍스트 관리 (<code>/context</code>, 자동 압축 창)</td><td><span class="pill yes">가능</span></td><td>비용의 큰 부분이 컨텍스트 크기</td></tr><tr><td>실행 한 번의 예산 상한 (<code>--max-budget-usd</code>)</td><td><span class="pill yes">가능</span></td><td>클라이언트 추정치 기준, 넘길 수 있음, 비대화형(-p) 전용</td></tr><tr><td>팀·모델별 사용량 가시화 (OTel)</td><td><span class="pill yes">가능</span></td><td><a href="day2-governance.html">Day 2</a>. 관측이며 차단이 아님</td></tr><tr><td>팀별 Bedrock 비용 귀속 (애플리케이션 추론 프로파일 + 비용 할당 태그)</td><td><span class="pill chk">검증 필요</span></td><td>AWS 문서 기준. 일 단위 집계이며 요청 단위가 아님. 이 자료에서는 실행하지 않음</td></tr><tr><td>사용자별 한도 차단 (Claude apps gateway 지출 한도)</td><td><span class="pill chk">조건부</span></td><td>자체 호스팅, OIDC SSO와 PostgreSQL 필요. 기본값은 DB 장애 시 열린 상태</td></tr><tr><td>Bedrock 직접 사용에서 사용자·팀별 <b>토큰/비용 하드 캡</b></td><td><span class="pill no">네이티브 불가</span></td><td>공식 비용 문서가 클라우드의 예산 통제로 안내</td></tr><tr><td>서브에이전트 단위 달러 상한</td><td><span class="pill no">불가</span></td><td><code>maxTurns</code>는 턴 수 상한일 뿐 달러 상한이 아님</td></tr><tr><td>구독과 Bedrock API의 가격 비교</td><td><span class="pill chk">공식 자료 없음</span></td><td>공식 문서의 엔터프라이즈 평균(개발자 1인 활성일당 약 13달러, 월 150~250달러대)은 평균이지 견적이 아님</td></tr></table><div class="step"><span class="no">6</span><span>내 팀 비용 규칙 3줄 쓰기</span></div><p>아래 틀에 내 팀의 규칙을 채워 옆 사람과 비교합니다.</p><div class="code"><div class="head"><span>메모</span><button class="copy" type="button">복사</button></div><pre><code>1. 기본 모델은 ____, 어려운 계획·설계에만 ____ 를 쓴다.
+2. 탐색·검증용 서브에이전트는 model: ____, maxTurns: ____ 로 제한한다.
+3. 자동 실행(-p, CI)에는 항상 --max-budget-usd ____ 와 --max-turns ____ 를 건다.</code></pre></div></section><div class="checkpoint"><span class="t">코어 3 체크포인트</span><label><input type="checkbox"><span>모델별 비용 비율을 내 숫자로 말할 수 있다</span></label><label><input type="checkbox"><span>첫 호출과 재실행의 비용 차이를 캐시로 설명할 수 있다</span></label><label><input type="checkbox"><span>예산 상한이 한도를 넘길 수 있음을 직접 봤다</span></label><label><input type="checkbox"><span>'네이티브 하드 캡 없음'과 그 대안(게이트웨이, 클라우드 예산)을 말할 수 있다</span></label><label><input type="checkbox"><span>내 팀 비용 규칙 3줄을 썼다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li>effort를 <code>low</code>, <code>high</code>로 바꿔 같은 작업의 비용을 비교합니다. 사소한 작업에서는 effort가 비용을 일정하게 바꾸지 않는다는 점을 관찰합니다(opus 측정: low 0.463, high 0.416).</li><li>작업을 모델별로 나누는 규칙(탐색은 haiku, 구현은 sonnet, 설계는 opus)을 서브에이전트 정의로 만들어 봅니다.</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>비용이 0으로 나온다</b>: 구독 계정은 구독 한도 내 사용이라도 목록가 추정치를 보여 줍니다. 실제 청구는 계정 종류에 따라 다릅니다.</li><li><b>스크립트가 실패한다</b>: <code>claude</code>가 PATH에 있는지, 모델 호출이 되는지 프리플라이트를 다시 실행하세요.</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">모델별 2회 측정을 두 시점에 반복해 캐시 상태에 따라 비용이 요동하는 것을 확인했고, 컨텍스트 크기 차이, 서브에이전트 모델별 비용, 하드 스톱의 한도 초과(0.004 → 0.0198)도 실제 실행으로 확인했습니다. <code>cost_compare.py</code>와 페이지의 <code>jq</code> 명령은 그대로 실행했습니다.</p><p class="ran"><code>--safe-mode</code>가 플러그인과 CLAUDE.md를 끄므로 깨끗한 기준으로 쓸 수 있음을 확인했습니다. 단 <code>--settings</code>로 넣은 훅도 함께 꺼집니다.</p><p class="not">Bedrock 직접 사용 단가, 1시간 캐시 TTL 배수, 애플리케이션 추론 프로파일 태그의 반영 지연은 확인하지 못했습니다.</p><p class="not">대화형의 <code>/usage</code>, <code>/context</code> 화면은 직접 보지 못했습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="core2.html">← 코어 2</a><a href="day2-skills.html">Day 2 확산 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

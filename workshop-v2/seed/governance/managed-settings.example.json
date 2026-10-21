@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "disableBypassPermissionsMode": "disable"
+  },
+  "allowManagedHooksOnly": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "python3 /opt/claude-governance/audit_hook.py" }
+        ]
+      }
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "team-tools": { "source": { "source": "directory", "path": "/opt/team-tools" } }
+  },
+  "strictKnownMarketplaces": [
+    { "source": "directory", "path": "/opt/team-tools" }
+  ],
+  "enabledPlugins": { "monthly-report@team-tools": true },
+  "disableSideloadFlags": true,
+  "allowManagedMcpServersOnly": true,
+  "allowedMcpServers": [],
+  "pluginConfigs": {
+    "cc-plugin-sec-default@builtin": { "options": { "allowManagedModsOnly": true } }
+  },
+  "cleanupPeriodDays": 30,
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "none",
+    "OTEL_TRACES_EXPORTER": "none",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/json",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://127.0.0.1:14318",
+    "OTEL_METRIC_EXPORT_INTERVAL": "10000",
+    "OTEL_RESOURCE_ATTRIBUTES": "team.id=TEAM_ID_HERE"
+  }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>코어 2 · 믿을 수 있게 만들기 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">코어 2 · 믿을 수 있게 만들기</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">DAY 1 · CORE 2</span>
+  <h1>코어 2 · 믿을 수 있게 만들기</h1>
+  <div class="sub">검증 서브에이전트와 Stop 게이트</div>
+  <p class="lede">산술은 결정적 스크립트가 하고, 통과 전에는 끝내지 못하게 강제합니다.</p>
+  <div class="meta"><span><strong>70분</strong></span><span>개념 2개 (서브에이전트, 훅)</span></div>
+</header>
+<main>
+<section><h2>이 블록에서 하는 일</h2><p>컴플라이언스 담당자의 질문, "숫자가 틀리면 바로 문제라 매번 눈으로 대조합니다. 자동으로 검증하는 방법이 있나요?"에 답합니다. 핵심은 <b>산술은 모델이 아니라 결정적 스크립트가 하고, 통과 전에는 끝내지 못하게 강제한다</b>는 것입니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>70분 (설명 15 + 실습 55)</td></tr><tr><td>이어서</td><td><a href="core1.html">코어 1</a>의 폴더와 <code>output/월간보고.xlsx</code>를 그대로 씁니다</td></tr><tr><td>완료 기준</td><td>일부러 심은 오류가 자동으로 잡히고, 고친 뒤에야 작업이 끝난다</td></tr></table></section><section><h2>설명 15분</h2><p>규칙(CLAUDE.md)은 <b>부탁</b>이고 게이트는 <b>강제</b>입니다. 현대 모델은 규칙을 대체로 지키고 스스로 검산하기도 하지만, 매번 보장되지는 않습니다. 그래서 사람 대신 보는 마지막 방어선이 필요합니다. 훅의 종료 코드는 위치마다 뜻이 다릅니다.</p><table class="tbl"><tr><th>위치</th><th>exit 2의 의미</th><th>쓰임</th></tr><tr><td>PreToolUse</td><td>도구 실행 전에 <b>차단</b></td><td>위험한 호출 막기</td></tr><tr><td>PostToolUse</td><td>이미 실행된 뒤. <b>차단이 아님</b>, stderr를 Claude에게 전달</td><td>구문 오류를 알려 스스로 고치게 하기 (오류를 알려 스스로 고치게 하는 피드백 루프)</td></tr><tr><td>Stop</td><td>Claude가 <b>멈추지 못하고 계속 작업</b></td><td>검증 통과 전에는 끝내지 못하게 하기</td></tr><tr><td><code>onFailure: "block"</code> (v2.1.295+)</td><td>command·http 훅이 실패하면 exit 2처럼 차단</td><td>훅 자체가 실패해도 통과시키지 않기</td></tr></table></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>대조 스크립트가 잡는 것 확인</span></div><p>코어 1에서 만든 보고서에 일부러 오류를 심고 대조합니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p scripts
+cat &gt; scripts/inject_error.py &lt;&lt;'WV2EOF'
+#!/usr/bin/env python3
+"""연습용: 보고서에 일부러 숫자 오류 1개를 심는다. 사용: python3 scripts/inject_error.py output/월간보고.xlsx"""
+import sys
+from openpyxl import load_workbook
+p = sys.argv[1]
+wb = load_workbook(p); ws = wb["월간보고"]
+before = ws["D7"].value; ws["D7"] = before + 3   # 합계 의심건수를 3만큼 틀리게
+wb.save(p); print(f"D7 합계 의심건수 {before} -&gt; {before + 3} (일부러 틀림)")
+WV2EOF
+chmod +x scripts/inject_error.py
+
+python3 scripts/inject_error.py output/월간보고.xlsx
+python3 scripts/reconcile.py output/월간보고.xlsx; echo "exit=$?"</code></pre></div><div class="code out"><div class="head"><span>기대 출력</span></div><pre><code>D7 합계 의심건수 57 -&gt; 60 (일부러 틀림)
+대조 실패 (1건)
+ - 숫자 불일치 D7 [합계 의심건수]: 보고서=60 기대=57
+exit=1</code></pre></div><p>이 스크립트는 숫자 24칸뿐 아니라 <b>양식 훼손</b>(제목 변경, 열 너비, 서식)과 <b>문자열로 저장된 숫자</b>(예: <code>'1381'</code>)도 잡습니다. 종료 코드는 0 일치, 1 불일치, 2 사용 오류입니다.</p><div class="step"><span class="no">2</span><span>읽기 전용 검증 서브에이전트</span></div><p>검증자는 파일을 고치지 못하고 대조 스크립트만 실행해야 합니다. 정의 파일의 <code>tools</code>에 쓴 <code>Bash(...)</code> 형식은 공식 문서에 기재되어 있지 않고 이 자료의 측정에서 동작했을 뿐이므로, <b>확실한 제한은 허용·거부 규칙이나 PreToolUse 훅</b>으로 겁니다. 아래 허용 규칙과 지침이 그 역할을 합니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p .claude/agents
+cat &gt; .claude/agents/report-verifier.md &lt;&lt;'WV2EOF'
+---
+name: report-verifier
+description: 월간 보고서를 읽기 전용으로 검증하고 PASS/FAIL 표로 보고한다. 보고서를 완료로 선언하기 전에 사용한다.
+tools: Read, Grep, Glob, Bash(python3 scripts/reconcile.py *)
+model: haiku
+maxTurns: 6
+---
+당신은 읽기 전용 검증자다. 어떤 파일도 수정하지 않는다.
+
+1. 아래 명령을 **정확히 그대로, 한 줄로만** 실행한다. `cd`, `&amp;&amp;`, `;`, `echo` 등을 붙이지 않는다. 허용 규칙이 이 모양과 일치할 때만 실행된다.
+
+   `python3 scripts/reconcile.py output/월간보고.xlsx`
+
+2. 출력을 `항목 | 결과(PASS/FAIL) | 근거` 표로 보고한다. 근거는 스크립트 출력만 쓰고 추측하지 않는다. 출력이 "대조 통과"로 시작하면 PASS, "대조 실패"로 시작하면 FAIL이다.
+3. 마지막 줄에 `최종: PASS` 또는 `최종: FAIL`을 쓴다. 명령이 실행되지 않았다면 판정하지 말고 `최종: 미검증`이라고 쓴다.
+WV2EOF</code></pre></div><p>Python 실행을 승인 없이 허용하는 규칙을 <code>.claude/settings.json</code>에 추가합니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>cat &gt; .claude/settings.json &lt;&lt;'WV2EOF'
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 scripts/reconcile.py *)"
+    ]
+  }
+}
+WV2EOF</code></pre></div><p>세션에서 보고서를 정상 상태로 되돌린 뒤(코어 1의 방법으로 다시 생성) 요청합니다.</p><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>report-verifier 서브에이전트에게 output/월간보고.xlsx 검증을 맡기고, 그 결과 표를 그대로 보여줘.</code></pre></div><div class="code out"><div class="head"><span>기대 출력 (정상 보고서)</span></div><pre><code>| 항목 | 결과(PASS/FAIL) | 근거 |
+| reconcile.py 대조 (output/월간보고.xlsx) | PASS | 대조 통과: 숫자 24칸 일치, 양식 보존 |
+
+최종: PASS</code></pre></div><div class="callout warn"><span class="t">tools와 허용 규칙은 다릅니다</span>서브에이전트의 <code>tools</code>는 <b>쓸 수 있는 도구</b>의 목록일 뿐 승인 없이 실행한다는 뜻이 아닙니다. 승인 없이 실행하려면 허용 규칙이 따로 필요합니다(<code>--tools</code>와 <code>--allowedTools</code>의 차이와 같은 구분). 허용 규칙은 <b>명령 모양이 일치할 때만</b> 적용됩니다. 측정 중 서브에이전트가 <code>cd ... ; echo $?</code>를 덧붙이자 규칙에 맞지 않아 막혔습니다. 그래서 검증자 정의에 '정확히 이 한 줄만 실행'을 적었습니다.</div><div class="callout tip"><span class="t">프로젝트 허용 규칙은 폴더 신뢰 뒤에 적용됩니다</span><code>.claude/settings.json</code>의 허용 규칙은 신뢰 대화상자를 수락한 뒤에만 적용됩니다. 대화형 세션에서는 코어 1에서 이미 수락했습니다. <code>claude -p</code>는 대화상자가 없어 규칙이 보류되므로 <code>--allowedTools "Bash(python3 scripts/reconcile.py *)"</code> 플래그나 추적되지 않는 <code>settings.local.json</code>을 씁니다.</div><div class="step"><span class="no">3</span><span>Stop 게이트로 강제하기</span></div><p>보고서에 대조가 통과하기 전에는 Claude가 끝낼 수 없게 합니다. 3번 고쳐도 안 되면 사람이 보도록 표시 파일을 남깁니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p scripts
+cat &gt; scripts/stop_gate.sh &lt;&lt;'WV2EOF'
+#!/usr/bin/env bash
+# Stop 훅: 보고서가 있으면 대조 스크립트로 검증한다.
+# 불일치면 exit 2로 Claude가 멈추지 못하게 하고, 3번 고쳐도 안 되면 사람이 보도록 표시 파일을 남긴다.
+cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+REPORT="output/월간보고.xlsx"
+COUNT_FILE=".claude/.gate_count"
+[ -f "$REPORT" ] || exit 0
+
+msg=$(python3 scripts/reconcile.py "$REPORT" 2&gt;&amp;1); rc=$?
+if [ "$rc" -eq 0 ]; then
+  rm -f "$COUNT_FILE" "output/검증실패.txt"
+  exit 0
+fi
+
+n=$(( $(cat "$COUNT_FILE" 2&gt;/dev/null || echo 0) + 1 ))
+echo "$n" &gt; "$COUNT_FILE"
+if [ "$n" -gt 3 ]; then
+  printf '자동 검증 실패: 3회 수정 후에도 대조가 통과하지 않았습니다. 사람이 확인하세요.\n%s\n' "$msg" &gt; "output/검증실패.txt"
+  exit 0
+fi
+printf '대조 스크립트가 불일치를 찾았습니다. 보고서를 고친 뒤 다시 완료하세요 (%s/3).\n%s\n' "$n" "$msg" &gt;&amp;2
+exit 2
+WV2EOF
+chmod +x scripts/stop_gate.sh</code></pre></div><div class="code"><div class="head"><span>Terminal, .claude/settings.json 전체 교체</span><button class="copy" type="button">복사</button></div><pre><code>cat &gt; .claude/settings.json &lt;&lt;'WV2EOF'
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 scripts/reconcile.py *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "$CLAUDE_PROJECT_DIR/scripts/stop_gate.sh" } ] }
+    ]
+  }
+}
+WV2EOF</code></pre></div><p>이제 "파이프라인의 한 단계가 보고서를 망가뜨린 상황"을 만듭니다. 새 세션에서 요청합니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>python3 scripts/reconcile.py output/월간보고.xlsx   # 정상인지 먼저 확인
+claude</code></pre></div><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>python3 scripts/inject_error.py output/월간보고.xlsx 를 실행하고, 끝나면 '완료'라고 답해줘.</code></pre></div><div class="code out"><div class="head"><span>관찰 포인트</span></div><pre><code>Claude가 오류를 심은 뒤 "완료"라고 하려 하면 → Stop 훅이 대조 실패 메시지와 함께 막는다
+→ Claude가 D7을 57로 되돌린다 → 대조 통과 후에야 종료
+(측정 결과: 5턴, 약 0.015달러. Claude가 "이전 답변에서 '완료'라고 한 것은 오류가 있는 상태였으니 잘못된 답이었다"고 스스로 정정했다)</code></pre></div><div class="step"><span class="no">4</span><span>세 겹 방어 정리</span></div><table class="tbl"><tr><th>겹</th><th>수단</th><th>한계</th></tr><tr><td>1</td><td>CLAUDE.md 규칙</td><td>부탁이라 어길 수 있음</td></tr><tr><td>2</td><td>Stop 게이트 + 대조 스크립트</td><td>스크립트가 아는 규칙만 검증</td></tr><tr><td>3</td><td>사람의 확인</td><td>게이트가 통과한 결과에서 샘플로</td></tr></table></section><div class="callout warn"><span class="t">솔직한 측정 결과</span>이 실습을 준비하며 같은 오류를 모델에게 보여 주자 <b>모델이 스스로 검산해서 불일치를 지적한 경우가 많았고</b>, 사람이 틀린 숫자(60)를 지시해도 데이터와 CLAUDE.md를 근거로 거부했습니다. 게이트는 '모델이 못 잡는 것을 잡는 장치'가 아니라 <b>모델의 성실성에 의존하지 않고 어떤 경우에도 강제하는 장치</b>입니다. 반대로 모델이 수정 자체를 하지 않으면 훅은 발동하지 않습니다.</div><div class="checkpoint"><span class="t">코어 2 체크포인트</span><label><input type="checkbox"><span>오류를 심고 대조 스크립트가 exit 1과 칸 번호를 알려 주는 것을 봤다</span></label><label><input type="checkbox"><span>검증 서브에이전트가 PASS와 FAIL을 모두 보고했다</span></label><label><input type="checkbox"><span>Stop 게이트가 켜진 상태에서 오류를 고치기 전에는 끝나지 않는 것을 봤다</span></label><label><input type="checkbox"><span>exit 2가 PreToolUse, PostToolUse, Stop에서 어떻게 다른지 설명할 수 있다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li>양식을 해치는 요청(열 너비 변경, 제목 수정)을 직접 시키고 어떤 메시지로 막히는지 봅니다.</li><li>Stop 훅 대신 <code>/goal</code>로 'reconcile.py가 종료 코드 0을 낼 때까지'를 조건으로 걸어 비교합니다(공식 문서 기준, 이 자료에서는 실행하지 않았습니다).</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>훅이 안 돈다</b>: 스크립트에 실행 권한(<code>chmod +x</code>)이 있는지, <code>.claude/settings.json</code> 경로가 맞는지, 폴더 신뢰를 수락했는지 확인하세요.</li><li><b>서브에이전트가 Bash 승인 대기</b>: 허용 규칙을 추가했는지, 명령이 '정확히 한 줄'인지 확인하세요.</li><li><b>무한히 고치려 한다</b>: 게이트는 3회까지만 막고 <code>output/검증실패.txt</code>를 남깁니다.</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">대조 스크립트: 정답 통과(exit 0), 숫자 오류(exit 1), 양식 훼손 3종(제목·열 너비·서식, exit 1), 문자열 숫자(exit 1), 파일 없음(exit 2).</p><p class="ran">Stop 게이트: 오류를 심고 '완료'를 요청하자 훅이 막았고 Claude가 57로 되돌려 대조가 통과했습니다(5턴).</p><p class="ran">검증 서브에이전트: 정상 보고서는 PASS, 오류 보고서는 FAIL과 근거 출력을 보고하고 파일을 수정하지 않았습니다.</p><p class="ran">허용 규칙 보류: <code>-p</code>에서 '이 작업 공간이 신뢰되지 않아 permissions.allow를 무시한다'는 경고를 확인했습니다.</p><p class="not">대화형 화면에서의 훅 동작은 직접 보지 못했습니다. <code>/goal</code> 대안은 실행하지 않았습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="core1.html">← 코어 1</a><a href="core3.html">코어 3 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "team-tools",
+  "owner": {
+    "name": "workshop-team"
+  },
+  "description": "팀 표준 Skill 모음 (연습용)",
+  "plugins": [
+    {
+      "name": "monthly-report",
+      "source": "./plugins/monthly-report",
+      "description": "월간 점검 보고서 Skill (연습용)"
+    }
+  ]
+}

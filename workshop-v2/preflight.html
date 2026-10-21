@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사전 점검 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">사전 점검</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">PRE-FLIGHT</span>
+  <h1>사전 점검</h1>
+  <div class="sub">행사 7일 전: 환경이 되는지 먼저 확인합니다</div>
+  <p class="lede">5분 점검, 대체 경로, 업무 PC 확인 질문, 사전 과제를 한 곳에 모았습니다.</p>
+  <div class="meta"><span>소요 <strong>5분</strong></span><span>회신 기한: 행사 <strong>3일 전</strong> 권장</span></div>
+</header>
+<main>
+<section><h2>왜 먼저 하나</h2><p>사전설문에서 "회사 네트워크에서는 환경 확인이 안 되는 부분이 있어 개인 노트북으로 대체하겠다"는 응답이 있었습니다. 행사 당일에 막히면 첫 시간이 사라집니다. 행사 7일 전까지 아래 5분 점검을 돌려 결과를 회신받고, 막힌 분은 대체 경로로 안내합니다.</p></section><section><h2>5분 프리플라이트</h2><div class="step"><span class="no">1</span><span>터미널에서 한 번에 실행</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>claude --version
+python3 --version
+python3 -c "import openpyxl; print('openpyxl', openpyxl.__version__)"
+node --version
+jq --version
+claude -p "1+1은? 숫자만 답해." --model haiku --effort low</code></pre></div><div class="code out"><div class="head"><span>기대 출력</span></div><pre><code>2.1.306 (Claude Code)          # 버전은 달라도 됩니다
+Python 3.9.x 이상
+openpyxl 3.1.5
+v22.x                          # 트랙 B에서만 필요
+jq-1.x
+2                              # 모델 호출이 되는지 확인</code></pre></div><table class="tbl"><tr><th>증상</th><th>의미</th><th>다음 행동</th></tr><tr><td><code>claude: command not found</code></td><td>설치되어 있지 않음</td><td>아래 '개인 노트북 설치'로 설치하거나 제공 환경 사용</td></tr><tr><td><code>claude -p</code>가 인증 또는 네트워크 오류</td><td>회사 네트워크 또는 모델 연결 설정 문제</td><td>프록시 변수(HTTPS_PROXY, NODE_EXTRA_CA_CERTS)와 허용 도메인을 확인하고, 해결이 안 되면 개인 노트북으로 대체</td></tr><tr><td><code>No module named openpyxl</code></td><td>Python 패키지 없음</td><td><code>pip install --user openpyxl</code> (패키지 미러가 필요한 환경이면 사전 설치)</td></tr><tr><td><code>node</code> 없음</td><td>트랙 B에서만 필요</td><td>트랙 A, C 선택 시 무시해도 됨</td></tr></table><div class="checkpoint"><span class="t">프리플라이트 체크</span><label><input type="checkbox"><span>claude 실행 파일이 있다</span></label><label><input type="checkbox"><span>python3와 openpyxl이 있다</span></label><label><input type="checkbox"><span><code>claude -p</code>가 숫자 2를 답한다(모델 호출 성공)</span></label><span class="progress"></span></div></section><section><h2>대체 경로 (3단)</h2><ol><li><b>제공 환경</b>: 주최 측이 안내하는 브라우저 기반 환경에서 위 점검을 통과하면 그대로 진행.</li><li><b>개인 노트북</b>: 설치 후 위 점검을 다시 실행. macOS·Linux·WSL은 <code>curl -fsSL https://claude.ai/install.sh | bash</code>, Windows PowerShell은 <code>irm https://claude.ai/install.ps1 | iex</code> (공식 설치 문서). 모델 연결 정보는 주최 측이 별도 안내.</li><li><b>현장 짝 실습</b>: 위 둘 다 어려우면 옆 사람과 한 화면으로 진행하고, 결과물은 이후 환경에서 다시 만들어 봅니다.</li></ol><div class="callout warn"><span class="t">회사 네트워크 허용 도메인</span>공식 네트워크 요건에 나온 주요 도메인입니다. 표는 요약이므로 보안팀에 요청할 때는 공식 문서의 최신 표를 첨부하세요.</div><table class="tbl"><tr><th>도메인</th><th>용도(공식 문서 기준)</th></tr><tr><td>api.anthropic.com</td><td>모델 API (Bedrock·게이트웨이를 쓰면 모델 트래픽은 해당 엔드포인트로 감)</td></tr><tr><td>claude.ai, claude.com, platform.claude.com, sso.claude.com</td><td>로그인과 계정</td></tr><tr><td>downloads.claude.ai, storage.googleapis.com</td><td>설치 파일과 업데이트</td></tr><tr><td>registry.npmjs.org, github.com, raw.githubusercontent.com</td><td>npm 설치, 플러그인·마켓 가져오기</td></tr><tr><td>mcp-proxy.anthropic.com</td><td>claude.ai 커넥터</td></tr></table></section><section><h2>업무 PC 확인 질문 4개</h2><p>문서 보안(DRM)이나 화면 캡처 차단이 걸린 단말은 공식 문서에 동작이 설명되어 있지 않습니다. 해결을 약속하지 않고 <b>사전에 확인만</b> 받아 현장 지원 계획에 씁니다.</p><ol><li>업무 PC에서 터미널(또는 브라우저 기반 터미널)을 열 수 있나요?</li><li>문서 보안(DRM)이 걸린 파일을 터미널이나 코드 도구로 열면 어떻게 되나요? (열림 / 열리지 않음 / 모름)</li><li>화면 캡처나 화면 공유가 막혀 있어서 가이드를 보면서 따라 하기 어렵지는 않나요? (두 번째 기기나 인쇄본이 필요한가요?)</li><li>회사 프록시나 인증서 검사 때문에 외부 사이트 접속이 제한되나요? (허용 도메인 요청이 필요한가요?)</li></ol></section><section><h2>사전 과제 (참가자별 1개)</h2><p>트랙 배정과 질문 클리닉에 씁니다. 실제 고객·내부 자료는 적지 마세요.</p><ol><li>이번 달에 사람이 반복하는 일 하나를 적어 주세요. (예: 월간 점검 보고서 작성)</li><li>그 일의 입력 자료는 무엇이고, 결과물은 어떤 형태(양식)인가요? (실제 자료가 아니라 종류만 적어 주세요)</li><li>한 달에 몇 번, 한 번에 얼마나 걸리나요?</li><li>결과가 틀리면 어떤 일이 생기나요? (그래서 무엇을 가장 확인하고 싶은가요?)</li></ol></section><section><h2>데이터 원칙</h2><p>실습에는 가상 데이터만 씁니다. 실제 고객정보, 내부 자료, 규제기관 제출 자료는 반입하지 않습니다. 대화 기록은 로컬에 평문으로 저장되므로 비밀번호와 키를 프롬프트에 붙여 넣지 마세요.</p></section><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran"><code>claude --version</code>, 모델 호출 명령, openpyxl 점검 명령을 이 환경에서 실행했습니다.</p><p class="not">사내 프록시·인증서 검사, DRM, 화면 캡처 차단 환경은 검증하지 못했습니다.</p><p>허용 도메인 표와 설치 명령은 공식 setup, network-config 문서를 기준으로 했습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="concepts.html">← 개념 9가지</a><a href="core1.html">코어 1 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

@@ -12,6 +12,7 @@ site compilation step, or automated test suite.
 | `20260525/`, `20260703/`, `20260901/`, `20260905/` | Chapter PDF editions; `20260905/` is the latest, `20260901/` is a session-ordered delivery build |
 | `ccw-hands-on-lab/` | General lab site (reader build) with shared `assets/`; `v1/` archives the previous build |
 | `20261116/` | November event site, labs, invitation, brochure, and image assets |
+| `workshop-v2/` | Draft redesigned two-day workshop (shared core, role tracks, seed projects) for team review; not published by the Pages workflow |
 | `20261123/` | One-day Hanwha Financial workshop invitation (`eDM.html`) and its logo, published at `/20261123/eDM.html` |
 | `Script/workshop-code/` | Archived slide examples and Korean speaker notes |
 | `tech_doc/` | Supplementary PDFs |
