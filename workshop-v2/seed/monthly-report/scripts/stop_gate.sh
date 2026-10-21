@@ -6,7 +6,8 @@ REPORT="output/월간보고.xlsx"
 COUNT_FILE=".claude/.gate_count"
 [ -f "$REPORT" ] || exit 0
 
-msg=$(python3 scripts/reconcile.py "$REPORT" 2>&1); rc=$?
+RECONCILE="${RECONCILE:-scripts/reconcile.py}"   # 관리형 배포에서는 root 소유 경로를 지정
+msg=$(python3 "$RECONCILE" "$REPORT" 2>&1); rc=$?
 if [ "$rc" -eq 0 ]; then
   rm -f "$COUNT_FILE" "output/검증실패.txt"
   exit 0
