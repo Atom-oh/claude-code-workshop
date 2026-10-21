@@ -6,6 +6,7 @@ on:
     paths:
       - "ccw-hands-on-lab/**"
       - "20261116/**"
+      - "20261123/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -28,9 +29,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Assemble Pages site
         run: |
-          mkdir -p _site/20261116
+          mkdir -p _site/20261116 _site/20261123
           cp -a ccw-hands-on-lab/. _site/
           cp -a 20261116/. _site/20261116/
+          cp -a 20261123/. _site/20261123/
           # Offline archive linked from every lab toolbar: top-level pages,
           # START_HERE.txt and assets/ (no v1/), with the ZIP button removed.
           offline=$(mktemp -d)

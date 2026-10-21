@@ -2,7 +2,7 @@
 
 ## Repository and Runtime
 
-The repository contains teaching content and two static browser sites.
+The repository contains teaching content and static browser pages published from three directories.
 There is no deployed API, database, cloud application stack, or dependency
 manifest. Shell, Python, TypeScript, IAM, and CI examples inside lessons belong
 to the curriculum; they are not repository infrastructure.
@@ -18,7 +18,7 @@ to the curriculum; they are not repository infrastructure.
 | `20261116/eDM.html`, `eDM.txt` | Web invitation and plain-text email copy |
 | `20261116/fsi-edm.html` | Compatibility entry forwarding to the web invitation |
 | `20261116/image/` | Event image assets |
-| `20261123/eDM.html`, `20261123/image/` | Standalone one-day invitation for Hanwha Financial with trimmed supplied logos; not copied by the Pages workflow |
+| `20261123/eDM.html`, `20261123/image/` | Standalone one-day invitation for Hanwha Financial with trimmed supplied logos; copied to `/20261123/` by the Pages workflow |
 | `20260525/`, `20260703/`, `20260901/`, `20260905/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
 | `Script/workshop-code/` | Archived Markdown examples, outside the Pages artifact |
 
@@ -35,15 +35,16 @@ that the event has already happened.
 
 Source of truth: [`.github/workflows/pages.yml`](../.github/workflows/pages.yml).
 
-1. A push to `main` affecting either site directory or the workflow, or a manual
+1. A push to `main` affecting a published directory or the workflow, or a manual
    dispatch, starts deployment.
 2. Copy `ccw-hands-on-lab/.` into `_site/`.
 3. Copy `20261116/.` into `_site/20261116/`.
-4. Add `.nojekyll`, upload `_site`, and deploy the artifact to GitHub Pages.
+4. Copy `20261123/.` into `_site/20261123/`.
+5. Add `.nojekyll`, upload `_site`, and deploy the artifact to GitHub Pages.
 
 The workflow supplies Pages permissions and the `github-pages` environment.
 It has no PR trigger or review job. Root instructions and `docs/` are not
-published; files inside the two site directories, including Markdown notes,
+published; files inside the published directories, including Markdown notes,
 are copied as-is. Public deployment URLs come from the repository's Pages
 configuration and workflow output.
 
@@ -53,13 +54,14 @@ Run from the repository root:
 
 ```bash
 preview_dir=$(mktemp -d /tmp/claude-workshop-preview.XXXXXX)
-mkdir -p "$preview_dir/20261116"
+mkdir -p "$preview_dir/20261116" "$preview_dir/20261123"
 cp -a ccw-hands-on-lab/. "$preview_dir/"
 cp -a 20261116/. "$preview_dir/20261116/"
+cp -a 20261123/. "$preview_dir/20261123/"
 touch "$preview_dir/.nojekyll"
 python3 -m http.server 8000 --bind 127.0.0.1 --directory "$preview_dir"
 ```
 
-Check `/` and `/20261116/`, including links, assets, navigation, and any changed
+Check `/`, `/20261116/` and `/20261123/`, including links, assets, navigation, and any changed
 JavaScript behavior. `file://` previews alone do not establish that the published
 relative paths work.
