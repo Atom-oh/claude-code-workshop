@@ -18,7 +18,7 @@ to the curriculum; they are not repository infrastructure.
 | `20261116/eDM.html`, `eDM.txt` | Web invitation and plain-text email copy |
 | `20261116/fsi-edm.html` | Compatibility entry forwarding to the web invitation |
 | `20261116/image/` | Event image assets |
-| `20261123/eDM.html`, `20261123/image/` | Standalone one-day invitation for Hanwha Financial with trimmed supplied logos; copied to `/20261123/` by the Pages workflow |
+| `20261123/eDM.html`, `20261123/image/` | Standalone one-day invitation for Hanwha Financial with the trimmed supplied logo; copied to `/20261123/` by the Pages workflow (no `index.html`, so use `/20261123/eDM.html`) |
 | `20260525/`, `20260703/`, `20260901/`, `20260905/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
 | `Script/workshop-code/` | Archived Markdown examples, outside the Pages artifact |
 
@@ -62,6 +62,6 @@ touch "$preview_dir/.nojekyll"
 python3 -m http.server 8000 --bind 127.0.0.1 --directory "$preview_dir"
 ```
 
-Check `/`, `/20261116/` and `/20261123/`, including links, assets, navigation, and any changed
+Check `/`, `/20261116/` and `/20261123/eDM.html`, including links, assets, navigation, and any changed
 JavaScript behavior. `file://` previews alone do not establish that the published
 relative paths work.

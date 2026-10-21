@@ -7,7 +7,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Added
 
-- Add `20261123/eDM.html`, a one-day Hanwha Financial workshop invitation modeled on an existing one-day invitation, with the training agenda, the supplied Hanwha logo (margins trimmed) under `20261123/image/`, and no lecture-material links. Date and venue are marked as to be announced. The Pages workflow now publishes it at `/20261123/`.
+- Add `20261123/eDM.html`, a one-day Hanwha Financial workshop invitation modeled on an existing one-day invitation, with the training agenda, the supplied Hanwha logo (margins trimmed) under `20261123/image/`, and no lecture-material links. Date and venue are marked as to be announced. The Pages workflow now publishes it at `/20261123/eDM.html`.
 - Add the July chapter PDF edition under `20260703/` and architecture/cost references under `tech_doc/`.
 - Add the general HTML lab portal, chapter labs, capstones, setup, preflight, and reference pages under `ccw-hands-on-lab/`.
 - Add a shared light/dark theme for the general lab site.

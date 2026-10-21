@@ -49,7 +49,7 @@ rg --files Script/workshop-code/ | rg auth
 
 [The Pages workflow](.github/workflows/pages.yml) copies the general lab site
 to the deployed site root, November materials to `/20261116/`, and the Hanwha
-Financial invitation to `/20261123/`. It runs for
+Financial invitation to `/20261123/eDM.html`. It runs for
 matching pushes to `main` or a manual dispatch. Use the workflow's deployment
 URL for this repository; links to the original author's sites in course
 materials are external references.
