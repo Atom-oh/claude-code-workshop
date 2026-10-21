@@ -13,6 +13,7 @@ examples, and static HTML labs. Project maintenance documentation is English.
 | [20260901](20260901/) | Session-ordered (D1/D2) delivery build of the decks |
 | [General labs](ccw-hands-on-lab/index.html) | Chapter labs, capstones, setup, preflight, and reference pages |
 | [November event](20261116/index.html) | Materials for the November 16–17, 2026 workshop |
+| [Hanwha Financial invitation](20261123/eDM.html) | One-day workshop invitation with the training agenda; date and venue to be announced |
 | [Code archive](Script/workshop-code/README.md) | 502 numbered slide examples organized by chapter and part |
 | [Technical documents](tech_doc/) | Architecture and cost-efficiency PDFs |
 
@@ -47,7 +48,8 @@ rg --files Script/workshop-code/ | rg auth
 ## Publishing
 
 [The Pages workflow](.github/workflows/pages.yml) copies the general lab site
-to the deployed site root and November materials to `/20261116/`. It runs for
+to the deployed site root, November materials to `/20261116/`, and the Hanwha
+Financial invitation to `/20261123/eDM.html`. It runs for
 matching pushes to `main` or a manual dispatch. Use the workflow's deployment
 URL for this repository; links to the original author's sites in course
 materials are external references.
