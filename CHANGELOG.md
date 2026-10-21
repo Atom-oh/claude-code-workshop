@@ -20,7 +20,6 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
-- Rewrite the `20261123/eDM.html` agenda on this branch to the redesigned one-day core (monthly report, verification gate, cost and control, role capstone, question clinic); the published page stays unchanged until merged.
 - Use the requested sonnet-5.5 and opus-5.5 names in the November Capstones 1-6 and switch the Bedrock model IDs to the Sonnet 5.5 inference profiles (`global.anthropic.claude-sonnet-5-5` for Capstones 2, 4, 5, 6 and Ch6, `us.` for Ch1).
 - Update the November labs against the Claude Code 2.1.296 documentation and CLI: Ch2 subagent frontmatter, model resolution, background and concurrency defaults, and built-in agents; Ch3 managed controls, Bedrock IAM policy and MCP lockdown; Ch4 hook scope; Ch5 and Ch6 tool-restriction semantics (`--tools` and SDK `tools` restrict, `--allowed-tools` and `allowedTools` only auto-approve); Ch1 install and Bedrock model pinning; Reference 1 directory map and settings precedence; Reference 2 command rows; Reference 3 plugin CLI.
 - Refresh the November labs for Claude Code v2.1.296: add a mods section and a financial-services plugin/mod governance section to Reference 3, add a permission-mode callout (auto mode is the default start mode since v2.1.283) to Ch4, and update the Ch1 sample output version.
