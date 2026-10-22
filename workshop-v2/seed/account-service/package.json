@@ -1,0 +1,7 @@
+{
+  "name": "account-service-lab",
+  "version": "1.0.0",
+  "description": "Claude Code workshop practice project (fictional data)",
+  "type": "module",
+  "scripts": { "test": "node test.js" }
+}

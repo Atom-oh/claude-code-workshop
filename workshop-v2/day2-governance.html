@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 2 · 통제와 운영 구조 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">Day 2 · 통제와 운영 구조</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">DAY 2 · GOVERN</span>
+  <h1>Day 2 · 통제와 운영 구조</h1>
+  <div class="sub">정책 묶음, OTel 집계, 감사 훅, 폐쇄망 가능 범위</div>
+  <p class="lede">가능한 통제는 직접 만들어 보고, 확인되지 않은 것은 확인되지 않았다고 말합니다.</p>
+  <div class="meta"><span><strong>60분</strong></span><span>개념 2개 (관리형 설정, OTel)</span></div>
+</header>
+<main>
+<section><h2>이 블록에서 하는 일</h2><p>"전사 오픈 가능한 관제 수준 구현", "폐쇄망 구성", "사용 비용의 가시화"에 답합니다. 핵심은 <b>가능한 통제는 설정으로 실제 보여 주고, 문서로 확인되지 않은 것은 확인되지 않았다고 말하는 것</b>입니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>60분</td></tr><tr><td>완료 기준</td><td>정책 묶음의 키를 설명하고, OTel 집계와 감사 로그를 직접 만들고, 폐쇄망 질문에 '가능/불가능/검증 필요'로 답할 수 있다</td></tr></table></section><section><h2>설명 15분: 정책은 위에서 아래로</h2><p>관리형 설정은 사용자·프로젝트 설정보다 우선하고, 서버 관리 → MDM → <code>managed-settings.json</code> 중 값을 주는 출처 하나가 기본으로 적용됩니다. 같은 키는 높은 스코프가 이기지만 <code>permissions.allow/ask/deny</code> 같은 <b>목록은 덮어쓰지 않고 병합</b>되며, 규칙 평가는 deny, ask, allow 순이라 어느 스코프의 deny든 먼저 적용됩니다.</p></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>정책 묶음 읽기</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p ~/workshop/governance &amp;&amp; cd ~/workshop/governance
+cat &gt; managed-settings.example.json &lt;&lt;'WV2EOF'
+{
+  "permissions": {
+    "disableBypassPermissionsMode": "disable"
+  },
+  "allowManagedHooksOnly": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "python3 /opt/claude-governance/audit_hook.py" }
+        ]
+      }
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "team-tools": { "source": { "source": "directory", "path": "/opt/team-tools" } }
+  },
+  "strictKnownMarketplaces": [
+    { "source": "directory", "path": "/opt/team-tools" }
+  ],
+  "enabledPlugins": { "monthly-report@team-tools": true },
+  "disableSideloadFlags": true,
+  "allowManagedMcpServersOnly": true,
+  "allowedMcpServers": [],
+  "pluginConfigs": {
+    "cc-plugin-sec-default@builtin": { "options": { "allowManagedModsOnly": true } }
+  },
+  "cleanupPeriodDays": 30,
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "none",
+    "OTEL_TRACES_EXPORTER": "none",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/json",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://127.0.0.1:14318",
+    "OTEL_METRIC_EXPORT_INTERVAL": "10000",
+    "OTEL_RESOURCE_ATTRIBUTES": "team.id=TEAM_ID_HERE"
+  }
+}
+WV2EOF</code></pre></div><table class="tbl"><tr><th>키</th><th>효과</th><th>비고</th></tr><tr><td><code>permissions.disableBypassPermissionsMode</code></td><td>모든 확인을 건너뛰는 bypassPermissions 모드를 막음</td><td>어느 설정 파일에서도 쓸 수 있으나 관리형에 두면 사용자가 바꿀 수 없음</td></tr><tr><td><code>allowManagedHooksOnly</code></td><td>사용자·프로젝트·로컬·플러그인 훅 차단, 조직이 배포한 훅만 실행</td><td>관리형 <code>enabledPlugins</code>로 강제한 플러그인의 훅은 예외</td></tr><tr><td><code>extraKnownMarketplaces</code> + <code>strictKnownMarketplaces</code> + <code>enabledPlugins</code></td><td>허용한 사내 마켓만 쓰고 지정 플러그인은 강제 설치</td><td>등록하려는 마켓의 출처도 허용 목록을 통과해야 함</td></tr><tr><td><code>disableSideloadFlags</code></td><td><code>--plugin-dir</code> 등 목록 밖 로드 경로 차단</td><td></td></tr><tr><td><code>allowManagedMcpServersOnly</code> + 빈 <code>allowedMcpServers</code></td><td>관리형 목록에 없는 MCP 서버 전부 차단</td><td><code>serverName</code> 항목은 보안 통제가 아님. URL이나 명령으로 지정</td></tr><tr><td><code>pluginConfigs.cc-plugin-sec-default@builtin.options.allowManagedModsOnly</code></td><td>사용자가 가져온 mod 차단 (mod는 샌드박스 밖에서 사용자 권한으로 실행됨)</td><td>조직 mod로 인정되려면 로컬 디렉터리 마켓 등 조건이 있음</td></tr><tr><td><code>cleanupPeriodDays</code></td><td>로컬 대화 기록(평문) 보존 기간</td><td>기본 30일</td></tr><tr><td><code>env</code> (OTel 변수)</td><td>사용량·비용 지표를 사내 수집기로 전송</td><td><code>team.id</code>는 개발자 측 설정이라 변조 가능. 관리형 env로 고정</td></tr></table><div class="callout warn"><span class="t">allowManagedHooksOnly는 코어 2의 Stop 게이트도 막습니다</span>프로젝트 <code>.claude/settings.json</code>의 훅은 이 설정이 켜지면 실행되지 않습니다. 게이트를 쓰려면 조직이 같은 훅을 <b>관리형 훅으로 승격</b>해 배포해야 합니다. 개별 편의와 조직 통제가 부딪히는 대표적인 지점입니다(공식 문서 기준, 이 자료에서는 관리형 배포를 실행하지 못했습니다).</div><div class="step"><span class="no">2</span><span>정책의 효과 일부 관찰</span></div><p>실제 배포는 서버 관리 설정, MDM, 또는 시스템 경로의 파일입니다(Linux <code>/etc/claude-code/managed-settings.json</code>, Windows <code>C:\Program Files\ClaudeCode\</code>). 먼저 <code>--settings</code>로 같은 파일의 일부 효과를 봅니다. 이 방식은 관리형 경로가 아니므로 우선순위 검증은 되지 않습니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>claude -p "1+1은? 숫자만." --settings ~/workshop/governance/managed-settings.example.json --model haiku --effort low</code></pre></div><div class="code out"><div class="head"><span>관찰 포인트</span></div><pre><code>Warning: claude.ai MCP servers blocked by enterprise policy: ...(연결된 claude.ai MCP 서버 목록)
+2</code></pre></div><p>MCP 허용 목록이 비어 있으므로 연결되어 있던 서버가 정책으로 차단됐다는 경고가 나옵니다. 조직 배포는 아래처럼 합니다(관리자 권한 필요).</p><div class="code"><div class="head"><span>Terminal (Linux, 관리자)</span><button class="copy" type="button">복사</button></div><pre><code>sudo mkdir -p /etc/claude-code
+sudo cp ~/workshop/governance/managed-settings.example.json /etc/claude-code/managed-settings.json
+# TEAM_ID_HERE와 /opt 경로를 실제 값으로 바꾼 뒤 사용. JSON이 잘못되면 시작이 거부됩니다.
+claude doctor</code></pre></div><div class="step"><span class="no">3</span><span>OTel로 팀별 비용 집계</span></div><p>수집기가 없어도 되도록 표준 라이브러리로 만든 작은 수신기를 씁니다(<code>127.0.0.1</code>만 수신). 한 터미널에서 수신기를 띄우고 다른 터미널에서 두 팀이 호출합니다.</p><div class="code"><div class="head"><span>Terminal 1</span><button class="copy" type="button">복사</button></div><pre><code>cat &gt; otlp_sink.py &lt;&lt;'WV2EOF'
+#!/usr/bin/env python3
+"""연습용 OTLP/HTTP(JSON) 수신기. 표준 라이브러리만 쓴다. 127.0.0.1에서만 받는다.
+Claude Code가 보내는 claude_code.cost.usage 지표를 team.id, model, query_source별로 합산해 출력한다.
+사용: python3 otlp_sink.py [포트]   (기본 14318)
+"""
+import json, sys
+from collections import defaultdict
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+TOTAL = defaultdict(float)
+
+
+def attr_map(attrs):
+    out = {}
+    for a in attrs or []:
+        v = a.get("value", {})
+        out[a["key"]] = next(iter(v.values())) if v else None
+    return out
+
+
+class H(BaseHTTPRequestHandler):
+    def do_POST(self):
+        body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+        try:
+            data = json.loads(body)
+        except Exception:
+            self.send_response(415); self.end_headers(); return
+        if self.path.endswith("/v1/metrics"):
+            for rm in data.get("resourceMetrics", []):
+                res = attr_map(rm.get("resource", {}).get("attributes"))
+                for sm in rm.get("scopeMetrics", []):
+                    for m in sm.get("metrics", []):
+                        if m.get("name") != "claude_code.cost.usage":
+                            continue
+                        for dp in (m.get("sum") or m.get("gauge") or {}).get("dataPoints", []):
+                            a = {**res, **attr_map(dp.get("attributes"))}
+                            val = dp.get("asDouble", dp.get("asInt", 0))
+                            key = (a.get("team.id", "-"), a.get("model", "-"), a.get("query_source", "-"))
+                            TOTAL[key] = max(TOTAL[key], float(val))  # 누적(cumulative) 값이므로 최댓값을 쓴다
+            print("\n팀 | 모델 | 호출 유형 | 누적 비용(USD)")
+            for (t, mo, q), v in sorted(TOTAL.items()):
+                print(f"{t} | {mo} | {q} | {v:.4f}", flush=True)
+        self.send_response(200); self.send_header("Content-Type", "application/json"); self.end_headers(); self.wfile.write(b"{}")
+
+    def log_message(self, *a):
+        pass
+
+
+if __name__ == "__main__":
+    port = int(sys.argv[1]) if len(sys.argv) &gt; 1 else 14318
+    print(f"OTLP 수신 대기: http://127.0.0.1:{port}/v1/metrics", flush=True)
+    HTTPServer(("127.0.0.1", port), H).serve_forever()
+WV2EOF
+chmod +x otlp_sink.py
+
+python3 otlp_sink.py</code></pre></div><div class="code"><div class="head"><span>Terminal 2, 팀별 호출</span><button class="copy" type="button">복사</button></div><pre><code>cd ~/workshop/monthly-report
+for t in lab-a lab-b; do
+  m=haiku; [ $t = lab-b ] &amp;&amp; m=sonnet
+  CFG="{\"env\":{\"CLAUDE_CODE_ENABLE_TELEMETRY\":\"1\",\"OTEL_METRICS_EXPORTER\":\"otlp\",\"OTEL_LOGS_EXPORTER\":\"none\",\"OTEL_TRACES_EXPORTER\":\"none\",\"OTEL_EXPORTER_OTLP_PROTOCOL\":\"http/json\",\"OTEL_EXPORTER_OTLP_ENDPOINT\":\"http://127.0.0.1:14318\",\"OTEL_METRIC_EXPORT_INTERVAL\":\"1000\",\"OTEL_RESOURCE_ATTRIBUTES\":\"team.id=$t\"}}"
+  claude -p "2+2는? 숫자만 답해." --settings "$CFG" --model $m --effort low --max-budget-usd 0.3
+done</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (수신기 출력)</span></div><pre><code>팀 | 모델 | 호출 유형 | 누적 비용(USD)
+lab-a | claude-haiku-5-5 | main | 0.0077
+lab-b | claude-sonnet-5-5 | main | 0.1546      # 플러그인이 많은 환경에서 위 명령을 그대로 실행한 값</code></pre></div><div class="callout tip"><span class="t">무엇이 실리나</span>지표 속성에 <code>team.id</code>, <code>model</code>, <code>query_source</code>(메인/서브에이전트), <code>effort</code>가 실립니다. 이메일 같은 식별 정보(<code>user.email</code>)도 가능하면 항상 전송되므로 수집기 쪽 개인정보 처리 정책을 먼저 정하세요. 프롬프트 본문은 기본적으로 전송되지 않습니다(<code>OTEL_LOG_USER_PROMPTS</code> 등을 켜야 함).</div><div class="callout warn"><span class="t">관측이지 차단이 아닙니다</span>OTel은 <b>사용량을 보여 줄 뿐</b> 한도를 넘으면 막지 않습니다. Bedrock 직접 사용에서 Claude Code 자체 기능으로는 사용자별 차단이 없고, 게이트웨이(자체 호스팅 Claude apps gateway의 지출 한도 등 LLM 게이트웨이의 예산·속도 제한)나 클라우드 예산으로 차단합니다(<a href="core3.html">코어 3</a>).</div><div class="step"><span class="no">4</span><span>감사 훅: 도구 호출을 JSONL로 남기기</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p ~/workshop/governance &amp;&amp; cd ~/workshop/governance
+cat &gt; audit_hook.py &lt;&lt;'WV2EOF'
+#!/usr/bin/env python3
+"""연습용 감사 훅. PreToolUse 이벤트마다 한 줄(JSONL)을 남긴다. 값 전체가 아니라 요약만 기록한다.
+훅은 stdin으로 JSON을 받는다. 이 스크립트는 아무것도 막지 않는다(항상 exit 0)."""
+import json, os, sys, time
+
+AUDIT = os.environ.get("AUDIT_LOG", os.path.expanduser("~/claude-audit.jsonl"))
+try:
+    ev = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+inp = ev.get("tool_input") or {}
+summary = inp.get("command") or inp.get("file_path") or inp.get("pattern") or inp.get("url") or ""
+rec = {
+    "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    "session": ev.get("session_id"),
+    "event": ev.get("hook_event_name"),
+    "tool": ev.get("tool_name"),
+    "target": str(summary)[:160],
+    "cwd": ev.get("cwd"),
+}
+with open(AUDIT, "a", encoding="utf-8") as f:
+    f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+sys.exit(0)
+WV2EOF
+chmod +x audit_hook.py</code></pre></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>cd ~/workshop/monthly-report
+AUDIT_LOG=$HOME/claude-audit-test.jsonl claude -p "data 폴더의 파일 목록을 보여주고 gangnam.csv의 첫 줄을 읽어줘." \
+  --settings '{"hooks":{"PreToolUse":[{"matcher":"*","hooks":[{"type":"command","command":"python3 ~/workshop/governance/audit_hook.py"}]}]}}' \
+  --model haiku --effort low --permission-mode acceptEdits --allowedTools "Read" "Bash(ls:*)" "Bash(head:*)"
+cat $HOME/claude-audit-test.jsonl</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (감사 로그)</span></div><pre><code>{"ts": "2026-10-21T14:05:58+0000", "session": "7e64f43b-...", "event": "PreToolUse", "tool": "Bash", "target": "ls -la .../data", "cwd": ".../wv2-test"}
+{"ts": "2026-10-21T14:05:58+0000", "session": "7e64f43b-...", "event": "PreToolUse", "tool": "Read", "target": ".../data/gangnam.csv", "cwd": ".../wv2-test"}</code></pre></div><div class="callout warn"><span class="t">--safe-mode와 함께 쓰지 마세요</span><code>--safe-mode</code>는 <code>--settings</code>로 넣은 훅까지 끕니다(측정 중 로그가 생기지 않아 확인). 이 훅은 아무것도 막지 않고 요약만 기록합니다. 값 전체가 아니라 앞 160자만 남기는 이유는 로그에 비밀이 쌓이지 않게 하기 위해서입니다.</div><div class="step"><span class="no">5</span><span>폐쇄망 질문에 답하기: 가능 / 불가능 / 검증 필요</span></div><table class="tbl"><tr><th>항목</th><th>라벨</th><th>근거와 한계</th></tr><tr><td>모델 트래픽을 Bedrock 또는 사내 LLM 게이트웨이로 고정 (<code>allowedProviders</code>)</td><td><span class="pill yes">가능</span></td><td>게이트웨이는 Anthropic 형식을 받아야 하고 인증·사용량·예산·감사는 게이트웨이가 담당</td></tr><tr><td>텔레메트리·업데이트·비필수 트래픽 차단</td><td><span class="pill yes">가능</span></td><td><code>DISABLE_TELEMETRY</code>(비어 있지 않은 값, <code>0</code>은 끄지 못함), <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</code>, <code>DISABLE_UPDATES</code></td></tr><tr><td>프록시, 사설 CA, mTLS</td><td><span class="pill yes">가능</span></td><td><code>HTTPS_PROXY</code>, <code>NODE_EXTRA_CA_CERTS</code>, 클라이언트 인증서 변수. SOCKS는 미지원</td></tr><tr><td>플러그인을 인터넷 없이 배포</td><td><span class="pill yes">가능</span></td><td><code>CLAUDE_CODE_PLUGIN_SEED_DIR</code> 읽기 전용 시드 + 사내 마켓</td></tr><tr><td>훅·MCP·마켓·mod 잠금, 감사 이벤트(OTel <code>tool_decision</code> 등)</td><td><span class="pill yes">가능</span></td><td>관측 수준의 통제. 프롬프트는 기본적으로 가려지고 로컬 기록은 평문</td></tr><tr><td>샌드박스로 Bash 하위 프로세스 격리</td><td><span class="pill chk">조건부</span></td><td>macOS, Linux, WSL2만. 네이티브 Windows는 샌드박스 없음. 파일 도구, MCP, 훅은 샌드박스 밖</td></tr><tr><td><b>완전 오프라인 사용</b></td><td><span class="pill no">불가</span></td><td>모델 엔드포인트에 닿는 경로가 반드시 필요</td></tr><tr><td>Bedrock 사용 시 WebSearch, <code>/logout</code></td><td><span class="pill no">불가</span></td><td>Bedrock에서는 지원되지 않음</td></tr><tr><td>Bedrock <b>VPC 인터페이스 엔드포인트(PrivateLink)</b> 위의 Claude Code</td><td><span class="pill chk">검증 필요</span></td><td>AWS는 bedrock-runtime 엔드포인트를 제공하지만 Claude Code 문서는 PrivateLink를 언급하지 않음. vpce 호스트명에서의 동작은 직접 확인</td></tr><tr><td>인터넷 경로가 전혀 없는 서브넷에서의 시작 점검</td><td><span class="pill chk">검증 필요</span></td><td>문서가 텔레메트리·비필수 트래픽 차단을 권장하나 시작 시 점검의 동작은 직접 확인</td></tr><tr><td>사내 npm·GitHub 미러, 프록시 뒤 게이트웨이</td><td><span class="pill chk">검증 필요</span></td><td>플러그인·마켓별로 필요 여부 확인</td></tr><tr><td><b>DRM 문서, 화면 캡처 차단, 클립보드 제한, VDI</b></td><td><span class="pill no">문서 없음</span></td><td>공식 문서에 동작이 없음. 고객 단말에서 직접 검증 필요</td></tr></table><div class="step"><span class="no">6</span><span>고객 환경에서 사전에 검증할 7가지</span></div><ol><li>모델 엔드포인트(Bedrock 또는 게이트웨이)에 업무 단말에서 닿는가? (프리플라이트의 모델 호출)</li><li>프록시와 사설 CA를 환경 변수로 지정했을 때 통과하는가?</li><li>텔레메트리·업데이트·비필수 트래픽을 끈 상태로 시작되는가?</li><li>Bedrock PrivateLink를 쓸 경우 vpce 호스트명으로 호출이 성공하는가? (SigV4 호스트·리전 처리)</li><li>플러그인 설치에 외부 접근이 필요한가? 시드와 사내 마켓으로 대체되는가?</li><li>DRM이 걸린 문서를 도구가 읽을 수 있는가? 없다면 업무 흐름은 무엇인가?</li><li>화면 캡처·공유 제한이 있는 단말에서 가이드를 어떻게 볼 것인가?</li></ol></section><div class="checkpoint"><span class="t">Day 2 통제 체크포인트</span><label><input type="checkbox"><span>정책 묶음의 키 5개를 의미와 함께 설명할 수 있다</span></label><label><input type="checkbox"><span>OTel 수신기에 팀별·모델별 비용이 집계되는 것을 봤다</span></label><label><input type="checkbox"><span>감사 로그 JSONL에 도구 호출이 기록되는 것을 봤다</span></label><label><input type="checkbox"><span>'완전 오프라인은 불가'와 'PrivateLink·DRM은 검증 필요'를 구분해 말할 수 있다</span></label><label><input type="checkbox"><span>allowManagedHooksOnly가 프로젝트 훅을 막는 이유를 설명할 수 있다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li>OTel 수신기의 집계 키에 <code>effort</code>를 추가해 effort별 비용도 봅니다.</li><li>감사 훅을 확장해 <code>.env</code> 같은 민감 경로 읽기 시도를 별도 표시로 남깁니다(차단하지 않고 기록만).</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>포트 충돌</b>: 수신기 기본 포트는 14318입니다. 이미 사용 중이면 다른 포트로 띄우고 <code>OTEL_EXPORTER_OTLP_ENDPOINT</code>도 같게 바꾸세요.</li><li><b>설정 파일의 OTel 변수와 충돌</b>: 사용자 <code>settings.json</code>의 <code>env</code>에 이미 OTel이 설정되어 있으면 셸 변수가 덮어써집니다. <code>--settings</code>의 <code>env</code>가 우선합니다.</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">OTLP(http/json) 수신기로 팀별·모델별 비용 집계를 확인했습니다. 감사 훅이 도구 호출을 JSONL로 남기는 것을 확인했습니다.</p><p class="ran"><code>--settings</code>로 정책 예시를 적용했을 때 MCP 차단 경고가 실제로 표시되는 것을 확인했습니다.</p><p class="ran">정책 예시 JSON의 문법을 확인하고 Claude가 파일을 받아들이는 것을 확인했습니다.</p><p class="not">관리형 경로(<code>/etc/claude-code</code>, MDM, 서버 관리)에 실제로 배포한 우선순위 동작은 확인하지 못했습니다(관리자 권한 필요).</p><p class="not"><code>allowManagedHooksOnly</code>, 마켓 잠금, mod 잠금의 실제 차단 동작은 문서 기준입니다.</p><p class="not">Bedrock PrivateLink, 무인터넷 서브넷, DRM·캡처 차단·VDI는 확인하지 못했습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="day2-skills.html">← Day 2 확산</a><a href="track-a1.html">트랙 A-1 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

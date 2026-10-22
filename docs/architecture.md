@@ -19,6 +19,7 @@ to the curriculum; they are not repository infrastructure.
 | `20261116/fsi-edm.html` | Compatibility entry forwarding to the web invitation |
 | `20261116/image/` | Event image assets |
 | `20261123/eDM.html`, `20261123/image/` | Standalone one-day invitation for Hanwha Financial with the trimmed supplied logo; copied to `/20261123/` by the Pages workflow (no `index.html`, so use `/20261123/eDM.html`) |
+| `workshop-v2/` | Draft two-day workshop: HTML labs with `assets/`, runnable seed projects under `seed/`, and a facilitator guide. Copied to `/workshop-v2/` by the Pages workflow for team review; seed projects are downloadable files, not executed by Pages |
 | `20260525/`, `20260703/`, `20260901/`, `20260905/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
 | `Script/workshop-code/` | Archived Markdown examples, outside the Pages artifact |
 

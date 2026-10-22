@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>트랙 C-1 · 팀별 비용 가시화 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">트랙 C-1 · 팀별 비용 가시화</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">TRACK C · R1</span>
+  <h1>트랙 C-1 · 팀별 비용 가시화</h1>
+  <div class="sub">운영·거버넌스: 측정에서 정책으로</div>
+  <p class="lede">세 팀의 호출을 모아 팀·모델·호출 유형별 비용표를 만들고 모델 정책을 도출합니다.</p>
+  <div class="meta"><span><strong>130분</strong></span><span>운영·거버넌스 직군 대상</span></div>
+</header>
+<main>
+<section><h2>이 트랙에서 하는 일</h2><p>설문의 비용 질문("조직 내 사용 비용의 가시화", "서브에이전트 사용 시 비용이 기하급수적으로 증가", "팀별 토큰 배분")에 <b>내 팀의 숫자로</b> 답합니다. 코어 3이 한 호출의 비용을 쟀다면, 여기서는 <b>팀 단위로 모으고 정책으로 연결</b>합니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>130분 (실습 120분 + 여유 10분)</td></tr><tr><td>이어서</td><td><a href="day2-governance.html">Day 2 통제</a>의 수신기(<code>otlp_sink.py</code>)</td></tr><tr><td>완료 기준</td><td>팀·모델·호출 유형별 비용표를 만들고, 그 표에서 모델 정책 3줄을 도출한다</td></tr></table><div class="callout tip"><span class="t">트랙 실습의 공통 규칙</span>모든 데이터는 가상입니다. 막히면 <a href="facilitator.html">힌트 정책</a>대로 '기본 레일 → 보너스 → 힌트' 순서를 따르고, 먼저 끝나면 보너스 카드로 갑니다. 마지막 10분은 쇼케이스 카드를 채웁니다.</div></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>세 팀이 호출한 비용을 모으기 (35분)</span></div><p>터미널 하나에서 수신기를 띄워 두고(<a href="day2-governance.html">Day 2</a> 참고), 다른 터미널에서 팀 태그가 다른 세 번의 호출을 실행합니다. 세 번째는 서브에이전트를 부릅니다(코어 2의 <code>report-verifier</code>와 정상 보고서 필요).</p><div class="code"><div class="head"><span>Terminal 2</span><button class="copy" type="button">복사</button></div><pre><code>cd ~/workshop/monthly-report
+python3 /dev/stdin &lt;&lt;'PY'
+import json, subprocess
+def run(team, prompt, model, extra):
+    cfg = {'env': {'CLAUDE_CODE_ENABLE_TELEMETRY': '1', 'OTEL_METRICS_EXPORTER': 'otlp', 'OTEL_LOGS_EXPORTER': 'none',
+           'OTEL_TRACES_EXPORTER': 'none', 'OTEL_EXPORTER_OTLP_PROTOCOL': 'http/json',
+           'OTEL_EXPORTER_OTLP_ENDPOINT': 'http://127.0.0.1:14318', 'OTEL_METRIC_EXPORT_INTERVAL': '1000',
+           'OTEL_RESOURCE_ATTRIBUTES': f'team.id={team}'}}
+    subprocess.run(['claude', '-p', prompt, '--settings', json.dumps(cfg), '--model', model, '--effort', 'low',
+                    '--permission-mode', 'acceptEdits', '--max-budget-usd', '1', *extra], stdin=subprocess.DEVNULL, capture_output=True)
+run('lab-a', '2+2는? 숫자만 답해.', 'haiku', [])
+run('lab-b', '2+2는? 숫자만 답해.', 'sonnet', [])
+run('lab-c', 'report-verifier 서브에이전트에게 output/월간보고.xlsx 검증을 맡기고 결과를 그대로 보여줘.', 'sonnet',
+    ['--allowedTools', 'Read', 'Agent', 'Bash(python3 scripts/reconcile.py *)'])
+PY</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (수신기 출력, USD)</span></div><pre><code>팀 | 모델 | 호출 유형 | 누적 비용(USD)
+lab-a | claude-haiku-5-5 | main | 0.0066
+lab-b | claude-sonnet-5-5 | main | 0.1309
+lab-c | claude-haiku-5-5 | subagent | 0.0021
+lab-c | claude-sonnet-5-5 | main | 0.2043      # 플러그인이 많은 환경에서 위 명령을 그대로 실행한 값</code></pre></div><div class="callout tip"><span class="t">서브에이전트가 따로 보입니다</span><code>query_source</code>가 <code>main</code>과 <code>subagent</code>로 나뉩니다. 서브에이전트 모델을 haiku로 제한한 효과가 표로 보입니다. 수신기는 지표의 누적값 중 최댓값을 쓰고, 프로세스를 다시 띄우면 집계가 초기화됩니다. 연습용이며 운영 수집기를 대체하지 않습니다.</div><div class="step"><span class="no">2</span><span>표 해석하기 (20분)</span></div><table class="tbl"><tr><th>질문</th><th>측정으로 답하는 방법</th></tr><tr><td>서브에이전트 때문에 비용이 늘었나?</td><td><code>query_source</code>가 <code>subagent</code>인 행의 비용과 모델</td></tr><tr><td>어느 팀이 비싼 모델을 많이 쓰나?</td><td><code>team.id</code> × <code>model</code> 집계</td></tr><tr><td>비싼 모델이 꼭 필요했나?</td><td>비용이 큰 호출의 작업 종류를 사람이 확인(수치만으로는 판단 불가)</td></tr><tr><td>한도를 넘기고 있나?</td><td>OTel은 관측만 함. 차단이 필요하면 게이트웨이 한도나 클라우드 예산 통제</td></tr></table><div class="step"><span class="no">3</span><span>내 팀 모델 정책 3줄 만들기 (20분)</span></div><p>측정에서 얻은 근거로 정책을 씁니다. 조직이 강제하려면 관리형 설정의 허용 목록을 씁니다(공식 문서 기준, 이 자료에서는 실행하지 않았습니다).</p><div class="code"><div class="head"><span>managed-settings.json 일부 (예시)</span><button class="copy" type="button">복사</button></div><pre><code>{
+  "availableModels": ["sonnet", "haiku"],
+  "enforceAvailableModels": true
+}</code></pre></div><div class="code"><div class="head"><span>메모</span><button class="copy" type="button">복사</button></div><pre><code>1. 기본 모델은 ____, 근거: 표의 ____ 행.
+2. 서브에이전트는 model: ____ 로 고정한다. 근거: ____.
+3. 자동 실행에는 --max-budget-usd ____ 를 건다. 근거: 코어 3의 한도 초과 측정.</code></pre></div><div class="step"><span class="no">4</span><span>Bedrock에서 팀별로 비용 귀속하기 (30분, AWS 계정 필요, 이 자료에서는 실행하지 않음)</span></div><p>OTel은 Claude Code 쪽의 관측입니다. 청구 쪽에서 팀별로 나누려면 팀마다 <b>애플리케이션 추론 프로파일</b>을 만들고 비용 할당 태그를 붙입니다. 프로파일의 태그는 요청의 청구 기록에 붙습니다. 집계는 일 단위이며 요청 단위 비용은 아닙니다(AWS 문서).</p><div class="code"><div class="head"><span>Terminal (AWS CLI)</span><button class="copy" type="button">복사</button></div><pre><code># 1) 시스템 정의(교차 리전) 추론 프로파일의 ARN 찾기 (읽기 전용)
+aws bedrock list-inference-profiles --type-equals SYSTEM_DEFINED \
+  --query "inferenceProfileSummaries[?contains(inferenceProfileId,'sonnet-5-5')].[inferenceProfileId,inferenceProfileArn]" --output text
+
+# 2) 팀별 애플리케이션 추론 프로파일 만들기 (리소스가 생성됨: 실습 계정에서만)
+aws bedrock create-inference-profile --inference-profile-name team-lab-a-sonnet \
+  --model-source copyFrom=&lt;1에서 찾은 ARN&gt; --tags key=team,value=lab-a
+
+# 3) Claude Code가 그 프로파일을 쓰게 하기 (Bedrock 문서: 모델 값에 프로파일 ARN 가능)
+export ANTHROPIC_MODEL='arn:aws:bedrock:&lt;리전&gt;:&lt;계정&gt;:application-inference-profile/&lt;id&gt;'</code></pre></div><div class="callout warn"><span class="t">실행 전에 확인하세요</span><code>create-inference-profile</code>은 리소스를 만듭니다. 실습용 계정에서만 실행하고, 비용 할당 태그를 청구 설정에서 활성화해야 보고서에 나타납니다(활성화 방법과 반영 지연은 이 자료에서 확인하지 못했습니다). 명령 형식은 로컬 AWS CLI의 도움말과 대조했고 실행은 하지 않았습니다.</div><div class="step"><span class="no">5</span><span>한 장 요약 만들기 (15분)</span></div><div class="code"><div class="head"><span>쇼케이스 카드 (1분 발표)</span><button class="copy" type="button">복사</button></div><pre><code>입력: ____________________ (어떤 자료)
+규칙: ____________________ (CLAUDE.md 또는 Skill에 적은 것)
+검증: ____________________ (무엇이 무엇을 확인하나)
+한계: ____________________ (이 방식이 못 잡는 것)
+내 팀의 모델 정책 3줄: ____________________</code></pre></div></section><div class="checkpoint"><span class="t">트랙 C-1 체크포인트</span><label><input type="checkbox"><span>세 팀의 호출이 팀·모델·호출 유형별로 집계되는 것을 봤다</span></label><label><input type="checkbox"><span>서브에이전트 비용이 메인과 분리되어 보이는 것을 확인했다</span></label><label><input type="checkbox"><span>표에서 모델 정책 3줄을 도출했다</span></label><label><input type="checkbox"><span>OTel이 관측이지 차단이 아님을 설명할 수 있다</span></label><label><input type="checkbox"><span>Bedrock 팀별 귀속의 방법과 한계(일 단위)를 설명할 수 있다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li>수신기의 집계 키에 <code>effort</code>를 더해 effort별 비용을 봅니다.</li><li>같은 작업을 모델별로 5회씩 돌려 비용의 범위(최소~최대)를 표로 만듭니다(코어 3의 캐시 요동을 확인).</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>수신기에 아무것도 안 뜸</b>: 포트(14318)와 <code>OTEL_EXPORTER_OTLP_ENDPOINT</code>가 같은지, 사용자 <code>settings.json</code>의 OTel <code>env</code>가 덮어쓰고 있지 않은지 확인하세요(<code>--settings</code>가 우선합니다).</li><li><b>서브에이전트 행이 없음</b>: 서브에이전트가 실제로 호출됐는지 JSON의 <code>modelUsage</code>에 서브에이전트 모델이 있는지 확인하세요.</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">팀 태그가 다른 세 번의 호출이 수신기에서 팀·모델·호출 유형별로 집계되는 것을 확인했고, 서브에이전트 호출이 <code>subagent</code>로 분리되어 나타나는 것을 확인했습니다.</p><p class="not">Bedrock 애플리케이션 추론 프로파일 생성, 태그 활성화, 청구 반영은 실행하지 못했습니다(AWS CLI 문법만 대조).</p><p class="not"><code>availableModels</code> 정책 예시는 문서 기준이며 실행하지 않았습니다.</p><p class="not">수신기는 연습용이며 운영 수집기(OpenTelemetry Collector 등)의 대체가 아닙니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="track-b2.html">← 트랙 B-2</a><a href="track-c2.html">트랙 C-2 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

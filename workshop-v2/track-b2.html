@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>트랙 B-2 · PR 리뷰 봇과 품질 일관성 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">트랙 B-2 · PR 리뷰 봇과 품질 일관성</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">TRACK B · R2</span>
+  <h1>트랙 B-2 · PR 리뷰 봇과 품질 일관성</h1>
+  <div class="sub">규칙은 파일로, 판정은 게이트로</div>
+  <p class="lede">결함 있는 변경은 CI에서 막고, 정상 변경은 통과시킵니다.</p>
+  <div class="meta"><span><strong>170분</strong></span><span>B-1 이후</span></div>
+</header>
+<main>
+<section><h2>이 트랙에서 하는 일</h2><p>"에이전트가 만든 코드의 품질과 일관성을 어떻게 유지하나", "조직 전체의 수준을 맞추려면"에 답합니다. 사람의 리뷰를 대체하지 않고, <b>PR마다 같은 기준으로 먼저 검사해 명백한 결함을 CI에서 막는 봇</b>을 만듭니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>170분</td></tr><tr><td>이어서</td><td><a href="track-b1.html">B-1</a>의 <code>~/workshop/account-service</code></td></tr><tr><td>완료 기준</td><td>결함 있는 diff는 봇이 막고(종료 코드 1), 정상 diff는 통과하며(종료 코드 0), 비용 상한이 걸려 있다</td></tr></table><div class="callout tip"><span class="t">트랙 실습의 공통 규칙</span>모든 데이터는 가상입니다. 막히면 <a href="facilitator.html">힌트 정책</a>대로 '기본 레일 → 보너스 → 힌트' 순서를 따르고, 먼저 끝나면 보너스 카드로 갑니다. 마지막 10분은 쇼케이스 카드를 채웁니다.</div></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>B-1 결과 커밋과 규칙 파일 (20분)</span></div><p>B-1을 했다면 먼저 그 결과를 커밋해 두세요(<code>git add -A &amp;&amp; git commit -qm "b1: fixes and tests"</code>). 이후 결함 diff만 따로 분리됩니다. 규칙 파일은 B-1에서 이미 만들었다면 <b>확인만</b> 하고, B-2만 하는 경우에만 아래로 만듭니다.</p><p>일관성은 사람의 기억이 아니라 <b>파일</b>로 유지합니다. 경로별 규칙(<code>paths:</code>)은 해당 파일을 다룰 때만 적용됩니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p .claude/rules
+cat &gt; .claude/rules/money.md &lt;&lt;'WV2EOF'
+---
+paths:
+  - "src/fees.js"
+---
+금액 계산 파일 규칙: 수수료는 원 단위 정수로 반올림해서 반환한다(`Math.round`). 부동소수점 결과를 그대로 반환하지 않는다.
+WV2EOF</code></pre></div><p>이미 B-1에서 CLAUDE.md의 팀 규칙(금액은 정수 반올림, 새 함수에는 테스트)이 있습니다. 봇의 리뷰 사유가 이 규칙을 직접 인용하는 것을 뒤에서 확인합니다.</p><div class="step"><span class="no">2</span><span>리뷰 봇 만들기 (40분)</span></div><p>읽기 전용 도구만 주고(<code>--tools</code>), 연결된 MCP 도구도 막고(<code>--disallowedTools "mcp__*"</code>), 구조화된 JSON으로 결과를 받습니다(<code>--json-schema</code>). 결과의 <code>structured_output</code>이 없으면 <b>통과가 아니라 오류</b>로 처리합니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p scripts
+cat &gt; scripts/review_schema.json &lt;&lt;'WV2EOF'
+{
+  "type": "object",
+  "properties": {
+    "summary": { "type": "string" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string" },
+          "line": { "type": "integer" },
+          "severity": { "type": "string", "enum": ["high", "medium", "low"] },
+          "message": { "type": "string" }
+        },
+        "required": ["file", "severity", "message"]
+      }
+    }
+  },
+  "required": ["summary", "findings"]
+}
+WV2EOF
+
+mkdir -p scripts
+cat &gt; scripts/review_bot.sh &lt;&lt;'WV2EOF'
+#!/usr/bin/env bash
+# PR 리뷰 봇: diff를 읽기 전용으로 검토하고 JSON으로 결과를 낸다.
+# high 지적이 하나라도 있으면 종료 코드 1을 반환해 CI를 막는다.
+# 사용: scripts/review_bot.sh [기준 브랜치]   (기본 origin/main)
+set -euo pipefail
+BASE="${1:-origin/main}"
+DIFF=$(git diff "$BASE"...HEAD)
+[ -n "$DIFF" ] || { echo "변경 없음"; exit 0; }
+
+RESULT=$(printf '%s' "$DIFF" | claude -p "이 diff를 코드 리뷰해 줘. 금액 계산 정확성, null 처리, 테스트 누락을 우선 본다. 변경된 줄에 대한 지적만 한다." \
+  --model "${REVIEW_MODEL:-sonnet}" --tools "Read,Grep,Glob" --disallowedTools "mcp__*" \
+  --permission-prompts none --max-turns 6 --max-budget-usd "${REVIEW_BUDGET:-0.50}" \
+  --json-schema "$(cat "$(dirname "$0")/review_schema.json")" --output-format json)
+
+# structured_output이 없으면 실패로 취급한다(검증 없이 통과시키지 않는다).
+echo "$RESULT" | jq -e '.structured_output' &gt;/dev/null || { echo "리뷰 결과 형식 오류" &gt;&amp;2; exit 2; }
+echo "$RESULT" | jq -r '.structured_output | "요약: \(.summary)", (.findings[] | "[\(.severity)] \(.file):\(.line // "-") \(.message)")'
+echo "비용: $(echo "$RESULT" | jq -r '.total_cost_usd') USD" &gt;&amp;2
+
+HIGH=$(echo "$RESULT" | jq '[.structured_output.findings[] | select(.severity=="high")] | length')
+[ "$HIGH" -eq 0 ] || { echo "high 지적 ${HIGH}건: 머지 차단" &gt;&amp;2; exit 1; }
+WV2EOF
+chmod +x scripts/review_bot.sh</code></pre></div><div class="step"><span class="no">3</span><span>결함이 있는 diff에서 막히는지 시험 (30분)</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>git checkout -q -b feature/transfer
+cat &gt;&gt; src/fees.js &lt;&lt;'JS'
+
+// 이체 처리 (신규)
+export function transfer(from, to, amount) {
+  from.balance -= amount;
+  to.balance += amount;
+  const fee = calcFee(amount, from.kyc.grade);
+  from.balance -= fee;
+  return { fee };
+}
+JS
+git commit -qam "feat: add transfer"
+scripts/review_bot.sh main; echo "종료 코드=$?"</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (sonnet-5.5, 25초, 0.106달러)</span></div><pre><code>[high] (규칙 위반·결함 등 4건, 아래는 일부만 표시)
+[medium] src/fees.js:10 테스트 누락: 새 함수 transfer의 테스트가 없다(프로젝트 규칙 위반). ...
+[low] src/fees.js:15 반환값이 { fee }뿐이라 호출자가 이체 후 잔액을 알 수 없다 ...
+비용: 0.1059978 USD
+high 지적 4건: 머지 차단
+종료 코드=1</code></pre></div><p><code>REVIEW_MODEL=opus</code>로 돌린 한 번은 high 5건, 0.124달러였습니다. <code>REVIEW_MODEL</code>로 모델을 바꿔 비용과 지적의 질을 비교하세요. 지적에는 "프로젝트 규칙(<code>.claude/rules/money.md</code>, CLAUDE.md)은 원 단위 정수 반올림을 요구한다"처럼 <b>파일에 적은 규칙이 인용</b>됩니다.</p><div class="step"><span class="no">4</span><span>정상 diff는 통과하는지 시험 (20분)</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>git checkout -q main &amp;&amp; git checkout -q -b feature/docs
+sed -i 's|^// 이체 수수료 계산 (연습용)|// 이체 수수료 계산 (연습용, 등급별 요율은 아래 RATE 참고)|' src/fees.js
+git commit -qam "docs: comment"
+scripts/review_bot.sh main; echo "종료 코드=$?"</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (0.058달러)</span></div><pre><code>요약: 변경된 줄에서 막을 만한 문제 없음. 금액 계산·null 처리 변경 없음, 주석만 바뀐 fees.js는 테스트 불필요.
+종료 코드=0</code></pre></div><div class="callout tip"><span class="t">봇은 사람을 대체하지 않습니다</span>봇의 지적이 매번 같을 보장은 없고(모델 출력), 정상 diff에서도 낮은 심각도의 군더더기 지적이 나올 수 있습니다. 그래서 <b>high만 차단</b>하고 나머지는 참고로 두며, 최종 승인은 사람이 합니다.</div><div class="step"><span class="no">5</span><span>CI에 연결 (40분, 실행하지 않음)</span></div><div class="code"><div class="head"><span>YAML, .github/workflows/pr-review-bot.yml</span><button class="copy" type="button">복사</button></div><pre><code>name: pr-review-bot
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: PR 리뷰 (high 지적이 있으면 실패)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BASE_REF: ${{ github.base_ref }}
+          REVIEW_BUDGET: "0.50"
+        run: scripts/review_bot.sh "origin/$BASE_REF"</code></pre></div><p>PR 제목이나 브랜치 이름 같은 사용자 입력은 <code>run:</code>에 직접 넣지 않고 환경 변수(<code>BASE_REF</code>)로 받습니다. <code>fetch-depth: 0</code>이 있어야 기준 브랜치와의 diff를 계산할 수 있습니다.</p><div class="step"><span class="no">6</span><span>비용 상한 정하기 (10분)</span></div><p>PR이 하루 몇 건인지 곱해 보고 <code>REVIEW_BUDGET</code>(1회 상한)과 <code>--max-turns</code>를 정합니다. 상한은 작업 비용보다 여유 있게 잡으세요(<a href="core3.html">코어 3</a>의 하드 스톱은 한도를 넘길 수 있습니다).</p><div class="step"><span class="no">7</span><span>쇼케이스 카드 (10분)</span></div><div class="code"><div class="head"><span>쇼케이스 카드 (1분 발표)</span><button class="copy" type="button">복사</button></div><pre><code>입력: ____________________ (어떤 자료)
+규칙: ____________________ (CLAUDE.md 또는 Skill에 적은 것)
+검증: ____________________ (무엇이 무엇을 확인하나)
+한계: ____________________ (이 방식이 못 잡는 것)
+봇이 막는 기준: ____________________ / 사람이 보는 것: ____________________</code></pre></div></section><div class="checkpoint"><span class="t">트랙 B-2 체크포인트</span><label><input type="checkbox"><span>규칙을 파일(CLAUDE.md, .claude/rules/)로 남겼다</span></label><label><input type="checkbox"><span>결함 diff에서 봇이 종료 코드 1로 막았다</span></label><label><input type="checkbox"><span>정상 diff에서 종료 코드 0으로 통과했다</span></label><label><input type="checkbox"><span>structured_output이 없으면 오류로 처리하는 이유를 설명할 수 있다</span></label><label><input type="checkbox"><span>high만 차단하고 최종 승인은 사람이 하는 이유를 설명할 수 있다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li><code>--json-schema</code>에 <code>confidence</code> 필드를 추가해 낮은 확신의 지적을 구분합니다.</li><li>같은 diff를 haiku, sonnet, opus로 돌려 지적의 수와 비용을 비교하는 표를 만듭니다.</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>'리뷰 결과 형식 오류'</b>: 모델 호출 실패나 예산 초과입니다. <code>REVIEW_BUDGET</code>을 확인하고 <code>--output-format json</code> 결과를 직접 보세요.</li><li><b>diff가 비어 있음</b>: 기준 브랜치 이름이 맞는지(<code>main</code>) 확인하세요.</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">리뷰 봇을 결함 diff(high 4~5건, exit 1)와 정상 diff(exit 0)에서 실제로 실행했습니다. sonnet 기준 0.106달러와 0.058달러, <code>REVIEW_MODEL=opus</code> 0.124달러.</p><p class="ran">구조화 출력(<code>--json-schema</code>)과 <code>structured_output</code> 검사, 규칙 파일이 지적에 인용되는 것을 확인했습니다.</p><p class="ran">워크플로 YAML의 문법을 확인했습니다.</p><p class="not">GitHub Actions에서의 실제 실행과 PR 연동은 하지 못했습니다.</p><p class="not">봇의 지적은 모델 출력이라 매번 같지 않습니다. 위 출력은 한 번의 측정입니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="track-b1.html">← 트랙 B-1</a><a href="track-c1.html">트랙 C-1 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

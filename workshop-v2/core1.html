@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>코어 1 · 일 맡기는 법 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">코어 1 · 일 맡기는 법</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">DAY 1 · CORE 1</span>
+  <h1>코어 1 · 일 맡기는 법</h1>
+  <div class="sub">맥락, Plan, 권한 모드</div>
+  <p class="lede">가상 월간 점검 보고서를 Claude에게 맡겨 첫 결과물을 만듭니다.</p>
+  <div class="meta"><span><strong>70분</strong></span><span>개념 2개</span></div>
+</header>
+<main>
+<section><h2>이 블록에서 하는 일</h2><p>가상 "월간 소비자보호 점검 보고서"를 Claude에게 맡깁니다. 설치와 개념 설명이 아니라 <b>결과물이 나오는 경험</b>이 먼저입니다. 개념 2개(맥락, Plan·권한 모드)만 씁니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>70분 (설명 15 + 실습 55)</td></tr><tr><td>사전 조건</td><td><a href="preflight.html">프리플라이트</a> 통과</td></tr><tr><td>완료 기준</td><td><code>output/월간보고.xlsx</code>가 만들어지고 대조 스크립트가 통과한다</td></tr></table></section><section><h2>설명 15분: 맡기는 법 두 가지</h2><ul><li><b>맥락(CLAUDE.md)</b>: 매번 말하지 않아도 되는 규칙을 파일로 적어 둔다. 세션을 시작할 때 읽힌다.</li><li><b>Plan과 권한 모드</b>: 실행 전에 계획을 먼저 보고 승인한다. 승인 없이 할 수 있는 범위는 권한 모드가 정한다. v2.1.283부터 대화형 세션은 <code>auto</code> 모드로 시작하며(분류기 모델이 행동을 검토), 모델 조건이 맞지 않으면 Manual로 시작한다.</li></ul></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>작업 폴더와 가상 데이터 만들기</span></div><div class="code"><div class="head"><span>Terminal, 전체 복사</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p ~/workshop/monthly-report &amp;&amp; cd ~/workshop/monthly-report
+
+cat &gt; make_seed.py &lt;&lt;'WV2EOF'
+#!/usr/bin/env python3
+"""가상 데이터와 양식을 만든다. 모든 값은 연습용이며 실제 고객·내부 자료가 아니다."""
+import csv, os, sys
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
+BRANCHES = {
+    "gangnam": ("강남지점", [("예금", 412, 3820, 3, 2), ("적금", 275, 1240, 1, 0), ("펀드", 96, 2310, 7, 4),
+                            ("보험", 188, 1675, 9, 5), ("대출", 134, 5210, 2, 3), ("카드", 521, 980, 4, 6)]),
+    "busan": ("부산지점", [("예금", 366, 3105, 2, 1), ("적금", 241, 1090, 0, 1), ("펀드", 71, 1580, 5, 3),
+                           ("보험", 152, 1320, 6, 4), ("대출", 118, 4470, 1, 2), ("카드", 433, 760, 3, 5)]),
+    "daejeon": ("대전지점", [("예금", 298, 2480, 1, 1), ("적금", 205, 910, 1, 0), ("펀드", 54, 1130, 4, 2),
+                             ("보험", 129, 1110, 5, 3), ("대출", 97, 3560, 1, 1), ("카드", 377, 640, 2, 4)]),
+}
+PREV = [("강남지점", 1630, 24, 19), ("부산지점", 1300, 15, 14), ("대전지점", 1105, 11, 9)]
+NEXT = "--next" in sys.argv  # 다음 달 데이터: 이번 달을 전월로 삼고 숫자를 바꾼다(재사용 연습용)
+if NEXT:
+    PREV = [("강남지점", 1626, 26, 20), ("부산지점", 1381, 17, 16), ("대전지점", 1160, 14, 11)]
+    for k, (nm, rows) in list(BRANCHES.items()):
+        BRANCHES[k] = (nm, [(a, b + 7 * (i + 1), c + 90, d + (i % 2), e + ((i + 1) % 2)) for i, (a, b, c, d, e) in enumerate(rows)])
+MONTH = "2026-10" if NEXT else "2026-09"
+HEAD = ["상품", "판매건수", "판매금액(백만원)", "의심건수", "민원건수"]
+
+os.makedirs("data", exist_ok=True)
+os.makedirs("template", exist_ok=True)
+os.makedirs("output", exist_ok=True)
+for key, (_, rows) in BRANCHES.items():
+    with open(f"data/{key}.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f); w.writerow(HEAD); w.writerows(rows)
+with open("data/prev_month.csv", "w", newline="", encoding="utf-8") as f:
+    w = csv.writer(f); w.writerow(["지점", "판매건수", "의심건수", "민원건수"]); w.writerows(PREV)
+
+wb = Workbook(); ws = wb.active; ws.title = "월간보고"
+thin = Side(style="thin", color="999999"); box = Border(left=thin, right=thin, top=thin, bottom=thin)
+ws.merge_cells("A1:G1"); ws["A1"] = "월간 소비자보호 점검 보고서 (가상)"
+ws["A1"].font = Font(bold=True, size=14); ws["A1"].alignment = Alignment(horizontal="center")
+ws.merge_cells("A2:G2"); ws["A2"] = "점검월: 2026-09 / 노란 셀만 입력하세요"  # 양식은 항상 이 문구로 저장한다
+ws["A2"].alignment = Alignment(horizontal="center")
+for i, h in enumerate(["지점", "판매건수", "판매금액(백만원)", "의심건수", "민원건수", "의심비율(%)", "전월대비 판매건수 증감률(%)"], 1):
+    c = ws.cell(row=3, column=i, value=h); c.font = Font(bold=True); c.border = box
+    c.fill = PatternFill("solid", fgColor="D9E1F2"); c.alignment = Alignment(horizontal="center", wrap_text=True)
+yellow = PatternFill("solid", fgColor="FFF2CC")
+for r, name in enumerate(["강남지점", "부산지점", "대전지점", "합계"], 4):
+    a = ws.cell(row=r, column=1, value=name); a.border = box; a.font = Font(bold=(name == "합계"))
+    for col in range(2, 8):
+        c = ws.cell(row=r, column=col); c.fill = yellow; c.border = box
+        c.number_format = "0.0" if col &gt;= 6 else "#,##0"
+ws["A9"] = "※ 숫자는 지점별 CSV 합계와 일치해야 합니다."
+for col, wd in zip("ABCDEFG", [14, 12, 18, 12, 12, 14, 24]): ws.column_dimensions[col].width = wd
+wb.save("template/월간점검보고서_양식.xlsx")
+print("점검월:", MONTH, "/ 만든 파일:", sorted(os.listdir("data")), "template/월간점검보고서_양식.xlsx")
+WV2EOF
+
+mkdir -p scripts
+cat &gt; scripts/reconcile.py &lt;&lt;'WV2EOF'
+#!/usr/bin/env python3
+"""결정적 대조 스크립트. 산술은 모델이 아니라 이 스크립트가 한다.
+사용: python3 scripts/reconcile.py output/월간보고.xlsx
+종료 코드: 0 일치 / 1 불일치 또는 양식 훼손 / 2 사용 오류
+"""
+import csv, sys, os
+from decimal import Decimal, ROUND_HALF_UP
+from openpyxl import load_workbook
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE = os.path.join(ROOT, "template", "월간점검보고서_양식.xlsx")
+BRANCHES = [("강남지점", "gangnam"), ("부산지점", "busan"), ("대전지점", "daejeon")]
+INPUT = {(r, c) for r in range(4, 8) for c in range(2, 8)}  # B4:G7만 입력 칸
+
+
+def r1(x):  # 소수 첫째 자리 사사오입
+    return float(Decimal(str(x)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
+
+
+def load_data():
+    prev = {}
+    with open(os.path.join(ROOT, "data", "prev_month.csv"), encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            prev[row["지점"]] = int(row["판매건수"])
+    out = {}
+    for name, key in BRANCHES:
+        s = m = x = c = 0
+        with open(os.path.join(ROOT, "data", f"{key}.csv"), encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                s += int(row["판매건수"]); m += int(row["판매금액(백만원)"]); x += int(row["의심건수"]); c += int(row["민원건수"])
+        out[name] = (s, m, x, c)
+    return out, prev
+
+
+def expected():
+    data, prev = load_data()
+    rows = []
+    for name, _ in BRANCHES:
+        s, m, x, c = data[name]
+        rows.append((name, s, m, x, c, r1(x / s * 100), r1((s - prev[name]) / prev[name] * 100)))
+    ts = sum(r[1] for r in rows); tm = sum(r[2] for r in rows); tx = sum(r[3] for r in rows); tc = sum(r[4] for r in rows)
+    tp = sum(prev.values())
+    rows.append(("합계", ts, tm, tx, tc, r1(tx / ts * 100), r1((ts - tp) / tp * 100)))
+    return rows
+
+
+def main(path):
+    if not os.path.exists(path):
+        print(f"파일 없음: {path}", file=sys.stderr); return 2
+    rep = load_workbook(path)["월간보고"]; tpl = load_workbook(TEMPLATE)["월간보고"]
+    errs = []
+    # 1) 숫자 대조
+    labels = ["판매건수", "판매금액(백만원)", "의심건수", "민원건수", "의심비율(%)", "전월대비 판매건수 증감률(%)"]
+    for i, exp in enumerate(expected()):
+        r = 4 + i
+        for j, label in enumerate(labels):
+            cell = rep.cell(row=r, column=2 + j); want = exp[1 + j]; got = cell.value
+            if not isinstance(got, (int, float)) or isinstance(got, bool) or abs(float(got) - float(want)) &gt; 1e-9:
+                errs.append(f"숫자 불일치 {cell.coordinate} [{exp[0]} {label}]: 보고서={got!r} 기대={want}")
+    # 2) 양식 보존: 입력 칸 밖의 값, 병합, 열 너비, 서식
+    for row in tpl.iter_rows(min_row=1, max_row=max(tpl.max_row, rep.max_row), max_col=8):
+        for c in row:
+            if (c.row, c.column) in INPUT:
+                continue
+            g = rep.cell(row=c.row, column=c.column)
+            if c.coordinate == "A2":  # 점검월 문구만 바꿀 수 있다
+                if not (isinstance(g.value, str) and g.value.startswith("점검월:") and g.value.endswith("/ 노란 셀만 입력하세요")):
+                    errs.append(f"양식 훼손 A2: '점검월: YYYY-MM / 노란 셀만 입력하세요' 형식이어야 함 (현재 {g.value!r})")
+                continue
+            if g.value != c.value:
+                errs.append(f"양식 훼손 {c.coordinate}: 값 {g.value!r} (양식 {c.value!r})")
+    if {str(x) for x in rep.merged_cells.ranges} != {str(x) for x in tpl.merged_cells.ranges}:
+        errs.append("양식 훼손: 병합 셀이 양식과 다름")
+    for col in "ABCDEFG":
+        if rep.column_dimensions[col].width != tpl.column_dimensions[col].width:
+            errs.append(f"양식 훼손: {col}열 너비가 양식과 다름")
+    for r, c in sorted(INPUT):
+        a, b = rep.cell(row=r, column=c), tpl.cell(row=r, column=c)
+        if a.number_format != b.number_format or a.fill.fgColor.rgb != b.fill.fgColor.rgb:
+            errs.append(f"양식 훼손 {a.coordinate}: 숫자 서식 또는 채움색이 양식과 다름")
+    if errs:
+        print("대조 실패 (%d건)" % len(errs)); [print(" -", e) for e in errs]; return 1
+    print("대조 통과: 숫자 24칸 일치, 양식 보존"); return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1]) if len(sys.argv) == 2 else (print(__doc__, file=sys.stderr) or 2))
+WV2EOF
+chmod +x scripts/reconcile.py
+
+python3 make_seed.py
+ls data template</code></pre></div><div class="code out"><div class="head"><span>기대 출력</span></div><pre><code>점검월: 2026-09 / 만든 파일: ['busan.csv', 'daejeon.csv', 'gangnam.csv', 'prev_month.csv'] template/월간점검보고서_양식.xlsx
+data:
+busan.csv  daejeon.csv  gangnam.csv  prev_month.csv
+
+template:
+월간점검보고서_양식.xlsx</code></pre></div><div class="step"><span class="no">2</span><span>CLAUDE.md 쓰기</span></div><p>아래 내용을 저장합니다. 규칙마다 이유가 있습니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>cat &gt; CLAUDE.md &lt;&lt;'WV2EOF'
+# 월간 점검 보고서 (연습용 가상 데이터)
+
+- 숫자 계산은 반드시 Python 코드로 한다. 직접 암산하거나 추정하지 않는다.
+- 양식 `template/월간점검보고서_양식.xlsx`를 복사해 노란 칸(B4:G7)만 채운다. 제목, 병합 셀, 열 너비, 서식은 바꾸지 않는다. 바꿀 수 있는 것은 A2의 점검월 문구뿐이다(`점검월: YYYY-MM / 노란 셀만 입력하세요`).
+- 비율은 소수 첫째 자리까지 반올림한다(사사오입). 의심비율 = 의심건수 / 판매건수 × 100, 전월대비 증감률 = (이번 달 − 전월) / 전월 × 100.
+- 결과는 `output/월간보고.xlsx`에 저장한다.
+- 실제 고객·내부 자료를 사용하지 않는다. 이 폴더의 데이터는 모두 가상이다.
+WV2EOF</code></pre></div><table class="tbl"><tr><th>CLAUDE.md의 규칙</th><th>왜 적나</th></tr><tr><td>숫자 계산은 반드시 Python 코드로 한다</td><td>모델의 암산과 추정을 막는다. 숫자는 코드가 맞고 틀림을 결정한다.</td></tr><tr><td>노란 칸(B4:G7)만 채운다, 제목·병합·너비·서식은 바꾸지 않는다</td><td>사내 양식은 그대로 제출해야 한다는 제약을 말로 적는다. 코어 2에서 이 규칙을 스크립트로 강제한다.</td></tr><tr><td>비율은 소수 첫째 자리 사사오입</td><td>'맞다'의 기준을 정한다. 기준이 없으면 모델마다 다르게 반올림한다.</td></tr><tr><td>결과 위치는 output/월간보고.xlsx</td><td>검증 스크립트와 게이트가 같은 경로를 본다.</td></tr><tr><td>실제 고객·내부 자료를 쓰지 않는다</td><td>연습용 폴더라는 경계를 명시한다.</td></tr></table><div class="step"><span class="no">3</span><span>첫 질문: 읽기만 시키기</span></div><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>cd ~/workshop/monthly-report
+claude</code></pre></div><p>처음 열면 "이 폴더를 신뢰하시겠습니까" 대화상자가 나옵니다. 가상 폴더이므로 수락합니다. 이 신뢰는 <a href="core2.html">코어 2</a>의 허용 규칙과 관련이 있습니다.</p><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>이 폴더에 무엇이 있는지 설명해줘. 파일은 수정하지 마.</code></pre></div><p>Claude가 파일을 읽는 도구를 스스로 부르는 모습과 CLAUDE.md 내용이 답에 반영되는지 봅니다.</p><div class="step"><span class="no">4</span><span>Plan 모드로 계획 먼저 받기</span></div><p>세션에서 <kbd>Shift</kbd>+<kbd>Tab</kbd>으로 Plan 모드로 바꾸거나, 새로 시작할 때 <code>claude --permission-mode plan</code>을 씁니다.</p><div class="code"><div class="head"><span>Claude 세션 입력 (Plan 모드)</span><button class="copy" type="button">복사</button></div><pre><code>data 폴더의 CSV 3개와 전월 파일, 그리고 template 양식으로 이번 달 월간 점검 보고서를 output/월간보고.xlsx로 만들려고 해. 어떤 순서로 할지 계획만 세워줘. 아직 실행하지 마.</code></pre></div><p>계획에 "Python으로 계산", "양식은 복사해서 노란 칸만 채움", "대조 스크립트 실행"이 들어 있는지 확인하고 승인합니다. 빠진 것이 있으면 수정을 요청하세요.</p><div class="step"><span class="no">5</span><span>실행하고 권한 요청 세어 보기</span></div><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>계획대로 진행해줘.</code></pre></div><p>권한 요청이 몇 번 나왔는지 세어 둡니다. <code>auto</code> 모드에서는 분류기가 안전한 동작을 대신 승인하므로 요청이 적을 수 있습니다. 조직이 이 기본값을 어떻게 제한하는지는 <a href="day2-governance.html">Day 2</a>에서 봅니다.</p><div class="step"><span class="no">6</span><span>결과를 스크립트로 확인</span></div><div class="code"><div class="head"><span>Terminal (새 터미널 또는 /exit 후)</span><button class="copy" type="button">복사</button></div><pre><code>python3 scripts/reconcile.py output/월간보고.xlsx</code></pre></div><div class="code out"><div class="head"><span>기대 출력</span></div><pre><code>대조 통과: 숫자 24칸 일치, 양식 보존</code></pre></div><div class="callout tip"><span class="t">엑셀 파일은 Read 도구로 읽히지 않습니다</span>xlsx는 압축된 바이너리라 Claude는 Python(openpyxl)으로 열어 확인합니다. 그래서 규칙에 '숫자는 Python으로'가 있고, Python 실행 권한 요청이 나올 수 있습니다.</div></section><div class="checkpoint"><span class="t">코어 1 체크포인트</span><label><input type="checkbox"><span>CLAUDE.md를 저장했다</span></label><label><input type="checkbox"><span>Plan 모드에서 계획을 받고 승인했다</span></label><label><input type="checkbox"><span>output/월간보고.xlsx가 만들어졌다</span></label><label><input type="checkbox"><span>대조 스크립트가 '대조 통과'를 출력했다</span></label><label><input type="checkbox"><span>권한 요청이 몇 번 났는지 말할 수 있다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li>CLAUDE.md에서 '숫자 계산은 반드시 Python' 규칙을 지우고 같은 작업을 다시 시켜 결과 차이를 비교합니다.</li><li>같은 작업을 <code>--permission-mode acceptEdits</code>와 <code>plan</code>으로 각각 시작해 승인 횟수를 비교합니다.</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>대조가 실패</b>하면 실패 메시지를 그대로 Claude에게 붙여 넣고 고치라고 하세요. 어느 칸이 틀렸는지 메시지가 알려 줍니다.</li><li><b>python3 실행이 계속 승인 대기</b>이면 Python 실행을 허용하거나 <code>acceptEdits</code> 모드로 시작하세요.</li><li><b>양식이 훼손됐다</b>는 메시지는 제목, 열 너비, 서식 중 하나를 바꿨다는 뜻입니다. 양식 복사부터 다시 시키세요.</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">같은 시드로 <code>claude -p</code>(haiku-5.5, effort low)가 17턴, 약 47초, 약 0.025달러(구독 계정 목록가 추정)에 보고서를 만들었고 대조가 통과했습니다.</p><p class="ran">sonnet-5.5로 같은 작업을 Skill로 실행하면 7~8턴, 0.29~0.31달러가 들었습니다. 이 환경은 플러그인이 많아 기준 컨텍스트가 큽니다.</p><p class="not">대화형 화면(신뢰 대화상자, Shift+Tab 전환, 권한 요청 표시)은 직접 확인하지 못했습니다. 위 설명은 공식 문서와 헤드리스 실행을 기준으로 했습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="preflight.html">← 사전 점검</a><a href="core2.html">코어 2 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>

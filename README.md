@@ -11,6 +11,7 @@ examples, and static HTML labs. Project maintenance documentation is English.
 | [20260703](20260703/) | July six-chapter PDF edition, authored against Claude Code 2.1.198 |
 | [20260905](20260905/) | Latest six-chapter PDF edition, revised against Claude Code v2.1.261 |
 | [20260901](20260901/) | Session-ordered (D1/D2) delivery build of the decks |
+| [workshop-v2](workshop-v2/index.html) | Draft two-day redesign for team review (published at `/workshop-v2/`) |
 | [General labs](ccw-hands-on-lab/index.html) | Chapter labs, capstones, setup, preflight, and reference pages |
 | [November event](20261116/index.html) | Materials for the November 16–17, 2026 workshop |
 | [Hanwha Financial invitation](20261123/eDM.html) | One-day workshop invitation with the training agenda; date and venue to be announced |

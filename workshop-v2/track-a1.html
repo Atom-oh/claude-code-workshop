@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>트랙 A-1 · 양식을 지키는 보고서 자동화 · Claude Code 워크샵 v2</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script>try{if(localStorage.getItem("hol-theme")==="light")document.documentElement.classList.add("light")}catch(e){}</script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="home" href="index.html">Claude Code 워크샵 v2</a><span class="where">트랙 A-1 · 양식을 지키는 보고서 자동화</span><button id="themeToggle" type="button" aria-pressed="false">화이트</button></div></div>
+<header class="hero">
+  <span class="eyebrow">TRACK A · R1</span>
+  <h1>트랙 A-1 · 양식을 지키는 보고서 자동화</h1>
+  <div class="sub">컴플라이언스·업무 자동화</div>
+  <p class="lede">양식이 바뀌어도 검증이 함께 바뀌고, 검증기 자체도 시험합니다.</p>
+  <div class="meta"><span><strong>130분</strong></span><span>비개발 직군 대상</span></div>
+</header>
+<main>
+<section><h2>이 트랙에서 하는 일</h2><p>비개발 직군의 가장 큰 질문, "<b>사내 양식을 그대로 맞춰야 하고, 숫자가 틀리면 안 됩니다. 어떻게 자동화하나요?</b>"에 답합니다. 코어 1·2에서 만든 보고서를 <b>실제로 일어나는 변화</b>(양식 변경, 검증기의 오류)에 부딪쳐 보며 단단하게 만듭니다.</p><table class="tbl"><tr><th>항목</th><th>내용</th></tr><tr><td>시간</td><td>130분 (15:20–17:30)</td></tr><tr><td>대상</td><td>컴플라이언스, 기획, 운영 등 비개발 직군 (코드를 직접 쓰지 않아도 됨)</td></tr><tr><td>이어서</td><td>코어 1·2의 <code>~/workshop/monthly-report</code></td></tr><tr><td>완료 기준</td><td>양식이 바뀌어도 검증이 함께 바뀌고, <b>검증 스크립트가 틀렸을 때도 잡힌다</b>는 것을 오류를 심어 확인한다</td></tr></table><div class="callout tip"><span class="t">트랙 실습의 공통 규칙</span>모든 데이터는 가상입니다. 막히면 <a href="facilitator.html">힌트 정책</a>대로 '기본 레일 → 보너스 → 힌트' 순서를 따르고, 먼저 끝나면 보너스 카드로 갑니다. 마지막 10분은 쇼케이스 카드를 채웁니다.</div></section><section><h2>실습</h2><div class="step"><span class="no">1</span><span>양식 호환성 점검 (15분)</span></div><p>사내 양식은 대부분 Excel이나 Word입니다. 도구가 파일을 열고 저장할 때 <b>사라지는 것이 없는지</b> 먼저 확인합니다. 이 스크립트는 파일을 열었다가 저장해 보고 사라진 내부 부분을 찾습니다.</p><div class="code"><div class="head"><span>Terminal</span><button class="copy" type="button">복사</button></div><pre><code>mkdir -p scripts
+cat &gt; scripts/template_probe.py &lt;&lt;'WV2EOF'
+#!/usr/bin/env python3
+"""양식 호환성 점검. 양식을 openpyxl로 열고 저장했을 때 사라지는 것이 있는지 실제로 확인한다.
+사용: python3 scripts/template_probe.py template/월간점검보고서_양식.xlsx
+종료 코드: 0 안전 / 1 주의 요소 있음 / 2 사용 오류
+점검 1) 왕복 검사: 열었다가 저장한 파일과 원본의 내부 부품 목록을 비교해 사라진 부분을 찾는다.
+점검 2) 구조 요약과 주의 요소: 수식, 시트 보호, 매크로, 외부 링크 등.
+"""
+import os, sys, tempfile, zipfile
+from openpyxl import load_workbook
+
+IGNORE = ("docProps/", "xl/calcChain.xml")   # 저장 때마다 다시 만들어지는 부품
+
+
+def parts(path):
+    with zipfile.ZipFile(path) as z:
+        return {n for n in z.namelist() if not n.startswith(IGNORE)}
+
+
+def main(path):
+    try:
+        before = parts(path)
+        wb = load_workbook(path, keep_vba=path.lower().endswith(".xlsm"))
+    except Exception as e:
+        print(f"열 수 없음: {e}", file=sys.stderr); return 2
+    warn = []
+    with tempfile.TemporaryDirectory() as d:
+        out = os.path.join(d, "roundtrip.xlsx"); wb.save(out)
+        lost = sorted(before - parts(out))
+    if lost:
+        warn.append("왕복 검사에서 사라진 부분: " + ", ".join(lost) + " → 이 양식은 openpyxl로 편집하면 손실이 생김")
+    for ws in wb.worksheets:
+        formulas = sum(1 for row in ws.iter_rows() for c in row if isinstance(c.value, str) and c.value.startswith("="))
+        print(f"시트 '{ws.title}': 범위 {ws.dimensions}, 병합 {len(ws.merged_cells.ranges)}개, 수식 {formulas}개, "
+              f"데이터 검증 {len(ws.data_validations.dataValidation)}개, 조건부 서식 {len(ws.conditional_formatting)}개, "
+              f"보호 {'켜짐' if ws.protection.sheet else '꺼짐'}")
+        if formulas:
+            warn.append(f"시트 '{ws.title}': 수식 {formulas}개 (저장 직후에는 계산된 값이 없어 값 대조가 불가능, 수식 자체는 보존됨)")
+        if ws.protection.sheet:
+            warn.append(f"시트 '{ws.title}': 시트 보호가 켜져 있음")
+    names = before
+    if any(n.startswith("xl/charts/") for n in names):
+        print("정보: 차트가 있음 (왕복 검사에서 보존됐더라도 저장 후 모양을 눈으로 확인)")
+    if any(n.startswith("xl/media/") for n in names):
+        print("정보: 이미지가 있음 (저장 후 위치와 크기를 눈으로 확인)")
+    if any(n.startswith("xl/externalLinks/") for n in names):
+        warn.append("외부 링크가 있음: 값이 오래되었을 수 있음")
+    if "xl/vbaProject.bin" in names:
+        warn.append("매크로(VBA)가 있음: .xlsm으로 열어 keep_vba=True로 저장해야 보존됨")
+    if warn:
+        print("주의:"); [print(" -", w) for w in warn]; return 1
+    print("점검 통과: 왕복 검사에서 사라지는 부분 없음"); return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1]) if len(sys.argv) == 2 else (print(__doc__, file=sys.stderr) or 2))
+WV2EOF
+chmod +x scripts/template_probe.py
+
+python3 scripts/template_probe.py template/월간점검보고서_양식.xlsx</code></pre></div><div class="code out"><div class="head"><span>기대 출력</span></div><pre><code>시트 '월간보고': 범위 A1:G9, 병합 2개, 수식 0개, 데이터 검증 0개, 조건부 서식 0개, 보호 꺼짐
+점검 통과: 왕복 검사에서 사라지는 부분 없음</code></pre></div><div class="callout warn"><span class="t">실제 양식에서는 이렇게 읽으세요</span><b>사라진 부분</b>이 나오면 그 양식은 이 방식으로 편집하면 손실이 생깁니다(예: 매크로 부품은 <code>.xlsm</code>으로 열어 <code>keep_vba</code>를 써야 보존). <b>수식</b>은 저장 직후 계산값이 없어 값 대조가 불가능합니다. 차트와 이미지는 이 환경에서는 보존됐지만 저장 후 모양을 눈으로 확인하세요. 실제 사내 양식은 이 자료로 검증하지 못했으니 <b>본인 양식으로 반드시 점검</b>하세요(반입이 가능한 가상 사본으로).</div><div class="step"><span class="no">2</span><span>내 업무 매핑 워크시트 (20분)</span></div><p>사전 과제로 적어 온 반복 업무를 아래 표에 적용해 봅니다. 6번째 질문의 답이 "사람이 확인할 부분"이며, 자동화가 끝나도 사라지지 않습니다.</p><table class="tbl"><tr><th>질문</th><th>내 업무에 적용</th></tr><tr><td>입력 자료는 무엇이고 형식은?</td><td></td></tr><tr><td>결과물 양식에서 절대 바뀌면 안 되는 것은?</td><td></td></tr><tr><td>틀리면 안 되는 숫자는 무엇인가?</td><td></td></tr><tr><td>그 숫자를 <b>코드로 다시 계산</b>할 수 있나? (기준 데이터는?)</td><td></td></tr><tr><td>허용 오차와 반올림 규칙은?</td><td></td></tr><tr><td>사람이 끝까지 확인해야 하는 부분은?</td><td></td></tr></table><div class="step"><span class="no">3</span><span>요구가 바뀌었다: 양식에 '비고' 열 추가 (40분)</span></div><p>현실에서는 양식이 바뀝니다. 양식과 검증이 따로 놀면 검증이 거짓 안심을 줍니다. 둘을 <b>함께</b> 바꾸게 시킵니다.</p><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>새 규제 요구로 보고서 양식에 '비고' 열을 H열에 추가해야 해.
+1) template/월간점검보고서_양식.xlsx에 H3 머리글 '비고'와 H4:H7 노란 입력 칸을 같은 서식으로 추가하고 A1:G1 제목 병합은 유지해.
+2) scripts/reconcile.py를 고쳐 H4:H7은 문자열을 허용하되(비어 있어도 됨) 기존 숫자 대조와 양식 훼손 탐지는 그대로 유지해.
+3) 수정 후, 비고에 '점검 완료'를 넣은 정상 보고서는 통과하고 제목이나 열 너비를 바꾼 보고서는 실패하는지 직접 만들어 확인해. 확인 결과를 표로 알려줘.</code></pre></div><div class="code out"><div class="head"><span>참고 측정값 (sonnet-5.5, 13턴, 약 70초, 0.43달러)</span></div><pre><code>수정 후 Claude가 직접 만들어 확인한 케이스 10개가 모두 기대대로 나왔고, 제가 따로 확인한 4개도 일치했습니다.
+비고 '점검 완료' → 통과 / 비고 비움 → 통과 / 제목 변경 → 실패 / 열 너비 변경 → 실패 / 병합 해제 → 실패
+채움색 변경 → 실패 / 비고에 숫자 123 → 실패 / 숫자 틀림 → 실패</code></pre></div><div class="callout warn"><span class="t">make_seed.py를 다시 실행하지 마세요</span><code>make_seed.py</code>는 <code>template/</code>을 예전 모양(H열 없음)으로 다시 만들어 덮어씁니다. 양식을 바꾼 뒤에는 실행하지 않습니다(Claude도 측정 중 이를 먼저 경고했습니다).</div><div class="step"><span class="no">4</span><span>검증 스크립트를 검증하기: 음성 시험 (30분)</span></div><p>"통과"만 보면 스크립트가 맞는지 알 수 없습니다. <b>일부러 틀린 보고서를 만들어 스크립트가 잡는지</b> 확인합니다. 이것을 음성 시험이라고 합니다.</p><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>scripts/reconcile.py가 놓칠 수 있는 오류 유형 5가지를 찾아줘. 그중 3개는 실제로 그런 보고서를 만들어 스크립트가 잡는지 확인하고, 못 잡는 것이 있으면 스크립트를 고쳐줘. 결과는 '오류 유형 | 잡힘/놓침 | 조치' 표로 알려줘.</code></pre></div><p>관찰할 것: 모델이 제시한 오류 유형 중 스크립트가 <b>놓친 것</b>이 있는가? 놓쳤다면 그것은 사람이 봐야 하는 부분이 아닌가?</p><div class="step"><span class="no">5</span><span>(선택) Word 양식 (15분)</span></div><p>Word 양식은 별도 문서 Skill이 필요합니다. 공식 문서와 저장소 기준으로 마켓 등록과 설치는 다음과 같습니다(외부 접근이 필요하며 이 자료에서는 실행하지 않았습니다).</p><div class="code"><div class="head"><span>Claude 세션 입력</span><button class="copy" type="button">복사</button></div><pre><code>/plugin marketplace add anthropics/skills
+/plugin install document-skills@anthropic-agent-skills</code></pre></div><p>그 Skill은 기존 .docx 편집 시 압축을 풀어 내부 XML을 고치고 검증 스크립트로 확인하는 경로를 안내합니다. 임의의 사내 양식을 그대로 편집한다는 보장은 문서에 없고, 라이선스가 독점(Proprietary)이므로 재배포 전에 확인이 필요합니다.</p><div class="step"><span class="no">6</span><span>쇼케이스 카드 (10분)</span></div><div class="code"><div class="head"><span>쇼케이스 카드 (1분 발표)</span><button class="copy" type="button">복사</button></div><pre><code>입력: ____________________ (어떤 자료)
+규칙: ____________________ (CLAUDE.md 또는 Skill에 적은 것)
+검증: ____________________ (무엇이 무엇을 확인하나)
+한계: ____________________ (이 방식이 못 잡는 것)
+사람이 확인하는 부분: ____________________</code></pre></div></section><div class="checkpoint"><span class="t">트랙 A-1 체크포인트</span><label><input type="checkbox"><span>양식 호환성 점검을 실행하고 결과를 해석했다</span></label><label><input type="checkbox"><span>내 업무 매핑 워크시트의 6칸을 채웠다</span></label><label><input type="checkbox"><span>양식에 비고 열을 추가하고 검증이 함께 바뀌었다</span></label><label><input type="checkbox"><span>일부러 틀린 보고서로 검증 스크립트가 잡는 것을 확인했다</span></label><label><input type="checkbox"><span>검증이 못 잡는 것과 사람이 확인할 부분을 말할 수 있다</span></label><span class="progress"></span></div><div class="tiers"><details class="bonus"><summary>보너스 (먼저 끝낸 분)</summary><ul><li>비고 열에 '필수 입력' 규칙을 추가하고(비어 있으면 실패) 기존 정상 보고서가 어떻게 되는지 봅니다.</li><li>지점이 4개로 늘어난 경우를 시뮬레이션해 양식, 데이터, 검증을 함께 확장해 봅니다.</li></ul></details><details class="hint"><summary>힌트 (막혔을 때)</summary><ul><li><b>Claude가 양식을 망가뜨림</b>: 양식 복사부터 다시 시키고 '노란 칸만 채움' 규칙을 CLAUDE.md에서 확인하세요.</li><li><b>스크립트 수정 후 정상 보고서도 실패</b>: 정상 보고서를 양식에서 새로 만들었는지 확인하세요(예전 양식으로 만든 파일은 H열이 없어 훼손으로 판정됩니다).</li></ul></details></div><div class="verify"><span class="t">검증 기록 (2026-10-21, Claude Code 2.1.306)</span><p class="ran">양식 호환성 점검을 정상 양식, 차트·수식·보호가 있는 양식, 매크로 부품이 있는 양식에서 실행해 왕복 검사가 실제 손실만 보고하는 것을 확인했습니다.</p><p class="ran">비고 열 추가 요구를 Claude가 13턴에 수행했고, 수정된 스크립트를 제가 독립적으로 시험해 정상·오류·양식 훼손·비고 형식 위반을 올바르게 판정하는 것을 확인했습니다.</p><p class="not">실제 사내 양식(복잡한 수식, 매크로, 보호, 외부 링크)은 검증하지 못했습니다.</p><p class="not">Word 문서 Skill 설치와 .docx 편집은 실행하지 않았습니다.</p><p class="not">음성 시험의 '놓치는 오류 유형'은 모델 답변에 따라 달라 결과를 고정해 적지 않았습니다.</p></div>
+<nav class="pager" aria-label="이전, 다음"><a href="day2-governance.html">← Day 2 통제</a><a href="track-a2.html">트랙 A-2 →</a></nav>
+</main>
+<footer>이 자료의 데이터와 예제는 모두 가상이며 실제 고객·내부 자료가 아닙니다. 명령과 수치는 표시된 날짜와 버전의 환경에서 확인한 것이며, 환경과 요금에 따라 다를 수 있습니다.</footer>
+<script src="assets/lab.js"></script>
+</body>
+</html>
