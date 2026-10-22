@@ -7,7 +7,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Added
 
-- Add `workshop-v2/`, a draft redesigned two-day workshop for team review: shared core labs, role tracks (compliance, development, operations), Day 2 skills and governance labs, a pre-flight check, question clinic cards from the pre-survey, a facilitator guide, an invitation draft, and seed projects. Each lab page lists what was run and what was not. It is not added to the Pages workflow.
+- Add `workshop-v2/`, a draft redesigned two-day workshop for team review: shared core labs, role tracks (compliance, development, operations), Day 2 skills and governance labs, a pre-flight check, question clinic cards from the pre-survey, a facilitator guide, an invitation draft, and seed projects. Each lab page lists what was run and what was not. The Pages workflow publishes it at `/workshop-v2/` for team review.
 - Add `20261123/eDM.html`, a one-day Hanwha Financial workshop invitation modeled on an existing one-day invitation, with the training agenda, the supplied Hanwha logo (margins trimmed) under `20261123/image/`, and no lecture-material links. Date and venue are marked as to be announced. The Pages workflow now publishes it at `/20261123/eDM.html`.
 - Add the July chapter PDF edition under `20260703/` and architecture/cost references under `tech_doc/`.
 - Add the general HTML lab portal, chapter labs, capstones, setup, preflight, and reference pages under `ccw-hands-on-lab/`.
