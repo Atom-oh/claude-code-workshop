@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Deep Dive Workshop, FSI Edition</title>
+  <meta name="generator" content="remarp">
+  <meta name="remarp-version" content="1">
+  <meta name="remarp-source" content="05-ch5-plugins-mods.md">
+  <meta name="remarp-block" content="05-ch5-plugins-mods">
+  <link rel="stylesheet" href="./common/theme.css">
+  <link rel="stylesheet" href="./common/deck-overlay.css">
+  <link rel="stylesheet" href="./common/deck-detail.css">
+  <link rel="stylesheet" href="./common/deck-nav.css">
+  <link rel="stylesheet" href="./common/deck-pen.css">
+  
+  <style>:root { --slide-ratio-w: 16; --slide-ratio-h: 9; } :root { --slide-width: 960px; --slide-height: 540px; }</style>
+  
+  <script>window.__remarpTheme = {"colors": {}, "footer": "\u00a9 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.", "pagination": true, "fonts": {}};</script>
+</head>
+<body>
+<div class="slide-deck theme-dark">
+<div class="slide theme-dark" data-remarp-id="s0" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods" style="background:linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%); padding:0; overflow:hidden;">
+  <h1 style="position:absolute; left:5%; top:48%; font-size:2.8rem; color:#fff; font-weight:300; line-height:1.2; width:53%; margin:0;">Chapter 5. Plugins & Mods</h1>
+  <p style="position:absolute; left:5%; top:62%; font-size:1.3rem; color:rgba(255,255,255,0.8); width:53%; margin:0;">나의 Claude Code를 팀의 플랫폼으로 (2026.11, Claude Code v2.1.319, Bedrock 기준)</p>
+  <div style="position:absolute; left:5%; top:76%;">
+    <p style="font-size:1.05rem; color:#fff; font-weight:600; margin:0;">Choi, WooHyung</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:6px 0 0 0;">Prin. Solutions Architect</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:2px 0 0 0;">AWS Korea</p>
+  </div>
+  
+</div>
+
+<div class="slide" data-remarp-id="s1" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s1-header"><h2>강의 35분, 실습 45분</h2></div>
+  <div class="slide-body" data-remarp-id="s1-body">
+    <p><!-- Slide 2: Agenda (PDF p2) --></p>
+<p>세 개의 Part와 Super Lab, 팀의 플랫폼까지 80분</p>
+<div class="fsi fsi-agenda">
+  <div class="fsi-grid-4">
+    <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
+    <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
+    <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
+    <div class="pick lab"><span class="k">SUPER LAB / 45분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
+  </div>
+  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s2" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s2-header"><h2>팀 표준화는 기대 주제 2위였다</h2></div>
+  <div class="slide-body" data-remarp-id="s2-body">
+    <p><!-- Slide 3: Pre-survey (PDF p3) --></p>
+<p>사전 설문 결과로 정한 이 챕터의 목표</p>
+<div class="fsi fsi-survey c5-survey">
+  <div class="sv-big">
+    <span class="eyebrow">PRE-SURVEY</span>
+    <div class="num"><span id="c5-survey-num">58명</span></div>
+    <p class="lead">참가 확정자 <b>138명 중 58명</b>이 팀 표준화(설정, 권한, 훅, MCP)를 기대 주제로 골랐습니다.</p>
+    <p class="why">이 챕터에서 그 표준을 플러그인 하나로 묶어 배포합니다.</p>
+  </div>
+  <div class="share" id="c5-survey-share">
+    <div class="lb"><span>팀 표준화를 고른 사람</span><b>58 / 138명</b></div>
+    <div class="tr"><i></i></div>
+    <p class="rank">기대 주제 2위, 복수 선택 문항</p>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s3" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  
+  <div class="slide-body" data-remarp-id="s3-body">
+    <p><!-- Slide 4: Chapter statement (PDF p4) --></p>
+<div class="fsi fsi-statement">
+  <span class="eyebrow">CHAPTER 05</span>
+  <div class="big">Plugins <em>&amp;</em> Mods</div>
+  <p class="lead">스킬, Subagent, 훅, <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 Claude가 쓰는 도구로 붙이는 표준">MCP</span>, mod를 한 번에 배포합니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s4" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  
+  <div class="slide-body" data-remarp-id="s4-body">
+    <p><!-- Slide 5: Part 01 divider (PDF p5) --></p>
+<div class="fsi fsi-section">
+  <span class="num">CHAPTER 05 / PART 01</span>
+  <div class="name">Plugins</div>
+  <p class="what">팀의 작업 방식을 묶어 배포하는 단위</p>
+  <ol>
+    <li><b>01</b>여섯 가지 확장 방법</li>
+    <li><b>02</b>플러그인 구조</li>
+    <li><b>03</b>설치와 갱신</li>
+  </ol>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s5" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s5-header"><h2>여섯 가지 중 다섯을 한 폴더에</h2></div>
+  <div class="slide-body" data-remarp-id="s5-body">
+    <p><!-- Slide 6: Extension map (PDF p6) --></p>
+<p>무엇을 넣을지는 언제, 누가, 무엇을 바꾸는가로 선택</p>
+<div class="fsi c5-ext">
+  <div class="map" data-pick="c5-ext">
+    <div class="outside">
+      <button class="pick" data-key="md"><span class="k">01</span><span class="t">CLAUDE.md</span><span class="d">플러그인 밖</span></button>
+    </div>
+    <div class="box">
+      <span class="lbl">PLUGIN, 한 디렉터리로 배포</span>
+      <div class="grid">
+        <button class="pick" data-key="skill"><span class="k">02</span><span class="t">스킬</span></button>
+        <button class="pick" data-key="sub"><span class="k">03</span><span class="t">Subagent</span></button>
+        <button class="pick" data-key="hook"><span class="k">04</span><span class="t">훅</span></button>
+        <button class="pick" data-key="mcp"><span class="k">05</span><span class="t">MCP</span></button>
+        <button class="pick" data-key="mod"><span class="k">06</span><span class="t">mod</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="panel" data-pick-panel="c5-ext">
+    <p class="hint">CLAUDE.md는 managed CLAUDE.md나 저장소로,<br>나머지 5종은 한 디렉터리에 담아 플러그인으로 배포합니다.<br>하나를 누르면 언제 쓰는지 나옵니다.</p>
+    <div data-for="md"><h4>CLAUDE.md</h4><p><b>항상 알아야 할 짧은 지침</b>을 둘 때 씁니다.</p><p>플러그인이 아니라 <b>managed CLAUDE.md나 저장소</b>로 배포합니다. 매 요청에 실리기 때문에 짧게 유지합니다 (Ch1, Ch6).</p></div>
+    <div data-for="skill"><h4>스킬</h4><p><b>같은 지시를 반복할 때</b> 씁니다. 필요할 때만 로드됩니다.</p><p>예: 팀의 PR 리뷰 절차</p></div>
+    <div data-for="sub"><h4>Subagent</h4><p><b>역할과 도구를 나눠 맡길 때</b> 씁니다.</p><p>예: Ch4에서 만든 code-reviewer</p></div>
+    <div data-for="hook"><h4>훅</h4><p><b>이벤트에 스크립트로 막거나 기록할 때</b> 씁니다.</p><p>예: Ch3의 DLP 훅</p></div>
+    <div data-for="mcp"><h4>MCP</h4><p><b>외부 시스템에 닿아야 할 때</b> 씁니다.</p><p>외부로 나가는 채널이라 반출 채널 검토 대상입니다.</p></div>
+    <div data-for="mod"><h4>mod</h4><p><b>화면, 커맨드, 이벤트 자체를 바꿀 때</b> 씁니다.</p><p>Part 3에서 자세히 다룹니다.</p></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s6" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s6-header"><h2>폴더 하나에 팀의 표준을 담는다</h2></div>
+  <div class="slide-body" data-remarp-id="s6-body">
+    <p><!-- Slide 7: Plugin structure (PDF p7, p25) --></p>
+<p>플러그인 디렉터리 구성과 각 파일의 역할</p>
+<div class="fsi c5-tree">
+  <div class="tree" data-pick="c5-tree">
+    <div class="root">fsi-team-kit/</div>
+    <button class="pick" data-key="manifest"><span class="p">.claude-plugin/plugin.json</span><span class="cm">이름, 버전, 설명</span></button>
+    <button class="pick" data-key="skills"><span class="p">skills/pr-review/SKILL.md</span><span class="cm">팀 리뷰 절차</span></button>
+    <button class="pick" data-key="agents"><span class="p">agents/code-reviewer.md</span><span class="cm">Ch4에서 만든 것</span></button>
+    <div class="leaf"><span class="p">agents/test-writer.md, docs-writer.md</span><span class="cm">Ch4 건너뛰면 code-reviewer만</span></div>
+    <button class="pick" data-key="hooks"><span class="p">hooks/hooks.json</span><span class="cm">DLP 훅 등록 (Ch3)</span></button>
+    <button class="pick" data-key="scripts"><span class="p">scripts/dlp-guard.sh</span><span class="cm">검사 스크립트</span></button>
+    <button class="pick extra" data-key="commands"><span class="p">commands/*.md</span><span class="cm">슬래시 커맨드</span></button>
+    <button class="pick extra" data-key="mcp"><span class="p">.mcp.json</span><span class="cm">MCP 서버</span></button>
+    <p class="cap">점선 두 줄은 이 예시에는 없지만 플러그인에 넣을 수 있는 파일입니다.</p>
+  </div>
+  <div class="panel" data-pick-panel="c5-tree">
+    <p class="hint">파일을 누르면 무엇이 들어가는지 보여 줍니다. Ch3과 Ch4의 결과물을 그대로 넣고, 설치 한 줄로 동료가 같은 환경을 갖습니다.</p>
+    <div data-for="manifest"><h4>.claude-plugin/plugin.json</h4><p>플러그인의 이름, 버전, 설명. <b>유일한 필수 파일</b>입니다.</p><p>버전으로 변경 이력을 관리합니다.</p></div>
+    <div data-for="skills"><h4>skills/&lt;name&gt;/SKILL.md</h4><p>스킬. <b>설명만 항상 실리고</b> 본문은 필요할 때 로드됩니다.</p><p>예시는 팀의 PR 리뷰 절차입니다.</p></div>
+    <div data-for="agents"><h4>agents/*.md</h4><p>Subagent. <b>Ch4에서 만든 정의를 그대로</b> 넣습니다. code-reviewer, test-writer, docs-writer 세 개입니다.</p><p>Ch4를 건너뛰었다면 code-reviewer만 넣습니다.</p></div>
+    <div data-for="hooks"><h4>hooks/hooks.json</h4><p>훅을 등록하는 곳. Ch3의 <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span> 훅을 여기에 등록합니다.</p><p><b>mod도 같은 hooks/ 아래</b>에 들어가고, 경로는 <code>${CLAUDE_PLUGIN_ROOT}</code>를 씁니다.</p></div>
+    <div data-for="scripts"><h4>scripts/dlp-guard.sh</h4><p>훅이 실행하는 검사 스크립트입니다.</p></div>
+    <div data-for="commands"><h4>commands/*.md</h4><p>슬래시 커맨드. <b>스킬로 대체되는 추세</b>입니다.</p></div>
+    <div data-for="mcp"><h4>.mcp.json</h4><p>MCP 서버 정의. 외부로 나가는 길이라 <b>반출 채널 검토 대상</b>입니다 (Ch3).</p></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s7" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s7-header"><h2>등록, 설치, 적용, 갱신의 네 단계</h2></div>
+  <div class="slide-body" data-remarp-id="s7-body">
+    <p><!-- Slide 8: Install and update (PDF p8, p26) --></p>
+<p>마켓플레이스에서 동료의 세션까지 플러그인이 가는 길</p>
+<div id="c5-sv-install"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s8" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  
+  <div class="slide-body" data-remarp-id="s8-body">
+    <p><!-- Slide 9: Part 02 divider (PDF p9) --></p>
+<div class="fsi fsi-section">
+  <span class="num">CHAPTER 05 / PART 02</span>
+  <div class="name">사내 배포</div>
+  <p class="what">설치를 강제하고 출처를 제한한다</p>
+  <ol>
+    <li><b>01</b>사내 마켓플레이스 강제</li>
+    <li><b>02</b>망분리와 <span class="rp-detail" tabindex="0" data-tip="Continuous Integration. 코드 변경마다 빌드와 테스트를 자동으로 돌리는 파이프라인">CI</span></li>
+    <li><b>03</b>배포 후 측정</li>
+  </ol>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s9" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s9-header"><h2>허용, 등록, 강제, 사이드로드 금지</h2></div>
+  <div class="slide-body" data-remarp-id="s9-body">
+    <p><!-- Slide 10: Forced internal marketplace (PDF p10, p27) --></p>
+<p>managed-settings.json 네 개 키로 사내 마켓플레이스를 강제</p>
+<div id="c5-sv-force"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s10" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s10-header"><h2>허용 목록이면 사이드로드도 막힐까?</h2></div>
+  <div class="slide-body" data-remarp-id="s10-body">
+    <p><!-- Slide 11: Quick check 1 (PDF p11) --></p>
+<p>QUICK CHECK, 손을 들어 답해 주세요</p>
+<div class="fsi qc" id="c5-qc-1">
+  <p class="q">strictKnownMarketplaces 허용 목록만 설정하면 <code>--plugin-dir</code> 로컬 로드는?</p>
+  <div class="opts three">
+    <button class="opt"><b>A</b>막힌다</button>
+    <button class="opt right"><b>B</b>막히지 않는다</button>
+    <button class="opt"><b>C</b>경고만 뜬다</button>
+  </div>
+  <p class="ans">정답 B. 사이드로드는 disableSideloadFlags로만 막습니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s11" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s11-header"><h2>git clone이 안 되면 미리 심어 둔다</h2></div>
+  <div class="slide-body" data-remarp-id="s11-body">
+    <p><!-- Slide 12: Air-gapped and CI (PDF p12, p26) --></p>
+<p>망분리와 CI는 CLAUDE_CODE_PLUGIN_SEED_DIR</p>
+<div id="c5-sv-seed"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s12" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s12-header"><h2>설치했다면 쓰이는지도 본다</h2></div>
+  <div class="slide-body" data-remarp-id="s12-body">
+    <p><!-- Slide 13: Measure after deploy (PDF p13) --></p>
+<p>배포 후 측정, OTel 이벤트 두 개와 이름 가림</p>
+<div class="fsi c5-pickrow">
+  <div class="row3" data-pick="c5-otel">
+    <button class="pick" data-key="inst"><span class="k">EVENT</span><span class="t">plugin_installed</span><span class="d">설치마다 기록</span></button>
+    <button class="pick" data-key="load"><span class="k">EVENT</span><span class="t">plugin_loaded</span><span class="d">세션 시작 시 켜진 플러그인</span></button>
+    <button class="pick" data-key="priv"><span class="k">PRIVACY</span><span class="t">이름 가림</span><span class="d">서드파티 플러그인 이름</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5-otel">
+    <p class="hint">무엇이 설치되고 쓰이는지 <span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span>로 봅니다. 카드를 누르면 각 이벤트가 답하는 질문이 나옵니다.</p>
+    <div data-for="inst"><h4>plugin_installed</h4><p><b>설치할 때마다</b> 기록됩니다. 누가 설치했는지 답합니다.</p></div>
+    <div data-for="load"><h4>plugin_loaded</h4><p><b>세션이 시작될 때 켜진 플러그인</b>이 기록됩니다. 설치만 하고 안 쓰는지, 실제로 쓰이는지 답합니다.</p><p>배포 전 체크리스트의 측정 항목도 이 이벤트입니다.</p></div>
+    <div data-for="priv"><h4>이름 가림</h4><p>서드파티 플러그인 이름은 기본으로 가려지고, <code>OTEL_LOG_TOOL_DETAILS=1</code>일 때만 표시됩니다.</p></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s13" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  
+  <div class="slide-body" data-remarp-id="s13-body">
+    <p><!-- Slide 14: Part 03 divider (PDF p14) --></p>
+<div class="fsi fsi-section">
+  <span class="num">CHAPTER 05 / PART 03</span>
+  <div class="name">Mods</div>
+  <p class="what">Claude Code 안에서 도는 코드</p>
+  <ol>
+    <li><b>01</b>mod가 할 수 있는 것</li>
+    <li><b>02</b>구조와 예시</li>
+    <li><b>03</b>조직 통제</li>
+  </ol>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s14" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  
+  <div class="slide-body" data-remarp-id="s14-body">
+    <p><!-- Slide 15: Mod statement (PDF p15) --></p>
+<div class="fsi fsi-statement">
+  <span class="eyebrow">NEW, v2.1.287+</span>
+  <div class="big">mod = 플러그인 안의 <em>이벤트 핸들러</em></div>
+  <p class="lead">도구 호출, 프롬프트, 커맨드, 화면 그리기 이벤트를 관찰하고, 바꾸고, 대신 처리합니다. Bedrock에서도 동작합니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s15" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s15-header"><h2>도구 호출 수를 스피너 옆에 띄운다</h2></div>
+  <div class="slide-body" data-remarp-id="s15-body">
+    <p><!-- Slide 16: Smallest mod (PDF p16) --></p>
+<p>가장 작은 mod, 이벤트 두 개를 다루는 register.js</p>
+<div id="c5-sv-mod"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s16" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s16-header"><h2>다른 수단으로 되면 mod는 쓰지 않는다</h2></div>
+  <div class="slide-body" data-remarp-id="s16-body">
+    <p><!-- Slide 17: Mod vs other extensions (PDF p17) --></p>
+<p>mod와 다른 확장 비교, 바꿀 수 있는 것과 작성 언어</p>
+<div class="fsi c5-pickrow">
+  <div class="row4" data-pick="c5-cmp">
+    <button class="pick" data-key="mod"><span class="k">JS/TS</span><span class="t">mod</span></button>
+    <button class="pick" data-key="hook"><span class="k">스크립트</span><span class="t">Settings 훅</span></button>
+    <button class="pick" data-key="skill"><span class="k">Markdown</span><span class="t">Skill</span></button>
+    <button class="pick" data-key="mcp"><span class="k">아무 언어</span><span class="t">MCP</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5-cmp">
+    <p class="hint">네 가지를 눌러 비교합니다. 원칙은 하나, <b>이미 다른 수단으로 되면 mod를 쓰지 않습니다</b>.</p>
+    <div data-for="mod"><dl class="kv"><dt>바꿀 수 있는 것</dt><dd>도구 호출, 프롬프트, 커맨드, 턴, 화면</dd><dt>작성</dt><dd>JS/TS (JavaScript, TypeScript)</dd><dt>고를 때</dt><dd>패널, 즉시 커맨드, 이벤트 재작성</dd></dl></div>
+    <div data-for="hook"><dl class="kv"><dt>바꿀 수 있는 것</dt><dd>허용/차단, 입력과 결과 수정</dd><dt>작성</dt><dd>스크립트</dd><dt>고를 때</dt><dd>기존 스크립트로 막거나 기록</dd></dl></div>
+    <div data-for="skill"><dl class="kv"><dt>바꿀 수 있는 것</dt><dd>Claude가 아는 것</dd><dt>작성</dt><dd>Markdown</dd><dt>고를 때</dt><dd>반복 지시</dd></dl></div>
+    <div data-for="mcp"><dl class="kv"><dt>바꿀 수 있는 것</dt><dd>Claude가 쓰는 도구</dd><dt>작성</dt><dd>아무 언어</dd><dt>고를 때</dt><dd>외부 시스템 연결</dd></dl></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s17" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s17-header"><h2>공식 샘플 셋으로 감을 잡는다</h2></div>
+  <div class="slide-body" data-remarp-id="s17-body">
+    <p><!-- Slide 18: Official sample mods (PDF p18) --></p>
+<p>claude-code-playground 저장소, 공식 지원 대상은 아님</p>
+<div class="fsi c5-pickrow">
+  <div class="row3" data-pick="c5-samples">
+    <button class="pick" data-key="tw"><span class="k">CONTEXT</span><span class="t">token-weather</span></button>
+    <button class="pick" data-key="br"><span class="k">SAFETY</span><span class="t">blast-radius</span></button>
+    <button class="pick" data-key="rt"><span class="k">REVIEW</span><span class="t">replay-theater</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5-samples">
+    <p class="hint">샘플 하나를 누르면 무엇을 하는 mod인지 보여 줍니다.</p>
+    <div data-for="tw"><h4>token-weather</h4><p>컨텍스트 창 사용량을 <b>예보처럼</b> 프롬프트 위에 표시합니다.</p></div>
+    <div data-for="br"><h4>blast-radius</h4><p>rm -rf, force push 같은 <b>위험 명령을 붙잡고</b> 영향 범위를 보여 준 뒤, 진행이나 취소 버튼을 띄웁니다.</p></div>
+    <div data-for="rt"><h4>replay-theater</h4><p><code>/replay</code>로 지난 턴의 파일 편집을 <b>단계별로 재생</b>합니다.</p></div>
+  </div>
+  <p class="note">샘플은 claude-code-playground 저장소에 있으며 공식 지원 대상이 아닙니다. 도입 전에 더 알아보기의 mod 리뷰 절차를 거칩니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s18" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s18-header"><h2>mod는 사용자 권한으로 모든 것에 닿는다</h2></div>
+  <div class="slide-body" data-remarp-id="s18-body">
+    <p><!-- Slide 19: Trust model (PDF p19) --></p>
+<p>설치 전에 알아야 할 신뢰 모델, 닿는 것과 막히는 것</p>
+<div id="c5-sv-trust"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s19" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s19-header"><h2>사용자 mod는 막고, 조직 mod는 검토</h2></div>
+  <div class="slide-body" data-remarp-id="s19-body">
+    <p><!-- Slide 20: Mod org control (PDF p20) --></p>
+<p>allowManagedModsOnly와 claude plugin validate 읽는 법</p>
+<div id="c5-sv-ctrl"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s20" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s20-header"><h2>managed settings 없으면 guard는?</h2></div>
+  <div class="slide-body" data-remarp-id="s20-body">
+    <p><!-- Slide 21: Quick check 2 (PDF p21) --></p>
+<p>QUICK CHECK, 손을 들어 답해 주세요</p>
+<div class="fsi qc" id="c5-qc-2">
+  <p class="q">Bedrock 사용자 PC에 managed settings가 없다면, 내장 guard(sec-default)는?</p>
+  <div class="opts three">
+    <button class="opt"><b>A</b>항상 로드된다</button>
+    <button class="opt right"><b>B</b>로드되지 않는다</button>
+    <button class="opt"><b>C</b>Bedrock이면 자동 로드</button>
+  </div>
+  <p class="ans">정답 B. Bedrock, API 키 사용자는 managed settings가 있는 머신에서만 guard가 로드됩니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s21" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s21-header"><h2>--plugin-dir로 실은 mod를 막으려면?</h2></div>
+  <div class="slide-body" data-remarp-id="s21-body">
+    <p><!-- Slide 22: Quick check 3 (PDF p22) --></p>
+<p>QUICK CHECK, 손을 들어 답해 주세요</p>
+<div class="fsi qc" id="c5-qc-3">
+  <p class="q">사용자가 <code>--plugin-dir</code>로 mod를 실어도 로드되지 않게 하려면?</p>
+  <div class="opts three">
+    <button class="opt"><b>A</b>CLAUDE.md에 금지 문구</button>
+    <button class="opt right"><b>B</b>managed settings의 disableSideloadFlags와 allowManagedModsOnly</button>
+    <button class="opt"><b>C</b>사용자 settings.json에 enabledPlugins false</button>
+  </div>
+  <p class="ans">정답 B. 사용자 설정은 정책을 이기지 못합니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s22" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s22-header"><h2>45분 동안 팀 스타터 킷을 만든다</h2></div>
+  <div class="slide-body" data-remarp-id="s22-body">
+    <p><!-- Slide 23: Super Lab (PDF p23) --></p>
+<p>SUPER LAB, 팀 스타터 킷 플러그인 + mod</p>
+<div class="fsi fsi-lab">
+  <ol class="steps">
+    <li><b>TASK 01</b><span>Ch4 Subagent 3종(Ch4 건너뛰면 code-reviewer 1종) + DLP 훅 + 리뷰 스킬 묶기</span><em>Part 1</em></li>
+    <li><b>TASK 02</b><span>로컬 디렉터리 마켓플레이스 fsi-local 등록, /plugin install fsi-team-kit@fsi-local</span><em>Part 1</em></li>
+    <li><b>TASK 03</b><span>공식 first-mod 붙여 넣기, Claude에게 /tally-reset 추가 요청</span><em>Part 3</em></li>
+    <li><b>TASK 05</b><span>allowManagedModsOnly로 사용자 mod 차단 확인, 원복</span><em>Part 3</em></li>
+    <li><b>TASK 06</b><span>배포 전 체크리스트 (선택 TASK 04: Bedrock용 idle compaction mod, 12분)</span><em>Part 2</em></li>
+  </ol>
+  <p class="where">골격은 복사해 붙이고, 나머지는 Claude에게 시킵니다. Hands-on Lab 포털에서 Chapter 5를 엽니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s23" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s23-header"><h2>올리기 전에 여섯 가지를 확인한다</h2></div>
+  <div class="slide-body" data-remarp-id="s23-body">
+    <p><!-- Slide 24: Pre-deploy checklist (PDF p24) --></p>
+<p>사내 배포 전 체크리스트, 눌러서 하나씩 확인</p>
+<div class="fsi c5-check" id="c5-check">
+  <div class="items">
+    <button class="it"><span class="k">VALIDATE</span><span class="t">validate 통과</span><span class="d">hooks, calls 목록을 보안팀과 리뷰</span></button>
+    <button class="it"><span class="k">VERSION</span><span class="t">버전 고정</span><span class="d">release channel(stable, latest) 분리</span></button>
+    <button class="it"><span class="k">ALLOW LIST</span><span class="t">허용 목록</span><span class="d">strictKnownMarketplaces + disableSideloadFlags</span></button>
+    <button class="it"><span class="k">AIR-GAP</span><span class="t">망분리 경로</span><span class="d">필요하면 seed 디렉터리로 배포</span></button>
+    <button class="it"><span class="k">MEASURE</span><span class="t">측정</span><span class="d">plugin_loaded 이벤트로 사용 현황 확인</span></button>
+    <button class="it"><span class="k">ROLLBACK</span><span class="t">롤백</span><span class="d">enabledPlugins false로 즉시 차단</span></button>
+  </div>
+  <div class="foot"><span>Super Lab TASK 06에서 같은 목록을 직접 점검합니다.</span><span class="cnt" id="c5-check-cnt">0 / 6</span></div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s24" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  
+  <div class="slide-body" data-remarp-id="s24-body">
+    <p><!-- Slide 25: Deep dive divider (PDF p25, p26 merged into slide 7) --></p>
+<div class="fsi fsi-section c5-dd">
+  <span class="num">CHAPTER 05 / DEEP DIVE</span>
+  <div class="name">더 알아보기</div>
+  <p class="what">자주 받는 질문과 세부 설정</p>
+  <ol>
+    <li><b>01</b>플러그인 폴더 구성</li>
+    <li><b>02</b>마켓플레이스 소스</li>
+    <li><b>03</b>조직 배포 설정</li>
+    <li><b>04</b>mod 이벤트와 호출</li>
+    <li><b>05</b>남이 만든 mod 리뷰</li>
+    <li><b>06</b>플러그인 운영 지표</li>
+  </ol>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s25" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s25-header"><h2>마켓플레이스는 네 곳에서 온다</h2></div>
+  <div class="slide-body" data-remarp-id="s25-body">
+    <p><!-- Slide 26: Marketplace sources (PDF p27) --></p>
+<p>더 알아보기, /plugin marketplace add로 등록하는 소스</p>
+<div class="fsi c5-pickrow">
+  <div class="row4" data-pick="c5-src">
+    <button class="pick" data-key="local"><span class="k">로컬 경로</span><span class="t">개발, 테스트</span></button>
+    <button class="pick" data-key="gh"><span class="k">GitHub 저장소</span><span class="t">공개, 사내 GitHub</span></button>
+    <button class="pick" data-key="git"><span class="k">git URL</span><span class="t">사내 GitLab 등</span></button>
+    <button class="pick" data-key="seed"><span class="k">seed 디렉터리</span><span class="t">망분리</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5-src">
+    <p class="hint">소스를 누르면 예시와 맞는 경우가 나옵니다.</p>
+    <div data-for="local"><dl class="kv"><dt>예</dt><dd><code>~/claude-lab/ch5/marketplace</code></dd><dt>맞는 경우</dt><dd>개발, 테스트 (이 랩)</dd></dl></div>
+    <div data-for="gh"><dl class="kv"><dt>예</dt><dd><code>owner/repo</code></dd><dt>맞는 경우</dt><dd>공개, 사내 GitHub</dd></dl></div>
+    <div data-for="git"><dl class="kv"><dt>예</dt><dd><code>https://git.corp.example/...git</code></dd><dt>맞는 경우</dt><dd>사내 GitLab 등</dd></dl></div>
+    <div data-for="seed"><dl class="kv"><dt>예</dt><dd><code>CLAUDE_CODE_PLUGIN_SEED_DIR</code></dd><dt>맞는 경우</dt><dd>망분리, 이미지에 미리 심기 (Part 2)</dd></dl></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s26" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s26-header"><h2>사내 git으로 등록하고 강제한다</h2></div>
+  <div class="slide-body" data-remarp-id="s26-body">
+    <p><!-- Slide 27: Org deploy settings (PDF p28) --></p>
+<p>더 알아보기, 조직 배포 설정과 함께 거는 잠금</p>
+<div class="fsi c5-codelocks">
+  <div>
+    <p class="path">managed-settings.json</p>
+<pre>{
+  "extraKnownMarketplaces": {
+    "fsi-internal": {
+      "source": { "source": "git", "url":
+        "https://git.corp.example/claude/marketplace.git" }
+    }
+  },
+  "enabledPlugins": {
+    "fsi-team-kit@fsi-internal": true
+  }
+}</pre>
+  </div>
+  <div class="locks">
+    <div class="lk"><b>strictKnownMarketplaces</b><span>hostPattern으로 사내 git 허용</span></div>
+    <div class="lk"><b>disableSideloadFlags</b><span>--plugin-dir 금지</span></div>
+    <div class="lk"><b>allowManagedModsOnly</b><span>사용자 mod 차단</span></div>
+    <div class="lk warn"><b>문제가 생기면</b><span>enabledPlugins를 false로</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s27" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s27-header"><h2>남이 만든 mod에는 샌드박스가 없다</h2></div>
+  <div class="slide-body" data-remarp-id="s27-body">
+    <p><!-- Slide 28: Mod events and reviewing others' mods (PDF p29, p30) --></p>
+<p>더 알아보기, validate 두 줄 읽기와 리뷰 여섯 항목</p>
+<div class="fsi c5-switch">
+  <div class="sw" data-pick="c5-review">
+    <button class="pick" data-key="read"><span class="t">validate 두 줄 읽기</span></button>
+    <button class="pick" data-key="rev"><span class="t">남이 만든 mod 리뷰</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5-review">
+    <div data-for="read">
+      <table>
+        <tr><th>항목</th><th>예 (first-mod)</th><th>읽는 법</th></tr>
+        <tr><td>hooks:</td><td>session.start, tool.call</td><td>언제 끼어드는가</td></tr>
+        <tr><td>hooks:</td><td>command.run{tally}, ui.render{Spinner}</td><td>커맨드, 화면 변경</td></tr>
+        <tr><td>calls:</td><td>$.command.register, $.ui.invalidate</td><td>바깥에 하는 일</td></tr>
+        <tr class="risk"><td>위험 신호</td><td>프로세스 실행, 네트워크 호출</td><td>calls 줄에 보이면 보안 리뷰</td></tr>
+      </table>
+    </div>
+    <div data-for="rev">
+      <table>
+        <tr><th>항목</th><th>확인할 것</th></tr>
+        <tr><td>출처</td><td>소스 저장소와 작성자 신뢰</td></tr>
+        <tr><td>calls</td><td>프로세스, 네트워크, 파일 접근 확인</td></tr>
+        <tr><td>버전 고정</td><td>자동 갱신 대신 검토한 버전</td></tr>
+        <tr><td>배포 경로</td><td>managed 마켓플레이스로만</td></tr>
+        <tr><td>차단 정책</td><td>allowManagedModsOnly</td></tr>
+        <tr><td>모니터링</td><td>plugin_loaded 이벤트</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s28" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s28-header"><h2>배포 후에는 네 가지를 본다</h2></div>
+  <div class="slide-body" data-remarp-id="s28-body">
+    <p><!-- Slide 29: Plugin ops metrics (PDF p31) --></p>
+<p>더 알아보기, 플러그인 운영 지표</p>
+<div class="fsi c5-metrics">
+  <div class="m"><b>plugin_installed</b><span class="src">OTel 이벤트</span><span class="q">누가 설치했나</span></div>
+  <div class="m"><b>plugin_loaded</b><span class="src">OTel 이벤트</span><span class="q">실제로 쓰이나</span></div>
+  <div class="m"><b>스킬, 에이전트 호출</b><span class="src">skill_activated, subagent_completed 이벤트</span><span class="q">어떤 구성요소가 효과적인가</span></div>
+  <div class="m"><b>버전 분포</b><span class="src">설치 캐시, 이벤트 속성</span><span class="q">구버전이 남아 있나</span></div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s29" data-fit="off" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="slide-header" data-remarp-id="s29-header"><h2>팀의 플랫폼을 만드는 여섯 줄</h2></div>
+  <div class="slide-body" data-remarp-id="s29-body">
+    <p><!-- Slide 30: Recap (PDF p32) --></p>
+<p>Chapter 5 Key Takeaways</p>
+<div class="fsi fsi-recap">
+  <div class="fsi-grid-3">
+    <div class="rc"><b>01</b><span>플러그인 = 스킬 + Subagent + 훅 + MCP + mod</span></div>
+    <div class="rc"><b>02</b><span>조직 배포 = 허용 목록 + 등록 + 강제 설치 + 사이드로드 금지</span></div>
+    <div class="rc"><b>03</b><span>망분리는 <code>CLAUDE_CODE_PLUGIN_SEED_DIR</code></span></div>
+    <div class="rc"><b>04</b><span>mod는 Claude Code 안의 JS 핸들러, 화면까지 바꿈</span></div>
+    <div class="rc"><b>05</b><span>mod는 샌드박스가 없다. validate와 allowManagedModsOnly</span></div>
+    <div class="rc"><b>06</b><span>Bedrock 사용자는 managed settings가 있어야 guard 로드</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s30" data-block="05-ch5-plugins-mods" data-block-title="Chapter 5. Plugins &amp; Mods">
+  <div class="center-content" style="height:100%; gap:1.5rem;">
+    <h1 style="font-family:var(--font-display); letter-spacing:var(--tracking-tight, -0.02em); font-size:3rem; color:var(--text-primary);">Thank You</h1>
+    <p style="color:var(--text-secondary); font-size:1.1rem;">다음은 점심, 그리고 Chapter 6. 토큰과 비용입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.</p>
+    
+    <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+            <a href="toc.html" class="btn btn-sm" style="text-decoration:none;">← 목차로 돌아가기</a>
+      <a href="06-ch6-tokens-cost.html" class="btn btn-primary btn-sm" style="text-decoration:none;">Chapter 6 →</a>
+    </div>
+  </div>
+</div>
+</div>
+<script src="./common/animation-utils.js"></script>
+<script src="./common/deck-overlay.js"></script>
+<script src="./common/deck-detail.js"></script>
+<script src="./common/deck-nav.js"></script>
+<script src="./common/deck-pen.js"></script>
+<script src="./common/slide-framework.js"></script>
+<script src="./common/quiz-component.js"></script>
+<script src="./common/presenter-view.js"></script>
+<script>
+(function(){
+(function(){function css(h){var has=[].some.call(document.querySelectorAll('link'),function(x){return x.getAttribute('href')===h;});if(has)return;var l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l);}css('assets/fsi.css');css('assets/ch5.css');if(!window.__fsiLoaded){window.__fsiLoaded=true;var s=document.createElement('script');s.src='assets/stepviz.js';document.head.appendChild(s);}})();
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var bar = document.querySelector('.slide-deck #c5-survey-share .tr i') || document.querySelector('#c5-survey-share .tr i');
+  function grow(on) { bar.style.width = on ? (58 / 138 * 100).toFixed(1) + '%' : '0'; }
+  F.countUp('#c5-survey-num', 58, { suffix: '명' });
+  F.onEnter(bar, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
+  grow(true);
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-ext'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-tree'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:40,w:1140,h:410,l:'INSTALL FLOW'}];
+  var SRC = {id:'src',x:40,y:110,w:220,h:90,t:'소스',s:'git, URL, 로컬 디렉터리',c:'muted'};
+  var MK = {id:'mk',x:320,y:110,w:240,h:90,t:'1 마켓플레이스 등록',s:'marketplace add',c:'info'};
+  var IN = {id:'in',x:620,y:110,w:240,h:90,t:'2 설치',s:'이름@마켓플레이스',c:'accent'};
+  var AP = {id:'ap',x:920,y:110,w:220,h:90,t:'3 적용',s:'리로드 또는 다음 세션',c:'success'};
+  var UP = {id:'up',x:620,y:310,w:240,h:90,t:'4 갱신',s:'autoUpdate 또는 수동',c:'warning'};
+  var ALL = [SRC, MK, IN, AP, UP];
+  F.stepviz('#c5-sv-install', [
+    {kicker:'STEP 1', title:'마켓플레이스를 등록합니다',
+     body:'플러그인은 <b>마켓플레이스</b>를 통해 받습니다. 먼저 <b>/plugin marketplace add</b>로 마켓플레이스를 등록합니다. 소스는 git, URL, 로컬 디렉터리입니다.',
+     facts:['로컬 경로: 개발, 테스트 (이 랩)','GitHub 저장소: 공개, 사내 GitHub','git URL: 사내 GitLab 등'],
+     zones:Z, nodes:ALL, hot:['src','mk'],
+     edges:[{f:'src',t:'mk',c:'info',o:0}],
+     snip:{hd:'마켓플레이스 등록',path:'Claude Code 프롬프트, 소스별 예시',lines:['# 로컬 경로 (이 랩)','/plugin marketplace add ~/claude-lab/ch5/marketplace','','# GitHub 저장소','/plugin marketplace add owner/repo','','# 사내 git URL','/plugin marketplace add https://git.corp.example/...git'],hl:[2,5,8],note:'망분리 환경은 등록 대신 <b>seed 디렉터리</b>를 씁니다 (Part 2).'}},
+    {kicker:'STEP 2', title:'이름@마켓플레이스로 설치합니다',
+     body:'등록한 마켓플레이스에서 <b>/plugin install 이름@마켓플레이스</b>로 설치합니다. 동료는 이 한 줄이면 같은 플러그인을 받습니다.',
+     facts:['이름과 마켓플레이스를 함께 지정','같은 이름이 여러 마켓플레이스에 있어도 구분','회사는 이 단계를 정책으로 강제 (Part 2)'],
+     zones:Z, nodes:ALL, hot:['mk','in'],
+     edges:[{f:'mk',t:'in',c:'accent',o:0}],
+     snip:{hd:'설치',path:'Claude Code 프롬프트',lines:['# 랩','/plugin install fsi-team-kit@fsi-local','','# 형식: 이름@마켓플레이스'],hl:[2],note:'랩은 로컬 디렉터리 마켓플레이스 <b>fsi-local</b>을 씁니다. Part 2의 정책 예시는 fsi-tools입니다.'}},
+    {kicker:'STEP 3', title:'리로드하거나 다음 세션부터',
+     body:'설치한 플러그인은 <b>/reload-plugins</b>로 바로 적용하거나 <b>다음 세션</b>부터 적용됩니다.',
+     facts:['/reload-plugins: 지금 세션에 적용','또는 다음 세션 시작 시','적용되면 스킬, Subagent, 훅이 함께 켜짐'],
+     zones:Z, nodes:ALL, hot:['in','ap'],
+     edges:[{f:'in',t:'ap',c:'success',o:0}],
+     snip:{hd:'적용',path:'Claude Code 프롬프트',lines:['/reload-plugins','','# 또는 새 세션을 시작'],hl:[1],note:'랩에서도 플러그인을 고친 뒤 /reload-plugins로 바로 확인합니다.'}},
+    {kicker:'STEP 4', title:'갱신은 자동 또는 수동',
+     body:'갱신은 <b>autoUpdate</b>로 자동으로 받거나 <b>수동 update</b>로 합니다. 갱신된 버전이 다시 적용 단계로 이어집니다.',
+     facts:['autoUpdate: 자동 갱신','수동 update: 검토한 버전만 받기','남이 만든 mod는 자동 갱신 대신 검토한 버전 (더 알아보기)'],
+     zones:Z, nodes:ALL, hot:['mk','up','ap'],
+     edges:[{f:'mk',t:'up',c:'warning',l:'새 버전',o:0},{f:'up',t:'ap',c:'warning',o:1}],
+     snip:{hd:'갱신',path:'두 가지 방식',lines:['# 자동: 마켓플레이스의 autoUpdate 설정','# 수동: 검토한 버전만 직접 update'],hl:[],note:'금융권에서는 <b>버전을 고정</b>하고 검토한 버전만 올리는 운영을 권합니다.'}},
+    {kicker:'OVERVIEW', title:'네 단계가 한 줄로 이어집니다',
+     body:'등록, 설치, 적용, 갱신. <b>동료는 설치 한 줄</b>로 팀과 같은 환경을 갖고, 갱신도 같은 길로 받습니다.',
+     facts:['1 등록: /plugin marketplace add','2 설치: /plugin install 이름@마켓플레이스','3 적용: /reload-plugins 또는 다음 세션','4 갱신: autoUpdate 또는 수동 update'],
+     zones:Z, nodes:ALL,
+     edges:[{f:'src',t:'mk',c:'info',o:0},{f:'mk',t:'in',c:'accent',o:1},{f:'in',t:'ap',c:'success',o:2},{f:'mk',t:'up',c:'warning',o:3},{f:'up',t:'ap',c:'warning',o:4}],
+     loop:true, stagger:0.7,
+     snip:{hd:'한 번에 보기',path:'Claude Code 프롬프트',lines:['/plugin marketplace add <소스>','/plugin install <이름>@<마켓플레이스>','/reload-plugins'],hl:[1,2,3],note:'Super Lab TASK 02에서 이 흐름을 새 폴더에서 동료처럼 따라 합니다.'}}
+  ], {legend:[['info','등록'],['accent','설치'],['success','적용'],['warning','갱신']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:40,w:300,h:410,l:'관리자'},{x:360,y:40,w:800,h:410,l:'사용자 PC의 Claude Code'}];
+  var MS = {id:'ms',x:40,y:200,w:260,h:90,t:'managed-settings.json',s:'사용자가 못 바꿈',c:'accent'};
+  var AL = {id:'al',x:400,y:90,w:340,h:72,t:'허용 목록',s:'your-org/*, 사내 git, skills-dir',c:'info'};
+  var RG = {id:'rg',x:400,y:200,w:340,h:72,t:'등록된 마켓플레이스',s:'fsi-tools',c:'info'};
+  var PL = {id:'pl',x:400,y:310,w:340,h:72,t:'fsi-team-kit',s:'강제 설치, 해제 불가',c:'success'};
+  var SL = {id:'sl',x:800,y:310,w:330,h:72,t:'--plugin-dir',s:'로컬 사이드로드',c:'danger'};
+  var SK = {id:'sk',x:800,y:90,w:330,h:72,t:'skills-dir',s:'로컬 스킬 플러그인 유지',c:'info'};
+  var ALL = [MS, AL, RG, PL, SL, SK];
+  var J = ['{',' "strictKnownMarketplaces": [','  { "source": "github", "repo": "your-org/*" },','  { "source": "hostPattern",','    "hostPattern": "^git\\\\.corp\\\\.example$" },','  { "source": "skills-dir" } ],',' "extraKnownMarketplaces": {','  "fsi-tools": { "source": { "source": "github",','    "repo": "your-org/fsi-tools" } } },',' "enabledPlugins": {','  "fsi-team-kit@fsi-tools": true },',' "disableSideloadFlags": true','}'];
+  function snip(hl, note) { return {hd:'사내 마켓플레이스 강제',path:'managed-settings.json',lines:J,hl:hl,note:note}; }
+  F.stepviz('#c5-sv-force', [
+    {kicker:'OVERVIEW', title:'키 네 개가 각자 한 가지를 합니다',
+     body:'사내 마켓플레이스를 강제하려면 <b>허용 목록, 등록, 강제 설치, 사이드로드 금지</b>를 함께 겁니다. 한 키만으로는 다 막히지 않습니다.',
+     zones:Z, nodes:ALL,
+     edges:[{f:'ms',t:'al',c:'info',o:0},{f:'ms',t:'rg',c:'info',o:1},{f:'ms',t:'pl',c:'success',o:2},{f:'sl',t:'pl',c:'danger',dash:true}],
+     snip:snip([2,7,10,12],'네 줄이 각각 허용, 등록, 강제, 금지입니다. 다음 단계에서 하나씩 봅니다.')},
+    {kicker:'KEY 1', title:'strictKnownMarketplaces: 허용만 합니다',
+     body:'허용할 마켓플레이스 목록입니다. <b>여기 적어도 등록은 되지 않습니다</b>. <code>hostPattern</code>으로 사내 git 호스트를 허용하고, <code>skills-dir</code>을 넣으면 로컬 스킬 플러그인을 계속 쓸 수 있습니다.',
+     zones:Z, nodes:ALL, hot:['ms','al','sk'],
+     edges:[{f:'ms',t:'al',c:'info',l:'허용',o:0},{f:'al',t:'sk',c:'info',o:1}],
+     snip:snip([2,3,4,5,6],'허용 목록 밖의 마켓플레이스는 등록할 수 없습니다.')},
+    {kicker:'KEY 2', title:'extraKnownMarketplaces: 실제로 등록',
+     body:'사용자가 직접 등록하지 않아도 <b>관리자가 마켓플레이스를 등록</b>해 둡니다. 예시는 <code>fsi-tools</code>입니다.',
+     zones:Z, nodes:ALL, hot:['ms','rg'],
+     edges:[{f:'ms',t:'rg',c:'info',l:'등록',o:0}],
+     snip:snip([7,8,9],'더 알아보기에 사내 git URL로 등록하는 예시가 있습니다.')},
+    {kicker:'KEY 3', title:'enabledPlugins true: 강제 설치',
+     body:'<b>true로 지정한 플러그인은 강제로 설치되고 사용자가 해제할 수 없습니다</b>. 팀 스타터 킷을 모두에게 까는 키입니다.',
+     zones:Z, nodes:ALL, hot:['ms','rg','pl'],
+     edges:[{f:'ms',t:'pl',c:'success',l:'true',o:0},{f:'rg',t:'pl',c:'success',o:1}],
+     snip:snip([10,11],'롤백도 같은 키입니다. <b>false로 바꾸면 즉시 차단</b>됩니다.')},
+    {kicker:'KEY 4', title:'disableSideloadFlags: 사이드로드 금지',
+     body:'<code>--plugin-dir</code>로 로컬 폴더의 플러그인을 직접 싣는 것을 <b>거부</b>합니다. 허용 목록만으로는 이 길이 막히지 않습니다.',
+     zones:Z, nodes:ALL, hot:['ms','sl','pl'],
+     edges:[{f:'ms',t:'sl',c:'danger',l:'거부',o:0,curve:70,side:'b'},{f:'sl',t:'pl',c:'danger',dash:true}],
+     snip:snip([12],'바로 다음 퀴즈가 이 키에 관한 것입니다.')}
+  ], {legend:[['accent','관리자 정책'],['info','허용과 등록'],['success','강제 설치'],['danger','거부되는 경로']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c5-qc-1'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:40,w:540,h:410,l:'빌드 시점 (이미지 만들 때)'},{x:600,y:40,w:560,h:410,l:'런타임 (망분리, CI)',tone:'warning'}];
+  var GT = {id:'gt',x:650,y:80,w:460,h:76,t:'git clone',s:'망 밖으로 못 나감',c:'danger'};
+  var BI = {id:'bi',x:60,y:90,w:460,h:90,t:'claude plugin install',s:'CLAUDE_CODE_PLUGIN_CACHE_DIR',c:'accent'};
+  var SD = {id:'sd',x:60,y:290,w:460,h:90,t:'/opt/claude-seed',s:'이미지에 미리 심기',c:'info'};
+  var RT = {id:'rt',x:650,y:200,w:460,h:90,t:'Claude Code',s:'CLAUDE_CODE_PLUGIN_SEED_DIR, 읽기 전용',c:'success'};
+  var PO = {id:'po',x:650,y:330,w:460,h:76,t:'허용, 차단 목록',s:'그대로 적용',c:'accent'};
+  var ALL = [GT, BI, SD, RT, PO];
+  var L = ['# 빌드 시점','CLAUDE_CODE_PLUGIN_CACHE_DIR=/opt/claude-seed \\','  claude plugin install …','','# 런타임','CLAUDE_CODE_PLUGIN_SEED_DIR=/opt/claude-seed'];
+  F.stepviz('#c5-sv-seed', [
+    {kicker:'STEP 1', title:'망분리 환경은 git clone이 안 됩니다',
+     body:'마켓플레이스 등록과 설치는 보통 git이나 URL에서 받아 옵니다.<br><b>망분리 PC나 CI(자동 빌드와 테스트) 러너</b>에서는 그 길이 막혀 있습니다.',
+     facts:['망분리 업무 PC','외부 접근이 없는 CI 러너','설치할 때 받아 오는 방식이 안 맞음'],
+     zones:Z, nodes:ALL, hot:['gt','rt'],
+     edges:[{f:'rt',t:'gt',c:'danger',dash:true}],
+     snip:{hd:'망분리, CI',path:'플러그인을 받는 방법',lines:L,hl:[],note:'해법은 <b>빌드할 때 심고, 런타임에는 읽기만</b> 하는 것입니다.'}},
+    {kicker:'STEP 2', title:'빌드할 때 플러그인을 심어 둡니다',
+     body:'이미지를 만드는 시점에 <b>CLAUDE_CODE_PLUGIN_CACHE_DIR</b>을 seed 디렉터리로 지정하고 <code>claude plugin install</code>을 실행합니다.',
+     facts:['빌드 시점에는 네트워크 사용 가능','설치 결과가 /opt/claude-seed에 남음','이 디렉터리를 이미지에 포함'],
+     zones:Z, nodes:ALL, hot:['bi','sd'],
+     edges:[{f:'bi',t:'sd',c:'info',l:'심기',o:0}],
+     snip:{hd:'빌드 시점',path:'이미지 빌드 스크립트',lines:L,hl:[2,3],note:'빌드와 런타임 두 줄이 같은 경로(/opt/claude-seed)를 가리켜야 합니다.'}},
+    {kicker:'STEP 3', title:'런타임에는 읽기 전용으로 씁니다',
+     body:'런타임에는 <b>CLAUDE_CODE_PLUGIN_SEED_DIR</b>로 같은 디렉터리를 가리킵니다. Claude Code는 이 플러그인을 <b>읽기 전용</b>으로 씁니다.',
+     facts:['같은 경로를 SEED_DIR로 지정','읽기 전용','git clone 없이 플러그인 사용'],
+     zones:Z, nodes:ALL, hot:['sd','rt'],
+     edges:[{f:'sd',t:'rt',c:'success',l:'읽기 전용',o:0,side:'h'}],
+     snip:{hd:'런타임',path:'망분리 PC, CI 러너 환경 변수',lines:L,hl:[5,6],note:'더 알아보기의 마켓플레이스 소스 표에도 seed 디렉터리가 나옵니다.'}},
+    {kicker:'STEP 4', title:'자동 업데이트는 꺼지고 정책은 그대로',
+     body:'seed로 쓰면 <b>자동 업데이트는 꺼집니다</b>. 그래도 <b>허용, 차단 목록은 그대로 적용</b>되어 Part 2의 정책이 유지됩니다.',
+     facts:['자동 업데이트 꺼짐: 이미지를 다시 빌드해 갱신','허용, 차단 목록은 그대로','강제 설치 정책과 함께 사용'],
+     zones:Z, nodes:ALL, hot:['sd','rt','po'],
+     edges:[{f:'sd',t:'rt',c:'success',o:0,side:'h'},{f:'po',t:'rt',c:'accent',l:'정책',o:1}],
+     snip:{hd:'정리',path:'망분리, CI',lines:L,hl:[2,3,5,6],note:'갱신은 <b>이미지 재빌드</b>로 합니다. 검토한 버전만 들어가는 장점도 있습니다.'}}
+  ], {legend:[['accent','설치와 정책'],['info','seed 디렉터리'],['success','런타임 사용'],['danger','막힌 경로']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-otel'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:40,w:1140,h:410,l:'hooks/register.js'}];
+  var EV = {id:'ev',x:50,y:90,w:250,h:84,t:'tool.call',s:'도구 호출 이벤트',c:'info'};
+  var H1 = {id:'h1',x:350,y:90,w:300,h:84,t:'calls += 1',s:'관찰하고 세기',c:'accent'};
+  var NX = {id:'nx',x:710,y:90,w:420,h:84,t:'next(e)',s:'도구는 그대로 실행',c:'success'};
+  var IV = {id:'iv',x:350,y:220,w:300,h:84,t:'$.ui.invalidate',s:'ui.render 다시 그리기',c:'accent'};
+  var RD = {id:'rd',x:50,y:340,w:250,h:84,t:'ui.render',s:'component: Spinner',c:'info'};
+  var SP = {id:'sp',x:710,y:340,w:420,h:84,t:'스피너 suffix',s:'tool calls: N',c:'success'};
+  var ALL = [EV, H1, NX, IV, RD, SP];
+  var CODE = ['let calls = 0','export function register(on) {','  on(\'tool.call\', async ($, e, next) => {','    calls += 1','    $.ui.invalidate(\'ui.render\')','    return next(e)            // 도구는 그대로 실행','  })','  on(\'ui.render\', { component: \'Spinner\' }, async ($, e, next) => {','    return next({ ...e, props: { ...e.props,','      suffix: \' · tool calls: \' + calls + \'…\' } })','  })','}'];
+  function snip(hl, note) { return {hd:'가장 작은 mod',path:'hooks/register.js',lines:CODE,hl:hl,note:note}; }
+  F.stepviz('#c5-sv-mod', [
+    {kicker:'STEP 1', title:'register(on)으로 핸들러를 겁니다',
+     body:'mod는 <b>register 함수</b> 하나를 내보냅니다. Claude Code가 넘겨준 <b>on</b>으로 어떤 이벤트에 끼어들지 등록합니다.',
+     zones:Z, nodes:ALL, hot:['ev','rd'],
+     edges:[],
+     snip:snip([2,3,8],'핸들러는 <code>($, e, next)</code>를 받습니다. $는 바깥 작업용 API입니다.')},
+    {kicker:'STEP 2', title:'tool.call: 세고 그대로 넘깁니다',
+     body:'도구가 호출될 때마다 <b>calls를 1 올리고</b>, <b>next(e)</b>로 원래 이벤트를 넘겨 도구는 그대로 실행됩니다. 이것이 <b>관찰</b>입니다.',
+     zones:Z, nodes:ALL, hot:['ev','h1','nx'],
+     edges:[{f:'ev',t:'h1',c:'info',o:0},{f:'h1',t:'nx',c:'success',l:'next(e)',o:1}],
+     loop:true, stagger:0.8,
+     snip:snip([3,4,6],'관찰, 변경, 대신 처리 중 이 핸들러는 <b>관찰</b>만 합니다.')},
+    {kicker:'STEP 3', title:'화면을 다시 그리게 합니다',
+     body:'<b>$.ui.invalidate(\'ui.render\')</b>로 화면을 다시 그리게 하면, Spinner를 그리는 <b>ui.render</b> 핸들러가 불립니다.',
+     zones:Z, nodes:ALL, hot:['h1','iv','rd'],
+     edges:[{f:'h1',t:'iv',c:'accent',o:0},{f:'iv',t:'rd',c:'accent',l:'다시 그리기',o:1}],
+     snip:snip([5,8],'mod가 바깥에 하는 일은 모두 <b>$ API</b>를 거칩니다. 그래서 validate로 볼 수 있습니다.')},
+    {kicker:'STEP 4', title:'props를 바꿔 스피너 옆에 표시',
+     body:'ui.render 핸들러는 <b>props에 suffix를 더한 이벤트</b>를 next로 넘깁니다. 이것이 <b>변경</b>입니다. 스피너 옆에 호출 수가 붙습니다.',
+     zones:Z, nodes:ALL, hot:['rd','sp'],
+     edges:[{f:'rd',t:'sp',c:'success',l:'suffix 추가',o:0}],
+     snip:snip([8,9,10],'Super Lab TASK 03에서 이 mod에 <code>/tally-reset</code> 커맨드를 Claude에게 추가시킵니다.')},
+    {kicker:'FILES', title:'세 파일과 두 원칙',
+     body:'mod는 <b>.claude-plugin/plugin.json</b>, 코드 위치를 적은 <b>hooks/hooks.json</b>, 그리고 <b>hooks/register.js</b> 세 파일로 된 플러그인입니다. 원칙은 두 가지, <b>관찰, 변경, 대신 처리</b>와 <b>바깥 작업은 $ API로만</b>입니다.',
+     facts:['원칙 1: 관찰, 변경, 대신 처리','원칙 2: 바깥 작업은 $ API로만','배포와 통제는 일반 플러그인과 같음'],
+     zones:Z, nodes:ALL,
+     edges:[{f:'ev',t:'h1',c:'info',o:0},{f:'h1',t:'nx',c:'success',o:1},{f:'h1',t:'iv',c:'accent',o:2},{f:'iv',t:'rd',c:'accent',o:3},{f:'rd',t:'sp',c:'success',o:4}],
+     loop:true, stagger:0.6,
+     snip:{hd:'세 파일',path:'mod 플러그인',lines:['.claude-plugin/plugin.json','hooks/hooks.json      # 코드 위치','hooks/register.js'],hl:[1,2,3],note:'그래서 mod도 <b>Part 2의 배포와 통제를 그대로</b> 받습니다.'}}
+  ], {legend:[['info','이벤트'],['accent','핸들러 동작'],['success','결과']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-cmp'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-samples'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:40,w:560,h:410,l:'닿는 것 (사용자 권한으로)',tone:'danger'},{x:620,y:40,w:540,h:410,l:'막히는 것',tone:'success'}];
+  var MD = {id:'md',x:330,y:200,w:220,h:90,t:'mod',s:'사용자 권한',c:'warning'};
+  var R1 = {id:'r1',x:40,y:70,w:270,h:76,t:'파일, 프로세스, 네트워크',s:'읽기, 쓰기, 실행',c:'danger'};
+  var R2 = {id:'r2',x:40,y:165,w:270,h:76,t:'비밀값',s:'환경변수, 설정 속',c:'danger'};
+  var R3 = {id:'r3',x:40,y:260,w:270,h:76,t:'프롬프트, 도구 호출',s:'모든 것',c:'danger'};
+  var R4 = {id:'r4',x:40,y:355,w:270,h:76,t:'모델 사용량',s:'사용자의 것',c:'danger'};
+  var B1 = {id:'b1',x:660,y:80,w:460,h:84,t:'managed deny 규칙',s:'managed PreToolUse 차단',c:'success'};
+  var B2 = {id:'b2',x:660,y:200,w:460,h:84,t:'권한 프롬프트 화면',s:'mod가 바꿀 수 없음',c:'success'};
+  var B3 = {id:'b3',x:660,y:320,w:460,h:84,t:'로드 자체를 정책으로 통제',s:'validate, allowManagedModsOnly',c:'accent'};
+  var ALL = [MD, R1, R2, R3, R4, B1, B2, B3];
+  F.stepviz('#c5-sv-trust', [
+    {kicker:'STEP 1', title:'사용자가 닿는 곳엔 mod도 닿습니다',
+     body:'mod는 <b>사용자 권한으로</b> 돕니다. 파일 읽기와 쓰기, 프로세스 실행, 네트워크, 환경변수와 설정 속 비밀값, 모든 프롬프트와 도구 호출, 모델 사용량까지 닿습니다.',
+     facts:['mod에는 샌드박스가 없음','비밀값과 모든 프롬프트에 접근','설치는 곧 신뢰'],
+     zones:Z, nodes:ALL, hot:['md','r1','r2','r3','r4'],
+     edges:[{f:'md',t:'r1',c:'danger',o:0},{f:'md',t:'r2',c:'danger',o:1},{f:'md',t:'r3',c:'danger',o:2},{f:'md',t:'r4',c:'danger',o:3}],
+     stagger:0.3,
+     snip:{hd:'닿는 것',path:'사용자 권한으로',lines:['파일 읽기, 쓰기','프로세스 실행','네트워크','환경변수, 설정 속 비밀값','모든 프롬프트와 도구 호출','사용자의 모델 사용량'],hl:[1,2,3,4,5,6],note:'그래서 <b>남이 만든 mod</b>는 플러그인보다 더 엄격하게 검토합니다.'}},
+    {kicker:'STEP 2', title:'조직의 차단과 권한 화면은 못 넘습니다',
+     body:'<b>managed deny 규칙과 managed PreToolUse 차단</b>은 mod가 우회하지 못합니다. <b>권한 프롬프트 화면</b>도 mod가 바꿀 수 없습니다.',
+     facts:['managed deny 규칙','managed PreToolUse 차단','권한 프롬프트 화면은 고정'],
+     zones:Z, nodes:ALL, hot:['md','b1','b2'],
+     edges:[{f:'md',t:'b1',c:'success',dash:true},{f:'md',t:'b2',c:'success',dash:true}],
+     snip:{hd:'막히는 것',path:'조직 정책이 이기는 곳',lines:['managed deny 규칙','managed PreToolUse 차단','권한 프롬프트 화면'],hl:[1,2,3],note:'Ch3에서 건 managed 통제는 mod가 있어도 그대로입니다.'}},
+    {kicker:'STEP 3', title:'그래서 로드 자체를 통제합니다',
+     body:'mod가 띄운 프로세스는 <b>샌드박스 밖</b>입니다. 그래서 정책으로 <b>로드 자체</b>를 통제하고, 설치 전 <b>claude plugin validate</b>로 hooks와 calls를 확인합니다.',
+     facts:['mod가 띄운 프로세스는 샌드박스 밖','정책으로 로드 자체를 통제','설치 전 claude plugin validate'],
+     zones:Z, nodes:ALL, hot:['md','b3'],
+     edges:[{f:'b3',t:'md',c:'accent',l:'로드 통제',o:0}],
+     snip:{hd:'설치 전',path:'shell',lines:['claude plugin validate ./some-mod','','# hooks: 언제 끼어드는가','# calls: 바깥에 하는 일'],hl:[1],note:'다음 장에서 정책 키와 validate 출력 읽는 법을 봅니다.'}}
+  ], {legend:[['danger','mod가 닿는 것'],['success','mod가 못 넘는 것'],['accent','로드 통제']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:40,w:300,h:410,l:'관리자'},{x:360,y:40,w:800,h:410,l:'사용자 PC'}];
+  var MS = {id:'ms',x:40,y:110,w:260,h:90,t:'managed-settings.json',s:'allowManagedModsOnly',c:'accent'};
+  var VA = {id:'va',x:40,y:300,w:260,h:90,t:'plugin validate',s:'설치 전 보안 리뷰',c:'warning'};
+  var OM = {id:'om',x:420,y:110,w:330,h:90,t:'조직 mod',s:'로컬 디렉터리 마켓플레이스',c:'success'};
+  var UM = {id:'um',x:800,y:110,w:330,h:90,t:'사용자 mod',s:'로드되지 않음',c:'danger'};
+  var CC = {id:'cc',x:420,y:300,w:710,h:90,t:'Claude Code',s:'파일, MDM 정책이면 Bedrock에서도 같게',c:'info'};
+  var ALL = [MS, VA, OM, UM, CC];
+  var POL = ['{','  "pluginConfigs": {','    "cc-plugin-sec-default@builtin": {','      "options": { "allowManagedModsOnly": true }','    }','  }','}'];
+  var VAL = ['$ claude plugin validate ./some-mod','','❯ ./register.js hooks: session.start, tool.call,','   ui.render{component=Pane}','❯ ./register.js calls: $.fs.read, $.http.fetch,','   $.store.set, $.ui.open'];
+  F.stepviz('#c5-sv-ctrl', [
+    {kicker:'STEP 1', title:'allowManagedModsOnly: 조직 mod만 로드',
+     body:'내장 보안 플러그인 <code>cc-plugin-sec-default@builtin</code>의 옵션 <b>allowManagedModsOnly</b>를 켜면 <b>조직이 배포한 mod만</b> 로드됩니다.',
+     facts:['managed-settings.json의 pluginConfigs','사용자가 설치한 mod는 로드 안 됨','사이드로드는 disableSideloadFlags와 함께'],
+     zones:Z, nodes:ALL, hot:['ms','om','um','cc'],
+     edges:[{f:'ms',t:'om',c:'success',l:'허용',o:0},{f:'um',t:'cc',c:'danger',dash:true},{f:'om',t:'cc',c:'success',o:1}],
+     snip:{hd:'사용자 mod 차단',path:'managed-settings.json',lines:POL,hl:[3,4],note:'Super Lab TASK 05에서 이 설정으로 사용자 mod가 막히는지 확인한 뒤 원복합니다.'}},
+    {kicker:'STEP 2', title:'조직 mod는 로컬 마켓플레이스로',
+     body:'조직 mod는 <b>로컬 디렉터리 마켓플레이스</b>에 두고 <b>prependPlugins</b>로 싣습니다.',
+     facts:['로컬 디렉터리 마켓플레이스','prependPlugins','검토한 버전만 올림'],
+     zones:Z, nodes:ALL, hot:['ms','om','cc'],
+     edges:[{f:'ms',t:'om',c:'success',l:'prependPlugins',o:0},{f:'om',t:'cc',c:'success',o:1}],
+     snip:{hd:'조직 mod 배포',path:'요약',lines:['조직 mod','  로컬 디렉터리 마켓플레이스','  + prependPlugins'],hl:[2,3],note:'배포 경로를 <b>managed 마켓플레이스로만</b> 두는 것이 리뷰 체크리스트의 한 항목입니다.'}},
+    {kicker:'STEP 3', title:'validate 출력은 두 줄을 읽습니다',
+     body:'<b>hooks</b> 줄은 언제 끼어드는지, <b>calls</b> 줄은 바깥에 무엇을 하는지입니다. calls에 <b>$.process.run, $.http.fetch</b>가 있으면 정밀 검토합니다.',
+     facts:['hooks: 언제 끼어드는가','calls: 바깥에 하는 일','$.process.run, $.http.fetch는 정밀 검토'],
+     zones:Z, nodes:ALL, hot:['va','om'],
+     edges:[{f:'va',t:'om',c:'warning',l:'검토 후 배포',o:0,side:'h'}],
+     snip:{hd:'설치 전 검토',path:'shell (예시 출력)',lines:VAL,hl:[3,5,6],note:'이 예시는 <b>$.http.fetch</b>가 있으니 네트워크 호출 대상을 확인해야 합니다.'}},
+    {kicker:'STEP 4', title:'파일과 MDM 정책은 Bedrock에서도 같습니다',
+     body:'이 통제는 파일이나 <b>MDM(단말 관리 도구)</b>으로 배포한 managed settings라서 <b>Bedrock 사용자에게도 똑같이</b> 적용됩니다.',
+     facts:['파일, MDM 정책','Bedrock에서도 똑같이 적용','서버 관리 설정에 기대지 않음'],
+     zones:Z, nodes:ALL,
+     edges:[{f:'ms',t:'cc',c:'accent',l:'파일, MDM',o:0,side:'h'},{f:'om',t:'cc',c:'success',o:1},{f:'um',t:'cc',c:'danger',dash:true}],
+     snip:{hd:'사용자 mod 차단',path:'managed-settings.json',lines:POL,hl:[4],note:'다음 퀴즈는 managed settings가 <b>없는</b> 경우입니다.'}}
+  ], {legend:[['accent','관리자 정책'],['warning','검토'],['success','허용된 mod'],['danger','막힌 mod']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c5-qc-2'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c5-qc-3'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var root = document.querySelector('.slide-deck #c5-check') || document.getElementById('c5-check');
+  var items = Array.prototype.slice.call(root.querySelectorAll('.it'));
+  var cnt = root.querySelector('#c5-check-cnt');
+  function upd() { cnt.textContent = items.filter(function (x) { return x.classList.contains('done'); }).length + ' / ' + items.length; }
+  items.forEach(function (it) { it.addEventListener('click', function () { it.classList.toggle('done'); upd(); }); });
+  F.bindKeys(root, {
+    down: function () { var n = items.filter(function (x) { return x.classList.contains('done'); }).length; if (n < items.length) { items[n].classList.add('done'); upd(); return true; } return false; },
+    up: function () { var d = items.filter(function (x) { return x.classList.contains('done'); }); if (d.length) { d[d.length - 1].classList.remove('done'); upd(); return true; } return false; }
+  });
+  F.onEnter(root, function () { items.forEach(function (x) { x.classList.remove('done'); }); upd(); });
+  upd();
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-src'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-review', { start: 0 }); });
+})();
+</script>
+<script>
+  
+  const presenterNotes = {
+    1: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 5, Plugins\uc640 Mods\n\u2022 \uac1c\uc778\uc774 \uc313\uc740 \uc124\uc815\uc744 \ud300\uc758 \ud50c\ub7ab\ud3fc\uc73c\ub85c \ubb36\uc5b4 \ubc30\ud3ec\ud558\ub294 \ucc55\ud130\n\u2022 2026\ub144 11\uc6d4, Claude Code v2.1.319 (2026-11-08 \ub9ac\ud5c8\uc124 \uac80\uc99d), Amazon Bedrock \uae30\uc900\n\n\ub458\uc9f8 \ub0a0 \uccab \ucc55\ud130, Plugins\uc640 Mods\ub97c \uc2dc\uc791\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\uc5b4\uc81c Ch3\uc5d0\uc11c \ub9cc\ub4e0 DLP \ud6c5\uacfc Ch4\uc5d0\uc11c \ub9cc\ub4e0 Subagent\ub97c \uc624\ub298\uc740 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4\uc11c \ud300 \uc804\uccb4\uc5d0 \ubc30\ud3ec\ud569\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 Claude Code \uc548\uc5d0\uc11c \uc9c1\uc811 \ub3c4\ub294 \ucf54\ub4dc\uc778 mod\uae4c\uc9c0 \ub2e4\ub8f9\ub2c8\ub2e4.\n\n\n\uba3c\uc800 \uc624\ub298\uc758 \uc21c\uc11c\ub97c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
+    2: "[0.5min] [\uc694\uc57d]\n\u2022 \uac15\uc758\ub294 \uc138 Part, 12\ubd84 10\ubd84 13\ubd84\uc73c\ub85c 35\ubd84\n\u2022 \uc774\uc5b4\uc11c Super Lab 45\ubd84, \ud300 \uc2a4\ud0c0\ud130 \ud0b7\uacfc mod\ub97c \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uae30\n\u2022 \ub354 \uc54c\uc544\ubcf4\uae30\ub294 \uc9c8\ubb38\uc774 \ub098\uc624\uba74 \ud3bc\uce68\n\n\uc624\ub298\uc740 \uc138 Part\ub85c \uc9c4\ud589\ud569\ub2c8\ub2e4. \uccab\uc9f8, \ud50c\ub7ec\uadf8\uc778\uc774 \ubb34\uc5c7\uc774\uace0 \uc5b4\ub5bb\uac8c \uc0dd\uacbc\ub294\uc9c0, \ub458\uc9f8, \ud68c\uc0ac\uc5d0\uc11c \uc5b4\ub5bb\uac8c \uac15\uc81c\ub85c \ubc30\ud3ec\ud558\uace0 \ucd9c\ucc98\ub97c \uc81c\ud55c\ud558\ub294\uc9c0, \uc14b\uc9f8, Claude Code \uc548\uc5d0\uc11c \ub3c4\ub294 \ucf54\ub4dc\uc778 mod\uc785\ub2c8\ub2e4.\n\uac15\uc758 35\ubd84\uc774 \ub05d\ub098\uba74 45\ubd84 \ub3d9\uc548 Super Lab\uc5d0\uc11c \uc9c1\uc811 \ud300 \uc2a4\ud0c0\ud130 \ud0b7\uc744 \ub9cc\ub4e4\uc5b4 \ubd05\ub2c8\ub2e4.",
+    3: "[1min] [\uc694\uc57d]\n\u2022 138\uba85 \uc911 58\uba85\uc774 \ud300 \ud45c\uc900\ud654(\uc124\uc815, \uad8c\ud55c, \ud6c5, MCP)\ub97c \uae30\ub300 \uc8fc\uc81c\ub85c \uc120\ud0dd\n\u2022 \uae30\ub300 \uc8fc\uc81c 2\uc704, \ubcf5\uc218 \uc120\ud0dd\n\u2022 \uadf8 \ud45c\uc900\uc744 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4 \ubc30\ud3ec\ud558\ub294 \uac83\uc774 \uc774 \ucc55\ud130\uc758 \ubaa9\ud45c\n\n\uc0ac\uc804 \uc124\ubb38\uc5d0\uc11c 138\ubd84 \uc911 58\ubd84\uc774 \ud300 \ud45c\uc900\ud654\ub97c \uae30\ub300 \uc8fc\uc81c\ub85c \uace0\ub974\uc168\uc2b5\ub2c8\ub2e4. \uc124\uc815, \uad8c\ud55c, \ud6c5, MCP\ub97c \ud300\uc774 \ub611\uac19\uc774 \uc4f0\ub294 \ubc29\ubc95\uc774\uace0, \ubcf5\uc218 \uc120\ud0dd\uc5d0\uc11c 2\uc704\uc600\uc2b5\ub2c8\ub2e4.\n\uc5b4\uc81c\uae4c\uc9c0 \uac01\uc790 \ub9cc\ub4e0 \uac83\ub4e4\uc744 \uc624\ub298\uc740 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4, \uc124\uce58 \ud55c \uc904\ub85c \ub3d9\ub8cc\uac00 \uac19\uc740 \ud658\uacbd\uc744 \uac16\uac8c \ub9cc\ub4dc\ub294 \uac83\uc774 \ubaa9\ud45c\uc785\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 \uc774\ubc88 \uc6cc\ud06c\uc20d \uc0ac\uc804 \uc124\ubb38, \ucc38\uac00 \ud655\uc815\uc790 138\uba85 \uae30\uc900",
+    4: "[0.5min] [\uc694\uc57d]\n\u2022 \uc2a4\ud0ac, Subagent, \ud6c5, MCP, mod\ub97c \ud55c \ubc88\uc5d0 \ubc30\ud3ec\ud558\ub294 \ub2e8\uc704\uac00 \ud50c\ub7ec\uadf8\uc778\n\n\uc774 \ucc55\ud130\uc758 \ud55c \ubb38\uc7a5\uc785\ub2c8\ub2e4. \uc2a4\ud0ac, Subagent, \ud6c5, MCP, \uadf8\ub9ac\uace0 mod\uae4c\uc9c0 \ud55c \ubc88\uc5d0 \ubc30\ud3ec\ud55c\ub2e4.\n\ud769\uc5b4\uc838 \uc788\ub358 \ud655\uc7a5 \uc218\ub2e8\uc744 \ud558\ub098\uc758 \ubc30\ud3ec \ub2e8\uc704\ub85c \ubb36\ub294 \uac83, \uadf8\uac8c \ud50c\ub7ec\uadf8\uc778\uc785\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 MCP: Model Context Protocol",
+    5: "[0.5min] [\uc694\uc57d]\n\u2022 Part 1\uc740 \ud50c\ub7ec\uadf8\uc778: \ud655\uc7a5 \ubc29\ubc95, \uad6c\uc870, \uc124\uce58\uc640 \uac31\uc2e0\n\n\uccab \ubc88\uc9f8 Part, \ud50c\ub7ec\uadf8\uc778\uc785\ub2c8\ub2e4. \ubb34\uc5c7\uc73c\ub85c \ud655\uc7a5\ud560 \uc218 \uc788\ub294\uc9c0 \uc9c0\ub3c4\ub97c \uba3c\uc800 \ubcf4\uace0, \ud50c\ub7ec\uadf8\uc778 \ud3f4\ub354\uac00 \uc5b4\ub5bb\uac8c \uc0dd\uacbc\ub294\uc9c0, \uc5b4\ub5bb\uac8c \uc124\uce58\ud558\uace0 \uac31\uc2e0\ud558\ub294\uc9c0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
+    6: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \ud655\uc7a5 \ubc29\ubc95\uc740 CLAUDE.md, \uc2a4\ud0ac, Subagent, \ud6c5, MCP, mod \uc5ec\uc12f \uac00\uc9c0\n\u2022 CLAUDE.md\ub294 managed CLAUDE.md\ub098 \uc800\uc7a5\uc18c\ub85c, \ub098\uba38\uc9c0 5\uc885\uc740 \ud55c \ub514\ub809\ud130\ub9ac\uc5d0 \ub2f4\uc544 \ud50c\ub7ec\uadf8\uc778\uc73c\ub85c \ubc30\ud3ec\n\u2022 \ubb34\uc5c7\uc744 \uc4f8\uc9c0\ub294 \"\uc5b8\uc81c, \ub204\uac00, \ubb34\uc5c7\uc744 \ubc14\uafb8\ub294\uac00\"\ub85c \uace0\ub984\n\nClaude Code\ub97c \ud655\uc7a5\ud558\ub294 \ubc29\ubc95\uc740 \uc5ec\uc12f \uac00\uc9c0\uc785\ub2c8\ub2e4.\n\n\uc544\ub798 \ud654\uc0b4\ud45c\ub85c \ud558\ub098\uc529 \uc5f4\uc5b4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. CLAUDE.md\ub294 \ud56d\uc0c1 \uc54c\uc544\uc57c \ud560 \uc9e7\uc740 \uc9c0\uce68, \uc2a4\ud0ac\uc740 \uac19\uc740 \uc9c0\uc2dc\ub97c \ubc18\ubcf5\ud560 \ub54c \ud544\uc694\ud560 \ub54c\ub9cc \ubd88\ub7ec\uc624\ub294 \uac83, Subagent\ub294 \uc5ed\ud560\uacfc \ub3c4\uad6c\ub97c \ub098\ub220 \ub9e1\uae38 \ub54c, \ud6c5\uc740 \uc774\ubca4\ud2b8\uc5d0 \uc2a4\ud06c\ub9bd\ud2b8\ub85c \ub9c9\uac70\ub098 \uae30\ub85d\ud560 \ub54c, MCP\ub294 \uc678\ubd80 \uc2dc\uc2a4\ud15c\uc5d0 \ub2ff\uc544\uc57c \ud560 \ub54c, \uadf8\ub9ac\uace0 mod\ub294 \ud654\uba74\uc774\ub098 \ucee4\ub9e8\ub4dc, \uc774\ubca4\ud2b8 \uc790\uccb4\ub97c \ubc14\uafc0 \ub54c \uc501\ub2c8\ub2e4.\nCLAUDE.md\ub294 managed CLAUDE.md\ub098 \uc800\uc7a5\uc18c\ub85c \ubc30\ud3ec\ud558\uace0, \ub098\uba38\uc9c0 \ub2e4\uc12f \uac00\uc9c0\ub97c \ud55c \ub514\ub809\ud130\ub9ac\uc5d0 \ub2f4\uc544 \ubc30\ud3ec\ud558\ub294 \ub2e8\uc704\uac00 \ud50c\ub7ec\uadf8\uc778\uc785\ub2c8\ub2e4.\n\uc5b4\ub5a4 \uac83\uc744 \uace0\ub97c\uc9c0\ub294 \uc5b8\uc81c, \ub204\uac00, \ubb34\uc5c7\uc744 \ubc14\uafb8\ub294\uac00\ub97c \uae30\uc900\uc73c\ub85c \uc0dd\uac01\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 MCP: Model Context Protocol",
+    7: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \ud50c\ub7ec\uadf8\uc778\uc740 \ub514\ub809\ud130\ub9ac \ud558\ub098, \ud544\uc218 \ud30c\uc77c\uc740 .claude-plugin/plugin.json\n\u2022 skills, agents, hooks, scripts \ud3f4\ub354\uc5d0 Ch3\uacfc Ch4 \uacb0\uacfc\ubb3c\uc744 \uadf8\ub300\ub85c \ub123\uc74c (Subagent 3\uc885, Ch4 \uac74\ub108\ub6f0\uba74 code-reviewer\ub9cc)\n\u2022 mod\ub3c4 \uac19\uc740 hooks/ \uc544\ub798, \ubc84\uc804\uc73c\ub85c \ubcc0\uacbd \uc774\ub825 \uad00\ub9ac\n\u2022 \uc124\uce58 \ud55c \uc904\ub85c \ub3d9\ub8cc\uac00 \uac19\uc740 \ud658\uacbd\n\n\ud50c\ub7ec\uadf8\uc778\uc740 \ub514\ub809\ud130\ub9ac \ud558\ub098\uc785\ub2c8\ub2e4. \uc624\ub298 \ub7a9\uc5d0\uc11c \ub9cc\ub4e4 fsi-team-kit\uc744 \uc608\ub85c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\n\ub9e8 \uc704 .claude-plugin \uc544\ub798 plugin.json\uc5d0\ub294 \uc774\ub984, \ubc84\uc804, \uc124\uba85\uc774 \ub4e4\uc5b4\uac00\uace0, \uc774\uac83\ub9cc \ud544\uc218\uc785\ub2c8\ub2e4.\nskills\uc5d0\ub294 \ud300 \ub9ac\ubdf0 \uc808\ucc28 \uac19\uc740 \uc2a4\ud0ac\uc744, agents\uc5d0\ub294 Ch4\uc5d0\uc11c \ub9cc\ub4e0 code-reviewer, test-writer, docs-writer\ub97c, Ch4\ub97c \uac74\ub108\ub6f0\uc168\ub2e4\uba74 code-reviewer\ub9cc \ub123\uc2b5\ub2c8\ub2e4. hooks\uc758 hooks.json\uc5d0\ub294 Ch3\uc758 DLP \ud6c5\uc744 \ub4f1\ub85d\ud558\uace0, \uc2e4\uc81c \uac80\uc0ac \uc2a4\ud06c\ub9bd\ud2b8\ub294 scripts\uc5d0 \ub461\ub2c8\ub2e4.\n\uc810\uc120\uc73c\ub85c \ud45c\uc2dc\ud55c commands\uc640 .mcp.json\ub3c4 \ub123\uc744 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \ud2b9\ud788 .mcp.json\uc740 \uc678\ubd80\ub85c \ub098\uac00\ub294 \uae38\uc774\ub77c \ubc18\ucd9c \ucc44\ub110 \uac80\ud1a0 \ub300\uc0c1\uc785\ub2c8\ub2e4.\n\ubc84\uc804\uc73c\ub85c \ubcc0\uacbd \uc774\ub825\uc744 \uad00\ub9ac\ud558\uace0, \uc124\uce58 \ud55c \uc904\uc774\uba74 \ub3d9\ub8cc\uac00 \uac19\uc740 \ud658\uacbd\uc744 \uac16\uac8c \ub429\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 DLP: Data Loss Prevention",
+    8: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 1 \ub4f1\ub85d: /plugin marketplace add, \uc18c\uc2a4\ub294 git, URL, \ub85c\uceec \ub514\ub809\ud130\ub9ac\n\u2022 2 \uc124\uce58: /plugin install \uc774\ub984@\ub9c8\ucf13\ud50c\ub808\uc774\uc2a4\n\u2022 3 \uc801\uc6a9: /reload-plugins \ub610\ub294 \ub2e4\uc74c \uc138\uc158\n\u2022 4 \uac31\uc2e0: autoUpdate \ub610\ub294 \uc218\ub3d9 update\n\n\n\ud50c\ub7ec\uadf8\uc778\uc774 \ub3d9\ub8cc\uc758 \uc138\uc158\uae4c\uc9c0 \uac00\ub294 \uae38\uc744 \ub124 \ub2e8\uacc4\ub85c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uccab\uc9f8, \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4 \ub4f1\ub85d\uc785\ub2c8\ub2e4. /plugin marketplace add\ub85c \ub4f1\ub85d\ud558\uace0, \uc18c\uc2a4\ub294 \ub85c\uceec \uacbd\ub85c, GitHub \uc800\uc7a5\uc18c, \uc0ac\ub0b4 git URL\uc744 \uc4f8 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc624\ub298 \ub7a9\uc740 \ub85c\uceec \uacbd\ub85c\ub97c \uc501\ub2c8\ub2e4.\n\ub458\uc9f8, \uc124\uce58\ub294 \uc774\ub984 \uace8\ubc45\uc774 \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4 \ud615\uc2dd\uc785\ub2c8\ub2e4. \ub7a9\uc5d0\uc11c\ub294 fsi-team-kit@fsi-local\ub85c \uc124\uce58\ud569\ub2c8\ub2e4.\n\uc14b\uc9f8, /reload-plugins\ub85c \ubc14\ub85c \uc801\uc6a9\ud558\uac70\ub098 \ub2e4\uc74c \uc138\uc158\ubd80\ud130 \uc801\uc6a9\ub429\ub2c8\ub2e4.\n\ub137\uc9f8, \uac31\uc2e0\uc740 autoUpdate\ub85c \uc790\ub3d9\uc73c\ub85c \ubc1b\uac70\ub098 \uc218\ub3d9\uc73c\ub85c \ud569\ub2c8\ub2e4. \uae08\uc735\uad8c\uc5d0\uc11c\ub294 \ubc84\uc804\uc744 \uace0\uc815\ud558\uace0 \uac80\ud1a0\ud55c \ubc84\uc804\ub9cc \uc62c\ub9ac\ub294 \ucabd\uc744 \uad8c\ud569\ub2c8\ub2e4.",
+    9: "[0.5min] [\uc694\uc57d]\n\u2022 Part 2\ub294 \uc0ac\ub0b4 \ubc30\ud3ec: \uac15\uc81c \uc124\uce58, \ucd9c\ucc98 \uc81c\ud55c, \ub9dd\ubd84\ub9ac, \uce21\uc815\n\n\ub450 \ubc88\uc9f8 Part, \uc0ac\ub0b4 \ubc30\ud3ec\uc785\ub2c8\ub2e4. \uac1c\uc778\uc774 \uace8\ub77c \uc124\uce58\ud558\ub294 \uac83\uc774 \uc544\ub2c8\ub77c, \ud68c\uc0ac\uac00 \uc124\uce58\ub97c \uac15\uc81c\ud558\uace0 \ucd9c\ucc98\ub97c \uc81c\ud55c\ud558\ub294 \ubc29\ubc95\uc744 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
+    10: "\ud83c\udfac [3min] [\uc694\uc57d]\n\u2022 \ud5c8\uc6a9 + \ub4f1\ub85d + \uac15\uc81c \uc124\uce58 + \uc0ac\uc774\ub4dc\ub85c\ub4dc \uae08\uc9c0\ub97c \ud568\uaed8 \uac78\uc5b4\uc57c \ud568\n\u2022 strictKnownMarketplaces\ub294 \ud5c8\uc6a9 \ubaa9\ub85d\uc77c \ubfd0 \ub4f1\ub85d\uc740 \uc548 \ud568, hostPattern\uc73c\ub85c \uc0ac\ub0b4 git, skills-dir\ub85c \ub85c\uceec \uc2a4\ud0ac \uc720\uc9c0\n\u2022 extraKnownMarketplaces\uac00 \uc2e4\uc81c \ub4f1\ub85d\n\u2022 enabledPlugins true\ub294 \uac15\uc81c \uc124\uce58\uc640 \ud574\uc81c \ubd88\uac00, false\ub294 \uc989\uc2dc \ucc28\ub2e8\n\u2022 disableSideloadFlags\uac00 --plugin-dir\uc744 \uac70\ubd80\n\n\n\ud68c\uc0ac\uac00 \ud50c\ub7ec\uadf8\uc778 \ubc30\ud3ec\ub97c \uac15\uc81c\ud558\ub294 \uc124\uc815\uc785\ub2c8\ub2e4. \uc624\ub978\ucabd managed-settings.json\uc758 \ud0a4 \ub124 \uac1c\ub97c \ud558\ub098\uc529 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uccab\uc9f8, strictKnownMarketplaces\ub294 \ud5c8\uc6a9 \ubaa9\ub85d\uc785\ub2c8\ub2e4. \uc5ec\uae30\uc5d0 \uc801\ub294\ub2e4\uace0 \ub4f1\ub85d\ub418\uc9c0\ub294 \uc54a\ub294\ub2e4\ub294 \uc810\uc744 \uaf2d \uae30\uc5b5\ud574 \uc8fc\uc138\uc694. hostPattern\uc73c\ub85c \uc0ac\ub0b4 git \ud638\uc2a4\ud2b8\ub97c \ud5c8\uc6a9\ud560 \uc218 \uc788\uace0, skills-dir\uc744 \ub123\uc73c\uba74 \ub85c\uceec \uc2a4\ud0ac \ud50c\ub7ec\uadf8\uc778\uc740 \uacc4\uc18d \uc4f8 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\ub458\uc9f8, extraKnownMarketplaces\uac00 \uc2e4\uc81c \ub4f1\ub85d\uc785\ub2c8\ub2e4. \uc0ac\uc6a9\uc790\uac00 \uc9c1\uc811 \ub4f1\ub85d\ud558\uc9c0 \uc54a\uc544\ub3c4 \ub429\ub2c8\ub2e4.\n\uc14b\uc9f8, enabledPlugins\uc5d0 true\ub97c \uc8fc\uba74 \uac15\uc81c\ub85c \uc124\uce58\ub418\uace0 \uc0ac\uc6a9\uc790\uac00 \ud574\uc81c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. \ubc18\ub300\ub85c false\ub85c \ubc14\uafb8\uba74 \uc989\uc2dc \ucc28\ub2e8\ub418\ub2c8 \ub864\ubc31\ub3c4 \uc774 \ud0a4\uc785\ub2c8\ub2e4.\n\ub137\uc9f8, disableSideloadFlags\ub294 --plugin-dir\ub85c \ub85c\uceec \ud3f4\ub354\ub97c \uc9c1\uc811 \uc2e3\ub294 \uae38\uc744 \ub9c9\uc2b5\ub2c8\ub2e4.",
+    11: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, \ud5c8\uc6a9 \ubaa9\ub85d\ub9cc\uc73c\ub85c\ub294 --plugin-dir\uc774 \ub9c9\ud788\uc9c0 \uc54a\uc74c\n\u2022 \uc0ac\uc774\ub4dc\ub85c\ub4dc\ub294 disableSideloadFlags\ub85c\ub9cc \ub9c9\uc74c\n\n\ud034\uc988\uc785\ub2c8\ub2e4. strictKnownMarketplaces \ud5c8\uc6a9 \ubaa9\ub85d\ub9cc \uc124\uc815\ud558\uba74, --plugin-dir\ub85c \ub85c\uceec \ud3f4\ub354\ub97c \uc2e3\ub294 \uac83\uc740 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 B, \ub9c9\ud788\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ud5c8\uc6a9 \ubaa9\ub85d\uc740 \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4\ub97c \uac70\ub974\ub294 \ud0a4\uc774\uace0, \uc0ac\uc774\ub4dc\ub85c\ub4dc\ub294 disableSideloadFlags\ub85c\ub9cc \ub9c9\uc2b5\ub2c8\ub2e4. \uadf8\ub798\uc11c \ub450 \ud0a4\ub97c \ud568\uaed8 \uac70\ub294 \uac83\uc785\ub2c8\ub2e4.",
+    12: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 \ub9dd\ubd84\ub9ac PC\uc640 CI\ub294 git clone\uc774 \uc548 \ub418\ubbc0\ub85c \ube4c\ub4dc \uc2dc\uc810\uc5d0 \ud50c\ub7ec\uadf8\uc778\uc744 \uc2ec\uc5b4 \ub460\n\u2022 \ube4c\ub4dc: CLAUDE_CODE_PLUGIN_CACHE_DIR=/opt/claude-seed claude plugin install\n\u2022 \ub7f0\ud0c0\uc784: CLAUDE_CODE_PLUGIN_SEED_DIR=/opt/claude-seed, \uc77d\uae30 \uc804\uc6a9\n\u2022 \uc790\ub3d9 \uc5c5\ub370\uc774\ud2b8\ub294 \uaebc\uc9c0\uace0 \ud5c8\uc6a9, \ucc28\ub2e8 \ubaa9\ub85d\uc740 \uadf8\ub300\ub85c \uc801\uc6a9\n\n\uae08\uc735\uad8c\uc5d0\uc11c \uaf2d \ub098\uc624\ub294 \uc9c8\ubb38, \ub9dd\ubd84\ub9ac \ud658\uacbd\uc785\ub2c8\ub2e4.\n\n\ub9dd\ubd84\ub9ac PC\ub098 \uc678\ubd80 \uc811\uadfc\uc774 \uc5c6\ub294 CI \ub7ec\ub108\uc5d0\uc11c\ub294 git clone\uc73c\ub85c \ud50c\ub7ec\uadf8\uc778\uc744 \ubc1b\uc544 \uc62c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.\n\uadf8\ub798\uc11c \uc774\ubbf8\uc9c0\ub97c \ube4c\ub4dc\ud558\ub294 \uc2dc\uc810\uc5d0 CLAUDE_CODE_PLUGIN_CACHE_DIR\uc744 seed \ub514\ub809\ud130\ub9ac\ub85c \uc9c0\uc815\ud558\uace0 \ud50c\ub7ec\uadf8\uc778\uc744 \uc124\uce58\ud574 \ub461\ub2c8\ub2e4.\n\ub7f0\ud0c0\uc784\uc5d0\ub294 CLAUDE_CODE_PLUGIN_SEED_DIR\ub85c \uac19\uc740 \ub514\ub809\ud130\ub9ac\ub97c \uac00\ub9ac\ud0a4\uba74 \uc77d\uae30 \uc804\uc6a9\uc73c\ub85c \uc501\ub2c8\ub2e4.\n\uc774\ub807\uac8c \uc4f0\uba74 \uc790\ub3d9 \uc5c5\ub370\uc774\ud2b8\ub294 \uaebc\uc9c0\uc9c0\ub9cc, \ud5c8\uc6a9\uacfc \ucc28\ub2e8 \ubaa9\ub85d\uc740 \uadf8\ub300\ub85c \uc801\uc6a9\ub429\ub2c8\ub2e4. \uac31\uc2e0\uc740 \uc774\ubbf8\uc9c0\ub97c \ub2e4\uc2dc \ube4c\ub4dc\ud574\uc11c \ud569\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 CI: Continuous Integration, \ucf54\ub4dc \ubcc0\uacbd\ub9c8\ub2e4 \ube4c\ub4dc\uc640 \ud14c\uc2a4\ud2b8\ub97c \uc790\ub3d9\uc73c\ub85c \ub3cc\ub9ac\ub294 \ud30c\uc774\ud504\ub77c\uc778",
+    13: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 plugin_installed: \uc124\uce58\ub9c8\ub2e4 \uae30\ub85d\n\u2022 plugin_loaded: \uc138\uc158 \uc2dc\uc791 \uc2dc \ucf1c\uc9c4 \ud50c\ub7ec\uadf8\uc778, \uc2e4\uc81c \uc0ac\uc6a9 \uc5ec\ubd80\n\u2022 \uc11c\ub4dc\ud30c\ud2f0 \uc774\ub984\uc740 OTEL_LOG_TOOL_DETAILS=1\uc77c \ub54c\ub9cc \ud45c\uc2dc\n\u2022 OTel \uc124\uc815 \uc790\uccb4\ub294 Ch6\uc5d0\uc11c \ub2e4\ub8f8\n\n\ubc30\ud3ec\ud588\ub2e4\uba74 \ubb34\uc5c7\uc774 \uc124\uce58\ub418\uace0 \uc2e4\uc81c\ub85c \uc4f0\uc774\ub294\uc9c0 \ubd10\uc57c \ud569\ub2c8\ub2e4. Ch6\uc5d0\uc11c \ub2e4\ub8f0 OTel\ub85c \ubd05\ub2c8\ub2e4.\n\nplugin_installed\ub294 \uc124\uce58\ud560 \ub54c\ub9c8\ub2e4, plugin_loaded\ub294 \uc138\uc158\uc774 \uc2dc\uc791\ub420 \ub54c \ucf1c\uc9c4 \ud50c\ub7ec\uadf8\uc778\uc744 \uae30\ub85d\ud569\ub2c8\ub2e4. \uc124\uce58\ub9cc \ub418\uace0 \uc548 \uc4f0\uc774\ub294 \ud50c\ub7ec\uadf8\uc778\uc744 \ucc3e\uc744 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 \uc11c\ub4dc\ud30c\ud2f0 \ud50c\ub7ec\uadf8\uc778 \uc774\ub984\uc740 \uae30\ubcf8\uc73c\ub85c \uac00\ub824\uc9c0\uace0, OTEL_LOG_TOOL_DETAILS\ub97c 1\ub85c \uc904 \ub54c\ub9cc \ubcf4\uc785\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 OTel: OpenTelemetry",
+    14: "[0.5min] [\uc694\uc57d]\n\u2022 Part 3\uc740 mod: \ud560 \uc218 \uc788\ub294 \uac83, \uad6c\uc870\uc640 \uc608\uc2dc, \uc870\uc9c1 \ud1b5\uc81c\n\n\uc138 \ubc88\uc9f8 Part, mod\uc785\ub2c8\ub2e4. Claude Code \uc548\uc5d0\uc11c \uc9c1\uc811 \ub3c4\ub294 \ucf54\ub4dc\ub77c \ud560 \uc218 \uc788\ub294 \uc77c\uc774 \ub9ce\uace0, \uadf8\ub9cc\ud07c \ud1b5\uc81c\ub3c4 \uc911\uc694\ud569\ub2c8\ub2e4.",
+    15: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 v2.1.287\ubd80\ud130 \ub4e4\uc5b4\uc628 \uc0c8 \uae30\ub2a5\n\u2022 mod\ub294 \ud50c\ub7ec\uadf8\uc778 \uc548\uc758 \uc774\ubca4\ud2b8 \ud578\ub4e4\ub7ec\n\u2022 \ub3c4\uad6c \ud638\ucd9c, \ud504\ub86c\ud504\ud2b8, \ucee4\ub9e8\ub4dc, \ud654\uba74 \uadf8\ub9ac\uae30 \uc774\ubca4\ud2b8\ub97c \uad00\ucc30, \ubcc0\uacbd, \ub300\uc2e0 \ucc98\ub9ac\n\u2022 Bedrock\uc5d0\uc11c\ub3c4 \ub3d9\uc791\n\n\nmod\ub97c \ud55c \uc904\ub85c \uc815\uc758\ud558\uba74, \ud50c\ub7ec\uadf8\uc778 \uc548\uc758 \uc774\ubca4\ud2b8 \ud578\ub4e4\ub7ec\uc785\ub2c8\ub2e4. v2.1.287\ubd80\ud130 \ub4e4\uc5b4\uc628 \uc0c8 \uae30\ub2a5\uc785\ub2c8\ub2e4.\n\ub3c4\uad6c \ud638\ucd9c, \ud504\ub86c\ud504\ud2b8, \ucee4\ub9e8\ub4dc, \ud654\uba74 \uadf8\ub9ac\uae30 \uac19\uc740 \uc774\ubca4\ud2b8\ub97c \uad00\ucc30\ud558\uace0, \ubc14\uafb8\uace0, \ub300\uc2e0 \ucc98\ub9ac\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 Bedrock\uc5d0\uc11c\ub3c4 \ub611\uac19\uc774 \ub3d9\uc791\ud569\ub2c8\ub2e4.",
+    16: "\ud83c\udfac [3min] [\uc694\uc57d]\n\u2022 mod\ub294 register(on)\uc744 \ub0b4\ubcf4\ub0b4\uace0 on\uc73c\ub85c \uc774\ubca4\ud2b8 \ud578\ub4e4\ub7ec\ub97c \ub4f1\ub85d\n\u2022 tool.call: calls\ub97c \uc138\uace0 next(e)\ub85c \ub3c4\uad6c\ub294 \uadf8\ub300\ub85c \uc2e4\ud589 (\uad00\ucc30)\n\u2022 $.ui.invalidate\ub85c \ub2e4\uc2dc \uadf8\ub9ac\uae30, ui.render\uc5d0\uc11c Spinner props\uc5d0 suffix \ucd94\uac00 (\ubcc0\uacbd)\n\u2022 \ud30c\uc77c\uc740 plugin.json, hooks.json, register.js \uc138 \uac1c, \ubc14\uae65 \uc791\uc5c5\uc740 $ API\ub85c\ub9cc\n\n\n\uac00\uc7a5 \uc791\uc740 mod\ub97c \ub2e8\uacc4\ubcc4\ub85c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \ub3c4\uad6c \ud638\ucd9c \uc218\ub97c \uc2a4\ud53c\ub108 \uc606\uc5d0 \ub744\uc6b0\ub294 \uc608\uc2dc\uc785\ub2c8\ub2e4.\n\uccab\uc9f8, mod\ub294 register \ud568\uc218\ub97c \ub0b4\ubcf4\ub0b4\uace0, \ub118\uaca8\ubc1b\uc740 on\uc73c\ub85c \uc774\ubca4\ud2b8\uc5d0 \ud578\ub4e4\ub7ec\ub97c \uac81\ub2c8\ub2e4.\n\ub458\uc9f8, tool.call \uc774\ubca4\ud2b8\uc5d0\uc11c\ub294 calls\ub97c \ud558\ub098 \uc62c\ub9ac\uace0 next(e)\ub85c \uc6d0\ub798 \uc774\ubca4\ud2b8\ub97c \ub118\uae41\ub2c8\ub2e4. \uadf8\ub798\uc11c \ub3c4\uad6c\ub294 \uadf8\ub300\ub85c \uc2e4\ud589\ub429\ub2c8\ub2e4. \uc774\uac8c \uad00\ucc30\uc785\ub2c8\ub2e4.\n\uc14b\uc9f8, $.ui.invalidate\ub85c \ud654\uba74\uc744 \ub2e4\uc2dc \uadf8\ub9ac\uac8c \ud558\uba74 ui.render \ud578\ub4e4\ub7ec\uac00 \ubd88\ub9bd\ub2c8\ub2e4. \ubc14\uae65\uc5d0 \ud558\ub294 \uc77c\uc740 \ubaa8\ub450 $ API\ub97c \uac70\uce69\ub2c8\ub2e4.\n\ub137\uc9f8, ui.render\uc5d0\uc11c\ub294 Spinner\uc758 props\uc5d0 suffix\ub97c \ub354\ud574\uc11c \ub118\uae41\ub2c8\ub2e4. \uc774\uac8c \ubcc0\uacbd\uc785\ub2c8\ub2e4.\n\ud30c\uc77c\uc740 \uc138 \uac1c, \uc6d0\uce59\uc740 \ub450 \uac00\uc9c0\uc785\ub2c8\ub2e4. \uad00\ucc30, \ubcc0\uacbd, \ub300\uc2e0 \ucc98\ub9ac\ub97c \ud558\uace0, \ubc14\uae65 \uc791\uc5c5\uc740 $ API\ub85c\ub9cc \ud569\ub2c8\ub2e4. \ubc30\ud3ec\ub294 \uc77c\ubc18 \ud50c\ub7ec\uadf8\uc778\uacfc \uac19\uc2b5\ub2c8\ub2e4.",
+    17: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 mod: \ub3c4\uad6c \ud638\ucd9c, \ud504\ub86c\ud504\ud2b8, \ucee4\ub9e8\ub4dc, \ud134, \ud654\uba74\uc744 JS/TS\ub85c, \ud328\ub110\uacfc \uc989\uc2dc \ucee4\ub9e8\ub4dc, \uc774\ubca4\ud2b8 \uc7ac\uc791\uc131\uc5d0\n\u2022 Settings \ud6c5: \ud5c8\uc6a9/\ucc28\ub2e8\uacfc \uc785\ub825, \uacb0\uacfc \uc218\uc815\uc744 \uc2a4\ud06c\ub9bd\ud2b8\ub85c\n\u2022 Skill: Claude\uac00 \uc544\ub294 \uac83\uc744 Markdown\uc73c\ub85c, MCP: \uc4f0\ub294 \ub3c4\uad6c\ub97c \uc544\ubb34 \uc5b8\uc5b4\ub85c\n\u2022 \uc774\ubbf8 \ub2e4\ub978 \uc218\ub2e8\uc73c\ub85c \ub418\uba74 mod\ub97c \uc4f0\uc9c0 \uc54a\uc74c\n\nmod\ub294 \uac15\ub825\ud558\uc9c0\ub9cc, \uc6d0\uce59\uc740 \uc774\ubbf8 \ub2e4\ub978 \uc218\ub2e8\uc73c\ub85c \ub418\uba74 mod\ub97c \uc4f0\uc9c0 \uc54a\ub294\ub2e4\ub294 \uac83\uc785\ub2c8\ub2e4.\n\nmod\ub294 \ub3c4\uad6c \ud638\ucd9c\ubd80\ud130 \ud654\uba74\uae4c\uc9c0 \ubc14\uafc0 \uc218 \uc788\uace0 JS\ub098 TS\ub85c \uc501\ub2c8\ub2e4. \ud328\ub110, \uc989\uc2dc \uc2e4\ud589\ub418\ub294 \ucee4\ub9e8\ub4dc, \uc774\ubca4\ud2b8 \uc7ac\uc791\uc131\uc774 \ud544\uc694\ud560 \ub54c \uace0\ub985\ub2c8\ub2e4.\n\ub9c9\uac70\ub098 \uae30\ub85d\ud558\ub294 \uac83\uc740 Settings \ud6c5\uc73c\ub85c \ucda9\ubd84\ud569\ub2c8\ub2e4. Claude\uac00 \uc54c\uc544\uc57c \ud560 \uac83\uc740 Skill, \uc368\uc57c \ud560 \ub3c4\uad6c\ub294 MCP\uc785\ub2c8\ub2e4.\n\ud654\uba74\uc774\ub098 \uc774\ubca4\ud2b8 \uc790\uccb4\ub97c \ubc14\uafd4\uc57c \ud560 \ub54c\ub9cc mod\ub97c \uace0\ub974\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 JS/TS: JavaScript, TypeScript",
+    18: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 claude-code-playground \uc800\uc7a5\uc18c\uc758 \uacf5\uc2dd \uc0d8\ud50c mod \uc138 \uac00\uc9c0, \uacf5\uc2dd \uc9c0\uc6d0 \ub300\uc0c1\uc740 \uc544\ub2d8\n\u2022 token-weather: \ucee8\ud14d\uc2a4\ud2b8 \uc0ac\uc6a9\ub7c9\uc744 \uc608\ubcf4\ucc98\ub7fc \ud45c\uc2dc\n\u2022 blast-radius: \uc704\ud5d8 \uba85\ub839\uc744 \ubd99\uc7a1\uace0 \uc601\ud5a5 \ubc94\uc704\ub97c \ubcf4\uc5ec \uc900 \ub4a4 \uc9c4\ud589 \ub610\ub294 \ucde8\uc18c\n\u2022 replay-theater: /replay\ub85c \uc9c0\ub09c \ud134\uc758 \ud3b8\uc9d1\uc744 \ub2e8\uacc4\ubcc4 \uc7ac\uc0dd\n\nmod\ub85c \ubb34\uc5c7\uc744 \ud560 \uc218 \uc788\ub294\uc9c0 \uacf5\uc2dd \uc0d8\ud50c \uc138 \uac1c\ub85c \uac10\uc744 \uc7a1\uc544 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. claude-code-playground \uc800\uc7a5\uc18c\uc5d0 \uc788\uace0, \uacf5\uc2dd \uc9c0\uc6d0 \ub300\uc0c1\uc740 \uc544\ub2d9\ub2c8\ub2e4.\n\ntoken-weather\ub294 \ucee8\ud14d\uc2a4\ud2b8 \uc0ac\uc6a9\ub7c9\uc744 \ub0a0\uc528 \uc608\ubcf4\ucc98\ub7fc \ubcf4\uc5ec \uc8fc\uace0, blast-radius\ub294 rm -rf\ub098 force push \uac19\uc740 \uc704\ud5d8 \uba85\ub839\uc744 \ubd99\uc7a1\uc544 \uc601\ud5a5 \ubc94\uc704\ub97c \ubcf4\uc5ec \uc900 \ub2e4\uc74c \uc9c4\ud589\ud560\uc9c0 \ubb3b\uc2b5\ub2c8\ub2e4. replay-theater\ub294 \uc9c0\ub09c \ud134\uc758 \ud30c\uc77c \ud3b8\uc9d1\uc744 \ub2e8\uacc4\ubcc4\ub85c \uc7ac\uc0dd\ud569\ub2c8\ub2e4.",
+    19: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 mod\ub294 \uc0ac\uc6a9\uc790 \uad8c\ud55c\uc73c\ub85c \ud30c\uc77c, \ud504\ub85c\uc138\uc2a4, \ub124\ud2b8\uc6cc\ud06c, \ube44\ubc00\uac12, \ubaa8\ub4e0 \ud504\ub86c\ud504\ud2b8, \ubaa8\ub378 \uc0ac\uc6a9\ub7c9\uc5d0 \ub2ff\uc74c\n\u2022 managed deny, managed PreToolUse \ucc28\ub2e8, \uad8c\ud55c \ud504\ub86c\ud504\ud2b8 \ud654\uba74\uc740 \ubabb \ub118\uc74c\n\u2022 mod\uac00 \ub744\uc6b4 \ud504\ub85c\uc138\uc2a4\ub294 \uc0cc\ub4dc\ubc15\uc2a4 \ubc16\uc774\ub77c \uc815\ucc45\uc73c\ub85c \ub85c\ub4dc \uc790\uccb4\ub97c \ud1b5\uc81c, \uc124\uce58 \uc804 validate\n\n\n\uc124\uce58 \uc804\uc5d0 \uaf2d \uc54c\uc544\uc57c \ud560 \uc2e0\ub8b0 \ubaa8\ub378\uc785\ub2c8\ub2e4.\n\uccab\uc9f8, mod\ub294 \uc0ac\uc6a9\uc790 \uad8c\ud55c\uc73c\ub85c \ub3d5\ub2c8\ub2e4. \uc0ac\uc6a9\uc790\uac00 \ub2ff\ub294 \uacf3\uc774\uba74 mod\ub3c4 \ub2ff\uc2b5\ub2c8\ub2e4. \ube44\ubc00\uac12\uacfc \ubaa8\ub4e0 \ud504\ub86c\ud504\ud2b8\uae4c\uc9c0\uc694. mod\uc5d0\ub294 \uc0cc\ub4dc\ubc15\uc2a4\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.\n\ub458\uc9f8, \uadf8\ub798\ub3c4 \uc870\uc9c1\uc758 managed deny \uaddc\uce59\uacfc managed PreToolUse \ucc28\ub2e8, \uadf8\ub9ac\uace0 \uad8c\ud55c \ud504\ub86c\ud504\ud2b8 \ud654\uba74\uc740 mod\uac00 \ub118\uc9c0 \ubabb\ud569\ub2c8\ub2e4.\n\uc14b\uc9f8, mod\uac00 \ub744\uc6b4 \ud504\ub85c\uc138\uc2a4\ub294 \uc0cc\ub4dc\ubc15\uc2a4 \ubc16\uc774\uae30 \ub54c\ubb38\uc5d0, \uacb0\uad6d \ud1b5\uc81c\ub294 \ub85c\ub4dc \uc790\uccb4\ub97c \ub9c9\ub294 \uac83\uc785\ub2c8\ub2e4. \uc124\uce58 \uc804\uc5d0\ub294 claude plugin validate\ub85c \ubb34\uc5c7\uc5d0 \ub07c\uc5b4\ub4e4\uace0 \ubb34\uc5c7\uc744 \ud638\ucd9c\ud558\ub294\uc9c0 \ud655\uc778\ud569\ub2c8\ub2e4.",
+    20: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 cc-plugin-sec-default@builtin\uc758 allowManagedModsOnly: \uc870\uc9c1 mod\ub9cc \ub85c\ub4dc\n\u2022 \uc870\uc9c1 mod\ub294 \ub85c\uceec \ub514\ub809\ud130\ub9ac \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4 + prependPlugins\n\u2022 claude plugin validate\uc758 hooks \uc904\uacfc calls \uc904, $.process.run\uacfc $.http.fetch\uac00 \uc788\uc73c\uba74 \uc815\ubc00 \uac80\ud1a0\n\u2022 \ud30c\uc77c, MDM \uc815\ucc45\uc774\uba74 Bedrock\uc5d0\uc11c\ub3c4 \ub611\uac19\uc774 \uc801\uc6a9\n\n\nmod\uc758 \uc870\uc9c1 \ud1b5\uc81c\uc785\ub2c8\ub2e4.\n\uccab\uc9f8, managed-settings.json\uc5d0\uc11c \ub0b4\uc7a5 \ubcf4\uc548 \ud50c\ub7ec\uadf8\uc778\uc758 allowManagedModsOnly\ub97c \ucf1c\uba74 \uc870\uc9c1\uc774 \ubc30\ud3ec\ud55c mod\ub9cc \ub85c\ub4dc\ub418\uace0 \uc0ac\uc6a9\uc790\uac00 \uc124\uce58\ud55c mod\ub294 \ub85c\ub4dc\ub418\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\ub458\uc9f8, \uc870\uc9c1 mod\ub294 \ub85c\uceec \ub514\ub809\ud130\ub9ac \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4\uc5d0 \ub450\uace0 prependPlugins\ub85c \uc2e3\uc2b5\ub2c8\ub2e4.\n\uc14b\uc9f8, \uc124\uce58 \uc804\uc5d0\ub294 claude plugin validate\ub97c \ub3cc\ub824 \ub450 \uc904\uc744 \uc77d\uc2b5\ub2c8\ub2e4. hooks\ub294 \uc5b8\uc81c \ub07c\uc5b4\ub4dc\ub294\uc9c0, calls\ub294 \ubc14\uae65\uc5d0 \ubb34\uc5c7\uc744 \ud558\ub294\uc9c0\uc785\ub2c8\ub2e4. calls\uc5d0 \ud504\ub85c\uc138\uc2a4 \uc2e4\ud589\uc774\ub098 http fetch\uac00 \ubcf4\uc774\uba74 \uc815\ubc00 \uac80\ud1a0 \ub300\uc0c1\uc785\ub2c8\ub2e4.\n\ub137\uc9f8, \ud30c\uc77c\uc774\ub098 MDM\uc73c\ub85c \ubc30\ud3ec\ud55c \uc815\ucc45\uc774\ub77c Bedrock \uc0ac\uc6a9\uc790\uc5d0\uac8c\ub3c4 \ub611\uac19\uc774 \uc801\uc6a9\ub429\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 MDM: Mobile Device Management, \ud68c\uc0ac \ub2e8\ub9d0\uc5d0 \uc124\uc815\uacfc \ud30c\uc77c\uc744 \ubc30\ud3ec\ud558\ub294 \uad00\ub9ac \ub3c4\uad6c",
+    21: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, managed settings\uac00 \uc5c6\uc73c\uba74 \ub0b4\uc7a5 guard(sec-default)\ub294 \ub85c\ub4dc\ub418\uc9c0 \uc54a\uc74c\n\u2022 Bedrock, API \ud0a4 \uc0ac\uc6a9\uc790\ub294 managed settings\uac00 \uc788\ub294 \uba38\uc2e0\uc5d0\uc11c\ub9cc guard \ub85c\ub4dc\n\n\ud034\uc988\uc785\ub2c8\ub2e4. Bedrock \uc0ac\uc6a9\uc790 PC\uc5d0 managed settings\uac00 \uc5c6\ub2e4\uba74, \ubc29\uae08 \ubcf8 \ub0b4\uc7a5 guard, sec-default\ub294 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 B, \ub85c\ub4dc\ub418\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. Bedrock\uc774\ub098 API \ud0a4 \uc0ac\uc6a9\uc790\ub294 managed settings\uac00 \uc788\ub294 \uba38\uc2e0\uc5d0\uc11c\ub9cc guard\uac00 \ub85c\ub4dc\ub429\ub2c8\ub2e4. \uadf8\ub798\uc11c Ch2\uc5d0\uc11c managed settings\ub97c \ubc30\ud3ec\ud558\ub294 \uac83\uc774 \ubaa8\ub4e0 \ud1b5\uc81c\uc758 \uc804\uc81c\uc785\ub2c8\ub2e4.",
+    22: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, managed settings\uc758 disableSideloadFlags\uc640 allowManagedModsOnly\n\u2022 CLAUDE.md \ubb38\uad6c\ub098 \uc0ac\uc6a9\uc790 \uc124\uc815\uc740 \uc815\ucc45\uc744 \uc774\uae30\uc9c0 \ubabb\ud568\n\n\uc774\ubc88 Part \ub9c8\uc9c0\ub9c9 \ud034\uc988\uc785\ub2c8\ub2e4. \uc0ac\uc6a9\uc790\uac00 --plugin-dir\ub85c mod\ub97c \uc2e4\uc5b4\ub3c4 \ub85c\ub4dc\ub418\uc9c0 \uc54a\uac8c \ud558\ub824\uba74 \ubb34\uc5c7\uc744 \ud574\uc57c \ud560\uae4c\uc694?\n\n\uc815\ub2f5\uc740 B, managed settings\uc5d0 disableSideloadFlags\uc640 allowManagedModsOnly\ub97c \ud568\uaed8 \uac70\ub294 \uac83\uc785\ub2c8\ub2e4. CLAUDE.md\uc758 \uae08\uc9c0 \ubb38\uad6c\ub294 \uc9c0\uce68\uc77c \ubfd0\uc774\uace0, \uc0ac\uc6a9\uc790 \uc124\uc815\uc740 \uc815\ucc45\uc744 \uc774\uae30\uc9c0 \ubabb\ud569\ub2c8\ub2e4.",
+    23: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 Super Lab 45\ubd84, \ud300 \uc2a4\ud0c0\ud130 \ud0b7 \ud50c\ub7ec\uadf8\uc778\uacfc mod\n\u2022 TASK 01 Subagent 3\uc885\uacfc DLP \ud6c5, \ub9ac\ubdf0 \uc2a4\ud0ac \ubb36\uae30, 02 fsi-local \ub4f1\ub85d\uacfc \uc124\uce58, 03 first-mod\uc640 /tally-reset, 05 \uc0ac\uc6a9\uc790 mod \ucc28\ub2e8\uacfc \uc6d0\ubcf5, 06 \uccb4\ud06c\ub9ac\uc2a4\ud2b8\n\u2022 \uc120\ud0dd TASK 04\ub294 Bedrock\uc6a9 idle compaction mod, 12\ubd84\n\n\n\uac15\uc758\ub97c \ub9c8\uce58\uba74 45\ubd84 Super Lab\uc744 \ud569\ub2c8\ub2e4.\nTASK 01\uc5d0\uc11c Ch4\uc758 Subagent \uc138 \uac1c, Ch4\ub97c \uac74\ub108\ub6f0\uc168\ub2e4\uba74 code-reviewer \ud558\ub098\uc640 Ch3\uc758 DLP \ud6c5, \ub9ac\ubdf0 \uc2a4\ud0ac\uc744 fsi-team-kit \ud558\ub098\ub85c \ubb36\uace0, TASK 02\uc5d0\uc11c \ub85c\uceec \ub514\ub809\ud130\ub9ac \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4 fsi-local\uc744 \ub4f1\ub85d\ud574 /plugin install fsi-team-kit@fsi-local\ub85c \uc124\uce58\ud569\ub2c8\ub2e4.\nTASK 03\uc740 \uacf5\uc2dd first-mod\ub97c \ubd99\uc5ec \ub123\uace0 Claude\uc5d0\uac8c /tally-reset \ucee4\ub9e8\ub4dc\ub97c \ucd94\uac00\ud558\uac8c \uc2dc\ud0b5\ub2c8\ub2e4. TASK 05\ub294 allowManagedModsOnly\ub85c \uc0ac\uc6a9\uc790 mod\uac00 \ub9c9\ud788\ub294\uc9c0 \ud655\uc778\ud558\uace0 \uaf2d \uc6d0\ubcf5\ud569\ub2c8\ub2e4. \ub9c8\uc9c0\ub9c9 TASK 06\uc740 \ubc30\ud3ec \uc804 \uccb4\ud06c\ub9ac\uc2a4\ud2b8\uc785\ub2c8\ub2e4.\n\uc2dc\uac04\uc774 \ub0a8\uc73c\uba74 12\ubd84\uc9dc\ub9ac \uc120\ud0dd TASK 04, Bedrock\uc6a9 idle compaction mod\ub97c \ud574 \ubcf4\uc138\uc694.\n\uace8\uaca9\uc740 \ubcf5\uc0ac\ud574 \ubd99\uc774\uace0, \ub098\uba38\uc9c0\ub294 Claude\uc5d0\uac8c \uc2dc\ud0a4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 \uc6d0\ubcf8 Ch5 \uac15\uc758\uc790\ub8cc p23",
+    24: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 validate \ud1b5\uacfc \ud6c4 hooks, calls\ub97c \ubcf4\uc548\ud300\uacfc \ub9ac\ubdf0\n\u2022 \ubc84\uc804 \uace0\uc815\uacfc release channel(stable, latest) \ubd84\ub9ac\n\u2022 \ud5c8\uc6a9 \ubaa9\ub85d(strictKnownMarketplaces + disableSideloadFlags), \ub9dd\ubd84\ub9ac\ub294 seed \ub514\ub809\ud130\ub9ac\n\u2022 plugin_loaded\ub85c \uce21\uc815, enabledPlugins false\ub85c \ub864\ubc31\n\n\ud50c\ub7ec\uadf8\uc778\uc744 \uc0ac\ub0b4 \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4\uc5d0 \uc62c\ub9ac\uae30 \uc804 \uccb4\ud06c\ub9ac\uc2a4\ud2b8\uc785\ub2c8\ub2e4. \uc624\ub298 Part 1\ubd80\ud130 3\uae4c\uc9c0 \ubcf8 \ub0b4\uc6a9\uc774 \ud55c \uc7a5\uc5d0 \ubaa8\uc5ec \uc788\uc2b5\ub2c8\ub2e4.\n\n\uce74\ub4dc\ub97c \ub204\ub974\uac70\ub098 \uc544\ub798 \ud654\uc0b4\ud45c\ub85c \ud558\ub098\uc529 \uccb4\ud06c\ud558\uaca0\uc2b5\ub2c8\ub2e4. validate\ub97c \ud1b5\uacfc\ud558\uace0 hooks\uc640 calls\ub97c \ubcf4\uc548\ud300\uacfc \ub9ac\ubdf0\ud588\ub294\uc9c0, \ubc84\uc804\uc744 \uace0\uc815\ud558\uace0 stable\uacfc latest \ucc44\ub110\uc744 \ub098\ub234\ub294\uc9c0, \ud5c8\uc6a9 \ubaa9\ub85d\uacfc \uc0ac\uc774\ub4dc\ub85c\ub4dc \uae08\uc9c0\ub97c \uac78\uc5c8\ub294\uc9c0, \ub9dd\ubd84\ub9ac \uacbd\ub85c\uac00 \ud544\uc694\ud558\uba74 seed \ub514\ub809\ud130\ub9ac\ub97c \uc900\ube44\ud588\ub294\uc9c0, plugin_loaded\ub85c \uce21\uc815\ud558\ub294\uc9c0, \uadf8\ub9ac\uace0 enabledPlugins\ub97c false\ub85c \ubc14\uafd4 \uc989\uc2dc \ub864\ubc31\ud560 \uc218 \uc788\ub294\uc9c0\uc785\ub2c8\ub2e4.",
+    25: "[0.5min] [\uc694\uc57d]\n\u2022 \ub354 \uc54c\uc544\ubcf4\uae30 \uc5ec\uc12f \uc8fc\uc81c: \ud3f4\ub354 \uad6c\uc131, \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4 \uc18c\uc2a4, \uc870\uc9c1 \ubc30\ud3ec \uc124\uc815, mod \uc774\ubca4\ud2b8\uc640 \ud638\ucd9c, \ub0a8\uc774 \ub9cc\ub4e0 mod \ub9ac\ubdf0, \uc6b4\uc601 \uc9c0\ud45c\n\u2022 \ud50c\ub7ec\uadf8\uc778 \ud3f4\ub354 \uad6c\uc131\uc740 \ubcf8\ubb38 Part 1 \uad6c\uc870 \uc7a5\ud45c\uc5d0 \ud569\uccd0 \ub460\n\n\uc5ec\uae30\ubd80\ud130\ub294 \ub354 \uc54c\uc544\ubcf4\uae30\uc785\ub2c8\ub2e4. \uc9c8\ubb38\uc774 \ub098\uc624\uac70\ub098 \uc2dc\uac04\uc774 \ub0a8\uc73c\uba74 \ud3bc\uce69\ub2c8\ub2e4. \ud50c\ub7ec\uadf8\uc778 \ud3f4\ub354 \uad6c\uc131\uc740 \uc55e\uc758 Part 1 \uad6c\uc870 \uc7a5\ud45c\uc5d0 \ud569\uccd0 \ub450\uc5c8\uc2b5\ub2c8\ub2e4.",
+    26: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 \ub85c\uceec \uacbd\ub85c: \uac1c\ubc1c, \ud14c\uc2a4\ud2b8 (\uc774 \ub7a9)\n\u2022 GitHub \uc800\uc7a5\uc18c: owner/repo, \uacf5\uac1c \ub610\ub294 \uc0ac\ub0b4 GitHub\n\u2022 git URL: \uc0ac\ub0b4 GitLab \ub4f1\n\u2022 seed \ub514\ub809\ud130\ub9ac: \ub9dd\ubd84\ub9ac, \uc774\ubbf8\uc9c0\uc5d0 \ubbf8\ub9ac \uc2ec\uae30\n\n\ub9c8\ucf13\ud50c\ub808\uc774\uc2a4 \uc18c\uc2a4\ub294 \ub124 \uac00\uc9c0\uc785\ub2c8\ub2e4.\n\n\ub85c\uceec \uacbd\ub85c\ub294 \uc624\ub298 \ub7a9\ucc98\ub7fc \uac1c\ubc1c\uacfc \ud14c\uc2a4\ud2b8\uc5d0, GitHub \uc800\uc7a5\uc18c\ub294 owner/repo \ud615\uc2dd\uc73c\ub85c \uacf5\uac1c\ub098 \uc0ac\ub0b4 GitHub\uc5d0, git URL\uc740 \uc0ac\ub0b4 GitLab \uac19\uc740 \uacf3\uc5d0, seed \ub514\ub809\ud130\ub9ac\ub294 \ub9dd\ubd84\ub9ac \ud658\uacbd\uc5d0 \uc501\ub2c8\ub2e4.",
+    27: "[1min] [\uc694\uc57d]\n\u2022 \uc0ac\ub0b4 git URL\uc744 extraKnownMarketplaces\ub85c \ub4f1\ub85d, enabledPlugins true\ub85c \uac15\uc81c\n\u2022 \ud568\uaed8 \uac70\ub294 \uc7a0\uae08: strictKnownMarketplaces(hostPattern\uc73c\ub85c \uc0ac\ub0b4 git \ud5c8\uc6a9), disableSideloadFlags, allowManagedModsOnly\n\u2022 \ubb38\uc81c \uc2dc enabledPlugins\ub97c false\ub85c\n\nPart 2\uc758 \uc608\uc2dc\ub294 GitHub\uc600\ub294\ub370, \uc0ac\ub0b4 git\uc73c\ub85c \ub4f1\ub85d\ud558\uba74 \uc774\ub7f0 \ubaa8\uc591\uc785\ub2c8\ub2e4. extraKnownMarketplaces\uc5d0 git \uc18c\uc2a4\uc640 URL\uc744 \uc8fc\uace0, enabledPlugins\ub85c \uac15\uc81c \uc124\uce58\ud569\ub2c8\ub2e4.\n\uc624\ub978\ucabd\uc740 \ud568\uaed8 \uac70\ub294 \uc7a0\uae08\uc785\ub2c8\ub2e4. strictKnownMarketplaces\uc5d0 hostPattern\uc744 \ub123\uc5b4 \uc0ac\ub0b4 git\uc744 \ud5c8\uc6a9\ud558\uace0, \uc0ac\uc774\ub4dc\ub85c\ub4dc\ub97c \uae08\uc9c0\ud558\uace0, \uc0ac\uc6a9\uc790 mod\ub97c \ucc28\ub2e8\ud569\ub2c8\ub2e4. \uadf8\ub9ac\uace0 \ubb38\uc81c\uac00 \uc0dd\uae30\uba74 enabledPlugins\ub97c false\ub85c \ubc14\uafd4 \uc989\uc2dc \ub9c9\uc2b5\ub2c8\ub2e4.",
+    28: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 validate\uc758 hooks \uc904\uc740 \uc5b8\uc81c \ub07c\uc5b4\ub4dc\ub294\uc9c0, calls \uc904\uc740 \ubc14\uae65\uc5d0 \ud558\ub294 \uc77c\n\u2022 \uc704\ud5d8 \uc2e0\ud638\ub294 \ud504\ub85c\uc138\uc2a4 \uc2e4\ud589\uacfc \ub124\ud2b8\uc6cc\ud06c \ud638\ucd9c\n\u2022 \ub0a8\uc774 \ub9cc\ub4e0 mod \ub9ac\ubdf0: \ucd9c\ucc98, calls, \ubc84\uc804 \uace0\uc815, \ubc30\ud3ec \uacbd\ub85c, \ucc28\ub2e8 \uc815\ucc45, \ubaa8\ub2c8\ud130\ub9c1\n\n\ub0a8\uc774 \ub9cc\ub4e0 mod\uc5d0\ub294 \uc0cc\ub4dc\ubc15\uc2a4\uac00 \uc5c6\uae30 \ub54c\ubb38\uc5d0 \ub9ac\ubdf0\uac00 \ud544\uc218\uc785\ub2c8\ub2e4.\n\n\uccab \ud0ed\uc740 validate \ucd9c\ub825 \uc77d\ub294 \ubc95\uc785\ub2c8\ub2e4. first-mod \uc608\uc2dc\uc5d0\uc11c hooks \uc904\uc740 session.start, tool.call\ucc98\ub7fc \uc5b8\uc81c \ub07c\uc5b4\ub4dc\ub294\uc9c0, command.run\uc774\ub098 ui.render\ucc98\ub7fc \ucee4\ub9e8\ub4dc\uc640 \ud654\uba74\uc744 \ubc14\uafb8\ub294\uc9c0 \ubcf4\uc5ec \uc8fc\uace0, calls \uc904\uc740 \ubc14\uae65\uc5d0 \ubb34\uc5c7\uc744 \ud558\ub294\uc9c0 \ubcf4\uc5ec \uc90d\ub2c8\ub2e4. \ud504\ub85c\uc138\uc2a4 \uc2e4\ud589\uc774\ub098 \ub124\ud2b8\uc6cc\ud06c \ud638\ucd9c\uc774 \ubcf4\uc774\uba74 \ubcf4\uc548 \ub9ac\ubdf0 \ub300\uc0c1\uc785\ub2c8\ub2e4.\n\ub450 \ubc88\uc9f8 \ud0ed\uc740 \ub9ac\ubdf0 \uc5ec\uc12f \ud56d\ubaa9\uc785\ub2c8\ub2e4. \ucd9c\ucc98, calls, \ubc84\uc804 \uace0\uc815, \ubc30\ud3ec \uacbd\ub85c, \ucc28\ub2e8 \uc815\ucc45, \ubaa8\ub2c8\ud130\ub9c1\uc785\ub2c8\ub2e4.",
+    29: "[1min] [\uc694\uc57d]\n\u2022 plugin_installed: \ub204\uac00 \uc124\uce58\ud588\ub098\n\u2022 plugin_loaded: \uc2e4\uc81c\ub85c \uc4f0\uc774\ub098\n\u2022 \uc2a4\ud0ac, \uc5d0\uc774\uc804\ud2b8 \ud638\ucd9c(skill_activated, subagent_completed \uc774\ubca4\ud2b8): \uc5b4\ub5a4 \uad6c\uc131\uc694\uc18c\uac00 \ud6a8\uacfc\uc801\uc778\uac00\n\u2022 \ubc84\uc804 \ubd84\ud3ec(\uc124\uce58 \uce90\uc2dc, \uc774\ubca4\ud2b8 \uc18d\uc131): \uad6c\ubc84\uc804 \uc794\uc874 \uc5ec\ubd80\n\n\ubc30\ud3ec \ud6c4\uc5d0 \ubcfc \uc9c0\ud45c \ub124 \uac00\uc9c0\uc785\ub2c8\ub2e4.\nplugin_installed\ub85c \ub204\uac00 \uc124\uce58\ud588\ub294\uc9c0, plugin_loaded\ub85c \uc2e4\uc81c\ub85c \uc4f0\uc774\ub294\uc9c0, skill_activated\uc640 subagent_completed \uc774\ubca4\ud2b8\ub85c \uc5b4\ub5a4 \uc2a4\ud0ac\uacfc \uc5d0\uc774\uc804\ud2b8\uac00 \ud6a8\uacfc\uc801\uc778\uc9c0, \uadf8\ub9ac\uace0 \uc124\uce58 \uce90\uc2dc\uc640 \uc774\ubca4\ud2b8 \uc18d\uc131\uc73c\ub85c \uad6c\ubc84\uc804\uc774 \ub0a8\uc544 \uc788\ub294\uc9c0 \ubd05\ub2c8\ub2e4. OTel \uc218\uc9d1 \uc124\uc815\uc740 Ch6\uc5d0\uc11c \ub2e4\ub8f9\ub2c8\ub2e4.",
+    30: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \ud50c\ub7ec\uadf8\uc778\uc740 \uc2a4\ud0ac, Subagent, \ud6c5, MCP, mod\ub97c \ubb36\uc740 \ubc30\ud3ec \ub2e8\uc704\n\u2022 \uc870\uc9c1 \ubc30\ud3ec\ub294 \ud5c8\uc6a9 \ubaa9\ub85d, \ub4f1\ub85d, \uac15\uc81c \uc124\uce58, \uc0ac\uc774\ub4dc\ub85c\ub4dc \uae08\uc9c0, \ub9dd\ubd84\ub9ac\ub294 seed \ub514\ub809\ud130\ub9ac\n\u2022 mod\ub294 JS \ud578\ub4e4\ub7ec, \uc0cc\ub4dc\ubc15\uc2a4\uac00 \uc5c6\uc73c\ub2c8 validate\uc640 allowManagedModsOnly\n\u2022 Bedrock \uc0ac\uc6a9\uc790\ub294 managed settings\uac00 \uc788\uc5b4\uc57c guard \ub85c\ub4dc\n\nChapter 5\ub97c \uc5ec\uc12f \uc904\ub85c \uc815\ub9ac\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\n\ud50c\ub7ec\uadf8\uc778\uc740 \uc2a4\ud0ac, Subagent, \ud6c5, MCP, mod\ub97c \ubb36\uc740 \ubc30\ud3ec \ub2e8\uc704\uc785\ub2c8\ub2e4. \uc870\uc9c1 \ubc30\ud3ec\ub294 \ud5c8\uc6a9 \ubaa9\ub85d, \ub4f1\ub85d, \uac15\uc81c \uc124\uce58, \uc0ac\uc774\ub4dc\ub85c\ub4dc \uae08\uc9c0\ub97c \ud568\uaed8 \uac78\uace0, \ub9dd\ubd84\ub9ac\ub294 seed \ub514\ub809\ud130\ub9ac\ub85c \ud569\ub2c8\ub2e4.\nmod\ub294 Claude Code \uc548\uc5d0\uc11c \ub3c4\ub294 JS \ud578\ub4e4\ub7ec\ub77c \ud654\uba74\uae4c\uc9c0 \ubc14\uafb8\uc9c0\ub9cc \uc0cc\ub4dc\ubc15\uc2a4\uac00 \uc5c6\uc73c\ub2c8 validate\uc640 allowManagedModsOnly\ub85c \ud1b5\uc81c\ud569\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 Bedrock \uc0ac\uc6a9\uc790\ub294 managed settings\uac00 \uc788\uc5b4\uc57c \ub0b4\uc7a5 guard\uac00 \ub85c\ub4dc\ub429\ub2c8\ub2e4.",
+    31: "[0.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc74c\uc740 \uc810\uc2ec, \uc774\uc5b4\uc11c Chapter 6 \ud1a0\ud070\uacfc \ube44\uc6a9\n\u2022 \uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi\n\n\uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774\uc81c Super Lab\uc744 \uc9c4\ud589\ud558\uace0, \uc810\uc2ec \ub4a4\uc5d0 Chapter 6 \ud1a0\ud070\uacfc \ube44\uc6a9\uc73c\ub85c \uc774\uc5b4 \uac00\uaca0\uc2b5\ub2c8\ub2e4.\n\uc9c8\ubb38\uc740 Slack \uc6cc\ud06c\uc20d \ucc44\ub110\uc5d0 \uc5b8\uc81c\ub4e0 \ud3b8\ud558\uac8c \ub0a8\uaca8 \uc8fc\uc138\uc694."
+  };
+  const deck = new SlideFramework({
+    logoSrc: "./image/aws-logo-white.png",
+    
+    footer: "\u00a9 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.",
+    
+    pagination: true,
+    sidebar: true,
+    presenterNotes: presenterNotes,
+    onSlideChange: (index, slide) => {}
+  });
+</script>
+</body>
+</html>

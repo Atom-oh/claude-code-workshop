@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Deep Dive Workshop, FSI Edition - Table of Contents</title>
+  <link rel="stylesheet" href="./common/theme.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .toc-container {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem; gap: 1.5rem;
+    }
+    .toc-title { font-size: 2.5rem; color: var(--text-primary); }
+    .block-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; max-width: 800px; width: 100%;
+    }
+    .block-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: .5rem; padding: 1.5rem; text-align: center;
+      display: flex; flex-direction: column; gap: 0.5rem;
+      transition: all var(--transition-fast);
+    }
+    .block-card:hover {
+      border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .block-link { text-decoration: none; flex: 1; }
+    .block-card h3 { color: var(--text-primary); margin: 0; }
+    .block-export-row { display: flex; gap: 0.25rem; justify-content: center; }
+    .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 0.2rem; color: var(--text-secondary); cursor: pointer; }
+    .btn-sm:hover { border-color: var(--accent); color: var(--text-primary); }
+    .export-toolbar {
+      display: flex; gap: 0.5rem; margin-top: 1.5rem;
+    }
+    .export-toolbar .btn {
+      padding: 0.5rem 1rem; font-size: 0.875rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 0.25rem; color: var(--text-primary);
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .export-toolbar .btn:hover {
+      border-color: var(--accent); background: var(--bg-elevated);
+    }
+  </style>
+</head>
+<body>
+<div class="toc-container">
+  <h1 class="toc-title">Claude Code Deep Dive Workshop, FSI Edition</h1>
+  <div class="block-grid">
+        <div class="block-card">
+      <a href="01-ch1-how-it-works.html" class="block-link"><h3>01-ch1-how-it-works</h3></a>
+      <div class="block-export-row">
+        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'01-ch1-how-it-works',blocks:['01-ch1-how-it-works.html']})">PDF</button>
+        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['01-ch1-how-it-works.html']})">ZIP</button>
+        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'01-ch1-how-it-works',blocks:['01-ch1-how-it-works.html']})">PPTX</button>
+      </div>
+    </div>
+    <div class="block-card">
+      <a href="02-ch2-bedrock-policy.html" class="block-link"><h3>02-ch2-bedrock-policy</h3></a>
+      <div class="block-export-row">
+        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'02-ch2-bedrock-policy',blocks:['02-ch2-bedrock-policy.html']})">PDF</button>
+        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['02-ch2-bedrock-policy.html']})">ZIP</button>
+        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'02-ch2-bedrock-policy',blocks:['02-ch2-bedrock-policy.html']})">PPTX</button>
+      </div>
+    </div>
+    <div class="block-card">
+      <a href="03-ch3-guardrails-dlp.html" class="block-link"><h3>03-ch3-guardrails-dlp</h3></a>
+      <div class="block-export-row">
+        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'03-ch3-guardrails-dlp',blocks:['03-ch3-guardrails-dlp.html']})">PDF</button>
+        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['03-ch3-guardrails-dlp.html']})">ZIP</button>
+        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'03-ch3-guardrails-dlp',blocks:['03-ch3-guardrails-dlp.html']})">PPTX</button>
+      </div>
+    </div>
+    <div class="block-card">
+      <a href="04-ch4-subagents.html" class="block-link"><h3>04-ch4-subagents</h3></a>
+      <div class="block-export-row">
+        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'04-ch4-subagents',blocks:['04-ch4-subagents.html']})">PDF</button>
+        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['04-ch4-subagents.html']})">ZIP</button>
+        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'04-ch4-subagents',blocks:['04-ch4-subagents.html']})">PPTX</button>
+      </div>
+    </div>
+    <div class="block-card">
+      <a href="05-ch5-plugins-mods.html" class="block-link"><h3>05-ch5-plugins-mods</h3></a>
+      <div class="block-export-row">
+        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'05-ch5-plugins-mods',blocks:['05-ch5-plugins-mods.html']})">PDF</button>
+        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['05-ch5-plugins-mods.html']})">ZIP</button>
+        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'05-ch5-plugins-mods',blocks:['05-ch5-plugins-mods.html']})">PPTX</button>
+      </div>
+    </div>
+    <div class="block-card">
+      <a href="06-ch6-tokens-cost.html" class="block-link"><h3>06-ch6-tokens-cost</h3></a>
+      <div class="block-export-row">
+        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'06-ch6-tokens-cost',blocks:['06-ch6-tokens-cost.html']})">PDF</button>
+        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['06-ch6-tokens-cost.html']})">ZIP</button>
+        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'06-ch6-tokens-cost',blocks:['06-ch6-tokens-cost.html']})">PPTX</button>
+      </div>
+    </div>
+  </div>
+  <div class="export-toolbar">
+    <button class="btn" onclick="ExportUtils.exportPDF({title:'Claude Code Deep Dive Workshop, FSI Edition'})">Export PDF</button>
+    <button class="btn" onclick="ExportUtils.downloadZIP()">Download ZIP</button>
+    <button class="btn" onclick="ExportUtils.exportPPTX({title:'Claude Code Deep Dive Workshop, FSI Edition'})">Export PPTX</button>
+  </div>
+</div>
+<script src="./common/export-utils.js"></script>
+</body>
+</html>
