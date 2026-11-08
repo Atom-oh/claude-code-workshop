@@ -95,10 +95,14 @@ generative), one line per scene, from `narration/script.json`
 music license applies. The first published version (2026-11-08, about 90
 seconds) came from a different local project.
 
-When the intro changes, run `npm run narration`, `npm run bgm` (only if the
-length changes) and `npm run render` in `fsi-workshop-video/`, then run these
-from this repository's `20261116/` folder, and regenerate the caption cues
-from `src/vo-manifest.json` and the scene lengths:
+When the intro changes, run `npm run narration` and `npm run render` in
+`fsi-workshop-video/`. If the video runs longer than the 95-second pad, first
+regenerate it with `D=<seconds> npm run bgm`. Then run these from this
+repository's `20261116/` folder and rebuild the caption cues: each scene's
+cue starts 0.5 s into the scene and lasts its clip length in
+`src/vo-manifest.json`; two-sentence lines are split at the spoken pause.
+Cues sit at the top of the frame (`line:2%`) so they never cover on-screen
+text.
 
 ```
 ffmpeg -i ../../fsi-workshop-video/out/fsi-workshop-intro.mp4 -c:v libx264 \
