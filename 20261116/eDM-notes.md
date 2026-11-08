@@ -54,10 +54,21 @@ course, generated from the Korean lab sources of the November lab environment
 repository and checked against two rehearsal events. They keep the previous
 filenames (`ClaudeCode_Preflight_Check.html`, `ClaudeCode_Ch1_HandsOnLab.html` to
 `ClaudeCode_Ch6_HandsOnLab.html`); the previous Ch6 Agent SDK lab is now
-`ClaudeCode_AgentSDK_HandsOnLab.html`. Session times in `eDM.html` follow the
-agenda above and do not match every lab length: Ch1 has no lab slot, Ch2's lab
-is 50 minutes against a 40-minute slot, and Ch6 Part 2 is a participant lab
-rather than an instructor demo. Reconcile these before resending the invitation.
+`ClaudeCode_AgentSDK_HandsOnLab.html`.
+
+On 2026-11-08 the session descriptions in `eDM.html` and `eDM.txt` were
+rewritten from the final decks and labs. Session times are unchanged; the
+instructors fit deck and lab content to each slot. Lab lengths on the portal
+(`index.html`) are the full lab guide lengths, not session lengths. Mapping:
+
+- Ch1 (10:10–10:40) is lecture only. Its 20-minute lab is linked from the
+  session card and listed as self-paced in `eDM.txt`.
+- Ch2 lab (13:00–13:40) runs TASK 00–06, ending with the Apps Gateway
+  group-policy check.
+- Ch3 (13:40–14:30) covers the DLP hook and fail-open tasks in session; the
+  auto mode task is an optional lab.
+- Ch6 Part 1 (13:00–13:40) runs lab TASK 01–04. Part 2 (16:50–17:40) runs
+  TASK 05–07 as a participant lab (gateway login, group policy, spend limit).
 
 Capstone and reference labs were imported from the archive. In the November copy of Capstone 3, the
 import removed one missing local webfont stylesheet and two browser-extension
