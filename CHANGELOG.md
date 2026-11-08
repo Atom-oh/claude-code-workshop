@@ -20,6 +20,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
+- Regenerate the November chapter PDFs after a full deck review: match the lab slides to the lab guides (Ch2 policy example and TASK order, Ch3 restore step, Ch4 code-reviewer and `@` typeahead instead of `/agents`, Ch5 Super Lab TASK 01–06), align session times with the retimed agenda (Ch1 lab at 11:20, Ch2 lab 50 minutes, Ch6 Part 1 at 12:40 for 60 minutes), unify Claude Apps Gateway naming, and fix the Slack channel name on closing slides.
 - Replace the November chapter labs with the redesigned six-chapter course on Amazon Bedrock (Preflight; Ch1 how it works; Ch2 Bedrock deployment and policy delivery; Ch3 guardrails and DLP; Ch4 subagents; Ch5 plugins and mods; Ch6 tokens and cost). The labs keep their published filenames so existing invitation links still resolve, and reflect the 2026-11-06 and 2026-11-08 rehearsals on Claude Code 2.1.318–2.1.319. The previous Ch6 Agent SDK lab moves to `ClaudeCode_AgentSDK_HandsOnLab.html` as a self-paced lab. Preflight screenshots move to `20261116/images/guides/preflight/`.
 - Add the November chapter decks as PDFs under `20261116/slides/` and link each chapter session in `eDM.html` and the portal to its PDF.
 - Update `eDM.html`, `eDM.txt`, and the portal to the redesigned agenda, `us-east-1`, and the code-server plus Claude Apps Gateway environment. Capstone and reference pages are unchanged.
