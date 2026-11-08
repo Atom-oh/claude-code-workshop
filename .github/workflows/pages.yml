@@ -32,6 +32,10 @@ jobs:
         run: |
           mkdir -p _site/20261116 _site/20261123 _site/workshop-v2
           cp -a ccw-hands-on-lab/. _site/
+          # The November 16-17 event is the site's main page: overlay its files
+          # on the root. Same-named general lab pages (index.html, eDM.html,
+          # ClaudeCode_*.html) are replaced; assets/, v1/ and START_HERE.txt stay.
+          cp -a 20261116/. _site/
           cp -a 20261116/. _site/20261116/
           cp -a 20261123/. _site/20261123/
           cp -a workshop-v2/. _site/workshop-v2/
