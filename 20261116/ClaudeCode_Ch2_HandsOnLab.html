@@ -178,7 +178,6 @@ use_bedrock_direct</code></pre></div></div></div>
       &quot;Action&quot;: [
         &quot;bedrock:InvokeModel&quot;,
         &quot;bedrock:InvokeModelWithResponseStream&quot;,
-        &quot;bedrock:ListInferenceProfiles&quot;,
         &quot;bedrock:GetInferenceProfile&quot;
       ],
       &quot;Resource&quot;: [
@@ -186,9 +185,15 @@ use_bedrock_direct</code></pre></div></div></div>
         &quot;arn:aws:bedrock:*:*:application-inference-profile/*&quot;,
         &quot;arn:aws:bedrock:*:*:foundation-model/*&quot;
       ]
+    },
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;bedrock:ListInferenceProfiles&quot;,
+      &quot;Resource&quot;: &quot;*&quot;
     }
   ]
 }</code></pre></div>
+<p><code>bedrock:ListInferenceProfiles</code>는 리소스 단위 권한을 지원하지 않아서 <code>&quot;Resource&quot;: &quot;*&quot;</code>인 별도 Statement로 둡니다. 위 ARN 목록과 같은 Statement에 넣으면 IAM 정책 시뮬레이터에서 목록 조회가 <code>implicitDeny</code>로 나옵니다(실습 환경에서 확인).</p>
 
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>자격증명 권고</strong></p>
 <p>장기 키(액세스 키, Bedrock API 키)는 배포하지 않습니다. 회사에서는 IAM Identity Center SSO 프로파일 + <code>awsAuthRefresh</code>(만료 시 <code>aws sso login</code> 자동 실행)가 기본입니다. 이 랩 환경에는 키 배포 경로가 아예 없고, 모든 호출이 인스턴스 역할(SigV4)입니다.</p></div></div>

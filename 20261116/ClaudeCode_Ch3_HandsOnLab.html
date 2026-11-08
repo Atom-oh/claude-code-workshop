@@ -215,22 +215,38 @@ command -v jq &gt;/dev/null || { echo &quot;DLP: 검사기 오류(jq 없음) - �
 TEXT=$(echo &quot;$INPUT&quot; | jq -r &#x27;.prompt // (.tool_input | tostring)&#x27;) || { echo &quot;DLP: 입력 해석 실패 - 차단&quot; &gt;&amp;2; exit 2; }
 
 PAT=&#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}&#x27;
-if echo &quot;$TEXT&quot; | grep -Eq &quot;$PAT&quot;; then
+echo &quot;$TEXT&quot; | grep -Eq &quot;$PAT&quot;; RC=$?
+[ &quot;$RC&quot; -eq 1 ] &amp;&amp; exit 0      # 1 = 패턴 없음 → 통과
+if [ &quot;$RC&quot; -eq 0 ]; then
   echo &quot;DLP: 민감정보 패턴이 감지되어 차단했습니다&quot; &gt;&amp;2
-  exit 2
+else
+  echo &quot;DLP: 검사기 오류(grep 종료 코드 $RC) - 안전을 위해 차단&quot; &gt;&amp;2
 fi
-exit 0
+exit 2
 EOF
-echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;</code></pre></div>
+echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
+echo &#x27;{&quot;prompt&quot;:&quot;안녕하세요&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;</code></pre></div>
+<p>첫 줄은 <code>exit=2</code>, 둘째 줄은 <code>exit=0</code>입니다. <code>grep</code>도 <code>jq</code>처럼 실행 오류가 날 수 있으므로, 종료 코드를 <strong>0(일치)·1(불일치)·그 밖(오류)</strong> 으로 나눠 오류일 때도 차단합니다. <code>if grep ...; then</code> 형태로 쓰면 grep 오류가 &quot;불일치&quot;와 같게 처리되어 통과됩니다(실습 환경에서 확인).</p>
+<h3 id="step-3-스크립트가-아예-없거나-멈춰도-막기">Step 3 · 스크립트가 아예 없거나 멈춰도 막기</h3>
+<p>스크립트 안의 처리로는 <strong>스크립트가 없거나, 시작하지 못하거나, 시간 초과</strong>인 경우를 막을 수 없습니다. 이때도 그대로 통과됩니다. 훅 설정에 <code>&quot;onFailure&quot;: &quot;block&quot;</code>(v2.1.295+)을 넣으면 이런 실패도 차단으로 처리됩니다.</p>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>M=/etc/claude-code/managed-settings.json
+sudo jq &#x27;(.hooks[][].hooks[]) |= . + {&quot;onFailure&quot;: &quot;block&quot;}&#x27; $M | sudo tee $M.tmp &gt;/dev/null &amp;&amp; sudo mv $M.tmp $M
+sudo jq -c &#x27;[.hooks[][].hooks[].onFailure]&#x27; $M
+sudo mv /opt/dlp/dlp-guard.sh /opt/dlp/dlp-guard.sh.off
+cd ~/claude-lab/ch3 &amp;&amp; claude -p &quot;안녕이라고만 답해줘&quot;; echo &quot;claude exit=$?&quot;
+sudo mv /opt/dlp/dlp-guard.sh.off /opt/dlp/dlp-guard.sh</code></pre></div>
+<p>스크립트를 치운 상태에서는 민감정보가 없는 프롬프트도 <code>UserPromptSubmit operation blocked by hook: … blocking because onFailure is &quot;block&quot;</code>으로 차단됩니다. 마지막 줄에서 스크립트를 되돌립니다.</p>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span>고장 난 훅에서 민감정보가 그대로 통과되는 것을 봤다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>오류 경로에 exit 2를 넣어 fail-closed로 바꿨다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>onFailure: &quot;block&quot;</code>으로 스크립트가 없을 때도 차단되는 것을 확인했다</span></label></li>
 </ul></div></div>
 
 <h2 id="task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기 (15분)</h2>
-<p>Claude Code를 쓰면서 가장 많이 누르는 것이 확인 창입니다. <strong>auto mode</strong>는 사람 대신 별도의 <strong>분류기 모델</strong>이 매 동작을 판정해, 되돌릴 수 없거나 환경 밖으로 나가는 동작만 막고 나머지는 묻지 않고 실행합니다. 이 Task에서는 ① 분류기 모델을 고르고 ② 무엇이 통과·차단되는지 보고 ③ 사람이 반드시 확인할 지점을 넣고 ④ 우리 회사의 민감 위치를 알려 주고 ⑤ 조직이 auto 자체를 잠그는 방법까지 확인합니다.</p>
+<p>Claude Code를 쓰면서 가장 많이 누르는 것이 확인 창입니다. <strong>auto mode</strong>는 사람 대신 별도의 <strong>분류기 모델</strong>이 매 동작을 판정해, 되돌릴 수 없거나 환경 밖으로 나가는 동작만 막고 나머지는 묻지 않고 실행합니다. 이 Task에서는 ① 분류기 모델을 확인하고 ② 무엇이 통과·차단되는지 보고 ③ 사람이 반드시 확인할 지점을 넣고 ④ 우리 회사의 민감 위치를 알려 주고 ⑤ 조직이 auto 자체를 잠그는 방법까지 확인합니다.</p>
 <table>
 <thead>
 <tr>
@@ -270,16 +286,17 @@ echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; |
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 랩은 이미 auto로 시작하고 있습니다</strong></p>
 <p>Claude Code v2.1.283 이상은 Bedrock 대화형 세션을 모드 지정 없이 시작하면 auto 모드로 시작합니다(Bedrock 지원 모델: Sonnet 5 이상, Opus 4.7 이상, Haiku 5.5, Fable). <code>claude -p</code>와 Agent SDK는 Manual로 시작합니다.</p></div></div>
 
-<h3 id="step-1-분류기-모델을-정하고-auto로-시작">Step 1 · 분류기 모델을 정하고 auto로 시작</h3>
-<p>분류기는 판정마다 대화 일부와 실행할 동작을 보내는 <strong>별도 모델 호출</strong>이고, Bedrock에서는 이것도 토큰 사용량으로 청구됩니다. 이 환경은 <code>ANTHROPIC_DEFAULT_SONNET_MODEL</code>이 Sonnet 5.5라서 기본 해석이 Sonnet 5가 되고, 계정에서 쓸 수 없으면 세션 모델(Opus 5.5)로 떨어질 수 있습니다. 그래서 명시적으로 지정합니다.</p>
+<h3 id="step-1-분류기-모델을-확인하고-auto로-시작">Step 1 · 분류기 모델을 확인하고 auto로 시작</h3>
+<p>분류기는 판정마다 대화 일부와 실행할 동작을 보내는 <strong>별도 모델 호출</strong>이고, Bedrock에서는 이것도 토큰 사용량으로 청구됩니다. 어느 모델이 판정하는지는 디버그 로그로 확인합니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude --version   # 2.1.302 이상이어야 CLAUDE_CODE_AUTO_MODE_MODEL이 적용됩니다
-jq &#x27;.env.CLAUDE_CODE_AUTO_MODE_MODEL = &quot;global.anthropic.claude-sonnet-5-5&quot;&#x27; ~/.claude/settings.json &gt; /tmp/s.json \
-  &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
-jq &#x27;.env.CLAUDE_CODE_AUTO_MODE_MODEL&#x27; ~/.claude/settings.json
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude --version
+cd ~/claude-lab/ch3
+claude -p --permission-mode auto --debug-file /tmp/classifier.log \
+  &quot;curl -s -o /dev/null -w &#x27;%{http_code}&#x27; https://example.com 을 실행하고 결과만 알려줘&quot;
+grep -o &#x27;Auto mode classifier:.\{0,160\}&#x27; /tmp/classifier.log | head -1
 claude auto-mode defaults | jq -r &#x27;.soft_deny[] | split(&quot; [&quot;)[0] | split(&quot;:&quot;)[0]&#x27; | head -15</code></pre></div>
 
-<p>마지막 줄은 분류기가 <strong>기본으로 막는 규칙의 이름</strong>입니다(Git Destructive, Code from External, Production Deploy, Secret-Store Writes 등). 거부 메시지의 <code>[...]</code> 안에 이 이름이 나옵니다. 기본 규칙은 <code>allow</code>, <code>environment</code>, <code>soft_deny</code>, <code>hard_deny</code> 네 목록으로 나뉩니다.</p>
+<p><code>200</code> 다음 줄에 <code>ANTHROPIC_DEFAULT_SONNET_MODEL=global.anthropic.claude-sonnet-5-5 cannot serve as the classifier; using the Sonnet 5 default instead</code>가 나옵니다. 이 환경의 기본 Sonnet은 5.5라서 분류기로 쓸 수 없고, <strong>Sonnet 5</strong>가 판정합니다. 마지막 명령의 출력은 분류기가 <strong>기본으로 막는 규칙의 이름</strong>입니다(Git Destructive, Code from External, Production Deploy, Secret-Store Writes 등). 거부 메시지의 <code>[...]</code> 안에 이 이름이 나옵니다. 기본 규칙은 <code>allow</code>, <code>environment</code>, <code>soft_deny</code>, <code>hard_deny</code> 네 목록으로 나뉩니다.</p>
 <table>
 <thead>
 <tr>
@@ -290,7 +307,7 @@ claude auto-mode defaults | jq -r &#x27;.soft_deny[] | split(&quot; [&quot;)[0] 
 <tbody>
 <tr>
 <td><code>CLAUDE_CODE_AUTO_MODE_MODEL</code>에 전체 모델 ID (v2.1.302+)</td>
-<td>지정한 모델</td>
+<td>지정한 모델. 단 Sonnet 5.5·Opus 5.5·Opus 5는 무시되고 다음 순서로</td>
 </tr>
 <tr>
 <td>Anthropic이 설정한 분류기 모델</td>
@@ -310,7 +327,9 @@ claude auto-mode defaults | jq -r &#x27;.soft_deny[] | split(&quot; [&quot;)[0] 
 </tr>
 </tbody>
 </table>
-<p>지정한 모델을 쓸 수 없으면 세션 모델로 폴백하고, 공급자가 아예 응답하지 못하면 검사가 실패해 <strong>해당 동작은 거부</strong>됩니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>분류기 모델을 직접 고정하려면</strong></p>
+<p><code>CLAUDE_CODE_AUTO_MODE_MODEL</code>에 Sonnet 5.5를 넣으면 로그에 <code>ignoring CLAUDE_CODE_AUTO_MODE_MODEL=… using the default classifier model instead</code>가 남고 기본 분류기가 그대로 판정합니다(실습 환경에서 확인). 고정하려면 <code>us.anthropic.claude-sonnet-5</code>처럼 제외되지 않은 모델을 지정합니다. 공급자가 지정한 모델을 제공하지 못하면 분류기 검사가 실패해 <strong>해당 동작은 거부</strong>됩니다.</p>
+</div></div>
 <h3 id="step-2-묻지-않는-것과-명시-지시가-통과시키는-것">Step 2 · 묻지 않는 것과, 명시 지시가 통과시키는 것</h3>
 <p>push를 시험할 <strong>로컬 원격</strong>을 만들고, 원격과 로컬 이력을 일부러 어긋나게 해 둡니다(force push가 실제로 이력을 덮어쓰는 상황).</p>
 <p><strong>Terminal, 전체 복사</strong></p>
@@ -502,13 +521,35 @@ cd ~/claude-lab/ch3 &amp;&amp; claude --permission-mode auto</code></pre></div>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p>설치가 실패하면 이 선택 TASK는 건너뛰고 TASK 05로 갑니다.</p></div></div>
 
 <h3 id="step-2-정책에-sandbox-추가">Step 2 · 정책에 sandbox 추가</h3>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo jq &#x27;. + {&quot;sandbox&quot;: {&quot;enabled&quot;: true, &quot;network&quot;: {&quot;allowedDomains&quot;: [&quot;pypi.org&quot;, &quot;files.pythonhosted.org&quot;]}}}&#x27; \
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo jq &#x27;. + {&quot;sandbox&quot;: {&quot;enabled&quot;: true, &quot;failIfUnavailable&quot;: true, &quot;allowUnsandboxedCommands&quot;: false, &quot;network&quot;: {&quot;allowManagedDomainsOnly&quot;: true, &quot;allowedDomains&quot;: [&quot;pypi.org&quot;, &quot;files.pythonhosted.org&quot;]}}}&#x27; \
   /etc/claude-code/managed-settings.json | sudo tee /tmp/ms.json &gt;/dev/null &amp;&amp; sudo mv /tmp/ms.json /etc/claude-code/managed-settings.json
 cd ~/claude-lab/ch3 &amp;&amp; claude</code></pre></div>
 
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>python3로 https://example.com 에 HTTP 요청을 보내서 상태 코드를 알려줘. curl은 쓰지 마</code></pre></div>
 
-<p>허용 목록 밖의 도메인이라 연결이 막힙니다. <code>/sandbox</code>로 현재 상태를 확인한 뒤 <code>/exit</code>로 나옵니다.</p>
+<p>허용 목록 밖의 도메인이라 연결이 막힙니다. Claude가 허용 목록을 넓혀 다시 시도하려 해도 <code>allowed_domains cannot widen network access</code>로 거부됩니다. <code>/sandbox</code>로 현재 상태를 확인한 뒤 <code>/exit</code>로 나옵니다.</p>
+<table>
+<thead>
+<tr>
+<th>키</th>
+<th>없으면 생기는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>network.allowManagedDomainsOnly</code></td>
+<td>auto 모드에서 Claude가 명령에 <code>allowed_domains</code>를 붙여 목록을 넓히고, 분류기가 승인하면 그대로 연결됩니다(실습 환경에서 example.com 연결 성공을 확인)</td>
+</tr>
+<tr>
+<td><code>allowUnsandboxedCommands: false</code></td>
+<td>샌드박스에서 실패한 명령을 샌드박스 밖에서 다시 실행할 수 있습니다</td>
+</tr>
+<tr>
+<td><code>failIfUnavailable</code></td>
+<td>bubblewrap 같은 의존성이 없으면 샌드박스 없이 실행됩니다</td>
+</tr>
+</tbody>
+</table>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>범위</strong></p>
 <p>Sandbox는 Claude가 실행하는 Bash에 적용됩니다. Ch5에서 다룰 mod가 띄운 프로세스는 sandbox 밖에서 돕니다.</p></div></div>
 
@@ -549,7 +590,7 @@ cd ~/claude-lab/ch3 &amp;&amp; claude --plugin-dir /tmp/rogue -p &quot;hi&quot;;
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo cp ~/claude-lab/ch3/managed-settings.backup.json /etc/claude-code/managed-settings.json
 sudo jq . /etc/claude-code/managed-settings.json
 rm -rf /tmp/rogue /tmp/ch3-remote.git
-use_bedrock_direct   # TASK 03에서 바꾼 사용자 settings.json(분류기 모델, ask, autoMode)을 기본값으로</code></pre></div>
+use_bedrock_direct   # TASK 03에서 바꾼 사용자 settings.json(ask, autoMode)을 기본값으로</code></pre></div>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>원복하지 않으면</strong></p>
 <p>DLP 훅, auto 잠금, 사이드로드 금지가 남아 Ch5의 <code>--plugin-dir</code> 실습과 Capstone이 막힙니다. <code>/opt/dlp/dlp-guard.sh</code>는 남겨 두어도 정책에서 빠지면 실행되지 않습니다.</p></div></div>

@@ -200,7 +200,7 @@ wc -l &quot;$F&quot; &amp;&amp; grep -o &#x27;&quot;type&quot;:&quot;[a-z_]*&quo
 </ul></div></div>
 
 <h2 id="task-04-bedrock-데이터-경로-확인-2분">TASK 04 · Bedrock 데이터 경로 확인 (2분)</h2>
-<p>추론이 내 계정 안에서 일어난다는 것을 AWS 쪽 기록으로 확인합니다.</p>
+<p>Bedrock 호출이 내 AWS 계정을 거쳐 기록된다는 것을 AWS 쪽 기록으로 확인합니다. 실제로 어느 리전에서 처리되는지는 추론 프로필이 정합니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>aws sts get-caller-identity --query Arn --output text
 aws cloudtrail lookup-events --region us-east-1 --max-results 5 \
@@ -208,6 +208,10 @@ aws cloudtrail lookup-events --region us-east-1 --max-results 5 \
   --query &#x27;Events[].{time:EventTime,name:EventName}&#x27; --output table</code></pre></div>
 
 <p>호출 주체가 이 인스턴스의 역할이고, Bedrock 호출 이력이 CloudTrail에 남는 것을 확인합니다. 이벤트가 아직 없다면 CloudTrail 반영에 몇 분 걸릴 수 있습니다.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>호출 리전과 처리 리전은 다릅니다</strong></p>
+<p>이 랩은 <code>us-east-1</code>로 호출하지만 모델은 <strong>global 추론 프로필</strong>(<code>global.anthropic.claude-*-5-5</code>)입니다. global 프로필은 요청을 상용 리전 전체로 보낼 수 있으므로, 처리 리전이 호출 리전과 같다고 볼 수 없습니다. 처리 리전을 묶어야 하면 <code>us.</code>·<code>apac.</code> 같은 지역 프로필을 고정합니다(Ch2). PrivateLink는 네트워크 경로를 사설망으로 묶는 장치이고, 처리 리전과는 별개의 통제입니다.</p>
+</div></div>
+
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Bedrock 경로의 기본값</strong></p>
 <p>Bedrock 경로에서는 Anthropic으로 가는 오류 리포트와 텔레메트리가 기본으로 꺼져 있습니다. 이 환경의 사용량 텔레메트리는 같은 PC의 OpenTelemetry Collector로 가며, Ch6에서 대시보드로 확인합니다.</p></div></div>
 
@@ -221,7 +225,7 @@ aws cloudtrail lookup-events --region us-east-1 --max-results 5 \
 <li class="check"><label><input type="checkbox"> <span>Claude Code가 모델 + 도구로 이루어진 하네스라는 것을 도구 호출 순서로 확인했다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span><code>/context</code>, CLAUDE.md, 세션 JSONL로 컨텍스트와 세션의 실체를 봤다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>체크포인트의 범위와 권한 모드의 차이를 체험했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>Bedrock 경로에서 추론이 내 계정·리전에서 일어나는 것을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>Bedrock 호출이 내 계정을 거쳐 기록되고, 처리 리전은 추론 프로필(이 랩은 global)이 정한다는 것을 확인했다</span></label></li>
 </ul>
 <h2 id="이전-다음">이전 / 다음</h2>
 <ul>
