@@ -567,9 +567,9 @@ QUICK CHECK, 손을 들어 답해 주세요
      nodes:[{id:'f',x:60,y:200,w:300,h:90,t:'세션 JSONL',s:'평문 기록',c:'info'},{id:'k',x:430,y:80,w:300,h:90,t:'cleanupPeriodDays',s:'기본 30일',c:'info'},{id:'m',x:430,y:320,w:300,h:90,t:'managed settings',s:'사용자가 못 바꿈 (Ch2)',c:'accent'},{id:'bk',x:850,y:200,w:270,h:90,t:'백업, 동기화',s:'제외 대상인지 검토',c:'muted'}],
      edges:[{f:'k',t:'f',c:'info',l:'지난 파일 정리',o:1},{f:'m',t:'k',c:'accent',l:'값을 고정',o:0},{f:'f',t:'bk',c:'muted',dash:true}],
      snip:{hd:'보존 기간을 정책으로',path:'managed-settings.json (Ch2에서 배포), 7은 예시 값',lines:['{','  "cleanupPeriodDays": 7','}'],hl:[2],note:'값은 회사 보존 정책에 맞춥니다. 배포 방법은 Ch2에서 다룹니다.'}},
-    {kicker:'STEP 4', title:'체크포인트는 파일 편집만 되돌립니다',
-     body:'<b>Esc 두 번</b> 또는 <b>/rewind</b>로 복원 메뉴를 열고, 되돌릴 범위(<b>코드, 대화</b>)를 고릅니다. 되돌아가는 것은 <b>Claude가 한 파일 편집</b>입니다.',
-     facts:['되돌릴 수 있음: Claude가 한 파일 편집','복원 메뉴에서 되돌릴 범위(코드, 대화) 선택','바깥 세상에 이미 나간 일은 그대로'],
+    {kicker:'STEP 4', title:'체크포인트는 Claude의 편집과 대화만 되돌립니다',
+     body:'<b>Esc 두 번</b> 또는 <b>/rewind</b>로 복원 메뉴를 열고, 되돌릴 범위(<b>코드, 대화</b>)를 고릅니다. 되돌아가는 것은 <b>Claude가 한 파일 편집과 대화</b>입니다.',
+     facts:['되돌릴 수 있음: Claude가 한 파일 편집과 대화','복원 메뉴에서 되돌릴 범위(코드, 대화) 선택','바깥 세상에 이미 나간 일은 그대로'],
      zones:[{x:20,y:40,w:560,h:410,l:'되돌릴 수 있음',tone:'success'},{x:610,y:40,w:550,h:410,l:'되돌릴 수 없음',tone:'danger'}],
      nodes:[{id:'r',x:320,y:200,w:230,h:90,t:'Esc 두 번',s:'/rewind',c:'success'},{id:'e1',x:50,y:110,w:230,h:84,t:'파일 편집',s:'Claude가 한 것',c:'success'},{id:'e2',x:50,y:300,w:230,h:84,t:'대화',s:'이전 시점으로',c:'success'},
             {id:'x1',x:880,y:70,w:250,h:62,t:'DB 변경',c:'danger'},{id:'x2',x:880,y:145,w:250,h:62,t:'외부 API 호출',c:'danger'},{id:'x3',x:880,y:220,w:250,h:62,t:'배포',c:'danger'},{id:'x4',x:880,y:295,w:250,h:62,t:'메시지, 메일 전송',c:'danger'},{id:'x5',x:880,y:370,w:250,h:62,t:'git push',c:'danger'}],
@@ -597,7 +597,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 세션은 ~/.claude/projects 아래 JSONL, 도구 결과까지 평문
 • /context, /compact, /clear, /resume과 claude --continue, --resume
 • 보존 기간 cleanupPeriodDays 기본 30일, 정책으로 짧게 배포 (Ch2)
-• 체크포인트(Esc 두 번, /rewind)는 Claude가 한 파일 편집만 되돌림, 복원 메뉴에서 코드와 대화 범위 선택
+• 체크포인트(Esc 두 번, /rewind)는 Claude가 한 편집과 대화만 되돌림, 복원 메뉴에서 범위 선택
 • DB 변경, 배포, git push 같은 일은 권한 규칙과 훅으로 사전 차단 (Ch3)
 
 {cue: demo}

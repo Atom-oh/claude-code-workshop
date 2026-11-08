@@ -281,9 +281,9 @@
   <div class="pts" data-pick="c3-auto-cfg">
     <p class="hint">위 항목을 누르면 아래 코드의 해당 줄이 켜집니다.</p>
     <button class="pick" data-key="perm"><span class="t">deny, ask가 먼저</span><span class="d">push, PR 생성은 사람 확인, secrets는 거부</span></button>
-    <button class="pick" data-key="env"><span class="t">신뢰 범위와 민감 위치</span><span class="d">"$defaults"를 빼면 그 목록의 기본 규칙이 전부 사라짐</span></button>
+    <button class="pick" data-key="env"><span class="t">신뢰 범위와 민감 위치</span><span class="d">조직, 저장소, 신뢰 도메인, 민감 위치를 문장으로</span></button>
     <button class="pick" data-key="deny"><span class="t">soft_deny, hard_deny</span><span class="d">마이그레이션은 막되 풀림, 외부 API 전송은 무조건 차단</span></button>
-    <button class="pick" data-key="check"><span class="t">꼭 지킬 것</span><span class="d">프로젝트 설정에서는 읽지 않음, claude auto-mode config와 critique로 확인</span></button>
+    <button class="pick" data-key="check"><span class="t">꼭 지킬 것</span><span class="d">"$defaults"를 빼면 그 목록의 기본 규칙이 전부 사라짐, 프로젝트 설정은 읽지 않음</span></button>
   </div>
 </div>
   </div>
@@ -691,7 +691,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s34" data-fit="off" data-block="03-ch3-guardrails-dlp" data-block-title="Chapter 3. 가드레일과 DLP">
-  <div class="slide-header" data-remarp-id="s34-header"><h2>훅은 루프의 여섯 지점에 끼어든다</h2></div>
+  <div class="slide-header" data-remarp-id="s34-header"><h2>DLP에 쓰는 훅 지점 여섯 곳</h2></div>
   <div class="slide-body" data-remarp-id="s34-body">
     <p><!-- Slide 35: Hook events (PDF p40) --></p>
 <p>훅 이벤트, 시점, DLP 용도</p>
@@ -1070,7 +1070,7 @@ window.__c3codepick = function (F, name, preId, lines, map) {
     {id:'l1',x:20,y:30,w:640,h:72,t:'1 권한 규칙',s:'permissions.deny',c:'accent'},
     {id:'l2',x:50,y:116,w:640,h:72,t:'2 샌드박스',s:'sandbox.network',c:'accent'},
     {id:'l3',x:80,y:202,w:640,h:72,t:'3 훅',s:'PreToolUse',c:'accent'},
-    {id:'l4',x:110,y:288,w:640,h:72,t:'4 Bedrock Guardrails',s:'X-Amzn-Bedrock-*',c:'info'},
+    {id:'l4',x:110,y:288,w:640,h:72,t:'4 Bedrock Guardrails',s:'AWS 쪽, X-Amzn-Bedrock-*',c:'info'},
     {id:'l5',x:140,y:374,w:640,h:72,t:'5 반출 채널',s:'managed allowlist',c:'accent'}];
   function B(y, t, s) { return {id:'b',x:860,y:y,w:300,h:80,t:t,s:s,c:'danger'}; }
   var down = [{f:'l1',t:'l2',c:'muted',o:0},{f:'l2',t:'l3',c:'muted',o:1},{f:'l3',t:'l4',c:'muted',o:2},{f:'l4',t:'l5',c:'muted',o:3}];
@@ -1104,7 +1104,7 @@ window.__c3codepick = function (F, name, preId, lines, map) {
     {kicker:'LAYER 4', title:'Guardrails: AWS 쪽에서 거릅니다',
      body:'모델로 가는 내용의 <b>PII(개인 식별 정보)와 민감정보</b>를 Bedrock Guardrails가 걸러냅니다. Bedrock을 쓸 때 <b>AWS 계정 쪽</b>에서 거는 층입니다.',
      facts:['콘솔에서 Guardrail 생성 후 버전 발행, 민감정보 필터로 PII 마스킹, 차단','cross-region profile이면 Guardrail에도 Cross-Region inference 활성화','호출 역할에 bedrock:ApplyGuardrail 권한 필요','조직 강제: IAM 조건 bedrock:GuardrailIdentifier'],
-     zones:[{x:100,y:280,w:1070,h:90,l:'AWS 쪽',tone:'info'}], nodes:s4.nodes, hot:s4.hot, edges:s4.edges,
+     zones:[{x:100,y:280,w:1070,h:90,l:'',tone:'info'}], nodes:s4.nodes, hot:s4.hot, edges:s4.edges,
      snip:{hd:'managed-settings.json (env)',path:'예시 Guardrail ID',lines:['{','  "env": {','    "ANTHROPIC_CUSTOM_HEADERS":','      "X-Amzn-Bedrock-GuardrailIdentifier: gr-abc123\\nX-Amzn-Bedrock-GuardrailVersion: 1"','  }','}'],hl:[3,4],note:'<b>모델로 가는 내용</b>은 AWS 쪽에서 한 번 더 거릅니다.'}},
     {kicker:'LAYER 5', title:'반출 채널: 다른 통로를 닫습니다',
      body:'웹, MCP, 플러그인, mod처럼 <b>데이터가 나갈 수 있는 다른 통로</b>를 허용 목록으로 닫습니다.',

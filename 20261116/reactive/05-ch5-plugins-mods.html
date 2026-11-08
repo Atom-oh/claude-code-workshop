@@ -427,7 +427,7 @@
   <div class="name">더 알아보기</div>
   <p class="what">자주 받는 질문과 세부 설정</p>
   <ol>
-    <li><b>01</b>플러그인 폴더 구성</li>
+    <li><b>01</b>플러그인 폴더 구성 (Part 1 구조 장표)</li>
     <li><b>02</b>마켓플레이스 소스</li>
     <li><b>03</b>조직 배포 설정</li>
     <li><b>04</b>mod 이벤트와 호출</li>
@@ -633,7 +633,7 @@
      facts:['/reload-plugins: 지금 세션에 적용','또는 다음 세션 시작 시','적용되면 스킬, Subagent, 훅이 함께 켜짐'],
      zones:Z, nodes:ALL, hot:['in','ap'],
      edges:[{f:'in',t:'ap',c:'success',o:0}],
-     snip:{hd:'적용',path:'Claude Code 프롬프트',lines:['/reload-plugins','','# 또는 새 세션을 시작'],hl:[1],note:'랩에서도 플러그인을 고친 뒤 /reload-plugins로 바로 확인합니다.'}},
+     snip:{hd:'적용',path:'Claude Code 프롬프트',lines:['/reload-plugins','','# 또는 새 세션을 시작'],hl:[1],note:'랩의 mod는 파일을 고치면 hot reload로 바로 반영되고, 새 커맨드는 /exit 후 다시 열어 확인합니다 (TASK 03).'}},
     {kicker:'STEP 4', title:'갱신은 자동 또는 수동',
      body:'갱신은 <b>autoUpdate</b>로 자동으로 받거나 <b>수동 update</b>로 합니다. 갱신된 버전이 다시 적용 단계로 이어집니다.',
      facts:['autoUpdate: 자동 갱신','수동 update: 검토한 버전만 받기','남이 만든 mod는 자동 갱신 대신 검토한 버전 (더 알아보기)'],
@@ -646,7 +646,7 @@
      zones:Z, nodes:ALL,
      edges:[{f:'src',t:'mk',c:'info',o:0},{f:'mk',t:'in',c:'accent',o:1},{f:'in',t:'ap',c:'success',o:2},{f:'mk',t:'up',c:'warning',o:3},{f:'up',t:'ap',c:'warning',o:4}],
      loop:true, stagger:0.7,
-     snip:{hd:'한 번에 보기',path:'Claude Code 프롬프트',lines:['/plugin marketplace add <소스>','/plugin install <이름>@<마켓플레이스>','/reload-plugins'],hl:[1,2,3],note:'Super Lab TASK 02에서 이 흐름을 새 폴더에서 동료처럼 따라 합니다.'}}
+     snip:{hd:'한 번에 보기',path:'Claude Code 프롬프트',lines:['/plugin marketplace add <소스>','/plugin install <이름>@<마켓플레이스>','/reload-plugins'],hl:[1,2,3],note:'Super Lab TASK 02에서 등록과 설치 흐름을 새 폴더에서 동료처럼 따라 합니다.'}}
   ], {legend:[['info','등록'],['accent','설치'],['success','적용'],['warning','갱신']]});
 });
 })();
