@@ -18,3 +18,8 @@ Thumbs.db
 # Editable decks stay out of git (tampering risk); publish PDFs only
 *.pptx
 *.potx
+
+# Local Remotion project for the November intro/Shorts videos. It lives inside a
+# published directory (Pages copies 20261116/ wholesale), so keep its sources,
+# narration MP3s, and renders out of git. Publish only web encodes in 20261116/media/.
+/20261116/video/

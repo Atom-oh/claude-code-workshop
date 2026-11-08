@@ -82,5 +82,7 @@ On 2026-11-08 `eDM.html` gained a 90-second intro video section above the
 workshop introduction. `media/intro-90s.mp4` (H.264/AAC, 1920×1080, ~6 MB,
 faststart) and `media/intro-poster.jpg` are web re-encodes of the Remotion
 render in the local, untracked `video/` project (`video/out/Intro.mp4`). Re-render
-and re-encode both files together when the intro changes. The video uses Amazon
+and re-encode both files together when the intro changes. The `video/` project is
+listed in the root `.gitignore`; never commit it, because Pages publishes
+everything under `20261116/`. The video uses Amazon
 Polly narration and a synthesized BGM; it does not autoplay.
