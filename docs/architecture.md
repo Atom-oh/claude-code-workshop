@@ -9,10 +9,10 @@ to the curriculum; they are not repository infrastructure.
 
 | Source | Behavior |
 | --- | --- |
-| `ccw-hands-on-lab/index.html` | General lab portal |
+| `ccw-hands-on-lab/index.html` | General lab portal; at the site root it is replaced by the November portal (see Pages Contract) |
 | `ccw-hands-on-lab/assets/` | Shared reader/workshop CSS and JS, theme script, fonts, per-page legacy CSS; pages must stay beside it |
 | `ccw-hands-on-lab/v1/` | Archived previous lab build, including legacy capstones A–D |
-| `20261116/index.html` | November event portal with its own page styling/scripts |
+| `20261116/index.html` | November event portal with its own page styling/scripts; also the site's main page at `/` |
 | `20261116/ClaudeCode_*.html` | November chapter labs, capstones, setup, and references |
 | `20261116/slides/` | November chapter deck PDFs, linked from the invitation and portal; included in the Pages artifact |
 | `20261116/images/guides/` | Screenshots used by the November chapter labs |
@@ -41,9 +41,13 @@ Source of truth: [`.github/workflows/pages.yml`](../.github/workflows/pages.yml)
 1. A push to `main` affecting a published directory or the workflow, or a manual
    dispatch, starts deployment.
 2. Copy `ccw-hands-on-lab/.` into `_site/`.
-3. Copy `20261116/.` into `_site/20261116/`.
-4. Copy `20261123/.` into `_site/20261123/`.
-5. Add `.nojekyll`, upload `_site`, and deploy the artifact to GitHub Pages.
+3. Copy `20261116/.` over `_site/` as well, so the November portal (`index.html`)
+   and invitation (`eDM.html`) are the site's main pages. Same-named general lab
+   pages are replaced at the root; `assets/`, `v1/` and `START_HERE.txt` stay.
+4. Copy `20261116/.` into `_site/20261116/`.
+5. Copy `20261123/.` into `_site/20261123/` and `workshop-v2/.` into `_site/workshop-v2/`.
+6. Build the offline ZIP from `ccw-hands-on-lab/` (not from the overlaid root).
+7. Add `.nojekyll`, upload `_site`, and deploy the artifact to GitHub Pages.
 
 The workflow supplies Pages permissions and the `github-pages` environment.
 It has no PR trigger or review job. Root instructions and `docs/` are not
@@ -59,12 +63,13 @@ Run from the repository root:
 preview_dir=$(mktemp -d /tmp/claude-workshop-preview.XXXXXX)
 mkdir -p "$preview_dir/20261116" "$preview_dir/20261123"
 cp -a ccw-hands-on-lab/. "$preview_dir/"
+cp -a 20261116/. "$preview_dir/"
 cp -a 20261116/. "$preview_dir/20261116/"
 cp -a 20261123/. "$preview_dir/20261123/"
 touch "$preview_dir/.nojekyll"
 python3 -m http.server 8000 --bind 127.0.0.1 --directory "$preview_dir"
 ```
 
-Check `/`, `/20261116/` and `/20261123/eDM.html`, including links, assets, navigation, and any changed
+Check `/` (November portal), `/eDM.html`, `/20261116/` and `/20261123/eDM.html`, including links, assets, navigation, and any changed
 JavaScript behavior. `file://` previews alone do not establish that the published
 relative paths work.
