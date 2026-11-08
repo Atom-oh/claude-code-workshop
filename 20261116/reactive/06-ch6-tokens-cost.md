@@ -927,7 +927,7 @@ managed settings로 창 크기, 캐시 수명, 압축 후 규칙을 고정
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var MS = {id:'ms',x:50,y:190,w:300,h:100,t:'managed-settings.json',s:'조직이 배포, 사용자가 못 바꿈',c:'danger'};
+  var MS = {id:'ms',x:50,y:190,w:300,h:100,t:'managed-settings.json',s:'조직이 배포하는 기본값',c:'danger'};
   var A = {id:'a',x:480,y:50,w:640,h:76,t:'autoCompactWindow: 400000',s:'100K에서 1M, 일찍 압축하면 요청당 입력이 작아짐',c:'info'};
   var B = {id:'b',x:480,y:146,w:640,h:76,t:'promptCacheTtl: "1h"',s:'자리 비움이 잦은 팀에만',c:'info'};
   var C = {id:'c',x:480,y:242,w:640,h:76,t:'SessionStart (matcher: compact)',s:'압축 뒤 DLP 규칙 재주입',c:'warning'};
@@ -1145,7 +1145,7 @@ Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와
 @type: content
 @fit: off
 
-## Bedrock은 직접 설치한 계측이 전부다
+## Bedrock은 콘솔과 직접 설치한 계측이 전부다
 셋업별 비용 관리 방법
 
 :::html

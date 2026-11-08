@@ -323,3 +323,6 @@
 .fsi-tools .panel .more4 div { display: flex; flex-direction: column; gap: var(--space-1); }
 .fsi-tools .panel .more4 b { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--accent); }
 .fsi-tools .panel .more4 span { font-size: var(--fs-caption); color: var(--text-secondary); }
+
+/* The framework's key hint fades out but keeps catching the pointer; it is not interactive. */
+.nav-hint { pointer-events: none; }

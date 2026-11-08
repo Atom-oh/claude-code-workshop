@@ -387,16 +387,20 @@ IAM 정책입니다. 오른쪽 항목을 하나씩 눌러 보겠습니다.
 • 사내 프록시 HTTPS_PROXY, NO_PROXY, 사내 인증서 NODE_EXTRA_CA_CERTS
 • 외부 통신 끄기 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1, 업데이트는 사내 배포와 DISABLE_AUTOUPDATER=1
 • 플러그인은 사내 git 마켓플레이스(Ch5), WebFetch는 deny 또는 허용 도메인만
+• SSO 로그인: IAM Identity Center 포털, OIDC, STS 엔드포인트에 닿아야 함, aws sso login 먼저 확인
 
 망분리 환경, 그러니까 인터넷 없이 Bedrock만 열린 환경에서 먼저 확인할 것들입니다.
 {cue: demo}
 모델 호출은 Bedrock Runtime VPC 엔드포인트, PrivateLink로 계정 안에서 끝납니다. 사내 프록시를 거친다면 HTTPS_PROXY와 NO_PROXY, 프록시가 TLS를 다시 서명한다면 NODE_EXTRA_CA_CERTS로 사내 인증서를 지정합니다.
 자동 업데이트와 오류 리포트 같은 외부 통신은 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC 하나로 한 번에 끕니다. 설치와 업데이트는 버전을 정해 사내에서 배포하고, 플러그인은 사내 git 마켓플레이스로 받습니다.
 웹 접근은 WebFetch를 막거나 허용 도메인만 엽니다.
+SSO를 쓴다면 IAM Identity Center 포털, OIDC, STS 엔드포인트까지 열려 있는지, aws sso login이 되는지 먼저 확인합니다.
 
 [약어]
 • TLS: Transport Layer Security
 • VPC: Virtual Private Cloud
+• OIDC: OpenID Connect
+• STS: Security Token Service
 :::
 
 ---
@@ -450,7 +454,7 @@ Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
     <div data-for="key"><p>장기 키를 단말에 두는 방식이라 <b>비권장</b>입니다.</p></div>
     <div data-for="sso"><p><b>권장</b>입니다. <span class="rp-detail" tabindex="0" data-tip="Single Sign-On. 회사 계정 한 번 로그인으로 여러 서비스에 접근하는 방식">SSO</span> 로그인으로 짧은 수명의 자격증명을 받습니다.</p><p>만료되면 다음 슬라이드의 자동 갱신으로 이어 갑니다.</p></div>
     <div data-for="con"><p><b>보조 수단</b>입니다.</p></div>
-    <div data-for="api"><p>Bedrock API 키도 장기 키라 <b>비권장</b>입니다. 다섯 가지 중 <b>이 방식만 AWS SDK 기본 체인을 거치지 않습니다</b>.</p></div>
+    <div data-for="api"><p>Bedrock API 키도 장기 키라 <b>비권장</b>입니다. 다섯 가지 중 <b>이 방식만 <span class="rp-detail" tabindex="0" data-tip="AWS SDK 기본 자격증명 체인. 환경 변수, 프로필(SSO 포함), 인스턴스 역할 순으로 자격증명을 찾는 규칙">AWS SDK 기본 자격증명 체인</span>을 거치지 않습니다</b>. SSO 프로필의 갱신 흐름 대신 키 하나로 인증합니다.</p></div>
   </div>
 </div>
 :::
@@ -1193,7 +1197,7 @@ LAB, managed settings 배포와 게이트웨이 그룹 정책 (13:00 시작)
 실습은 점심 후 13시에 50분 동안 진행합니다.
 TASK 01에서 지금 연결 상태를 읽고, TASK 02에서 정책을 병합 배포하고, TASK 03에서 개인 설정으로 우회를 시도해 실패하는 걸 확인합니다.
 TASK 04는 drop-in 조각과 깨진 JSON 동작, TASK 05는 백업으로 원복입니다.
-마지막 TASK 06에서는 게이트웨이로 바꿔 bob 사용자로 로그인하면, Cognito device code로 로그인한 뒤 배너에 Sonnet 5.5와 Cloud gateway가 함께 표시되는지 확인합니다. 그러면 파일 없이도 그룹 정책으로 Opus가 빠지는 걸 봅니다. 이 차이는 더 알아보기 마지막 장에서 설명합니다.
+마지막 TASK 06에서는 use_gateway로 게이트웨이로 바꾸고 bob 사용자로 로그인합니다. Cognito device code 로그인이 끝나면 배너에 Sonnet 5.5와 Cloud gateway가 함께 표시되는지 확인합니다. 그러면 파일 없이도 그룹 정책으로 Opus가 빠지는 걸 봅니다. 이 차이는 더 알아보기 마지막 장에서 설명합니다.
 :::
 
 ---
