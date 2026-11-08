@@ -78,9 +78,25 @@ The import archive is provenance, not a required tracked build dependency.
 
 ## Intro Video
 
-On 2026-11-08 `eDM.html` gained a 90-second intro video section above the
-workshop introduction. `media/intro-90s.mp4` (H.264/AAC, 1920×1080, ~6 MB,
-faststart) and `media/intro-poster.jpg` are web re-encodes of the Remotion
-render in the local, untracked `video/` project (`video/out/Intro.mp4`). Re-render
-and re-encode both files together when the intro changes. The video uses Amazon
-Polly narration and a synthesized BGM; it does not autoplay.
+`eDM.html` shows a 93-second intro video above the workshop introduction. It
+does not autoplay. `media/intro-90s.mp4` (H.264/AAC, 1920×1080, ~5 MB,
+faststart) and `media/intro-poster.jpg` (1280×720, the title frame) are web
+re-encodes of a Remotion render from a local project outside this repository
+(`fsi-workshop-video/`, `out/fsi-workshop-intro.mp4`). The file keeps its
+original `intro-90s.mp4` name so existing links still work.
+
+The scenes use only facts from `eDM.txt` and the reactive decks; the preview
+scene shows Ch1 slides 7 and 16 captured from the published
+`/20261116/reactive/` deck. Narration is Amazon Polly (ko-KR Seoyeon,
+generative), one line per scene; the BGM is a pad synthesized with ffmpeg in
+the project, so no third-party music licence applies. The first published
+version (2026-11-08, about 90 seconds) came from a different local project.
+
+When the intro changes, re-render, then re-encode both files together:
+
+```
+ffmpeg -i out/fsi-workshop-intro.mp4 -c:v libx264 -preset slow -crf 27 \
+  -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart media/intro-90s.mp4
+ffmpeg -ss 3.8 -i media/intro-90s.mp4 -frames:v 1 -vf scale=1280:720 \
+  -q:v 4 media/intro-poster.jpg
+```
