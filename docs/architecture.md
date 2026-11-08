@@ -14,6 +14,8 @@ to the curriculum; they are not repository infrastructure.
 | `ccw-hands-on-lab/v1/` | Archived previous lab build, including legacy capstones A–D |
 | `20261116/index.html` | November event portal with its own page styling/scripts |
 | `20261116/ClaudeCode_*.html` | November chapter labs, capstones, setup, and references |
+| `20261116/slides/` | November chapter deck PDFs, linked from the invitation and portal; included in the Pages artifact |
+| `20261116/images/guides/` | Screenshots used by the November chapter labs |
 | `20261116/AWS_CCB_Program_Brochure.pdf` | Event brochure included in the Pages artifact |
 | `20261116/eDM.html`, `eDM.txt` | Web invitation and plain-text email copy |
 | `20261116/fsi-edm.html` | Compatibility entry forwarding to the web invitation |

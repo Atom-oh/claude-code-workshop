@@ -49,7 +49,17 @@ not registration. The Slack URL was supplied for this event; the survey URL
 retains its imported value. Channel membership and survey suitability have not
 been verified.
 
-Labs were imported from the archive. In the November copy of Capstone 3, the
+The chapter labs were replaced on 2026-11-08 with the redesigned six-chapter
+course, generated from the Korean lab sources of the November lab environment
+repository and checked against two rehearsal events. They keep the previous
+filenames (`ClaudeCode_Preflight_Check.html`, `ClaudeCode_Ch1_HandsOnLab.html` to
+`ClaudeCode_Ch6_HandsOnLab.html`); the previous Ch6 Agent SDK lab is now
+`ClaudeCode_AgentSDK_HandsOnLab.html`. Session times in `eDM.html` follow the
+agenda above and do not match every lab length: Ch1 has no lab slot, Ch2's lab
+is 50 minutes against a 40-minute slot, and Ch6 Part 2 is a participant lab
+rather than an instructor demo. Reconcile these before resending the invitation.
+
+Capstone and reference labs were imported from the archive. In the November copy of Capstone 3, the
 import removed one missing local webfont stylesheet and two browser-extension
 references. The portal also received a small-screen wrapping correction. This
 import did not validate lab commands, model versions, or cloud deployments.
