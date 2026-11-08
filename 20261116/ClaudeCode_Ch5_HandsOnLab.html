@@ -1,1209 +1,636 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css">
-<title>Chapter 5 Hands-on Lab - Claude Code Deep Dive Workshop</title>
-<style>
-:root {
-  --bg: #12181F;
-  --bg-card: #1B242E;
-  --bg-code: #0C1117;
-  --bg-inline: #232E3A;
-  --line: #2A3542;
-  --orange: #FF9900;
-  --orange-dim: rgba(255, 153, 0, 0.14);
-  --crimson: #B6002E;
-  --green: #3FB950;
-  --green-dim: rgba(63, 185, 80, 0.12);
-  --text: #E2E4EC;
-  --muted: #A6ABBE;
-  --dim: #7B8198;
-  --font-body: "NanumSquareOTF", "나눔스퀘어OTF", "NanumSquare", "나눔스퀘어", "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-code: "D2Coding", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 76px; }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 15.5px;
-  line-height: 1.75;
-  -webkit-font-smoothing: antialiased;
-}
-::selection { background: rgba(255, 153, 0, 0.3); }
-a { color: var(--orange); text-decoration: none; }
-a:hover { text-decoration: underline; }
-button:focus-visible, a:focus-visible, input:focus-visible {
-  outline: 2px solid var(--orange);
-  outline-offset: 2px;
-}
-
-/* ============ Hero ============ */
-.hero {
-  position: relative;
-  padding: 64px 32px 44px;
-  max-width: 1160px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-.hero::after {
-  content: "";
-  position: absolute;
-  top: -140px; right: -180px;
-  width: 460px; height: 460px;
-  background: radial-gradient(closest-side, rgba(182, 0, 46, 0.28), rgba(255, 153, 0, 0.10) 55%, transparent 75%);
-  pointer-events: none;
-}
-.eyebrow {
-  display: inline-block;
-  background: var(--crimson);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  padding: 5px 12px;
-  border-radius: 3px;
-  text-transform: uppercase;
-  margin-bottom: 22px;
-}
-.hero h1 {
-  font-size: clamp(28px, 4.4vw, 42px);
-  font-weight: 800;
-  line-height: 1.28;
-  letter-spacing: -0.01em;
-  max-width: 780px;
-}
-.hero .subtitle {
-  margin-top: 14px;
-  color: var(--orange);
-  font-size: clamp(16px, 2.2vw, 19px);
-  font-weight: 700;
-}
-.hero .lede {
-  margin-top: 18px;
-  color: var(--muted);
-  max-width: 720px;
-  font-size: 15.5px;
-}
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 26px;
-  margin-top: 26px;
-  color: var(--dim);
-  font-size: 13px;
-}
-.hero-meta strong { color: var(--text); font-weight: 700; }
-
-/* ============ Sticky timeline ============ */
-.timeline {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(12, 17, 23, 0.92);
-  backdrop-filter: blur(8px);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.timeline-inner {
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: 10px 32px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.timeline-label {
-  flex: none;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--dim);
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-.timeline-label strong { color: var(--orange); font-size: 13px; }
-.segments {
-  flex: 1;
-  display: flex;
-  gap: 4px;
-  height: 26px;
-}
-.seg {
-  position: relative;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--bg-card);
-  cursor: pointer;
-  overflow: hidden;
-  transition: border-color 0.15s;
-  padding: 0;
-  font-family: var(--font-body);
-}
-.seg:hover { border-color: var(--orange); }
-.seg .fill {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(255, 153, 0, 0.85), rgba(255, 153, 0, 0.65));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.35s ease;
-}
-.seg.done .fill { transform: scaleX(1); }
-.seg .seg-txt {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--dim);
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.seg.done .seg-txt { color: #12181F; }
-.seg.active { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange) inset; }
-
-/* ============ Layout ============ */
-.layout {
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: 44px 32px 80px;
-  display: grid;
-  grid-template-columns: 216px minmax(0, 1fr);
-  gap: 52px;
-  align-items: start;
-}
-.sidenav {
-  position: sticky;
-  top: 66px;
-  font-size: 13.5px;
-}
-.sidenav .nav-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--dim);
-  letter-spacing: 0.14em;
-  margin-bottom: 14px;
-}
-.sidenav a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--muted);
-  padding: 7px 10px;
-  border-radius: 6px;
-  border-left: 2px solid transparent;
-}
-.sidenav a:hover { color: var(--text); background: var(--bg-card); text-decoration: none; }
-.sidenav a.active { color: var(--orange); border-left-color: var(--orange); background: var(--bg-card); }
-.sidenav .dot {
-  flex: none;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  border: 1.5px solid var(--dim);
-}
-.sidenav a.done .dot { background: var(--green); border-color: var(--green); }
-.sidenav .nav-time { margin-left: auto; font-size: 11px; color: var(--dim); }
-
-/* ============ Task sections ============ */
-.task { margin-bottom: 72px; }
-.task-head {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 26px;
-}
-.task-num {
-  font-family: var(--font-code);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--orange);
-  letter-spacing: 0.1em;
-}
-.task-head h2 {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-.time-badge {
-  margin-left: auto;
-  flex: none;
-  background: var(--orange-dim);
-  color: var(--orange);
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-.task-goal {
-  color: var(--muted);
-  margin-bottom: 24px;
-  max-width: 760px;
-}
-.task-goal strong { color: var(--text); }
-.step-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16.5px;
-  font-weight: 800;
-  margin: 34px 0 12px;
-}
-.step-title .step-no {
-  flex: none;
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  background: var(--orange);
-  color: #12181F;
-  font-size: 12.5px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-p.body { color: var(--muted); margin: 10px 0 14px; max-width: 760px; }
-p.body strong, li strong { color: var(--text); }
-code.inline {
-  font-family: var(--font-code);
-  font-size: 0.88em;
-  background: var(--bg-inline);
-  color: #FFC466;
-  padding: 2px 7px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-kbd {
-  font-family: var(--font-code);
-  font-size: 0.82em;
-  background: var(--bg-inline);
-  border: 1px solid var(--line);
-  border-bottom-width: 2px;
-  border-radius: 5px;
-  padding: 2px 8px;
-  color: var(--text);
-}
-
-/* ============ Code blocks ============ */
-.code-wrap {
-  background: var(--bg-code);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  margin: 14px 0 20px;
-  overflow: hidden;
-}
-.code-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
-}
-.code-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--dim);
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.copy-btn {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-  background: var(--bg-inline);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 4px 12px;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-.copy-btn:hover { color: var(--orange); border-color: var(--orange); }
-.copy-btn.copied { color: var(--green); border-color: var(--green); }
-.code-wrap pre {
-  padding: 16px 18px;
-  overflow-x: auto;
-  font-family: var(--font-code);
-  font-size: 13.5px;
-  line-height: 1.7;
-}
-.code-wrap code { font-family: inherit; color: #D8DEE9; }
-.code-wrap.output pre { color: var(--dim); }
-.code-wrap .cmt { color: #5E6B7E; }
-.code-wrap .hl { color: #FFC466; }
-.code-wrap .ok { color: var(--green); }
-
-/* ============ Callouts ============ */
-.callout {
-  border-radius: 8px;
-  background: var(--bg-card);
-  padding: 14px 18px;
-  margin: 18px 0;
-  font-size: 14.5px;
-  color: var(--muted);
-  max-width: 760px;
-}
-.callout strong { color: var(--text); }
-.callout.tip .co-title { color: var(--orange); }
-
-.callout .co-title {
-  display: block;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  margin-bottom: 5px;
-}
-
-.callout.warn .co-title { color: #FF5C85; }
-
-/* ============ Checkpoint ============ */
-.checkpoint {
-  background: var(--green-dim);
-  border: 1px solid rgba(63, 185, 80, 0.35);
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-top: 28px;
-}
-.checkpoint .cp-title {
-  font-size: 12.5px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  color: var(--green);
-  margin-bottom: 10px;
-}
-.cp-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 5px 0;
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 14.5px;
-}
-.cp-item input {
-  flex: none;
-  margin-top: 5px;
-  width: 15px; height: 15px;
-  accent-color: var(--green);
-  cursor: pointer;
-}
-.cp-item input:checked + span { color: var(--text); }
-
-/* ============ Tabs ============ */
-.tabs { margin: 18px 0 6px; }
-.tab-btns {
-  display: flex;
-  gap: 6px;
-  border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
-}
-.tab-btn {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--dim);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: 9px 16px;
-  cursor: pointer;
-  margin-bottom: -1px;
-}
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
-.tab-pane { display: none; padding-top: 16px; }
-.tab-pane.active { display: block; }
-
-/* ============ Tables ============ */
-.tbl {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 14px 0 22px;
-  font-size: 14px;
-  background: var(--bg-card);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.tbl th, .tbl td {
-  text-align: left;
-  padding: 10px 16px;
-  border-bottom: 1px solid #FFFFFF14;
-}
-.tbl th {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--orange);
-  background: rgba(255, 255, 255, 0.03);
-}
-.tbl td { color: var(--muted); vertical-align: middle; }
-.tbl td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
-.tbl tr:last-child td { border-bottom: none; }
-.tbl code { font-family: var(--font-code); font-size: 0.9em; color: #FFC466; }
-
-/* ============ Wrap-up ============ */
-.wrapup {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 32px 34px;
-  margin-bottom: 56px;
-}
-.wrapup h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-.wrapup .sub { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
-.next-box {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  background: linear-gradient(90deg, rgba(182, 0, 46, 0.16), rgba(255, 153, 0, 0.08));
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 22px 26px;
-}
-.next-box .nx-label {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  color: var(--orange);
-}
-.next-box h3 { font-size: 19px; font-weight: 800; }
-.next-box p { color: var(--muted); font-size: 14px; }
-
-footer {
-  border-top: 1px solid var(--line);
-  padding: 30px 32px 46px;
-  text-align: center;
-  color: var(--dim);
-  font-size: 13px;
-  line-height: 1.9;
-}
-footer .who { color: var(--muted); font-weight: 700; }
-footer .mail { color: var(--orange); }
-
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 64px; }
-  .sidenav { display: none; }
-  .hero { padding: 44px 20px 32px; }
-  .timeline-inner { padding: 10px 20px; }
-  .seg .seg-txt { font-size: 9px; }
-  .task-head h2 { font-size: 20px; }
-}
-
-/* ── Korean typography fix: 단어 단위 줄바꿈, 히어로 정돈 ── */
-body { word-break: keep-all; overflow-wrap: break-word; }
-.hero h1 { max-width: 980px; font-size: clamp(26px, 4vw, 38px); text-wrap: balance; }
-.hero .subtitle, .hero .lede, .task-goal, .wrapup .sub { text-wrap: pretty; }
-
-/* ── 잘림 방지 v2: 히어로 압축 + 좁은 화면 대응 ── */
-.hero { padding: 44px 28px 34px; }
-.eyebrow { margin-bottom: 14px; }
-.hero h1 { line-height: 1.3; }
-.hero .subtitle { margin-top: 10px; }
-.hero .lede { margin-top: 12px; }
-.seg-txt { text-overflow: ellipsis; }
-@media (max-width: 620px) {
-  .hero { padding: 26px 16px 24px; }
-  .hero h1 { font-size: 23px; }
-  .hero .subtitle { font-size: 15px; }
-  .hero .lede { font-size: 14px; }
-  .hero-meta { gap: 6px 14px; font-size: 12px; }
-  .seg .seg-txt { display: none; }
-  .timeline-inner { padding: 0 10px; }
-}
-
-/* ── 잘림 방지 v3: 좁은 화면 가로 넘침 제거 ── */
-.tbl { display: block; overflow-x: auto; max-width: 100%; }
-.hero, .layout, .timeline-inner, main, section { min-width: 0; }
-@media (max-width: 620px) {
-  .timeline-label:last-child { display: none; }
-}
-
-/* ── 잘림 방지 v4: 인라인 코드 칩의 최소폭 강제 해제 ── */
-code.inline { white-space: normal; overflow-wrap: anywhere; }
-
-/* ── v5: 소개문/본문 전체 폭 사용 (가독성 캡 해제) ── */
-.hero .lede, .task-goal, p.body, .callout, .part-divider p, .wrapup .sub { max-width: none; }
-.hero .lede { text-wrap: wrap; }
-
-/* ── macOS 터미널 스타일: 신호등 3버튼 ── */
-.code-head { position: relative; padding-left: 76px; }
-.code-head::before {
-  content: ""; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-  width: 11px; height: 11px; border-radius: 50%; background: #FF5F57;
-  box-shadow: 18px 0 0 #FEBC2E, 36px 0 0 #28C840;
-}
-
-/* ── v6: 화이트 모드 (우측 상단 고정 토글, 라이트 팔레트는 대비 4.5:1 이상) ── */
-.theme-toggle {
-  position: fixed; top: 9px; right: 14px; z-index: 60;
-  font-family: var(--font-body); font-size: 11.5px; font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--muted); background: var(--bg-card);
-  border: 1px solid var(--line); border-radius: 999px;
-  padding: 5px 14px; cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-.theme-toggle:hover { color: var(--orange); border-color: var(--orange); }
-@media (max-width: 1300px) { .timeline-inner { padding-right: 88px; } }
-html.light {
-  --bg: #F4F6F9; --bg-card: #FFFFFF; --bg-inline: #E8EDF3;
-  --line: #D7DEE7;
-  --orange: #A85500; --orange-dim: rgba(168, 85, 0, 0.10);
-  --green: #1F883D; --green-dim: rgba(31, 136, 61, 0.08);
-  --text: #1B2430; --muted: #4B5665; --dim: #66717F;
-}
-html.light ::selection { background: rgba(255, 153, 0, 0.35); }
-html.light .hero::after { background: radial-gradient(closest-side, rgba(182, 0, 46, 0.10), rgba(255, 153, 0, 0.06) 55%, transparent 75%); }
-html.light .timeline { background: rgba(255, 255, 255, 0.92); }
-html.light .step-title .step-no { color: #FFFFFF; }
-html.light code.inline, html.light .tbl code { color: #9A4E00; }
-html.light .tbl th { background: rgba(0, 0, 0, 0.035); }
-html.light .tbl th, html.light .tbl td { border-bottom-color: rgba(0, 0, 0, 0.08); }
-html.light .code-wrap { border-color: #303C4B; }
-html.light .code-head { border-bottom-color: #2A3542; }
-html.light .code-wrap .code-label { color: #7B8198; }
-html.light .code-wrap .copy-btn { color: #A6ABBE; background: #232E3A; border-color: #2A3542; }
-html.light .code-wrap .copy-btn:hover { color: #FF9900; border-color: #FF9900; }
-html.light .code-wrap .copy-btn.copied { color: #3FB950; border-color: #3FB950; }
-html.light .code-wrap.output pre { color: #8B96A5; }
-html.light .callout.warn .co-title { color: #C7325C; }
-html.light .checkpoint { border-color: rgba(31, 136, 61, 0.4); }
-html.light .next-box { background: linear-gradient(90deg, rgba(182, 0, 46, 0.06), rgba(255, 153, 0, 0.05)); }
-html.light .part-divider { background: linear-gradient(135deg, #F0EAFB 0%, #F7F5FC 65%); border-color: #CDBDF0; }
-html.light .part-divider .rules span { background: #EDE6FB; border-color: #CDBDF0; color: #4A2D8A; }
-html.light .task.mission .task-num, html.light .checkpoint.dod .cp-title { color: #6B3FD4; }
-html.light .checkpoint.dod { background: rgba(122, 63, 242, 0.05); }
-html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0, 0.04); }
-</style>
-</head>
-<body>
-
-<header class="hero">
-  <span class="eyebrow">Hands-on Lab / Chapter 5</span>
-  <h1>CLI Reference, Claude Code를 파이프라인의 부품으로</h1>
-  <div class="subtitle">Claude Code Deep Dive Workshop, Chapter 5 - CLI Reference 실습</div>
-  <p class="lede">
-    이 랩에서는 Claude Code를 대화 도구에서 <strong>자동화 부품</strong>으로 바꿉니다.
-    헤드리스 호출 5패턴, JSON 파싱, 커밋 범위를 받는 <strong>로컬 리뷰 봇 스크립트</strong>,
-    다중 호출 데이터를 CSV와 HTML 대시보드로 만드는 파이프라인, 그리고 GitHub Actions 통합까지 40분에 완주합니다.
-    Chapter 1에서 인증을 마친 상태를 전제합니다.
-  </p>
-  <div class="hero-meta">
-    <span>소요 시간 <strong>40분 내외</strong></span>
-    <span>Task <strong>준비 + 4개</strong></span>
-    <span>기준 버전 <strong>Claude Code 2.1.x</strong></span>
-    <span>Update <strong>2026.07</strong></span>
-  </div>
-</header>
-
-<nav class="timeline" aria-label="랩 진행 타임라인">
-  <div class="timeline-inner">
-    <span class="timeline-label">진행 <strong id="progress-count">0/5</strong></span>
-    <div class="segments" id="segments">
-      <button class="seg" data-task="t0" style="flex:2" title="준비, 2분"><span class="fill"></span><span class="seg-txt">준비</span></button>
-      <button class="seg" data-task="t1" style="flex:10" title="Task 1 헤드리스 5패턴, 10분"><span class="fill"></span><span class="seg-txt">1 헤드리스 5패턴</span></button>
-      <button class="seg" data-task="t2" style="flex:10" title="Task 2 리뷰 봇 스크립트, 10분"><span class="fill"></span><span class="seg-txt">2 리뷰 봇</span></button>
-      <button class="seg" data-task="t3" style="flex:10" title="Task 3 파싱 파이프라인, 10분"><span class="fill"></span><span class="seg-txt">3 파싱 파이프라인</span></button>
-      <button class="seg" data-task="t4" style="flex:8" title="Task 4 CI 통합, 8분"><span class="fill"></span><span class="seg-txt">4 CI 통합</span></button>
-    </div>
-    <span class="timeline-label">40 min</span>
-  </div>
-</nav>
-
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ch5. Plugins &amp; Mods · Claude Code Deep Dive Lab</title>
+<style>:root{--bg:#f7f7f5;--panel:#ffffff;--ink:#16191f;--muted:#5b6270;--line:#e3e4e8;--accent:#e07b00;--accent-ink:#9a4f00;--code-bg:#161d26;--code-ink:#e6e9ef;--code-head:#1f2733;
+--info:#2563eb;--info-bg:#eef4ff;--warn:#b45309;--warn-bg:#fff6e5;--ok:#15803d;--ok-bg:#ecf8ef;--err:#b91c1c;--err-bg:#fdeeee;--side:#f0f0ec;--th:#f3f3f0}
+:root[data-theme="dark"]{--bg:#0f141b;--panel:#161d26;--ink:#e8ebf0;--muted:#9aa3b2;--line:#2a3442;--accent:#ff9900;--accent-ink:#ffb547;--code-bg:#0b1016;--code-ink:#e6e9ef;--code-head:#1a222d;
+--info:#7aa7ff;--info-bg:#15223a;--warn:#ffb547;--warn-bg:#2b2112;--ok:#5fd38a;--ok-bg:#132a1d;--err:#ff8a8a;--err-bg:#2e1616;--side:#121820;--th:#1c2430}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141b;--panel:#161d26;--ink:#e8ebf0;--muted:#9aa3b2;--line:#2a3442;--accent:#ff9900;--accent-ink:#ffb547;--code-bg:#0b1016;--code-ink:#e6e9ef;--code-head:#1a222d;
+--info:#7aa7ff;--info-bg:#15223a;--warn:#ffb547;--warn-bg:#2b2112;--ok:#5fd38a;--ok-bg:#132a1d;--err:#ff8a8a;--err-bg:#2e1616;--side:#121820;--th:#1c2430}}
+*{box-sizing:border-box}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.7 Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-ink)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;height:56px;padding:0 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{color:var(--ink);text-decoration:none;font-weight:600;white-space:nowrap}.brand b{color:var(--accent)}
+.env{color:var(--muted);font-size:13px;margin-left:auto}
+.top button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;height:34px;min-width:34px;cursor:pointer;font-size:15px}
+.menu{display:none}
+.layout{display:grid;grid-template-columns:264px minmax(0,1fr)}
+.side{position:sticky;top:56px;height:calc(100vh - 56px);overflow:auto;background:var(--side);border-right:1px solid var(--line);padding:18px 12px}
+.side ul{list-style:none;margin:0;padding:0}
+.side li a,.side li span{display:block;padding:8px 12px;border-radius:8px;color:var(--ink);text-decoration:none;font-size:14.5px}
+.side li a:hover{background:var(--line)}
+.side li.cur a{background:var(--panel);box-shadow:inset 3px 0 0 var(--accent);font-weight:600}
+.side li.missing span{color:var(--muted);font-style:italic}
+.side-foot{margin-top:18px;padding:0 12px;color:var(--muted);font-size:12px}
+main{display:grid;grid-template-columns:minmax(0,860px) 220px;gap:36px;padding:32px 36px 80px;justify-content:center}
+article{min-width:0}
+.page-title{font-size:30px;line-height:1.3;margin:0 0 6px;letter-spacing:-.01em}
+article h2{font-size:22px;margin:44px 0 12px;padding-top:14px;border-top:1px solid var(--line);letter-spacing:-.01em}
+article h3{font-size:17px;margin:28px 0 8px}
+article p{margin:10px 0}
+blockquote{margin:12px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--panel);border-radius:0 8px 8px 0;color:var(--ink)}
+blockquote p{margin:0}
+code{font-family:D2Coding,"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--th);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--th);font-weight:600}
+td{background:var(--panel)}
+.code{margin:12px 0;border-radius:10px;overflow:hidden;background:var(--code-bg);border:1px solid #0000}
+.code-head{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 6px 14px;background:var(--code-head);color:#9aa3b2;font:12px/1 ui-monospace,Menlo,monospace;text-transform:lowercase}
+.code pre{margin:0;padding:14px 16px;overflow-x:auto}
+.code pre code{background:none;border:0;padding:0;color:var(--code-ink);font-size:13.5px;line-height:1.6;white-space:pre}
+.code.sample{opacity:.92}.code.sample .code-head{background:#232b37}
+.copy{border:1px solid #3a4656;background:#243041;color:#e6e9ef;border-radius:6px;padding:5px 10px;font:12px/1 inherit;cursor:pointer}
+.copy:hover{background:#2e3d52}.copy.done{background:#1f6f43;border-color:#1f6f43}
+.tag{color:#7d8796;font-size:11px}
+.alert{display:flex;gap:12px;margin:16px 0;padding:12px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel)}
+.alert-icon{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;margin-top:2px}
+.alert-body{min-width:0;flex:1}.alert-body>:first-child{margin-top:0}.alert-body>:last-child{margin-bottom:0}
+.alert.info{background:var(--info-bg);border-color:color-mix(in srgb,var(--info) 30%,transparent)}.alert.info .alert-icon{background:var(--info);color:#fff}
+.alert.warning{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn) 35%,transparent)}.alert.warning .alert-icon{background:var(--warn);color:#fff}
+.alert.success{background:var(--ok-bg);border-color:color-mix(in srgb,var(--ok) 35%,transparent)}.alert.success .alert-icon{background:var(--ok);color:#fff}
+.alert.error{background:var(--err-bg)}.alert.error .alert-icon{background:var(--err);color:#fff}
+ul,ol{padding-left:22px}
+li.check{list-style:none;margin-left:-22px}
+li.check label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+li.check input{width:17px;height:17px;margin-top:5px;accent-color:var(--ok);flex:none}
+li.check input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+img{max-width:100%;border-radius:8px;border:1px solid var(--line)}
+p.img-missing img{display:none}p.img-missing::before{content:"🖼 이미지: Workshop Studio 포털에서 확인";display:block;padding:14px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:13px}
+a.ws-only{color:var(--muted);text-decoration:underline dotted;cursor:help}
+.toc{position:sticky;top:88px;align-self:start;font-size:13px;max-height:calc(100vh - 110px);overflow:auto}
+.toc-title{font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;font-size:11.5px}
+.toc ol{list-style:none;padding:0;margin:0;border-left:2px solid var(--line)}
+.toc a{display:block;padding:4px 10px;color:var(--muted);text-decoration:none;margin-left:-2px;border-left:2px solid transparent}
+.toc a.on{color:var(--ink);border-left-color:var(--accent)}
+.progress{display:flex;align-items:center;gap:10px;margin:4px 0 18px;font-size:13px;color:var(--muted)}
+.progress .bar{flex:1;height:6px;border-radius:3px;background:var(--line);position:relative;overflow:hidden;max-width:320px}
+.progress .bar::after{content:"";position:absolute;inset:0;width:var(--p,0%);background:var(--ok);transition:width .2s}
+.pager{display:flex;gap:12px;justify-content:space-between;margin-top:48px}
+.pager a{flex:1;max-width:48%;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);text-decoration:none}
+.pager a small{display:block;color:var(--muted);font-size:12px}
+.pager .next{margin-left:auto;text-align:right}
+@media (max-width:1180px){main{grid-template-columns:minmax(0,860px)}.toc{display:none}}
+@media (max-width:860px){.layout{grid-template-columns:1fr}.menu{display:inline-block}.env{display:none}
+.side{position:fixed;top:56px;left:0;width:280px;z-index:30;transform:translateX(-100%);transition:transform .2s;box-shadow:0 10px 30px #0004}
+body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-size:25px}}
+@media print{.top,.side,.toc,.pager,.copy{display:none}.layout,main{display:block;padding:0}.code pre code{white-space:pre-wrap}}
+.brand{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.theme{margin-left:auto}.env+.theme{margin-left:0}
+@media (max-width:860px){.top{gap:10px;padding:0 12px}.brand{font-size:14px}}
+</style></head>
+<body data-page="ch5-plugins-mods">
+<header class="top"><button class="menu" type="button" aria-label="메뉴">☰</button><a class="brand" href="index.html">Claude Code Deep Dive <b>Hands-on Lab</b></a><span class="env">Amazon Bedrock · us-east-1 · Apps Gateway</span><button class="theme" type="button" aria-label="테마 전환">◐</button></header>
 <div class="layout">
+<aside class="side"><ul><li><a href="index.html">실습 포털</a></li><li><a href="ClaudeCode_Preflight_Check.html">Preflight. 시작 전 확인</a></li><li><a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. 작동 원리</a></li><li><a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2. Bedrock 배포와 정책 전달</a></li><li><a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. 가드레일·DLP</a></li><li><a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Subagents</a></li><li class="cur"><a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. Plugins &amp; Mods</a></li><li><a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 토큰과 비용</a></li></ul><div class="side-foot">FSI 2026.11 · ko</div></aside>
+<main><article><h1 class="page-title">Ch5. Plugins &amp; Mods</h1><div class="progress" hidden><span class="bar"></span><span class="txt"></span></div><p><strong>Hands-on Lab / Chapter 5</strong></p>
+<blockquote>
+<p><strong>Claude Code Deep Dive Workshop, Chapter 5 - Plugins &amp; Mods 실습</strong></p>
+</blockquote>
+<p>Ch3의 DLP 훅과 Ch4의 서브에이전트를 <strong>팀 스타터 킷 플러그인</strong> 하나로 묶어 로컬 마켓플레이스로 배포하고, Claude Code 안에서 도는 코드인 <strong>mod</strong>를 직접 만들어 봅니다. 마지막으로 조직이 mod와 사이드로드를 어떻게 통제하는지 확인합니다.</p>
+<p>소요 시간 <strong>45분 내외 (슈퍼랩) + 선택 12분</strong> · Task <strong>준비 + 5개 + 선택 1개</strong> · 기준 버전 <strong>Claude Code 2.1.287 이상</strong> · Update <strong>2026.11</strong></p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>슈퍼랩 규칙</strong></p>
+<p>파일을 손으로 짜지 말고 가능하면 Claude에게 시켜서 만듭니다. 아래 코드 블록은 막혔을 때 쓰는 정답지입니다.</p></div></div>
 
-<aside class="sidenav" aria-label="랩 목차">
-  <div class="nav-title">LAB CONTENTS</div>
-  <a href="#t0" data-nav="t0"><span class="dot"></span>사전 준비 확인<span class="nav-time">2분</span></a>
-  <a href="#t1" data-nav="t1"><span class="dot"></span>Task 1 헤드리스 5패턴<span class="nav-time">10분</span></a>
-  <a href="#t2" data-nav="t2"><span class="dot"></span>Task 2 리뷰 봇 스크립트<span class="nav-time">10분</span></a>
-  <a href="#t3" data-nav="t3"><span class="dot"></span>Task 3 파싱 파이프라인<span class="nav-time">10분</span></a>
-  <a href="#t4" data-nav="t4"><span class="dot"></span>Task 4 CI 통합<span class="nav-time">8분</span></a>
-  <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리와 자동화 지도<span class="nav-time"></span></a>
-</aside>
+<h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</h2>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
+claude --version
+mkdir -p ~/claude-lab/ch5
+sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
+  &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. 아래 &#x27;정책 초기화&#x27;를 먼저 실행하세요&quot;
+sudo cp /etc/claude-code/managed-settings.json ~/claude-lab/ch5/managed-settings.backup.json
+sudo jq . /etc/claude-code/managed-settings.json
+ls ~/claude-lab/ch4/.claude/agents/ 2&gt;/dev/null || echo &quot;Ch4 에이전트 없음 - TASK 01 Step 1의 대체 블록을 쓰세요&quot;
+ls /opt/dlp/dlp-guard.sh 2&gt;/dev/null || echo &quot;Ch3 DLP 스크립트 없음 - TASK 01 Step 1의 대체 블록을 쓰세요&quot;</code></pre></div>
 
-<main>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>"이전 챕터 정책이 남아 있습니다"가 나오면, 정책 초기화</strong></p>
+<p>이전 챕터의 원복을 건너뛰면 그 정책이 이번 챕터의 백업에 섞여 들어가고, 원복해도 계속 남습니다(예: Opus를 뺀 모델 목록). 백업 전에 아래로 초기화한 뒤 위 블록을 다시 실행하세요.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>echo &#x27;{}&#x27; | sudo tee /etc/claude-code/managed-settings.json &gt;/dev/null
+sudo rm -f /etc/claude-code/managed-settings.d/*.json
+use_bedrock_direct</code></pre></div></div></div>
 
-<!-- ================= Task 0 ================= -->
-<section class="task" id="t0">
-  <div class="task-head">
-    <span class="task-num">TASK 00</span>
-    <h2>사전 준비 확인</h2>
-    <span class="time-badge">2분</span>
-  </div>
-  <p class="task-goal">
-    헤드리스 호출은 실제 API를 사용하므로 <strong>인증 상태</strong>를 먼저 확인하고,
-    리뷰 대상이 될 커밋 2개짜리 실습 저장소를 만듭니다.
-  </p>
+<p>Ch3의 사이드로드 금지(<code>disableSideloadFlags</code>)가 남아 있으면 이 랩의 <code>--plugin-dir</code>가 막히므로, 특히 Ch3 직후라면 위 메시지를 꼭 확인하세요.</p>
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>버전이 2.1.287 이상이고 managed-settings를 백업했다(<code>disableSideloadFlags</code>가 없어야 함)</span></label></li>
+</ul></div></div>
 
-  <div class="step-title"><span class="step-no">1</span>인증 확인과 실습 저장소 생성</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>claude auth status || echo "로그인 필요: claude 실행 후 인증 (Chapter 1 참고)"
-jq --version
-
-mkdir -p ~/claude-lab/ch5/src &amp;&amp; cd ~/claude-lab/ch5
-
-cat &gt; package.json &lt;&lt; 'EOF'
-{
-  "name": "cli-lab",
-  "version": "1.0.0",
-  "dependencies": { "express": "4.17.1", "lodash": "4.17.20" }
-}
+<h2 id="task-01-팀-스타터-킷-플러그인-만들기-12분">TASK 01 · 팀 스타터 킷 플러그인 만들기 (12분)</h2>
+<h3 id="step-1-플러그인-골격과-재료-모으기">Step 1 · 플러그인 골격과 재료 모으기</h3>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>K=~/claude-lab/ch5/marketplace/plugins/fsi-team-kit
+mkdir -p $K/.claude-plugin $K/agents $K/skills/pr-review $K/hooks $K/scripts
+cp ~/claude-lab/ch4/.claude/agents/*.md $K/agents/ 2&gt;/dev/null || cat &gt; $K/agents/code-reviewer.md &lt;&lt; &#x27;EOF&#x27;
+---
+name: code-reviewer
+description: 변경된 코드의 버그, 보안 위험, 가독성 문제를 찾는다. 커밋이나 PR 리뷰를 요청받으면 사용.
+tools: Read, Grep, Glob
+model: sonnet
+---
+당신은 금융권 시니어 리뷰어다. 파일을 수정하지 말고 발견 사항을 심각도 순으로 보고한다.
 EOF
-
-cat &gt; src/pay.js &lt;&lt; 'EOF'
-export function charge(amount) {
-  return { ok: true, amount };
-}
-EOF
-
-git init -q
-git config user.name  &gt;/dev/null 2&gt;&amp;1 || git config user.name "lab"
-git config user.email &gt;/dev/null 2&gt;&amp;1 || git config user.email "lab@example.com"
-git add -A &amp;&amp; git commit -q -m "chore: cli lab scaffold"
-
-cat &gt; src/pay.js &lt;&lt; 'EOF'
-export function charge(amount) {
-  // TODO: 입력 검증 없이 그대로 청구
-  return { ok: true, amount, currency: "KRW" };
-}
-EOF
-git commit -qam "feat: add currency to charge"
-git log --oneline</code></pre>
-  </div>
-
-  <div class="checkpoint">
-    <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox" data-cp="t0"><span>인증 OK, 커밋 2개짜리 ~/claude-lab/ch5 저장소가 준비되었다</span></label>
-  </div>
-</section>
-
-<!-- ================= Task 1 ================= -->
-<section class="task" id="t1">
-  <div class="task-head">
-    <span class="task-num">TASK 01</span>
-    <h2>헤드리스 5패턴, 자동화의 어휘</h2>
-    <span class="time-badge">10분</span>
-  </div>
-  <p class="task-goal">
-    앞으로 모든 자동화에서 반복될 5가지 기본 패턴을 손에 익힙니다.
-    각 명령을 실행하고 출력 구조를 관찰하세요.
-  </p>
-
-  <div class="step-title"><span class="step-no">1</span>패턴 1, 단순 호출</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>claude -p "리스트와 튜플의 차이를 정확히 3줄로"</code></pre>
-  </div>
-
-  <div class="step-title"><span class="step-no">2</span>패턴 2, JSON 출력과 result 추출</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>claude -p "정렬 알고리즘 3가지 이름만" --output-format json | jq -r '.result'</code></pre>
-  </div>
-
-  <div class="step-title"><span class="step-no">3</span>패턴 3, 토큰과 비용 추적</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>claude -p "OK 한 단어만" --output-format json | \
-  jq '{in: .usage.input_tokens, out: .usage.output_tokens, usd: .total_cost_usd, ms: .duration_ms}'</code></pre>
-  </div>
-  <div class="code-wrap output">
-    <div class="code-head"><span class="code-label">출력 예시</span></div>
-    <pre><code>{ "in": 4213, "out": 5, "usd": 0.013, "ms": 2841 }</code></pre>
-  </div>
-
-  <div class="step-title"><span class="step-no">4</span>패턴 4, 파이프 입력</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>cat package.json | claude -p "이 의존성 목록에서 눈에 띄는 위험 하나만 한 줄로"</code></pre>
-  </div>
-
-  <div class="step-title"><span class="step-no">5</span>패턴 5, 세션 이어가기</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>S=$(claude -p "정렬 알고리즘 3가지 이름만" --output-format json | jq -r '.session_id')
-echo "session: $S"
-claude -p --resume "$S" "그 중 첫 번째 것만 파이썬 코드로" --output-format json | jq -r '.result'</code></pre>
-  </div>
-
-  <div class="callout warn">
-    <span class="co-title">구자료 주의, 세션 지정은 --resume입니다</span>
-    구버전 자료의 <code class="inline">claude --continue "$SESSION_ID"</code>는 현행과 다릅니다.
-    <code class="inline">-c / --continue</code>는 <strong>ID 없이</strong> 현재 디렉토리의 최근 대화를 잇고,
-    특정 세션을 ID나 이름으로 지정할 때는 <code class="inline">-r / --resume</code>을 씁니다.
-    분기해서 실험하고 싶으면 <code class="inline">--resume "$S" --fork-session</code>으로 새 세션 ID를 만듭니다.
-  </div>
-
-  <div class="callout tip">
-    <span class="co-title">스크립트 가속, --bare</span>
-    훅, 스킬, MCP, CLAUDE.md 탐색이 필요 없는 순수 텍스트 작업이라면 <code class="inline">claude --bare -p "..."</code>로
-    시작 오버헤드를 줄일 수 있습니다. 반복 호출 파이프라인에서 체감이 큽니다.
-    <code class="inline">--bare</code>는 OAuth와 키체인을 읽지 않으므로 <strong><code class="inline">ANTHROPIC_API_KEY</code>(또는 apiKeyHelper)가 필요</strong>합니다(Bedrock, Vertex, Foundry는 각자의 자격 증명 사용).
-    구독 로그인이나 <code class="inline">claude setup-token</code>으로 만든 토큰으로는 인증되지 않습니다.
-  </div>
-
-  <div class="checkpoint">
-    <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox" data-cp="t1a"><span>JSON 출력에서 result / usage / total_cost_usd를 추출했다</span></label>
-    <label class="cp-item"><input type="checkbox" data-cp="t1b"><span>--resume으로 이전 세션의 맥락이 이어지는 것을 확인했다</span></label>
-  </div>
-</section>
-
-<!-- ================= Task 2 ================= -->
-<section class="task" id="t2">
-  <div class="task-head">
-    <span class="task-num">TASK 02</span>
-    <h2>자동화 스크립트, 로컬 리뷰 봇</h2>
-    <span class="time-badge">10분</span>
-  </div>
-  <p class="task-goal">
-    커밋 범위를 인자로 받아 diff를 리뷰하고, 결과를 파일로 남기며,
-    <strong>심각도에 따라 exit code로 신호</strong>하는 스크립트를 만듭니다. 이 exit code가 Task 4에서 CI 게이트가 됩니다.
-  </p>
-
-  <div class="step-title"><span class="step-no">1</span>my-review.sh 작성</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>cd ~/claude-lab/ch5
-cat &gt; my-review.sh &lt;&lt; 'EOF'
+cp /opt/dlp/dlp-guard.sh $K/scripts/ 2&gt;/dev/null || cat &gt; $K/scripts/dlp-guard.sh &lt;&lt; &#x27;EOF&#x27;
 #!/bin/bash
-# my-review.sh &lt;커밋범위&gt; - 로컬 코드 리뷰 봇
-set -euo pipefail
-RANGE="${1:?Usage: ./my-review.sh &lt;commit-range&gt;  예: HEAD~1..HEAD}"
-
-echo "1) diff 수집: $RANGE"
-DIFF=$(git diff "$RANGE")
-[ -z "$DIFF" ] &amp;&amp; { echo "diff 없음"; exit 0; }
-
-echo "2) Claude 리뷰 실행..."
-RESULT=$(claude -p "$(cat &lt;&lt;PROMPT
-다음 diff를 리뷰하세요.
-관점: 1) 버그 위험 2) 보안 3) 테스트 필요성
-각 지적은 "- [심각도] 파일: 내용" 형식, 심각도는 CRITICAL/WARN/INFO 중 하나.
-심각한 문제가 없으면 "- [INFO] 특이사항 없음" 한 줄만.
-
-$DIFF
-PROMPT
-)" --output-format json --max-turns 5 \
-  --tools "Read,Grep,Glob")
-
-echo "$RESULT" | jq -r '.result' &gt; review.md
-COST=$(echo "$RESULT" | jq -r '.total_cost_usd')
-echo "3) 저장: review.md (비용: \$$COST)"
-
-if grep -q "CRITICAL" review.md; then
-  echo "4) CRITICAL 발견 → exit 1 (게이트 차단 신호)"
-  exit 1
+INPUT=$(cat)
+command -v jq &gt;/dev/null || { echo &quot;DLP: 검사기 오류 - 차단&quot; &gt;&amp;2; exit 2; }
+TEXT=$(echo &quot;$INPUT&quot; | jq -r &#x27;.prompt // (.tool_input | tostring)&#x27;) || exit 2
+if echo &quot;$TEXT&quot; | grep -Eq &#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}&#x27;; then
+  echo &quot;DLP: 민감정보 패턴이 감지되어 차단했습니다&quot; &gt;&amp;2; exit 2
 fi
-echo "4) 통과"
+exit 0
 EOF
-chmod +x my-review.sh
-bash -n my-review.sh &amp;&amp; echo "문법 OK"</code></pre>
-  </div>
+chmod 755 $K/scripts/dlp-guard.sh
+ls -R $K</code></pre></div>
 
-  <div class="step-title"><span class="step-no">2</span>실행과 exit code 확인</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>./my-review.sh HEAD~1..HEAD; echo "exit code: $?"
-cat review.md</code></pre>
-  </div>
-  <div class="code-wrap output">
-    <div class="code-head"><span class="code-label">출력 예시</span></div>
-    <pre><code>1) diff 수집: HEAD~1..HEAD
-2) Claude 리뷰 실행...
-3) 저장: review.md (비용: $0.021)
-4) 통과
-exit code: 0
-- [WARN] src/pay.js: amount 입력 검증 부재, 음수/비숫자 방어 필요
-- [INFO] 테스트 파일 부재 ...</code></pre>
-  </div>
+<h3 id="step-2-claude에게-나머지를-시키기">Step 2 · Claude에게 나머지를 시키기</h3>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch5/marketplace/plugins/fsi-team-kit &amp;&amp; claude</code></pre></div>
 
-  <div class="callout tip">
-    <span class="co-title">스크립트에 넣은 안전장치 3가지</span>
-    <code class="inline">set -euo pipefail</code>은 중간 실패를 즉시 드러내고,
-    <code class="inline">--max-turns 5</code>는 폭주를 막고,
-    <code class="inline">--tools "Read,Grep,Glob"</code>은 <strong>사용 가능한 내장 도구 자체를 읽기 전용으로 제한</strong>합니다(MCP 도구에는 적용되지 않으므로 필요하면 <code class="inline">--disallowedTools "mcp__*"</code>를 더하세요).
-    <code class="inline">--allowed-tools</code>는 이름과 달리 도구를 제한하지 않고 <strong>프롬프트 없이 실행할 도구</strong>만 정하므로 제한 용도로 쓰면 안 됩니다. 두 플래그를 헷갈리지 마세요.
-    예산 상한이 필요하면 <code class="inline">--max-budget-usd 0.50</code>을 더하세요. 이 값은 클라이언트 측 비용 추정치 기준이라 청구액과 다를 수 있고 상한을 약간 넘길 수 있으니 여유를 두세요(서브에이전트 비용도 합산됩니다).
-    사람이 답할 수 없는 무인 실행에서는 <code class="inline">--permission-prompts none</code>(v2.1.259+)을 더하면 승인이 필요한 동작이 멈추지 않고 자동 거부됩니다.
-  </div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 디렉터리를 Claude Code 플러그인 fsi-team-kit으로 완성해줘.
+1) .claude-plugin/plugin.json: name fsi-team-kit, version 0.1.0, 한국어 설명
+2) skills/pr-review/SKILL.md: 우리 팀 PR 리뷰 절차(변경 요약 → code-reviewer 위임 → 심각도별 정리)를 담은 스킬
+3) hooks/hooks.json: UserPromptSubmit에서 ${CLAUDE_PLUGIN_ROOT}/scripts/dlp-guard.sh를 실행
+끝나면 claude plugin validate . 를 실행해서 통과시켜줘</code></pre></div>
 
-  <div class="callout tip">
-    <span class="co-title">GitHub PR 버전으로 확장 (참고)</span>
-    gh CLI가 있다면 diff 소스를 <code class="inline">gh pr diff "$PR_NUM"</code>으로 바꾸고,
-    마지막에 <code class="inline">gh pr comment "$PR_NUM" --body-file review.md</code>를 붙이면 그대로 PR 리뷰 봇이 됩니다.
-    사람 확인 후 게시하도록 read 프롬프트를 두는 것이 강의에서 다룬 안전 패턴입니다.
-  </div>
-
-  <div class="checkpoint">
-    <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox" data-cp="t2a"><span>review.md가 생성되고 심각도 형식의 리뷰가 담겼다</span></label>
-    <label class="cp-item"><input type="checkbox" data-cp="t2b"><span>CRITICAL 유무에 따라 exit code가 달라지는 구조를 설명할 수 있다</span></label>
-  </div>
-</section>
-<!-- ================= Task 3 ================= -->
-<section class="task" id="t3">
-  <div class="task-head">
-    <span class="task-num">TASK 03</span>
-    <h2>파싱 파이프라인, JSON에서 대시보드까지</h2>
-    <span class="time-badge">10분</span>
-  </div>
-  <p class="task-goal">
-    여러 호출의 JSON을 모아 <strong>CSV로 변환하고 통계를 집계</strong>한 뒤 HTML 대시보드로 만듭니다.
-    조직의 사용량/비용 리포트 자동화가 이 구조의 확장판입니다.
-  </p>
-
-  <div class="step-title"><span class="step-no">1</span>데이터 수집, 3회 호출</div>
-  <p class="body">비용 절약을 위해 <code class="inline">--model haiku</code>로 수집합니다.</p>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>cd ~/claude-lab/ch5 &amp;&amp; mkdir -p data
-for topic in Python Go Rust; do
-  echo "수집: $topic"
-  claude -p "$topic 언어의 장점을 정확히 2가지, 각 한 줄로" \
-    --model haiku --output-format json &gt; "data/$topic.json"
-done
-ls -la data/</code></pre>
-  </div>
-
-  <div class="step-title"><span class="step-no">2</span>JSON → CSV 변환</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>{
-  echo "topic,duration_ms,input_tokens,output_tokens,cost_usd"
-  jq -r '[
-    (input_filename | sub("data/"; "") | sub("\\.json$"; "")),
-    .duration_ms, .usage.input_tokens, .usage.output_tokens, .total_cost_usd
-  ] | @csv' data/*.json
-} &gt; stats.csv
-cat stats.csv</code></pre>
-  </div>
-  <div class="code-wrap output">
-    <div class="code-head"><span class="code-label">출력 예시</span></div>
-    <pre><code>topic,duration_ms,input_tokens,output_tokens,cost_usd
-"Go",2113,4188,42,0.0031
-"Python",2410,4190,45,0.0032
-"Rust",2287,4189,44,0.0031</code></pre>
-  </div>
-  <div class="callout warn">
-    <span class="co-title">구자료 주의, 슬러프(-s)와 input_filename은 함께 쓰면 안 됩니다</span>
-    구버전 자료의 <code class="inline">jq -rs '.[] | [(input_filename | ...)]'</code> 패턴은
-    슬러프가 모든 파일을 먼저 읽어버려 <strong>모든 행에 마지막 파일명</strong>이 찍힙니다.
-    파일당 JSON이 하나라면 위처럼 <strong>-s 없이 파일별 처리</strong>가 정답입니다.
-    반대로 아래 통계 집계는 전체를 하나의 배열로 봐야 하므로 -s가 맞습니다.
-  </div>
-
-  <div class="step-title"><span class="step-no">3</span>통계 집계</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>jq -rs '{
-  total_calls: length,
-  avg_duration_ms: ([.[].duration_ms] | add / length | floor),
-  total_input: ([.[].usage.input_tokens] | add),
-  total_output: ([.[].usage.output_tokens] | add),
-  total_cost_usd: ([.[].total_cost_usd] | add)
-}' data/*.json</code></pre>
-  </div>
-
-  <div class="step-title"><span class="step-no">4</span>HTML 대시보드 생성</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>cat &lt;&lt; HTML &gt; dashboard.html
-&lt;!DOCTYPE html&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;title&gt;Claude Usage&lt;/title&gt;
-&lt;style&gt;
-  body { font-family: sans-serif; max-width: 760px; margin: 40px auto; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { padding: 8px 10px; border-bottom: 1px solid #ddd; text-align: left; }
-  th { background: #f0f0f0; }
-&lt;/style&gt;&lt;/head&gt;&lt;body&gt;
-&lt;h1&gt;Claude 호출 통계&lt;/h1&gt;
-&lt;p&gt;생성: $(date)&lt;/p&gt;
-$(awk -F, 'BEGIN{print "&lt;table&gt;"}
-NR==1{printf "&lt;tr&gt;"; for(i=1;i&lt;=NF;i++) printf "&lt;th&gt;%s&lt;/th&gt;", $i; print "&lt;/tr&gt;"; next}
-{gsub(/"/,""); printf "&lt;tr&gt;"; for(i=1;i&lt;=NF;i++) printf "&lt;td&gt;%s&lt;/td&gt;", $i; print "&lt;/tr&gt;"}
-END{print "&lt;/table&gt;"}' stats.csv)
-&lt;/body&gt;&lt;/html&gt;
-HTML
-echo "생성 완료: dashboard.html (브라우저로 열어 확인)"</code></pre>
-  </div>
-
-  <div class="callout tip">
-    <span class="co-title">실전으로 가는 확장</span>
-    이 파이프라인의 topic 자리에 <strong>파일 목록이나 이슈 목록</strong>이 들어가면 대량 처리 패턴이 됩니다.
-    수백 건이라면 조직 관점에서는 Chapter 3의 OTel 텔레메트리가 이 수집을 대체하고,
-    개별 스크립트는 <code class="inline">--max-budget-usd</code>로 상한을 거는 것이 안전합니다.
-    스트리밍 이벤트 단위 처리가 필요하면 <code class="inline">--output-format stream-json</code>을 사용합니다.
-  </div>
-
-  <div class="checkpoint">
-    <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox" data-cp="t3a"><span>stats.csv에 3행의 호출 데이터가 만들어졌다</span></label>
-    <label class="cp-item"><input type="checkbox" data-cp="t3b"><span>dashboard.html이 생성되어 브라우저에서 표가 보인다</span></label>
-  </div>
-</section>
-
-<!-- ================= Task 4 ================= -->
-<section class="task" id="t4">
-  <div class="task-head">
-    <span class="task-num">TASK 04</span>
-    <h2>CI 통합, GitHub Actions 워크플로</h2>
-    <span class="time-badge">8분</span>
-  </div>
-  <p class="task-goal">
-    Task 2의 리뷰 봇 개념을 CI로 올립니다. 워크플로 작성과 문법 검증은 전원 진행하고,
-    실제 push 검증은 GitHub 저장소 보유자용 선택 트랙입니다.
-  </p>
-
-  <div class="step-title"><span class="step-no">1</span>워크플로 작성</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>cd ~/claude-lab/ch5
-mkdir -p .github/workflows
-cat &gt; .github/workflows/claude-check.yml &lt;&lt; 'EOF'
-name: Claude Check
-
-on:
-  pull_request:
-    types: [opened, synchronize]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  claude-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-      - name: Review diff
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          git diff origin/${{ github.base_ref }}...HEAD | \
-            claude -p "이 diff에서 CRITICAL 수준 문제만 지적, 없으면 PASS 한 단어" \
-            --output-format json --max-turns 3 --max-budget-usd 0.50 | \
-            jq -r '.result' | tee check.md
-          grep -q "CRITICAL" check.md &amp;&amp; exit 1 || echo "게이트 통과"
+<p><strong>정답지 (막혔을 때만)</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>K=~/claude-lab/ch5/marketplace/plugins/fsi-team-kit
+cat &gt; $K/.claude-plugin/plugin.json &lt;&lt; &#x27;EOF&#x27;
+{ &quot;name&quot;: &quot;fsi-team-kit&quot;, &quot;version&quot;: &quot;0.1.0&quot;, &quot;description&quot;: &quot;FSI 팀 스타터 킷: 리뷰 에이전트, PR 리뷰 스킬, DLP 훅&quot; }
 EOF
-python3 -c "import yaml; yaml.safe_load(open('.github/workflows/claude-check.yml')); print('YAML 문법 OK')"</code></pre>
-  </div>
+cat &gt; $K/skills/pr-review/SKILL.md &lt;&lt; &#x27;EOF&#x27;
+---
+name: pr-review
+description: 현재 브랜치의 변경을 팀 기준으로 리뷰한다. PR 리뷰나 머지 전 점검을 요청받으면 사용.
+---
+1. `git diff main...HEAD --stat`으로 변경 범위를 요약한다.
+2. code-reviewer 서브에이전트에게 diff 검토를 맡긴다.
+3. 결과를 Critical / Major / Minor로 정리하고, 개인정보 로깅 여부를 반드시 확인한다.
+EOF
+cat &gt; $K/hooks/hooks.json &lt;&lt; &#x27;EOF&#x27;
+{
+  &quot;hooks&quot;: {
+    &quot;UserPromptSubmit&quot;: [
+      { &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;\&quot;${CLAUDE_PLUGIN_ROOT}/scripts/dlp-guard.sh\&quot;&quot; }] }
+    ]
+  }
+}
+EOF
+claude plugin validate $K</code></pre></div>
 
-  <div class="step-title"><span class="step-no">2</span>인증 준비, 3가지 경로</div>
-  <table class="tbl">
-    <tr><th>경로</th><th>방법</th><th>적합</th></tr>
-    <tr><td>API Key</td><td>저장소 Settings → Secrets → ANTHROPIC_API_KEY 등록</td><td>Console 계정 팀</td></tr>
-    <tr><td>구독 토큰</td><td>로컬에서 claude setup-token으로 장수명 토큰 발급 후 Secret 등록</td><td>Pro/Max 구독 CI</td></tr>
-    <tr><td>Bedrock</td><td>OIDC로 AWS 역할 Assume + CLAUDE_CODE_USE_BEDROCK=1</td><td>키 없는 조직 표준 (Ch3)</td></tr>
-  </table>
+<p>경로를 큰따옴표로 감싸지 않으면 validate가 "경로에 공백이 있으면 깨진다"는 경고를 냅니다. author·license·README가 없다는 경고는 남아도 되고, 마지막 줄이 <code>Validation passed with warnings</code>면 통과입니다.</p>
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span><code>claude plugin validate</code>가 통과했다(경고는 있어도 됨)</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>플러그인 안에 agents, skills, hooks, scripts가 있다</span></label></li>
+</ul></div></div>
 
-  <div class="step-title"><span class="step-no">3</span>선택 트랙, 실제 실행 (GitHub 저장소 보유자)</div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal, 선택</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>git checkout -b test-claude-ci
-git add .github &amp;&amp; git commit -m "ci: add claude check"
-git push -u origin test-claude-ci
-gh pr create --title "Test Claude CI" --body "Testing" --fill 2&gt;/dev/null || true
-gh run watch</code></pre>
-  </div>
+<h2 id="task-02-로컬-마켓플레이스로-배포-8분">TASK 02 · 로컬 마켓플레이스로 배포 (8분)</h2>
+<h3 id="step-1-마켓플레이스-카탈로그">Step 1 · 마켓플레이스 카탈로그</h3>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>mkdir -p ~/claude-lab/ch5/marketplace/.claude-plugin
+cat &gt; ~/claude-lab/ch5/marketplace/.claude-plugin/marketplace.json &lt;&lt; &#x27;EOF&#x27;
+{
+  &quot;name&quot;: &quot;fsi-local&quot;,
+  &quot;owner&quot;: { &quot;name&quot;: &quot;Platform Team&quot; },
+  &quot;plugins&quot;: [
+    { &quot;name&quot;: &quot;fsi-team-kit&quot;, &quot;source&quot;: &quot;./plugins/fsi-team-kit&quot;, &quot;description&quot;: &quot;FSI 팀 스타터 킷&quot; }
+  ]
+}
+EOF
+claude plugin validate ~/claude-lab/ch5/marketplace</code></pre></div>
 
-  <div class="callout warn">
-    <span class="co-title">CI 비용과 안전의 3중 잠금</span>
-    <code class="inline">timeout-minutes</code>(작업 시간 상한), <code class="inline">--max-turns</code>(에이전트 턴 상한),
-    <code class="inline">--max-budget-usd</code>(지출 상한)를 항상 함께 거세요.
-    permissions는 최소로 시작하고(PR 코멘트가 필요할 때만 pull-requests: write 추가),
-    시크릿은 organization secret으로 중앙 관리하는 것이 회전에 유리합니다.
-  </div>
+<h3 id="step-2-설치하고-확인">Step 2 · 설치하고 확인</h3>
+<p>새 프로젝트 폴더에서 동료가 설치하는 상황을 흉내 냅니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>mkdir -p ~/claude-lab/ch5/colleague &amp;&amp; cd ~/claude-lab/ch5/colleague &amp;&amp; git init -q &amp;&amp; claude</code></pre></div>
 
-  <div class="checkpoint">
-    <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox" data-cp="t4a"><span>워크플로 YAML이 작성되고 문법 검증을 통과했다</span></label>
-    <label class="cp-item"><input type="checkbox" data-cp="t4b"><span>3중 잠금(timeout / max-turns / max-budget)의 역할을 설명할 수 있다</span></label>
-  </div>
-</section>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/plugin marketplace add ~/claude-lab/ch5/marketplace</code></pre></div>
 
-<!-- ================= Wrap-up ================= -->
-<section class="wrapup" id="wrapup">
-  <h2>마무리, 학습 목표 체크리스트</h2>
-  <p class="sub">Chapter 5의 학습 목표를 스스로 점검하세요. 미달성 항목은 진행자에게 질문하거나 강의 자료의 해당 Part를 다시 확인합니다.</p>
-  <table class="tbl">
-    <tr><th>목표</th><th>확인 질문</th><th>관련</th></tr>
-    <tr><td>Headless</td><td>-p / JSON / 파이프 / --resume 5패턴을 손으로 실행했는가</td><td>Task 1</td></tr>
-    <tr><td>Scripting</td><td>diff 주입, 도구 제한, exit code 게이트 스크립트를 만들었는가</td><td>Task 2</td></tr>
-    <tr><td>Parsing</td><td>다중 호출 JSON을 CSV와 대시보드로 집계했는가</td><td>Task 3</td></tr>
-    <tr><td>CI/CD</td><td>3중 잠금이 걸린 워크플로를 작성하고 검증했는가</td><td>Task 4</td></tr>
-  </table>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/plugin install fsi-team-kit@fsi-local</code></pre></div>
 
-  <div class="step-title"><span class="step-no" style="background:transparent;color:var(--accent);border:1px solid var(--accent)">M</span>자동화 5패턴 지도, 오늘 골격이 꽂히는 곳</div>
-  <table class="tbl">
-    <tr><th>패턴</th><th>구조</th><th>오늘 만든 재료</th></tr>
-    <tr><td>1 PR 리뷰 봇</td><td>diff 주입 → 리뷰 → 코멘트/게이트</td><td>Task 2 + Task 4 그대로</td></tr>
-    <tr><td>2 이슈 트리아지</td><td>이슈 본문 파이프 → 분류 JSON → 라벨링</td><td>Task 1 패턴 4 + jq</td></tr>
-    <tr><td>3 코드 마이그레이션</td><td>파일 루프 → 변환 → 실패 수집</td><td>Task 3 루프 구조</td></tr>
-    <tr><td>4 보안 감사</td><td>주기 실행 → CRITICAL 게이트 → 알림</td><td>Task 2 exit code + cron</td></tr>
-    <tr><td>5 일일 보고서</td><td>다중 수집 → 집계 → HTML 발행</td><td>Task 3 파이프라인 그대로</td></tr>
-  </table>
+<p><code>Successfully added marketplace: fsi-local</code>이 나온 뒤 설치 명령을 보내면 <strong>설치 범위</strong>를 묻습니다. 기본값 <strong>Install for you (user scope)</strong>로 Enter를 누르면 <code>✓ Installed fsi-team-kit. Plugin is now active.</code>가 나오고, 재시작 없이 바로 확인할 수 있습니다.</p>
+<table>
+<thead>
+<tr>
+<th>범위</th>
+<th>저장 위치</th>
+<th>쓰임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>user</td>
+<td><code>~/.claude/settings.json</code></td>
+<td>나만, 모든 프로젝트</td>
+</tr>
+<tr>
+<td>project</td>
+<td>저장소의 <code>.claude/settings.json</code></td>
+<td>저장소를 받는 동료 전체</td>
+</tr>
+<tr>
+<td>local</td>
+<td>저장소의 <code>.claude/settings.local.json</code></td>
+<td>나만, 이 저장소에서만</td>
+</tr>
+</tbody>
+</table>
+<p>확인할 세 가지:</p>
+<ul>
+<li>입력창에 <code>@fsi</code>를 치면 <code>fsi-team-kit:code-reviewer (agent)</code> 등 <strong>플러그인 이름이 붙은</strong> 에이전트가 보인다</li>
+<li><code>/pr-r</code>을 치면 <code>/fsi-team-kit:pr-review</code> 스킬이 보인다</li>
+<li><code>고객 900101-1234567 조회해줘</code>를 보내면 차단되고, <code>This hook comes from the fsi-team-kit@fsi-local plugin.</code>이 함께 표시된다</li>
+</ul>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>슬래시 명령은 붙여 넣으세요</strong></p>
+<p><code>/plugin marketplace add …</code>를 빠르게 타이핑하면 자동완성이 앞 글자로 다른 명령(<code>/add-dir</code> 등)을 골라 실행하기도 합니다. 복사 버튼으로 복사해 붙여 넣고 Enter를 누르세요. 엉뚱한 창이 뜨면 <code>Esc</code>로 닫습니다.</p></div></div>
 
-  <div class="next-box">
-    <div>
-      <div class="nx-label">NEXT CHAPTER</div>
-      <h3>Chapter 6 - Agent SDK</h3>
-      <p>CLI 파이프라인의 다음 단계는 코드입니다. 셸 스크립트로 엮던 것을 Python / TypeScript SDK로 옮겨, 멀티턴 제어, 커스텀 도구, 프로덕션 에이전트 서비스까지 확장합니다.</p>
-    </div>
-  </div>
-</section>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>조직 전체 배포라면</strong></p>
+<p>회사에서는 같은 마켓플레이스를 사내 git 저장소에 두고, managed settings의 <code>extraKnownMarketplaces</code>(등록) + <code>enabledPlugins</code>(강제 설치) + <code>strictKnownMarketplaces</code>(허용 목록)로 내려보냅니다. git에 닿지 않는 망에서는 <code>CLAUDE_CODE_PLUGIN_SEED_DIR</code>로 빌드 시점에 심어 둔 플러그인을 읽기 전용으로 씁니다.</p></div></div>
 
-</main>
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>마켓플레이스 등록과 플러그인 설치가 끝났다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>에이전트, 스킬, DLP 훅이 설치 한 줄로 따라왔다</span></label></li>
+</ul></div></div>
+
+<h2 id="task-03-첫-mod-만들기-12분">TASK 03 · 첫 mod 만들기 (12분)</h2>
+<p>mod는 플러그인의 한 종류로, <code>hooks/hooks.json</code>의 <code>modules</code> 키가 가리키는 JavaScript 파일이 Claude Code 프로세스 안에서 이벤트 핸들러로 돕니다. 공식 튜토리얼의 <code>first-mod</code>를 그대로 만듭니다.</p>
+<h3 id="step-1-세-파일-작성">Step 1 · 세 파일 작성</h3>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>M=~/claude-lab/ch5/first-mod
+mkdir -p $M/.claude-plugin $M/hooks
+cat &gt; $M/.claude-plugin/plugin.json &lt;&lt; &#x27;EOF&#x27;
+{
+  &quot;name&quot;: &quot;first-mod&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;description&quot;: &quot;Counts Claude&#x27;s tool calls, shows the count beside the spinner, and adds a /tally command&quot;,
+  &quot;author&quot;: { &quot;name&quot;: &quot;Workshop&quot; }
+}
+EOF
+cat &gt; $M/hooks/hooks.json &lt;&lt; &#x27;EOF&#x27;
+{
+  &quot;description&quot;: &quot;The first-mod hooks module&quot;,
+  &quot;modules&quot;: [&quot;./register.js&quot;]
+}
+EOF
+cat &gt; $M/hooks/register.js &lt;&lt; &#x27;EOF&#x27;
+let calls = 0
+
+export function register(on) {
+  on(&#x27;session.start&#x27;, async ($, e, next) =&gt; {
+    await $.command.register({ name: &#x27;tally&#x27;, description: &#x27;Show how many tool calls Claude has made&#x27; })
+    return next(e)
+  })
+
+  on(&#x27;tool.call&#x27;, async ($, e, next) =&gt; {
+    calls += 1
+    $.ui.invalidate(&#x27;ui.render&#x27;)
+    return next(e)
+  })
+
+  on(&#x27;command.run&#x27;, { command: &#x27;tally&#x27; }, async () =&gt; {
+    return { text: &#x27;Claude has made &#x27; + calls + &#x27; tool calls since this mod loaded&#x27; }
+  })
+
+  on(&#x27;ui.render&#x27;, { component: &#x27;Spinner&#x27; }, async ($, e, next) =&gt; {
+    return next({ ...e, props: { ...e.props, suffix: &#x27; · tool calls: &#x27; + calls + &#x27;…&#x27; } })
+  })
+}
+EOF
+claude plugin validate $M</code></pre></div>
+
+<p>출력에서 mod 요약 네 줄을 읽습니다.</p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>  ❯ ./register.js hooks: session.start, tool.call, command.run{command=tally}, ui.render{component=Spinner}
+  ❯ ./register.js answers its own command: command.run{command=tally}
+  ❯ ./register.js gating hook without .catch: tool.call
+  ❯ ./register.js calls: $.command.register, $.ui.invalidate</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>줄</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hooks:</code></td>
+<td>이 mod가 끼어드는 이벤트</td>
+</tr>
+<tr>
+<td><code>answers its own command:</code></td>
+<td>자기가 등록한 명령에 스스로 답함(정상)</td>
+</tr>
+<tr>
+<td><code>gating hook without .catch:</code></td>
+<td><code>tool.call</code>처럼 동작을 <strong>통과시키거나 막는</strong> 훅에서 예외가 나면 도구 호출 자체가 실패할 수 있다는 경고. 운영 mod는 <code>.catch</code>로 실패해도 통과시키게 만듭니다(선택 TASK 04 참고)</td>
+</tr>
+<tr>
+<td><code>calls:</code></td>
+<td>이 mod가 바깥에 하는 일. <strong>보안 리뷰는 이 줄부터 봅니다</strong></td>
+</tr>
+</tbody>
+</table>
+<p>그 아래 README·LICENSE·icon이 없다는 "Plugin directory checks"는 공개 디렉터리 등록용 검사라 결과에 영향이 없습니다. 마지막 줄이 <code>✔ Validation passed</code>면 됩니다.</p>
+<h3 id="step-2-실행과-hot-reload">Step 2 · 실행과 hot reload</h3>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch5/colleague &amp;&amp; claude --plugin-dir ~/claude-lab/ch5/first-mod</code></pre></div>
+
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 폴더의 파일 목록을 보고 .git/config를 읽어줘</code></pre></div>
+
+<p>스피너 옆에 <code>· tool calls: N…</code>이 붙는 것을 보고, 끝나면 <code>/tally</code>를 입력합니다(<code>first-mod: Claude has made N tool calls since this mod loaded</code>).</p>
+<p>이어서 hot reload를 봅니다. 세션을 연 채로 입력창에 아래를 붙여 넣으면(<code>!</code>로 시작하면 셸 명령) 파일이 바뀌고 <code>first-mod: reloaded (4 hooks: …)</code>가 표시됩니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>!sed -i &quot;s/&#x27; · tool calls: &#x27;/&#x27; · 도구 호출: &#x27;/&quot; ~/claude-lab/ch5/first-mod/hooks/register.js</code></pre></div>
+
+<p>다음 질문부터 스피너가 <code>· 도구 호출: 0…</code>으로 바뀝니다. 카운트가 <strong>0으로 돌아간</strong> 것도 보세요. 다시 로드되면 모듈의 변수(<code>let calls</code>)가 새로 초기화됩니다.</p>
+<h3 id="step-3-claude에게-mod-고치게-하기">Step 3 · Claude에게 mod 고치게 하기</h3>
+<p>같은 세션에서 요청합니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 mod에 /tally-reset 커맨드를 추가해서 카운트를 0으로 되돌리게 해줘. 끝나면 claude plugin validate로 확인해줘</code></pre></div>
+
+<p>Claude가 먼저 <code>plugin-authoring</code> 스킬을 불러온 뒤 고칩니다. 새 명령은 <code>session.start</code>에서 등록되므로, hot reload만으로는 <code>/tally-reset</code>이 목록에 나타나지 않습니다. <code>/exit</code> 후 같은 명령으로 다시 열면 보입니다.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>mod에는 샌드박스가 없습니다</strong></p>
+<p>mod는 사용자 권한으로 파일, 프로세스, 네트워크, 비밀값에 닿을 수 있습니다. 남이 만든 mod는 <code>calls:</code> 줄에 <code>$.process.run</code>이나 <code>$.http.fetch</code>가 있는지부터 확인하세요.</p></div></div>
+
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>스피너 옆 카운트와 <code>/tally</code>가 동작했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>validate</code>의 hooks·calls 줄을 읽을 수 있다</span></label></li>
+</ul></div></div>
+
+<h2 id="선택-task-04-bedrock용-idle-compaction-mod-만들기-12분">선택 TASK 04 · Bedrock용 idle compaction mod 만들기 (12분)</h2>
+<p>Ch6에서 보듯 Claude Code 내장 <strong>idle compaction</strong>은 1시간 캐시와 Anthropic feature flag가 필요해 Bedrock에서는 동작하지 않는다는 보고가 있습니다. Bedrock 메인 대화의 기본 캐시 수명은 <strong>5분</strong>이라, 자리를 비운 뒤 돌아오면 큰 대화 전체를 비캐시 입력으로 다시 읽습니다. 같은 아이디어를 5분 캐시에 맞춰 <strong>mod로 직접</strong> 만들어 봅니다.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>공식 기능이 아닌 커스텀 예제입니다</strong></p>
+<p>이 mod는 공식 mods API(<code>$.clock</code>, <code>$.session.usage</code>, <code>$.session.compact</code>, <code>turn.complete</code>)로 만든 워크숍 예제입니다. 공식 기능처럼 조직 표준으로 바로 배포하지 말고, OTel로 효과를 측정한 뒤 판단하세요.</p></div></div>
+
+<p><strong>왜 settings hooks가 아니라 mod인가</strong></p>
+<table>
+<thead>
+<tr>
+<th>필요한 것</th>
+<th>settings hooks</th>
+<th>mods</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>idle 타이머</td>
+<td>없음 (이벤트가 올 때만 실행되고 끝남)</td>
+<td><code>$.clock.after(ms, fn)</code></td>
+</tr>
+<tr>
+<td>세션 안에서 압축 시작</td>
+<td>없음 (<code>PreCompact</code>는 압축에 반응하거나 막을 뿐)</td>
+<td><code>$.session.compact()</code></td>
+</tr>
+<tr>
+<td>현재 컨텍스트 크기</td>
+<td>transcript 파일을 직접 세야 함</td>
+<td><code>$.session.usage().context.tokens</code></td>
+</tr>
+</tbody>
+</table>
+<p>hooks만으로는 <code>Notification</code> hook으로 "곧 캐시가 식습니다, 자리를 비우면 <code>/compact</code> 하세요" 알림을 띄우는 데까지만 할 수 있습니다.</p>
+<p><strong>동작 설계</strong></p>
+<ol>
+<li>메인 대화의 턴이 끝나면(<code>turn.complete</code>) 컨텍스트가 <code>minContextTokens</code> 이상인지 봅니다.</li>
+<li>그렇다면 <code>cacheTtlSeconds − marginSeconds</code>(기본 300 − 45 = 255초) 뒤로 압축을 예약합니다. <strong>캐시가 식기 전</strong>에 압축해야 접두부를 캐시에서 싸게 읽습니다.</li>
+<li>그 전에 사용자가 입력하면(<code>prompt.submit</code>) 예약을 취소합니다. 서브에이전트 턴은 무시하고, 한 번 쉬는 동안에는 한 번만 압축합니다.</li>
+</ol>
+<h3 id="step-1-파일-세-개-만들기">Step 1 · 파일 세 개 만들기</h3>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>B=~/claude-lab/ch5/bedrock-idle-compact
+mkdir -p $B/.claude-plugin $B/hooks
+cat &gt; $B/.claude-plugin/plugin.json &lt;&lt; &#x27;EOF&#x27;
+{
+  &quot;name&quot;: &quot;bedrock-idle-compact&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;description&quot;: &quot;Compacts a large idle conversation shortly before the Bedrock prompt cache (default 5 min) expires&quot;,
+  &quot;author&quot;: { &quot;name&quot;: &quot;Workshop&quot; }
+}
+EOF
+echo &#x27;{ &quot;description&quot;: &quot;bedrock-idle-compact hooks module&quot;, &quot;modules&quot;: [&quot;./register.js&quot;] }&#x27; &gt; $B/hooks/hooks.json
+cat &gt; $B/hooks/register.js &lt;&lt; &#x27;EOF&#x27;
+// bedrock-idle-compact
+// Bedrock 메인 대화의 기본 프롬프트 캐시 수명은 5분입니다. 사용자가 자리를 비운 뒤
+// 캐시가 식으면 다음 요청이 전체 기록을 비캐시 입력으로 다시 읽습니다.
+// 이 mod는 큰 대화가 일정 시간 idle이면 &quot;캐시가 식기 직전&quot;에 압축해 둡니다.
+// 압축 요청은 아직 따뜻한 캐시에서 접두부를 읽으므로 식은 뒤 압축보다 쌉니다.
+
+const DEFAULTS = {
+  cacheTtlSeconds: 300,   // Bedrock 기본 5분. promptCacheTtl &quot;1h&quot;를 쓰면 3600
+  marginSeconds: 45,      // 만료 몇 초 전에 압축할지
+  minContextTokens: 80000, // 이보다 작은 대화는 압축하지 않음 (식어도 싸므로)
+  instructions: &#x27;결정 사항, 변경한 파일, 남은 할 일, 사용자가 건 제약만 남겨라&#x27;,
+}
+
+let cfg = DEFAULTS
+let timer = null
+let compactedThisIdle = false
+
+function cancel($) {
+  if (timer) { timer.cancel(); timer = null }
+  $.ui.status()   // 인자 없이 부르면 상태줄을 지움
+}
+
+export function register(on, options = {}) {
+  cfg = { ...DEFAULTS, ...options }
+
+  // 사용자가 돌아와 입력하면 예약 취소
+  on(&#x27;prompt.submit&#x27;, async ($, e, next) =&gt; {
+    cancel($)
+    compactedThisIdle = false
+    return next(e)
+  }).catch(async ($, e, next) =&gt; (next.called ? undefined : next(e)))  // 실패해도 프롬프트는 막지 않음
+
+  // 메인 대화의 턴이 끝날 때마다 idle 타이머를 다시 건다
+  on(&#x27;turn.complete&#x27;, async ($, e, next) =&gt; {
+    const result = await next(e)
+    if (e.agentId) return result          // 서브에이전트 턴은 무시
+    cancel($)
+    const usage = await $.session.usage()
+    const tokens = usage?.context?.tokens ?? 0
+    if (compactedThisIdle || tokens &lt; cfg.minContextTokens) return result
+
+    const delayMs = Math.max(30, cfg.cacheTtlSeconds - cfg.marginSeconds) * 1000
+    $.ui.status(`idle ${Math.round(delayMs / 1000)}s 후 압축 예약 · context ${Math.round(tokens / 1000)}K`)
+    timer = $.clock.after(delayMs, async () =&gt; {
+      timer = null
+      try {
+        compactedThisIdle = true
+        $.ui.status(&#x27;캐시가 식기 전에 압축 중…&#x27;)
+        await $.session.compact({ instructions: cfg.instructions })  // 시그니처는 types/index.d.ts로 확인
+        $.ui.toast(&#x27;Compacted while idle, before the Bedrock prompt cache expired&#x27;)
+      } catch (err) {
+        $.ui.log(&#x27;idle compact skipped: &#x27; + (err?.message ?? err))
+      } finally {
+        $.ui.status()
+      }
+    })
+    return result
+  })
+
+  // 세션이 끝나면 타이머 정리
+  on(&#x27;session.end&#x27;, async ($, e, next) =&gt; { cancel($); return next(e) })
+}
+EOF
+claude plugin validate $B</code></pre></div>
+
+<p><code>validate</code> 출력의 두 줄을 확인합니다. 외부로 나가는 호출(<code>$.process</code>, <code>$.http</code>)이 없는 것이 보안 리뷰 포인트입니다. README·LICENSE·icon이 없다는 "plugin directory" 경고는 공개 디렉터리 등록용 검사라 사내·실습 용도에서는 무시해도 되며, 마지막 줄이 <code>Validation passed</code>면 됩니다.</p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>  &gt; ./register.js hooks: prompt.submit, turn.complete, session.end
+  &gt; ./register.js gating hook with .catch: prompt.submit
+  &gt; ./register.js calls: $.clock.after, $.session.compact, $.session.usage, $.ui.log, $.ui.status, $.ui.toast
+✔ Validation passed</code></pre></div>
+
+<p>TASK 03의 first-mod와 달리 <code>gating hook with .catch</code>입니다. mod가 실패해도 사용자의 프롬프트는 막지 않도록 <code>.catch</code>를 달았기 때문입니다.</p>
+<h3 id="step-2-짧은-값으로-시연하기">Step 2 · 짧은 값으로 시연하기</h3>
+<p>5분을 기다릴 수 없으니 시연용 값으로 바꿉니다(캐시 수명 75초, 여유 45초 → 30초 idle 후 압축, 5K 토큰 이상이면 대상).</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sed -i &#x27;s/cacheTtlSeconds: 300/cacheTtlSeconds: 75/; s/minContextTokens: 80000/minContextTokens: 5000/&#x27; $B/hooks/register.js
+cd ~/claude-lab/ch4 &amp;&amp; claude --plugin-dir ~/claude-lab/ch5/bedrock-idle-compact</code></pre></div>
+
+<p>세션에서 컨텍스트를 키운 뒤 손을 뗍니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>src 폴더의 모든 파일과 test.js를 읽고 구조를 자세히 설명해줘</code></pre></div>
+
+<ol>
+<li>답이 끝나면 입력창 아래에 <code>bedrock-idle-compact: idle 30s 후 압축 예약 · context 21K</code> 같은 상태줄이 뜹니다(실습 환경에서 약 21K).</li>
+<li>아무것도 입력하지 않고 30초를 기다리면 압축이 실행되고 <code>Conversation compacted (ctrl+o for the summary)</code>가 표시됩니다. <code>Ctrl+O</code>로 요약 내용을 볼 수 있습니다.</li>
+<li><code>/context</code>로 Messages가 줄어든 것을 확인합니다.</li>
+<li>다시 질문을 보내 상태줄이 사라지고(예약 취소) 턴이 끝나면 다시 예약되는 것을 확인합니다.</li>
+</ol>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong><code>$.session.compact</code>의 인자를 확인하세요</strong></p>
+<p>레퍼런스에는 메서드 이름만 있습니다. <code>--plugin-dir</code>로 한 번 로드하면 mod 폴더에 타입 정의가 생기므로, 아래로 실제 시그니처를 보고 <code>instructions</code> 인자 이름이 다르면 고칩니다. 압축이 안 되면 <code>$.ui.log</code>로 남긴 <code>idle compact skipped:</code> 줄이 원인을 알려 줍니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>grep -n -A6 &quot;compact&quot; ~/claude-lab/ch5/bedrock-idle-compact/.claude-plugin/types/claude-code/index.d.ts | head -30</code></pre></div></div></div>
+
+<p><code>/exit</code>로 나옵니다.</p>
+<h3 id="step-3-이-mod가-이득인-경우와-손해인-경우">Step 3 · 이 mod가 이득인 경우와 손해인 경우</h3>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>큰 대화(수십만 토큰)에서 5분 넘게 자리를 비움</td>
+<td><strong>이득.</strong> 따뜻한 캐시로 싸게 압축하고, 돌아온 뒤에는 요약만 다시 읽음</td>
+</tr>
+<tr>
+<td>압축 직후(4분대)에 바로 돌아옴</td>
+<td><strong>손해.</strong> 캐시는 아직 따뜻했으므로 요약 출력과 캐시 재작성 비용만 더 듦</td>
+</tr>
+<tr>
+<td>짧은 휴식이 잦은 작업</td>
+<td><strong>품질 손실.</strong> 쉴 때마다 요약되어 초반 제약·정확한 오류 메시지·대화로 건 경계가 빠질 수 있음</td>
+</tr>
+<tr>
+<td>작은 대화</td>
+<td>효과 거의 없음 → <code>minContextTokens</code>로 제외</td>
+</tr>
+</tbody>
+</table>
+<p>대안은 공식 설정인 <code>promptCacheTtl: "1h"</code>(Bedrock 모델별 지원 확인)입니다. 손실 없이 캐시를 1시간 유지하지만 캐시 쓰기 단가가 높습니다. 두 방식을 Ch6의 OTel <code>claude_code.token.usage</code>로 비교해 고르세요.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>배포할 때</strong></p>
+<p>mod에는 샌드박스가 없습니다. 조직에 배포한다면 사내 마켓플레이스와 <code>allowManagedModsOnly</code>(TASK 05)로 묶고, 값은 manifest의 <code>userConfig</code>로 노출해 <code>pluginConfigs</code>에서 조정하게 만드는 것이 좋습니다.</p></div></div>
+
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>settings hooks로는 안 되고 mod로는 되는 이유(타이머, 압축 시작)를 설명할 수 있다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>짧은 값으로 idle 압축 예약 → 실행 → 취소를 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>이 mod가 이득인 조건과 손해인 조건을 구분할 수 있다</span></label></li>
+</ul></div></div>
+
+<h2 id="task-05-조직이-mod를-통제하는-법-6분">TASK 05 · 조직이 mod를 통제하는 법 (6분)</h2>
+<h3 id="step-1-사용자-mod-차단-정책">Step 1 · 사용자 mod 차단 정책</h3>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; /tmp/policy.json &lt;&lt; &#x27;EOF&#x27;
+{
+  &quot;pluginConfigs&quot;: {
+    &quot;cc-plugin-sec-default@builtin&quot;: {
+      &quot;options&quot;: { &quot;allowManagedModsOnly&quot;: true }
+    }
+  }
+}
+EOF
+M=/etc/claude-code/managed-settings.json
+sudo jq -s &#x27;.[0] * .[1]&#x27; $M /tmp/policy.json | sudo tee $M.tmp &gt;/dev/null &amp;&amp; sudo mv $M.tmp $M
+cd ~/claude-lab/ch5/colleague &amp;&amp; claude --plugin-dir ~/claude-lab/ch5/first-mod</code></pre></div>
+
+<p>세션이 열리자마자 아래 메시지가 보이고, <code>/tally</code>는 없는 명령이 됩니다.</p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● first-mod: refused by cc-plugin-sec-default: mods are limited to your organization&#x27;s by policy
+  (allowManagedModsOnly); first-mod was not loaded</code></pre></div>
+
+<p>사용자가 <code>--plugin-dir</code>로 실은 mod는 로드되지 않습니다. <code>/exit</code>로 나옵니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Bedrock 사용자는 managed settings가 전제입니다</strong></p>
+<p>이 내장 guard(<code>cc-plugin-sec-default</code>)는 Bedrock·API 키 사용자의 경우 managed settings가 있는 머신에서만 로드됩니다. Ch2의 정책 배포가 여기서도 출발점입니다. 조직이 허용한 mod는 managed 마켓플레이스와 <code>prependPlugins</code>로 배포합니다.</p></div></div>
+
+<h3 id="step-2-원복">Step 2 · 원복</h3>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo cp ~/claude-lab/ch5/managed-settings.backup.json /etc/claude-code/managed-settings.json &amp;&amp; sudo jq . /etc/claude-code/managed-settings.json
+use_bedrock_direct &gt;/dev/null
+claude plugin list</code></pre></div>
+
+<p><code>use_bedrock_direct</code>가 사용자 settings.json을 기본값으로 되돌리므로, user 범위로 설치한 fsi-team-kit은 <code>Status: ✘ disabled</code>가 됩니다. 이후 챕터에서 이 플러그인의 DLP 훅이 프롬프트를 막지 않게 하려는 것입니다. 다시 쓰려면 <code>/plugin</code>에서 켜면 됩니다.</p>
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span><code>allowManagedModsOnly</code>로 사용자 mod가 막히는 것을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>managed-settings를 백업으로 원복했다</span></label></li>
+</ul></div></div>
+
+<h2 id="task-06-배포-전-체크리스트-4분">TASK 06 · 배포 전 체크리스트 (4분)</h2>
+<p>팀 킷을 사내 마켓플레이스에 올리기 전에 스스로 점검합니다.</p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span><code>claude plugin validate</code>가 통과하고, mod가 있다면 <code>calls:</code>를 보안팀과 리뷰했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>버전을 올려 변경 이력을 남겼다(설치본은 버전별로 캐시됨)</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>허용 목록(<code>strictKnownMarketplaces</code>)과 사이드로드 금지(<code>disableSideloadFlags</code>)를 함께 건다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>망분리 환경이면 seed 디렉터리 배포 경로를 정했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>OTel <code>plugin_loaded</code> 이벤트로 사용 현황을 볼 수 있다(Ch6)</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>문제가 생기면 <code>enabledPlugins</code>에서 <code>false</code>로 즉시 끌 수 있다</span></label></li>
+</ul>
+<h2 id="마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</h2>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>에이전트, 스킬, 훅을 하나의 플러그인으로 묶어 로컬 마켓플레이스로 배포했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>공식 튜토리얼의 mod를 만들고 hot reload와 validate를 체험했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>조직이 사용자 mod와 사이드로드를 막는 정책을 적용해 봤다</span></label></li>
+</ul>
+<h2 id="이전-다음">이전 / 다음</h2>
+<ul>
+<li>이전: <a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Subagents</a></li>
+<li>다음: <a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 토큰과 비용</a></li>
+</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch4_HandsOnLab.html"><small>이전</small>Ch4. Subagents</a><a class="next" href="ClaudeCode_Ch6_HandsOnLab.html"><small>다음</small>Ch6. 토큰과 비용</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</a></li><li><a href="#task-01-팀-스타터-킷-플러그인-만들기-12분">TASK 01 · 팀 스타터 킷 플러그인 만들기 (12분)</a></li><li><a href="#task-02-로컬-마켓플레이스로-배포-8분">TASK 02 · 로컬 마켓플레이스로 배포 (8분)</a></li><li><a href="#task-03-첫-mod-만들기-12분">TASK 03 · 첫 mod 만들기 (12분)</a></li><li><a href="#선택-task-04-bedrock용-idle-compaction-mod-만들기-12분">선택 TASK 04 · Bedrock용 idle compaction mod 만들기 (12분)</a></li><li><a href="#task-05-조직이-mod를-통제하는-법-6분">TASK 05 · 조직이 mod를 통제하는 법 (6분)</a></li><li><a href="#task-06-배포-전-체크리스트-4분">TASK 06 · 배포 전 체크리스트 (4분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
-
-<footer>
-  <div class="who">Claude Code Deep Dive Workshop, Chapter 5 Hands-on Lab</div>
-  <div>기준: Claude Code 2.1.x, 2026.07 / 비용과 출력 값은 모델과 환경에 따라 다릅니다</div>
-</footer>
-
-<script>
-(function () {
-  "use strict";
-
-  /* ---------- Copy buttons ---------- */
-  document.querySelectorAll(".copy-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var pre = btn.closest(".code-wrap").querySelector("pre");
-      var text = pre.textContent.replace(/\n{3,}/g, "\n\n").trim();
-      function done() {
-        var old = btn.textContent;
-        btn.textContent = "복사됨 ✓";
-        btn.classList.add("copied");
-        setTimeout(function () {
-          btn.textContent = old;
-          btn.classList.remove("copied");
-        }, 1600);
-      }
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(done).catch(function () { fallback(); });
-      } else {
-        fallback();
-      }
-      function fallback() {
-        var ta = document.createElement("textarea");
-        ta.value = text;
-        ta.style.position = "fixed";
-        ta.style.opacity = "0";
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand("copy"); done(); } catch (e) {}
-        document.body.removeChild(ta);
-      }
-    });
-  });
-
-  /* ---------- Checkpoints ---------- */
-  var taskGroups = {
-    t0: ["t0"],
-    t1: ["t1a", "t1b"],
-    t2: ["t2a", "t2b"],
-    t3: ["t3a", "t3b"],
-    t4: ["t4a", "t4b"]
+<script>(function(){
+  var root=document.documentElement, page=document.body.dataset.page;
+  function get(k){try{return localStorage.getItem(k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  var t=get('lab-theme'); if(t) root.dataset.theme=t;
+  document.querySelector('.theme').onclick=function(){
+    var dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme=dark?'light':'dark'; set('lab-theme',root.dataset.theme);
   };
-  var state = {};
-
-  function refresh() {
-    var doneCount = 0;
-    Object.keys(taskGroups).forEach(function (task) {
-      var allDone = taskGroups[task].every(function (cp) { return state[cp]; });
-      if (allDone) doneCount++;
-      var seg = document.querySelector('.seg[data-task="' + task + '"]');
-      if (seg) seg.classList.toggle("done", allDone);
-      var nav = document.querySelector('.sidenav a[data-nav="' + task + '"]');
-      if (nav) nav.classList.toggle("done", allDone);
-    });
-    var pc = document.getElementById("progress-count");
-    if (pc) pc.textContent = doneCount + "/5";
+  document.querySelector('.menu').onclick=function(){document.body.classList.toggle('nav-open')};
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.onclick=function(){
+      var txt=b.closest('.code').querySelector('code').innerText;
+      function ok(){b.textContent='복사됨';b.classList.add('done');setTimeout(function(){b.textContent='복사';b.classList.remove('done')},1400)}
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(ok,fallback)}else fallback();
+      function fallback(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok()}catch(e){}document.body.removeChild(ta)}
+    };
+  });
+  var boxes=[].slice.call(document.querySelectorAll('li.check input')), key='lab-check-'+page, saved={};
+  try{saved=JSON.parse(get(key)||'{}')}catch(e){}
+  var prog=document.querySelector('.progress');
+  function update(){
+    if(!boxes.length) return; prog.hidden=false;
+    var n=boxes.filter(function(b){return b.checked}).length;
+    prog.querySelector('.bar').style.setProperty('--p',Math.round(n*100/boxes.length)+'%');
+    prog.querySelector('.txt').textContent='체크포인트 '+n+' / '+boxes.length;
   }
-
-  document.querySelectorAll('.cp-item input[type="checkbox"]').forEach(function (cb) {
-    cb.addEventListener("change", function () {
-      state[cb.dataset.cp] = cb.checked;
-      refresh();
-    });
-  });
-
-  /* ---------- Timeline seg click ---------- */
-  document.querySelectorAll(".seg").forEach(function (seg) {
-    seg.addEventListener("click", function () {
-      var el = document.getElementById(seg.dataset.task);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  });
-
-  /* ---------- Scrollspy ---------- */
-  var sections = document.querySelectorAll("section[id]");
-  var navLinks = document.querySelectorAll(".sidenav a[data-nav]");
-  var segs = document.querySelectorAll(".seg[data-task]");
-  if ("IntersectionObserver" in window) {
-    var current = null;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) current = entry.target.id;
-      });
-      if (!current) return;
-      navLinks.forEach(function (a) { a.classList.toggle("active", a.dataset.nav === current); });
-      segs.forEach(function (s) { s.classList.toggle("active", s.dataset.task === current); });
-    }, { rootMargin: "-20% 0px -65% 0px" });
-    sections.forEach(function (s) { io.observe(s); });
+  boxes.forEach(function(b,i){ if(saved[i]) b.checked=true; b.onchange=function(){saved[i]=b.checked; set(key,JSON.stringify(saved)); update()} });
+  update();
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  if(links.length&&'IntersectionObserver' in window){
+    var map={}; links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.remove('on')});var a=map[e.target.id];if(a)a.classList.add('on')}})},{rootMargin:'-70px 0px -70% 0px'});
+    document.querySelectorAll('article h2[id]').forEach(function(h){io.observe(h)});
   }
 })();
-</script>
-<script>
-(function () {
-  "use strict";
-  var KEY = "hol-theme";
-  var btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "theme-toggle";
-  function apply(light) {
-    document.documentElement.classList.toggle("light", light);
-    btn.textContent = light ? "DARK" : "WHITE";
-    btn.setAttribute("aria-pressed", light ? "true" : "false");
-    btn.setAttribute("aria-label", light ? "다크 모드로 전환" : "화이트 모드로 전환");
-  }
-  var saved = null;
-  try { saved = localStorage.getItem(KEY); } catch (e) { saved = null; }
-  apply(saved === "light");
-  btn.addEventListener("click", function () {
-    var next = !document.documentElement.classList.contains("light");
-    apply(next);
-    try { localStorage.setItem(KEY, next ? "light" : "dark"); } catch (e) {}
-  });
-  document.body.appendChild(btn);
-})();
-</script>
-</body>
-</html>
+</script></body></html>

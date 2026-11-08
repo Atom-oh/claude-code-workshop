@@ -14,3 +14,7 @@ Thumbs.db
 
 # Claude Code machine-local settings (per-user permission allowlist)
 .claude/settings.local.json
+
+# Editable decks stay out of git (tampering risk); publish PDFs only
+*.pptx
+*.potx
