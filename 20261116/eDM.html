@@ -288,8 +288,8 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <div class="top"><span class="time">10:10–10:40</span><span class="badge lec">강의</span><span class="dur">30분</span></div>
         <h3><span class="chip">CH 01</span>작동 원리, Bedrock 위의 에이전트 루프</h3>
         <p class="steps"><b>에이전트 루프</b> → <b>컨텍스트와 세션</b> → <b>권한과 데이터 경로</b> → <b>이틀 동안 배울 것</b></p>
-        <p class="syn">Claude Code의 전체 구조를 한 장으로 보고, 에이전트가 맥락을 읽고 도구를 고르는 방식을 살펴봅니다. Amazon Bedrock 경로에서 코드와 대화가 어디로 가고 어디에 남는지 확인하고, 이틀 동안 다룰 관리와 활용 두 갈래를 정리합니다. 함께 제공하는 20분 분량의 랩으로 같은 내용을 직접 확인할 수 있습니다.</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="slides/ClaudeCode_FSI_Ch1_20261116.pdf">강의자료 PDF</a></div>
+        <p class="syn">Claude Code의 전체 구조를 한 장으로 보고, 에이전트가 맥락을 읽고 도구를 고르는 방식을 살펴봅니다. Amazon Bedrock 경로에서 코드와 대화가 어디로 가고 어디에 남는지 확인하고, 이틀 동안 다룰 관리와 활용 두 갈래를 정리합니다. 같은 내용은 Ch2 강의 뒤 Ch1 랩에서 직접 확인합니다.</p>
+        <div class="links"><a class="lab" href="slides/ClaudeCode_FSI_Ch1_20261116.pdf">강의자료 PDF</a></div>
       </article>
       <article class="session">
         <div class="top"><span class="time">10:40–11:20</span><span class="badge lec">강의</span><span class="dur">40분</span></div>
@@ -298,9 +298,17 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <p class="syn">장기 키를 나눠주지 않고 SSO 자격증명으로 연결하는 방법, 모델 버전을 고정하고 inference profile로 팀별 비용을 나누는 방법을 다룹니다. claude.ai 관리 콘솔이 없는 Bedrock 환경에서 정책을 managed-settings.json으로 강제하는 구조와, 망분리 환경에서 쓸 때 확인할 항목을 함께 봅니다.</p>
         <div class="links"><a class="lab" href="slides/ClaudeCode_FSI_Ch2_20261116.pdf">강의자료 PDF</a></div>
       </article>
-      <div class="slot"><div class="time">11:20–13:00</div><div class="title">점심 식사</div></div>
       <article class="session">
-        <div class="top"><span class="time">13:00–13:40</span><span class="badge lab">LAB</span><span class="dur">40분</span></div>
+        <div class="top"><span class="time">11:20–11:50</span><span class="badge lab">LAB</span><span class="dur">30분</span></div>
+        <h3><span class="chip">PRE + CH 01 LAB</span>실습 환경 점검과 에이전트 루프 직접 보기</h3>
+        <p class="steps"><b>code-server 접속</b> → <b>Preflight CHECK 01~05</b> → <b>첫 claude 세션</b> → <b>컨텍스트와 세션 파일</b> → <b>체크포인트와 권한 모드</b></p>
+        <p class="syn">오후 실습이 끊기지 않도록 점심 전에 내 EC2 환경을 점검합니다. Preflight로 접속과 Bedrock 연결을 확인하고, 이어서 Ch1 랩에서 에이전트가 파일을 읽고 실행하고 고치는 순서, /context와 세션 파일, /rewind와 권한 모드를 직접 확인합니다. Preflight에서 버전과 모드를 확인했으므로 Ch1 TASK 00은 실습 폴더 만들기만 합니다.</p>
+        <p class="out"><b>산출물</b>점검을 마친 실습 환경과 첫 Claude Code 세션</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Preflight_Check.html">Preflight</a><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Hands-on Lab</a></div>
+      </article>
+      <div class="slot"><div class="time">11:50–13:00</div><div class="title">점심 식사</div></div>
+      <article class="session">
+        <div class="top"><span class="time">13:00–13:50</span><span class="badge lab">LAB</span><span class="dur">50분</span></div>
         <h3><span class="chip">CH 02 LAB</span>managed settings 배포와 Gateway 그룹 정책</h3>
         <p class="steps"><b>연결 확인</b> → <b>정책 배포</b> → <b>우회 시도</b> → <b>팀별 정책 조각</b> → <b>Gateway 그룹 정책</b></p>
         <p class="syn">지금의 Bedrock 연결과 최소 IAM 정책을 읽어 본 뒤, 차단 규칙과 허용 모델을 담은 managed-settings.json을 직접 배포합니다. 개인 설정으로 정책을 덮어쓰려다 실패하는 것을 확인하고, 마지막에는 Claude Apps Gateway에 로그인해 같은 정책이 IdP 그룹 단위로 적용되는 것을 봅니다.</p>
@@ -308,32 +316,32 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <div class="links"><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Hands-on Lab</a></div>
       </article>
       <article class="session">
-        <div class="top"><span class="time">13:40–14:30</span><span class="badge lab">강의 + LAB</span><span class="dur">50분</span></div>
+        <div class="top"><span class="time">13:50–14:40</span><span class="badge lab">강의 + LAB</span><span class="dur">50분</span></div>
         <h3><span class="chip">CH 03</span>가드레일·DLP, 무엇을 못 하게 할 것인가</h3>
         <p class="steps"><b>설정·권한 기초</b> → <b>auto mode와 안전의 경계</b> → <b>DLP 5층</b> → <b>확장 통제와 감사</b> → <b>미니랩</b></p>
         <p class="syn">권한 규칙, sandbox, hooks, Bedrock Guardrails, 반출 채널 통제를 층으로 쌓아 데이터가 나가는 길을 좁힙니다. auto mode가 확인 창을 줄이면서 어디에서 멈추는지, 감사에서 자주 받는 질문에 어떤 기록으로 답하는지도 다룹니다. 미니랩에서 DLP 훅을 만들고, 고장 난 훅이 조용히 통과되는 fail-open 문제를 직접 확인합니다.</p>
         <p class="out"><b>산출물</b>managed 정책으로 강제한 DLP 훅</p>
         <div class="links"><a class="lab" href="ClaudeCode_Ch3_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="slides/ClaudeCode_FSI_Ch3_20261116.pdf">강의자료 PDF</a></div>
       </article>
-      <div class="slot"><div class="time">14:30–14:40</div><div class="title">Break</div></div>
+      <div class="slot"><div class="time">14:40–14:50</div><div class="title">Break</div></div>
       <article class="session">
-        <div class="top"><span class="time">14:40–15:30</span><span class="badge lab">강의 + LAB</span><span class="dur">50분</span></div>
+        <div class="top"><span class="time">14:50–15:40</span><span class="badge lab">강의 + LAB</span><span class="dur">50분</span></div>
         <h3><span class="chip">CH 04</span>Subagents, 역할별 에이전트와 병렬 실행</h3>
         <p class="steps"><b>Subagent란</b> → <b>호출과 비용</b> → <b>레거시 분석과 claude -p</b> → <b>병렬의 확장</b> → <b>Lab</b></p>
         <p class="syn">역할과 도구 권한을 나눈 전문 에이전트를 정의하고, 읽기 전용 에이전트가 파일을 고치려다 멈추는 순간을 확인합니다. 자동 위임, @멘션, 병렬 실행을 비교하고, 레거시 코드 분석과 대화 없이 실행하는 claude -p 활용법, 모델 배분으로 비용을 관리하는 방법을 함께 봅니다.</p>
         <p class="out"><b>산출물</b>저장소에서 바로 동작하는 전문 에이전트 3종 (code-reviewer · test-writer · docs-writer)</p>
         <div class="links"><a class="lab" href="ClaudeCode_Ch4_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="slides/ClaudeCode_FSI_Ch4_20261116.pdf">강의자료 PDF</a></div>
       </article>
-      <div class="slot"><div class="time">15:30–15:40</div><div class="title">Break</div></div>
+      <div class="slot"><div class="time">15:40–15:50</div><div class="title">Break</div></div>
       <article class="session capstone" id="capstone">
-        <div class="top"><span class="time">15:40–17:35</span><span class="badge lab">LAB</span><span class="dur">115분</span></div>
+        <div class="top"><span class="time">15:50–17:40</span><span class="badge lab">LAB</span><span class="dur">110분</span></div>
         <h3><span class="chip">CAPSTONE R1</span>오늘 배운 것으로 첫 완결</h3>
-        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> 빌드와 검증 → <b>③</b> 개장과 Slack 공유</p>
-        <p class="syn"><b>Press Start · 게임</b>, <b>Frame It · 미술관</b>, <b>Quake Watch · 지진 워치</b> 중 하나를 골라 완주합니다. 정책이 걸린 환경에서 오늘 만든 에이전트를 활용해 결과물을 만들고, 실행 화면이나 URL을 Slack에 공유합니다.</p>
-        <p class="out"><b>산출물</b>직접 설계하고 실행한 첫 번째 결과물</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Capstone1_HandsOnLab.html">Mission 1 게임</a><a class="lab" href="ClaudeCode_Capstone3_HandsOnLab.html">Mission 3 미술관</a><a class="lab" href="ClaudeCode_Capstone5_HandsOnLab.html">Mission 5 지진 워치</a></div>
+        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> 빌드와 검증 → <b>③</b> CloudFront 배포와 Slack 출품</p>
+        <p class="syn">만들고 싶은 것을 직접 정해 완주합니다. 주제가 떠오르지 않으면 <b>Press Start · 게임</b>, <b>Frame It · 미술관</b>, <b>Quake Watch · 지진 워치</b> 예시 미션을 그대로 따라가도 됩니다. 정책이 걸린 환경에서 오늘 만든 에이전트를 활용해 결과물을 만들고, CloudFront URL로 배포해 Slack에 출품합니다. ③을 다 못 끝내면 쇼케이스 1 시작 전까지 마무리합니다.</p>
+        <p class="out"><b>산출물</b>CloudFront URL로 열리는 첫 번째 결과물</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Capstone_Setup.html#submit">출품 방법</a><a class="lab" href="ClaudeCode_Capstone1_HandsOnLab.html">예시 · 게임</a><a class="lab" href="ClaudeCode_Capstone3_HandsOnLab.html">예시 · 미술관</a><a class="lab" href="ClaudeCode_Capstone5_HandsOnLab.html">예시 · 지진 워치</a><a class="lab" href="https://capstone.atomai.click/">지난 출품작</a></div>
       </article>
-      <div class="slot ops"><div class="time">17:35–18:00</div><div class="title">쇼케이스 1<small>Slack 공유작 하이라이트와 둘째 날 과제 안내</small></div></div>
+      <div class="slot ops"><div class="time">17:40–18:00</div><div class="title">쇼케이스 1<small>Slack 출품작 하이라이트와 둘째 날 과제 안내</small></div></div>
     </div>
   </section>
 
@@ -349,9 +357,9 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <p class="out"><b>산출물</b>설치 한 줄로 배포되는 팀 스타터 킷 플러그인</p>
         <div class="links"><a class="lab" href="ClaudeCode_Ch5_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="slides/ClaudeCode_FSI_Ch5_20261116.pdf">강의자료 PDF</a></div>
       </article>
-      <div class="slot"><div class="time">11:30–13:00</div><div class="title">점심 식사</div></div>
+      <div class="slot"><div class="time">11:30–12:40</div><div class="title">점심 식사</div></div>
       <article class="session">
-        <div class="top"><span class="time">13:00–13:40</span><span class="badge lab">강의 + 데모 + LAB</span><span class="dur">40분</span></div>
+        <div class="top"><span class="time">12:40–13:40</span><span class="badge lab">강의 + 데모 + LAB</span><span class="dur">60분</span></div>
         <h3><span class="chip">CH 06 · P1</span>토큰과 비용 ①, 컨텍스트 엔지니어링</h3>
         <p class="steps"><b>먼저 본다</b> → <b>항상 실리는 지침 줄이기</b> → <b>출력 필터·도구 지연 로드</b> → <b>캐시와 압축</b> → <b>모델과 사고량</b></p>
         <p class="syn">같은 일을 더 적은 토큰으로 하는 여덟 가지 원리를 공식 기능으로 정리합니다. 출력 필터 훅을 적용하기 전후를 데모로 비교하고, 랩 TASK 01~04에서 기준선 재기, CLAUDE.md 줄이기, 압축 시점 정하기를 직접 해 봅니다.</p>
@@ -361,10 +369,10 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
       <article class="session capstone">
         <div class="top"><span class="time">13:40–16:40</span><span class="badge lab">LAB</span><span class="dur">180분</span></div>
         <h3><span class="chip">CAPSTONE R2</span>AI를 품은 두 번째 완결</h3>
-        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> AI 분석과 팀 플러그인 연결 → <b>③</b> 검증과 공유</p>
-        <p class="syn"><b>Market Desk · 증시</b>, <b>Trend Radar · 유튜브</b>, <b>Newsroom Lens · 뉴스룸 렌즈</b> 중 하나를 선택합니다. 오전에 만든 팀 플러그인과 토큰 절감 원리를 적용해 두 번째 결과물을 완성합니다.</p>
-        <p class="out"><b>산출물</b>AI 분석을 연결한 두 번째 결과물</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Capstone2_HandsOnLab.html">Mission 2 증시</a><a class="lab" href="ClaudeCode_Capstone4_HandsOnLab.html">Mission 4 유튜브</a><a class="lab" href="ClaudeCode_Capstone6_HandsOnLab.html">Mission 6 뉴스룸 렌즈</a></div>
+        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> AI 분석과 팀 플러그인 연결 → <b>③</b> 검증, CloudFront 배포와 Slack 출품</p>
+        <p class="syn">만들고 싶은 것에 AI 분석을 더해 두 번째 결과물을 완성합니다. <b>Market Desk · 증시</b>, <b>Trend Radar · 유튜브</b>, <b>Newsroom Lens · 뉴스룸 렌즈</b>는 따라갈 수 있는 예시 미션이고, 첫날 결과물을 확장해도 됩니다. 오전에 만든 팀 플러그인과 토큰 절감 원리를 적용하고, 완성작은 CloudFront URL로 배포해 Slack에 출품합니다. 증시와 유튜브 예시는 로컬에서 완결되므로 출품 방법의 배포 단계를 더해 주세요.</p>
+        <p class="out"><b>산출물</b>AI 분석을 연결해 CloudFront URL로 열리는 두 번째 결과물</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Capstone_Setup.html#submit">출품 방법</a><a class="lab" href="ClaudeCode_Capstone2_HandsOnLab.html">예시 · 증시</a><a class="lab" href="ClaudeCode_Capstone4_HandsOnLab.html">예시 · 유튜브</a><a class="lab" href="ClaudeCode_Capstone6_HandsOnLab.html">예시 · 뉴스룸 렌즈</a><a class="lab" href="https://capstone.atomai.click/">지난 출품작</a></div>
       </article>
       <div class="slot"><div class="time">16:40–16:50</div><div class="title">Break</div></div>
       <article class="session">
@@ -394,7 +402,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
     </div>
   </section>
 
-  <a class="banner" href="index.html" id="start" style="display:block"><h3>Hands-on Lab 포털 열기</h3><p>챕터별 랩, 선택 미션 6종과 자율 미션 1종, Reference 3부작을 한곳에서 확인합니다.</p><div class="cta"><span class="btn primary">Lab 포털 열기 →</span></div></a>
+  <a class="banner" href="index.html" id="start" style="display:block"><h3>Hands-on Lab 포털 열기</h3><p>챕터별 랩, 캡스톤 예시 미션 6종과 자율 미션 1종, Reference 3부작을 한곳에서 확인합니다.</p><div class="cta"><span class="btn primary">Lab 포털 열기 →</span></div></a>
 
   <section class="sec" id="after">
     <div id="survey"><div class="sec-label">AFTER THE WORKSHOP</div><h2>교육 후 설문</h2><div class="meta">이틀 과정에 대한 의견을 들려주세요.</div>
