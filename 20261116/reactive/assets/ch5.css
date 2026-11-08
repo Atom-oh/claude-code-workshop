@@ -1,0 +1,118 @@
+/* Chapter 5 (Plugins & Mods): chapter-specific layouts. Theme tokens only. */
+
+/* Survey: single share bar */
+.c5-survey .share { display: flex; flex-direction: column; gap: var(--space-4); }
+.c5-survey .share .tr { height: 3rem; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.c5-survey .share .tr i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 1.2s var(--ease-out); }
+.c5-survey .share .lb { display: flex; justify-content: space-between; font-size: var(--fs-card); color: var(--text-secondary); }
+.c5-survey .share .lb b { color: var(--text-primary); }
+.c5-survey .share .rank { font-size: var(--fs-card); color: var(--text-secondary); border-left: 4px solid var(--accent); padding-left: var(--space-4); margin: var(--space-4) 0 0; }
+
+/* Extension map: six cards, CLAUDE.md sits outside the plugin box */
+.c5-ext { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--space-6); }
+.c5-ext .map { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 3fr); gap: var(--space-4); }
+.c5-ext .outside { display: flex; flex-direction: column; gap: var(--space-3); }
+.c5-ext .outside .pick { flex: 1; display: flex; flex-direction: column; justify-content: center; border-style: dashed; }
+.c5-ext .box { border: 2px solid var(--accent); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.c5-ext .box .lbl { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--accent); letter-spacing: var(--tracking-wide); }
+.c5-ext .box .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); flex: 1; }
+.c5-ext .box .pick { display: flex; flex-direction: column; justify-content: center; }
+.c5-ext .pick .t { font-size: var(--fs-subtitle); }
+.c5-ext .panel { display: flex; flex-direction: column; justify-content: center; }
+
+/* Plugin folder tree */
+.c5-tree { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-6); }
+.c5-tree .tree { background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5) var(--space-6); display: flex; flex-direction: column; gap: var(--space-2); }
+.c5-tree .tree .root { font-family: var(--font-mono); font-size: var(--fs-card); color: var(--text-primary); font-weight: var(--weight-bold); margin-bottom: var(--space-2); }
+.c5-tree .tree .pick { font-family: var(--font-mono); font-size: var(--fs-caption); padding: var(--space-3) var(--space-4); display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--space-4); align-items: baseline; }
+.c5-tree .tree .pick .p { color: var(--text-primary); white-space: nowrap; }
+.c5-tree .tree .pick .p.l2 { padding-left: var(--space-6); }
+.c5-tree .tree .pick .cm { color: var(--text-muted); font-family: var(--font-main); }
+.c5-tree .tree .pick.extra { border-style: dashed; }
+.c5-tree .tree .cap { font-size: var(--fs-caption); color: var(--text-muted); margin: var(--space-2) 0 0; }
+.c5-tree .panel { display: flex; flex-direction: column; justify-content: center; }
+
+/* Two-column pick + panel with stacked cards (comparison, samples, metrics) */
+.c5-pickrow { display: flex; flex-direction: column; gap: var(--space-5); }
+.c5-pickrow .row4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
+.c5-pickrow .row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.c5-pickrow .row4 .pick, .c5-pickrow .row3 .pick { min-height: 11rem; display: flex; flex-direction: column; justify-content: flex-end; }
+.c5-pickrow .pick .t { font-size: var(--fs-subtitle); }
+.c5-pickrow .panel { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.c5-pickrow .kv { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: var(--space-3) var(--space-5); margin: 0; }
+.c5-pickrow .kv dt { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); align-self: center; }
+.c5-pickrow .kv dd { margin: 0; font-size: var(--fs-card); color: var(--text-primary); }
+.c5-pickrow .note { font-size: var(--fs-caption); color: var(--text-muted); margin: 0; }
+
+/* Deploy checklist */
+.c5-check { display: flex; flex-direction: column; gap: var(--space-5); }
+.c5-check .items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.c5-check .it {
+  font: inherit; text-align: left; cursor: pointer; color: inherit;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-5); min-height: 11rem; display: flex; flex-direction: column; gap: var(--space-2);
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.c5-check .it .k { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); letter-spacing: var(--tracking-wide); }
+.c5-check .it .k::before { content: '○ '; }
+.c5-check .it .t { font-size: var(--fs-subtitle); font-weight: var(--weight-bold); color: var(--text-primary); }
+.c5-check .it .d { font-size: var(--fs-caption); color: var(--text-secondary); line-height: 1.4; }
+.c5-check .it.done { border-color: var(--success); background: color-mix(in srgb, var(--success) 12%, var(--bg-card)); }
+.c5-check .it.done .k { color: var(--success); }
+.c5-check .it.done .k::before { content: '● '; }
+.c5-check .foot { display: flex; justify-content: space-between; align-items: center; font-size: var(--fs-card); color: var(--text-secondary); }
+.c5-check .foot .cnt { font-family: var(--font-mono); color: var(--success); font-size: var(--fs-subtitle); }
+
+/* Code + lock cards (deep dive) */
+.c5-codelocks { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--space-6); }
+.c5-codelocks pre {
+  margin: 0; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6); font-family: var(--font-mono); font-size: var(--fs-caption);
+  line-height: 1.55; color: var(--text-primary); white-space: pre-wrap; word-break: break-all;
+}
+.c5-codelocks .path { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); margin: 0 0 var(--space-2); }
+.c5-codelocks .locks { display: flex; flex-direction: column; gap: var(--space-3); }
+.c5-codelocks .lk { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); }
+.c5-codelocks .lk b { display: block; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--accent); margin-bottom: var(--space-1); }
+.c5-codelocks .lk span { font-size: var(--fs-card); color: var(--text-primary); }
+.c5-codelocks .lk.warn { border-color: var(--danger); }
+.c5-codelocks .lk.warn b { color: var(--danger); }
+
+/* Tab-like switch with two views (deep dive) */
+.c5-switch { display: flex; flex-direction: column; gap: var(--space-4); }
+.c5-switch .sw { display: flex; gap: var(--space-3); }
+.c5-switch .sw .pick { padding: var(--space-3) var(--space-5); }
+.c5-switch .sw .pick .t { margin: 0; }
+.c5-switch .panel { flex: 1; }
+.c5-switch table { width: 100%; border-collapse: separate; border-spacing: 0 var(--space-2); }
+.c5-switch th { text-align: left; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); font-weight: var(--weight-medium); padding: 0 var(--space-4); }
+.c5-switch td { background: var(--bg-card); font-size: var(--fs-card); color: var(--text-primary); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.c5-switch td:first-child { border-left: 1px solid var(--border); border-radius: var(--radius-md) 0 0 var(--radius-md); font-family: var(--font-mono); font-size: var(--fs-caption); }
+.c5-switch td:last-child { border-right: 1px solid var(--border); border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--text-secondary); }
+.c5-switch tr.risk td { border-color: var(--danger); }
+.c5-switch tr.risk td:first-child { color: var(--danger); }
+
+/* Metric cards (deep dive) */
+.c5-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); align-content: center; }
+.c5-metrics .m { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2); min-height: 12rem; }
+.c5-metrics .m b { font-family: var(--font-mono); font-size: var(--fs-subtitle); color: var(--accent); }
+.c5-metrics .m .src { font-size: var(--fs-caption); color: var(--text-muted); }
+.c5-metrics .m .q { font-size: var(--fs-subtitle); color: var(--text-primary); }
+
+/* Wider code column for the code-heavy StepViz slides in this chapter */
+.slide-deck #c5-sv-force.sv, .slide-deck #c5-sv-seed.sv, .slide-deck #c5-sv-mod.sv, .slide-deck #c5-sv-ctrl.sv { grid-template-columns: minmax(0, 1fr) 43%; }
+#c5-sv-force .sv-pre, #c5-sv-seed .sv-pre, #c5-sv-mod .sv-pre, #c5-sv-ctrl .sv-pre { word-break: normal; overflow-wrap: anywhere; }
+.fsi-recap .rc code { font-size: var(--fs-caption); word-break: break-all; }
+.c5-codelocks pre { word-break: normal; overflow-wrap: anywhere; }
+/* Re-sync: non-interactive leaf rows in the plugin tree (agents/test-writer.md etc.) */
+.c5-tree .tree .leaf { font-family: var(--font-mono); font-size: var(--fs-caption); padding: var(--space-1) var(--space-4) var(--space-1) var(--space-6); display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--space-4); align-items: baseline; border-left: 2px solid var(--border); margin-left: var(--space-4); }
+.c5-tree .tree .leaf .p { color: var(--text-secondary); white-space: nowrap; }
+.c5-tree .tree .leaf .cm { color: var(--text-muted); font-family: var(--font-main); }
+/* Re-sync: six-item deep dive divider wraps into a 3 x 2 grid */
+.c5-dd ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-6); }
+.c5-dd ol li { min-width: 0; }
+.c5-tree .tree { gap: var(--space-1); padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.c5-tree .tree .pick { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+.c5-tree .tree .root { margin-bottom: var(--space-1); }
+.c5-tree .tree .leaf { padding-top: 0; padding-bottom: 0; }
+.c5-tree .tree .leaf { display: flex; flex-direction: column; gap: 0; }

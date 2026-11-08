@@ -1,0 +1,135 @@
+/* Chapter 2 (Bedrock 배포와 정책 전달) slide layouts. Theme tokens only. */
+
+/* Shared card used by several Ch2 slides */
+.c2-why .rc, .c2-verify .rc, .c2-repl .rc, .c2-quota .rc {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2);
+}
+.c2-why .rc b, .c2-verify .rc b, .c2-repl .rc b, .c2-quota .rc b {
+  font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--accent); letter-spacing: var(--tracking-wide);
+}
+.c2-why .rc .t, .c2-verify .rc .t, .c2-repl .rc .t, .c2-quota .rc .t { font-size: var(--fs-subtitle); font-weight: var(--weight-bold); color: var(--text-primary); }
+.c2-why .rc .d, .c2-verify .rc .d, .c2-repl .rc .d, .c2-quota .rc .d { font-size: var(--fs-card); color: var(--text-secondary); line-height: var(--leading-body); }
+
+/* Why Bedrock */
+.c2-why { display: flex; flex-direction: column; justify-content: center; gap: var(--space-6); }
+.c2-why .fsi-grid-2 { gap: var(--space-5); }
+.c2-why .rc { min-height: 12rem; }
+.c2-why .rc.gap { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--bg-card)); }
+.c2-lead { font-size: var(--fs-subtitle); color: var(--text-secondary); margin: 0; }
+
+/* Code panel */
+.c2-code {
+  margin: 0; white-space: pre-wrap; word-break: break-all;
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.55; color: var(--text-secondary);
+}
+.c2-code .c { color: var(--info); font-style: italic; }
+.c2-code .on { color: var(--text-primary); font-weight: var(--weight-semibold); }
+.c2-code [data-l] { transition: color var(--duration-fast), opacity var(--duration-fast); }
+.c2-code [data-l].on { color: var(--accent); }
+.c2-code [data-l].dim { opacity: .4; }
+.c2-code i { font-style: normal; }
+.c2-cap { font-size: var(--fs-caption); color: var(--text-muted); margin: 0; }
+
+/* Result box (region, precedence) */
+.c2-res {
+  display: flex; flex-direction: column; gap: var(--space-1);
+  border: 2px solid var(--accent); border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-card)); padding: var(--space-5) var(--space-6);
+}
+.c2-res .k { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--accent); letter-spacing: var(--tracking-wide); }
+.c2-res .v { font-family: var(--font-mono); font-size: 3rem; font-weight: var(--weight-bold); color: var(--text-primary); }
+.c2-res .s { font-size: var(--fs-card); color: var(--text-secondary); }
+.c2-res.big .v { font-size: 4rem; }
+.c2-cyc { align-self: flex-start; font-size: var(--fs-card); }
+
+/* Rows that can be switched on (region order, precedence layers) */
+.c2-row {
+  font: inherit; text-align: left; cursor: pointer; color: inherit; width: 100%;
+  display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; align-items: center; column-gap: var(--space-4);
+  background: var(--bg-card); border: 1px dashed var(--border); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5);
+  transition: border-color var(--duration-fast), background var(--duration-fast), opacity var(--duration-fast);
+}
+.c2-row b { font-family: var(--font-mono); font-size: var(--fs-subtitle); color: var(--text-muted); }
+.c2-row .n { font-family: var(--font-mono); font-size: var(--fs-card); color: var(--text-primary); }
+.c2-row .x { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); opacity: .35; }
+.c2-row.set { border-style: solid; }
+.c2-row.set .x { opacity: 1; color: var(--text-secondary); }
+.c2-row.win { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-card)); }
+.c2-row.win b, .c2-row.win .x { color: var(--accent); }
+.c2-row.fixed { cursor: default; }
+.c2-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.c2-region .fsi-stack, .c2-prec .fsi-stack { justify-content: center; }
+.c2-order { gap: var(--space-3); }
+
+/* Precedence layers: five columns of info per row */
+.c2-layers { gap: var(--space-3); justify-content: center; }
+.c2-layers .c2-row { grid-template-columns: 3rem 10rem minmax(0, 1fr) 4.5rem; row-gap: var(--space-1); }
+.c2-layers .c2-row .w { font-size: var(--fs-caption); color: var(--text-secondary); }
+.c2-layers .c2-row code { grid-column: 3; font-size: var(--fs-caption); color: var(--text-muted); background: none; padding: 0; }
+.c2-layers .c2-row .x { grid-column: 4; grid-row: 1 / span 2; text-align: right; }
+.c2-layers .c2-row b { grid-row: 1 / span 2; }
+.c2-layers .c2-row .n { grid-row: 1 / span 2; }
+
+/* IAM, managed-settings example: picks beside code */
+.c2-iam .fsi-stack, .c2-ms .fsi-stack { justify-content: center; }
+.c2-iam [data-pick] { gap: var(--space-2); }
+.c2-iam [data-pick] .pick { display: flex; gap: var(--space-4); align-items: baseline; padding: var(--space-3) var(--space-5); }
+.c2-iam [data-pick] .pick .t { margin: 0; }
+.c2-iam .panel { min-height: 9rem; }
+.c2-ms-items { gap: var(--space-3); }
+.c2-ms-items .pick .t { margin: 0; font-size: var(--fs-card); }
+
+/* Air-gapped list */
+.c2-air .c2-picks { grid-auto-rows: 1fr; }
+.c2-air .c2-picks .pick .t { font-size: var(--fs-card); word-break: break-all; }
+.c2-air .panel, .c2-cred .panel, .c2-knobs .panel, .c2-os .panel, .c2-prof .panel, .c2-pin .panel { display: flex; flex-direction: column; justify-content: center; }
+
+/* Credential rows */
+.c2-cred { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--space-6); }
+.c2-cred-rows { display: flex; flex-direction: column; gap: var(--space-3); justify-content: center; }
+.c2-cred-rows .pick { display: grid; grid-template-columns: 13rem minmax(0, 1fr) auto; gap: var(--space-4); align-items: center; }
+.c2-cred-rows .pick .t { margin: 0; }
+.c2-cred-rows .pick code { font-size: var(--fs-caption); }
+.c2-cred-rows .pick.rec { border-color: var(--success); }
+
+/* Model pinning */
+.c2-pin .fsi-stack { justify-content: center; }
+.c2-pin .c2-pfx { color: var(--accent); }
+.c2-pin .c2-pfx.flash { background: color-mix(in srgb, var(--accent) 18%, transparent); border-radius: var(--radius-sm); }
+.c2-pin .fsi-grid-2 .pick .t { font-family: var(--font-mono); font-size: var(--fs-subtitle); }
+
+/* Three knobs, OS, profile choice */
+.c2-knobs, .c2-os { display: flex; flex-direction: column; gap: var(--space-5); }
+.c2-knobs .fsi-grid-3 .pick { min-height: 11rem; display: flex; flex-direction: column; justify-content: flex-end; }
+.c2-knobs .fsi-grid-3 .pick .t { font-size: var(--fs-subtitle); }
+.c2-knobs .panel, .c2-os .panel { flex: 1; }
+.c2-os .fsi-grid-3 .pick .k { font-size: var(--fs-card); }
+.c2-kv { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: var(--space-3) var(--space-5); align-items: baseline; }
+.c2-kv span { font-size: var(--fs-caption); color: var(--text-muted); }
+.c2-kv code, .c2-kv b { font-size: var(--fs-card); color: var(--text-primary); }
+.c2-kv b { font-weight: var(--weight-medium); }
+.c2-prof .fsi-stack { justify-content: center; }
+.c2-prof .fsi-stack .pick { padding: var(--space-4) var(--space-5); }
+
+/* Verify, replacements, quota */
+.c2-verify, .c2-repl, .c2-quota { display: flex; flex-direction: column; justify-content: center; }
+.c2-verify .rc { min-height: 20rem; }
+.c2-repl .rc, .c2-quota .rc { min-height: 18rem; }
+
+/* Recap: seven items */
+.c2-recap .fsi-grid-4 { grid-auto-rows: 1fr; gap: var(--space-4); }
+.c2-recap .rc { min-height: 12rem; }
+.c2-recap .rc span { font-size: var(--fs-card); }
+
+/* Re-sync (19:42 PDF): full global model IDs and the lab login note */
+.c2-pin .c2-code { word-break: normal; overflow-wrap: normal; white-space: pre; overflow-x: auto; }
+.c2-lab { gap: var(--space-4); }
+.c2-lab .steps { gap: var(--space-2); }
+.c2-lab .steps li { padding: var(--space-3) var(--space-6); }
+
+/* Slide 16: ARN lines are broken by hand at ':' and '/'; never split a token mid-word */
+.slide-deck #c2-sv-tag .sv-pre { white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; }

@@ -1,0 +1,135 @@
+/* Chapter 3 (가드레일과 DLP): chapter-specific layouts. Theme tokens only. */
+
+/* ---------- Code + clickable points (codepick) ---------- */
+.c3-codepick { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: var(--space-6); height: 100%; min-height: 0; }
+.c3-codepick .code { display: flex; flex-direction: column; gap: var(--space-2); min-height: 0; }
+.c3-codepick .code .path { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); }
+.c3-codepick pre {
+  margin: 0; flex: 1; min-height: 0; overflow: auto; white-space: pre-wrap; word-break: break-all;
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.5; color: var(--text-primary);
+}
+.c3-codepick pre .ln { display: block; padding: 0 var(--space-2); border-radius: var(--radius-sm); transition: opacity var(--duration-fast), background var(--duration-fast); }
+.c3-codepick pre .ln .c { color: var(--info); font-style: italic; }
+.c3-codepick pre.has-sel .ln { opacity: .35; }
+.c3-codepick pre.has-sel .ln.on { opacity: 1; background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.c3-codepick .pts { display: flex; flex-direction: column; gap: var(--space-3); min-height: 0; }
+.c3-codepick .pts .pick .t { font-size: var(--fs-card); }
+.c3-codepick .pts .hint { font-size: var(--fs-caption); color: var(--text-muted); margin: 0; }
+
+/* ---------- Key / effect lists (pick rows) ---------- */
+.c3-keys { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--space-6); height: 100%; min-height: 0; }
+.c3-keys .list { display: flex; flex-direction: column; gap: var(--space-2); min-height: 0; }
+.c3-keys .list .pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-5); }
+.c3-keys .list .pick .t { margin: 0; font-family: var(--font-mono); font-size: var(--fs-caption); word-break: break-all; }
+.c3-keys .list .pick .k { margin: 0; white-space: nowrap; }
+.c3-keys .panel { display: flex; flex-direction: column; justify-content: center; }
+.c3-keys .panel .eff { font-size: var(--fs-subtitle); color: var(--text-primary); margin: 0 0 var(--space-4); }
+.c3-keys .panel .rec { font-size: var(--fs-card); color: var(--text-secondary); margin: 0; }
+.c3-keys .panel .rec b { color: var(--accent); font-family: var(--font-mono); font-size: var(--fs-caption); display: block; margin-bottom: var(--space-1); letter-spacing: var(--tracking-wide); }
+
+/* ---------- Ladder (ordered conditions) ---------- */
+.c3-ladder { display: flex; flex-direction: column; gap: var(--space-3); height: 100%; justify-content: center; }
+.c3-ladder .rung {
+  display: grid; grid-template-columns: 4rem minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--space-5); align-items: center;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-5);
+  transition: border-color var(--duration-fast), background var(--duration-fast), opacity var(--duration-fast);
+}
+.c3-ladder .rung .n { font-family: var(--font-mono); font-size: var(--fs-card); color: var(--accent); }
+.c3-ladder .rung .w { font-size: var(--fs-card); color: var(--text-primary); }
+.c3-ladder .rung .r { font-size: var(--fs-caption); color: var(--text-secondary); }
+.c3-ladder .rung .r b { color: var(--text-primary); }
+.c3-ladder.run .rung { opacity: .4; }
+.c3-ladder.run .rung.pass { opacity: .7; }
+.c3-ladder.run .rung.hit { opacity: 1; border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-card)); }
+.c3-ladder .ctl { display: flex; align-items: center; gap: var(--space-5); margin-top: var(--space-3); }
+.c3-ladder .ctl .btn { font-size: var(--fs-card); }
+.c3-ladder .ctl .case { font-size: var(--fs-card); color: var(--text-secondary); }
+.c3-ladder .ctl .case b { color: var(--text-primary); }
+
+/* ---------- Category grid (classifier defaults) ---------- */
+.c3-cats { display: flex; flex-direction: column; gap: var(--space-5); height: 100%; }
+.c3-cats .fsi-grid-4 .pick { min-height: 9rem; display: flex; flex-direction: column; justify-content: center; }
+.c3-cats .fsi-grid-4 .pick .t { font-size: var(--fs-subtitle); }
+.c3-cats .lower { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--space-5); flex: 1; min-height: 0; }
+.c3-cats .panel { display: flex; flex-direction: column; justify-content: center; }
+.c3-cats .pass { display: flex; flex-direction: column; gap: var(--space-2); justify-content: center; }
+.c3-cats .pass div { font-size: var(--fs-caption); color: var(--text-secondary); background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); }
+.c3-cats .pass div .tag { margin-right: var(--space-3); }
+
+/* ---------- Two columns of fragment cards ---------- */
+.c3-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); height: 100%; align-content: center; }
+.c3-two .col { display: flex; flex-direction: column; gap: var(--space-3); }
+.c3-two .col h4 { margin: 0 0 var(--space-2); font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); color: var(--accent); }
+.c3-two .col.warn h4 { color: var(--warning); }
+.c3-two .it { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); font-size: var(--fs-card); color: var(--text-primary); }
+.c3-two .it small { display: block; font-size: var(--fs-caption); color: var(--text-muted); margin-top: var(--space-1); }
+
+/* ---------- Boundary ladder (hard to soft) ---------- */
+.c3-bound .list .pick { grid-template-columns: 2.5rem minmax(0, 1fr); }
+.c3-bound .list .pick .lv { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--accent); }
+.c3-bound .list .pick .t { font-family: var(--font-main); font-size: var(--fs-card); word-break: keep-all; }
+.c3-bound .panel code { font-size: var(--fs-caption); }
+
+/* ---------- Operations cards ---------- */
+.c3-ops .fsi-grid-4 .pick { min-height: 10rem; display: flex; flex-direction: column; justify-content: center; }
+.c3-ops .fsi-grid-4 .pick .t { font-size: var(--fs-subtitle); }
+.c3-ops { display: flex; flex-direction: column; gap: var(--space-5); }
+.c3-ops .panel { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+/* ---------- Audit question picker ---------- */
+.c3-audit .list .pick .t { font-family: var(--font-main); font-size: var(--fs-card); word-break: keep-all; }
+.c3-audit .panel .ev { font-size: var(--fs-subtitle); color: var(--text-primary); margin: 0 0 var(--space-4); }
+.c3-audit .panel .ch { font-size: var(--fs-card); color: var(--text-secondary); margin: 0; }
+
+/* ---------- OS comparison ---------- */
+.c3-os { display: flex; flex-direction: column; gap: var(--space-4); height: 100%; }
+.c3-os .heads { display: grid; grid-template-columns: 14rem repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.c3-os .heads .pick { text-align: center; }
+.c3-os .heads .pick .t { margin: 0; font-size: var(--fs-subtitle); }
+.c3-os .heads .blank { display: block; }
+.c3-os .grid { display: grid; grid-template-columns: 14rem repeat(3, minmax(0, 1fr)); gap: var(--space-2) var(--space-3); flex: 1; align-content: start; }
+.c3-os .grid .rh { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--text-muted); align-self: center; }
+.c3-os .grid .cell { font-size: var(--fs-caption); color: var(--text-primary); background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); transition: opacity var(--duration-fast), border-color var(--duration-fast); }
+.c3-os.sel .grid .cell { opacity: .35; }
+.c3-os.sel .grid .cell.on { opacity: 1; border-color: var(--accent); }
+.c3-os .grid .cell.risk { color: var(--warning); }
+
+/* ---------- Recap with seven cards ---------- */
+.c3-recap .fsi-grid-4 { grid-auto-rows: 1fr; gap: var(--space-4); }
+.c3-recap .rc { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); min-height: 12rem; }
+.c3-recap .rc b { font-family: var(--font-mono); font-size: var(--fs-subtitle); color: var(--accent); }
+.c3-recap .rc span { font-size: var(--fs-card); color: var(--text-primary); line-height: var(--leading-body); }
+.c3-recap { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+
+/* ---------- Survey tweak ---------- */
+.c3-survey .bar { grid-template-columns: 12rem minmax(0, 1fr) 5rem; }
+
+/* ---------- Fixes after screenshot review ---------- */
+.c3-keys .list .pick { flex: 1 1 0; max-height: 7rem; }
+.c3-keys .list .pick .t { font-size: var(--fs-card); }
+.c3-audit .list .pick .t, .c3-bound .list .pick .t { font-size: var(--fs-subtitle); }
+/* Full-width code with a row of points above it */
+.c3-codepick.c3-wide { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: var(--space-4); }
+.c3-codepick.c3-wide .pts { order: -1; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--space-3); }
+.c3-codepick.c3-wide .pts .hint { display: none; }
+.c3-codepick.c3-wide .pts .pick { padding: var(--space-3) var(--space-4); }
+.c3-codepick.c3-wide pre { white-space: pre; overflow: hidden; }
+/* Section dividers with five or more items */
+.fsi-section.c3-sec ol { gap: var(--space-4); }
+.fsi-section.c3-sec ol li { min-width: 0; flex: 1 1 0; }
+/* OS grid fills the slide */
+.c3-os .grid { grid-auto-rows: minmax(0, 1fr); align-content: stretch; }
+.c3-os .grid .cell { display: flex; align-items: center; font-size: var(--fs-card); }
+.c3-os .grid .rh { font-size: var(--fs-caption); }
+.c3-codepick.c3-wide .code .path { display: block; margin-bottom: var(--space-2); }
+.c3-codepick.c3-wide pre { line-height: 1.35; padding: var(--space-3) var(--space-5); }
+.c3-codepick.c3-wide .pts .pick .d { font-size: var(--fs-caption); }
+.c3-codepick.c3-wide pre { line-height: 1.28; }
+
+/* Re-sync 19:42: hook script slide needs a wider code column and no mid-word breaks */
+.slide-deck #c3-sv-hook.sv { grid-template-columns: minmax(0, 1fr) 46%; gap: var(--space-5); }
+.slide-deck #c3-sv-hook .sv-pre { word-break: normal; overflow-wrap: anywhere; padding: var(--space-3) var(--space-4); line-height: 1.4; }
+.slide-deck #c3-sv-hook .sv-facts div { line-height: 1.3; }
+.slide-deck #c3-sv-dlp .sv-pre { word-break: normal; overflow-wrap: anywhere; }
