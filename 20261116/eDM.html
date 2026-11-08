@@ -69,6 +69,14 @@
 
 
   .sec { padding: 32px 46px; border-bottom: 1px solid var(--line); }
+  .intro-video { padding-top: 26px; padding-bottom: 26px; }
+  .intro-video .frame {
+    position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--line); background: #0B1018;
+  }
+  .intro-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .intro-video .cap { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+  .intro-video .cap a { color: var(--orange); text-decoration: underline; text-underline-offset: 3px; }
   .sec:last-of-type { border-bottom: 0; }
   .sec-label {
     color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .16em; text-align: center;
@@ -185,6 +193,10 @@
     .slot { grid-template-columns: 1fr; gap: 4px; }
     a.ref { grid-template-columns: 52px 1fr; }
     .ref .go { grid-column: 2; }
+    .intro-video { padding-top: 14px; padding-bottom: 14px; }
+    .intro-video .sec-label { margin-bottom: 8px; }
+    .intro-video .cap { margin-top: 6px; font-size: 12.5px; line-height: 1.55; }
+    #flow { padding-top: 20px; }
   }
 
 
@@ -255,6 +267,17 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
     <div class="where">센터필드 18층 · 300 · 301 · 400 · 401호</div>
     <div class="facts"><span>금융 서비스 산업 고객 · FSI</span><span>이론 + 핸즈온 + 캡스톤</span><span>6 Chapters + 2 Capstone Rounds</span><span>Amazon Bedrock 기준</span></div>
   </header>
+
+  <section class="sec intro-video" id="intro-video" aria-label="워크샵 인트로 영상">
+    <div class="sec-label">INTRO · 90초</div>
+    <div class="frame">
+      <video controls playsinline preload="metadata" poster="media/intro-poster.jpg" width="1920" height="1080">
+        <source src="media/intro-90s.mp4" type="video/mp4">
+        브라우저가 영상 재생을 지원하지 않습니다. <a href="media/intro-90s.mp4">영상 파일 받기</a>
+      </video>
+    </div>
+    <p class="cap">이틀 동안 다룰 내용을 90초로 미리 봅니다. 소리를 켜고 재생하세요. · <a href="media/intro-90s.mp4" download>MP4 받기 (6MB)</a></p>
+  </section>
 
   <section class="sec" id="flow" aria-label="워크샵 소개">
     <p class="intro" id="why" style="margin-top:0">Claude Code를 개인의 도구에서 팀의 개발 플랫폼으로 연결하는 이틀입니다. 금융 서비스 산업 고객을 대상으로, <strong>Amazon Bedrock 기준의 배포와 정책, 가드레일과 DLP, 전문 에이전트와 플러그인, 토큰과 비용 통제</strong>까지 공식 문서를 기준으로 실습하며 익힙니다.</p>
