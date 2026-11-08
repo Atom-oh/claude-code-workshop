@@ -20,6 +20,8 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
+- Make the November 16–17 event the site's main page: the Pages workflow now also copies `20261116/` over the site root, so `/` serves the November portal and `/eDM.html` the November invitation. Same-named general lab pages at the root are replaced by their November versions; `assets/`, `v1/`, `START_HERE.txt` and the offline ZIP (still built from `ccw-hands-on-lab/`) are unchanged, and `/20261116/` keeps working.
+
 - Replace the November chapter labs with the redesigned six-chapter course on Amazon Bedrock (Preflight; Ch1 how it works; Ch2 Bedrock deployment and policy delivery; Ch3 guardrails and DLP; Ch4 subagents; Ch5 plugins and mods; Ch6 tokens and cost). The labs keep their published filenames so existing invitation links still resolve, and reflect the 2026-11-06 and 2026-11-08 rehearsals on Claude Code 2.1.318–2.1.319. The previous Ch6 Agent SDK lab moves to `ClaudeCode_AgentSDK_HandsOnLab.html` as a self-paced lab. Preflight screenshots move to `20261116/images/guides/preflight/`.
 - Add the November chapter decks as PDFs under `20261116/slides/` and link each chapter session in `eDM.html` and the portal to its PDF.
 - Update `eDM.html`, `eDM.txt`, and the portal to the redesigned agenda, `us-east-1`, and the code-server plus Claude Apps Gateway environment. Capstone and reference pages are unchanged.
