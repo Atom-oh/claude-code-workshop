@@ -38,7 +38,9 @@ def full_set(**overrides):
         "ClaudeCode_Preflight_Check.html": "<html>%s</html>" % RESTORE,
         "ClaudeCode_Ch1_HandsOnLab.html": page(),
         "ClaudeCode_Ch2_HandsOnLab.html": page(),
-        "ClaudeCode_Ch2_Guardrails_HandsOnLab.html": page(),
+        "ClaudeCode_Ch2_Guardrails_HandsOnLab.html": page(
+            body="PAT=&#x27;%s&#x27;" % load_pattern().pattern
+        ),
         "ClaudeCode_Ch3_HandsOnLab.html": page(),
         "ClaudeCode_Ch4_HandsOnLab.html": ch4,
         "ClaudeCode_Ch5_HandsOnLab.html": ch5,
@@ -55,14 +57,31 @@ class CheckLabsTest(unittest.TestCase):
         self.root = Path(tmp.name)
         self.labs = self.root / "20261116"
         self.labs.mkdir()
+        self.git("init", "-q")
+        self.git("config", "user.email", "t@t")
+        self.git("config", "user.name", "t")
+
+    def git(self, *args):
+        return subprocess.run(
+            ["git", *args], cwd=self.root, check=True, capture_output=True, text=True
+        ).stdout.strip()
 
     def write(self, pages):
         for name, html in pages.items():
             (self.labs / name).write_text(html, encoding="utf-8")
 
-    def run_check(self, pages, **kw):
+    def commit(self, pages):
+        """Write pages and commit them; returns the new revision."""
         self.write(pages)
-        return check(self.labs, MANIFEST, **kw)
+        self.git("add", "-A")
+        self.git("commit", "-qm", "base")
+        return self.git("rev-parse", "HEAD")
+
+    def run_check(self, pages, **kw):
+        # The committed pages double as the rule 4 baseline, so only the
+        # rule under test can fail.
+        rev = self.commit(pages)
+        return check(self.labs, MANIFEST, baseline_rev=kw.pop("baseline_rev", rev))
 
     def test_clean_set_passes(self):
         self.assertEqual(self.run_check(full_set()), [])
@@ -107,18 +126,10 @@ class CheckLabsTest(unittest.TestCase):
 
     def test_time_budget_exceeded(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"
-        subprocess.run(["git", "init", "-q"], cwd=self.root, check=True, capture_output=True)
-        subprocess.run(["git", "config", "user.email", "t@t"], cwd=self.root, check=True, capture_output=True)
-        subprocess.run(["git", "config", "user.name", "t"], cwd=self.root, check=True, capture_output=True)
-        self.write(full_set(**{name: page(minutes=5) + "<h2>선택 TASK 09 (99분)</h2>"}))
-        subprocess.run(["git", "add", "-A"], cwd=self.root, check=True, capture_output=True)
-        subprocess.run(["git", "commit", "-qm", "base"], cwd=self.root, check=True, capture_output=True)
-        rev = subprocess.run(
-            ["git", "rev-parse", "HEAD"], cwd=self.root, check=True, capture_output=True, text=True
-        ).stdout.strip()
+        rev = self.commit(full_set(**{name: page(minutes=5) + "<h2>선택 TASK 09 (99분)</h2>"}))
         # Same total (optional task ignored) passes; a larger required total fails.
         self.assertEqual(check(self.labs, MANIFEST, baseline_rev=rev), [])
-        self.write({name: page(minutes=6)})
+        self.write({name: page(minutes=6)})  # uncommitted edit vs baseline
         errs = check(self.labs, MANIFEST, baseline_rev=rev)
         self.assertEqual(len(errs), 1)
         self.assertTrue(errs[0].startswith(name + ": rule 4"))
@@ -140,6 +151,33 @@ class CheckLabsTest(unittest.TestCase):
         self.assertTrue(errs)
         self.assertTrue(all("rule 6" in e for e in errs))
         self.assertTrue(any(e.startswith(name + ":") for e in errs))
+
+    def test_missing_page_is_an_error(self):
+        pages = full_set()
+        del pages["ClaudeCode_Ch5_HandsOnLab.html"]
+        errs = self.run_check(pages)
+        self.assertEqual(errs, ["ClaudeCode_Ch5_HandsOnLab.html: missing lab page"])
+        empty = check(self.root / "empty", MANIFEST)
+        self.assertEqual(sum(e.endswith("missing lab page") for e in empty), 8)
+
+    def test_unresolvable_baseline_is_an_error(self):
+        errs = self.run_check(full_set(), baseline_rev="deadbeef0000")
+        self.assertEqual(errs, ["rule 4: baseline deadbeef0000 not found"])
+
+    def test_unparsable_task_minutes_is_an_error(self):
+        name = "ClaudeCode_Ch1_HandsOnLab.html"
+        for bad in ("(5~7분)", "(약 5분)"):
+            body = "<h2>TASK 01 · x %s</h2><h2>선택 TASK 02 · y %s</h2>" % (bad, bad)
+            errs = self.run_check(full_set(**{name: page(body=body)}))
+            self.assertEqual(len(errs), 2, bad)
+            self.assertTrue(all(e.startswith(name + ": rule 4") and "minutes" in e for e in errs))
+        ok = "<h2>TASK 01 · x (5 분)</h2>"
+        self.assertEqual(self.run_check(full_set(**{name: page(body=ok)})), [])
+
+    def test_guardrails_requires_a_pat(self):
+        name = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"
+        errs = self.run_check(full_set(**{name: page()}))
+        self.assertEqual(errs, [name + ": rule 2: no PAT='...' found"])
 
 
 if __name__ == "__main__":

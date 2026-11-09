@@ -38,7 +38,8 @@ MYDATA_RE = re.compile(re.escape(MYDATA) + r"(/[A-Za-z0-9_./*-]*)?")
 KIT_URL_RE = re.compile(r"https?://[^\s\"'<>()]*mydata-kit\.zip")
 PAT_RE = re.compile(r"PAT='([^']*)'")
 H2_RE = re.compile(r"<h2\b[^>]*>(.*?)</h2>", re.S)
-MINUTES_RE = re.compile(r"\((\d+)분\)\s*$")
+MINUTES_RE = re.compile(r"\((\d+)\s*분\)\s*$")
+GUARDRAILS = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"
 
 
 def _text(fragment):
@@ -54,12 +55,25 @@ def _sections(raw):
 
 
 def required_minutes(raw):
-    total = 0
+    """Return (sum of required-task minutes, headings without parsable minutes)."""
+    total, bad = 0, []
     for heading, _ in _sections(raw):
-        if heading.startswith("TASK"):
-            m = MINUTES_RE.search(heading)
-            total += int(m.group(1)) if m else 0
-    return total
+        if not heading.startswith(("TASK", "선택 TASK")):
+            continue
+        m = MINUTES_RE.search(heading)
+        if not m:
+            bad.append(heading)
+        elif heading.startswith("TASK"):
+            total += int(m.group(1))
+    return total, bad
+
+
+def _rev_exists(repo_root, rev):
+    r = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", "%s^{commit}" % rev],
+        cwd=repo_root, capture_output=True, text=True,
+    )
+    return r.returncode == 0
 
 
 def _baseline_page(repo_root, rev, name):
@@ -86,9 +100,13 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
     entries = set(manifest)
     expected_pat = load_pattern().pattern
     errors, urls = [], {}
+    baseline_ok = _rev_exists(labs_dir.parent, baseline_rev)
+    if not baseline_ok:
+        errors.append("rule 4: baseline %s not found" % baseline_rev)
     for name in PAGES:
         path = labs_dir / name
         if not path.is_file():
+            errors.append("%s: missing lab page" % name)
             continue
         raw = path.read_text(encoding="utf-8")
         text = html.unescape(raw)
@@ -102,6 +120,8 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
         for pat in PAT_RE.findall(text):  # rule 2
             if pat != expected_pat:
                 err(2, "PAT differs from dlp_pattern.txt: %s" % pat)
+        if name == GUARDRAILS and not PAT_RE.search(text):
+            err(2, "no PAT='...' found")
 
         found = set(KIT_URL_RE.findall(text))
         urls[name] = found
@@ -121,9 +141,12 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
                     err(3, "TASK 00 lacks curl re-download of mydata-kit.zip")
 
         if name != PREFLIGHT:  # rule 4
-            base = _baseline_page(labs_dir.parent, baseline_rev, name)
+            now, bad = required_minutes(raw)
+            for h in bad:
+                err(4, "cannot parse minutes in heading: %s" % h)
+            base = _baseline_page(labs_dir.parent, baseline_rev, name) if baseline_ok else None
             if base is not None:
-                now, then = required_minutes(raw), required_minutes(base)
+                then = required_minutes(base)[0]
                 if now > then:
                     err(4, "required TASK minutes %d exceed baseline %d" % (now, then))
         if name in NO_TRANSACTIONS:  # rule 5
