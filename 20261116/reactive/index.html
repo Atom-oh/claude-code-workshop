@@ -2175,7 +2175,7 @@ pattern='^(npm test|pytest|go test)( [^;&amp;|&lt;&gt;`$#\\[:cntrl:]]*)?$'
 if [[ "$cmd" =~ $pattern ]]; then
   filtered_cmd="log=\$(mktemp); $cmd &gt;\"\$log\" 2&gt;&amp;1; rc=\$?
 grep -A 5 -E '(FAIL|ERROR|error:)' \"\$log\" | head -100; exit \$rc"
-  echo "$input" | jq --arg filtered "$filtered_cmd"
+  echo "$input" | jq --arg filtered "$filtered_cmd" \
     '{hookSpecificOutput: {hookEventName: "PreToolUse",
       updatedInput: (.tool_input + {command: $filtered})}}'
 else
