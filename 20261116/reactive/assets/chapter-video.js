@@ -3,8 +3,8 @@
  * the chapter's one-minute preview video (../media/chapters/chN-preview.mp4, the
  * landscape Short) in an in-deck player. While the player is open the deck gets no
  * keys (the video's own controls still do), Tab stays inside the player, and Esc,
- * the backdrop, ✕ or any slide change (e.g. from the presenter view) closes it and
- * returns focus to the cover button.
+ * the backdrop, ✕ or any slide change (e.g. from the presenter view) closes it; Esc,
+ * the backdrop and ✕ return focus to the cover button.
  * Loaded once by assets/stepviz.js.
  */
 (function () {
