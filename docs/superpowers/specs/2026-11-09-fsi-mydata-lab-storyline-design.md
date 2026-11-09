@@ -86,7 +86,7 @@ Base rule: keep each chapter's existing TASK skeleton and learning objectives,
 and **replace only the practice material with MyData**.
 
 ### Preflight: get the data
-- Add CHECK 06 "Download MyData" after CHECK 01-05: `curl` the signed URL from
+- Add CHECK 06 "Download MyData" after CHECK 01-05: `aws s3 cp` the kit from
   the ccb-endpoint terminal, extract, and verify a checksum.
 - Location: `~/claude-lab/mydata/` (data is read-only; per-chapter work folders
   stay `~/claude-lab/chN`).
@@ -212,15 +212,16 @@ the breakdown below is a designer call)
 
 ## 7. Distribution and continuity
 
-- **Distribution** (owner decision): upload to Workshop Studio assets and
-  download through a public signed URL. Use the AWS profile `workshop-2` for
-  upload and verification (its token was expired on 2026-11-09 and needs
-  re-authentication).
-  - To verify: signed URL lifetime. The event lasts two days, so the link must
-    still work on Day 2. If it expires, Day 2 Preflight must hand out a fresh
-    link or an alternate path. A previous event saw the ap-northeast-2 regional
-    S3 hostname blocked on some participant networks, so also consider the
-    global endpoint or a CloudFront path.
+- **Distribution** (owner decision, revised 2026-11-09): the kit lives in the
+  Workshop Studio assets bucket of the Apps Gateway workshop. Upload by placing
+  `mydata-kit.zip` in that workshop repo's `assets/` and syncing it to
+  `s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/` with the AWS
+  profile `workshop-2`. Learners run `aws s3 cp` on the single object
+  (`s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip`)
+  from ccb-endpoint using the instance role. No signed URL, so nothing expires
+  between Day 1 and Day 2.
+  - To verify in the Task 13 rehearsal: the learner shell can read the assets
+    bucket (the event region or instance-role permissions may differ).
 - **Checkpoints** (agreed): each chapter has a checkpoint bundling what must
   exist when the chapter starts: the DLP script (Ch2), agents and
   `segments.md` (Ch3), the kit (Ch4). This generalizes the existing "no Ch4
@@ -230,8 +231,9 @@ the breakdown below is a designer call)
 
 ## 8. Constraints
 
-- Each chapter must fit its scheduled time. Data download and orientation time
-  is absorbed by Preflight and Ch1.
+- Each chapter follows the user's schedule within +-30 minutes per session
+  (budgets are rough; lab guard rule 4 allows baseline + 30). Data download and
+  orientation time is absorbed by Preflight and Ch1.
 - Same lab environment as today: ccb-endpoint (code-server), Claude Code 2.1.x,
   Bedrock, Apps Gateway, `alice`/`bob` accounts.
 - Chapter structure and lecture decks are being changed in parallel. Lab pages
@@ -248,7 +250,7 @@ the breakdown below is a designer call)
   registration number and confirms the block. The Ch5 SessionStart `compact`
   hook is project-level and does not conflict.
 - **What to cut when time runs over**: per-chapter minutes follow the parallel
-  schedule work. When over, cut optional tasks first, then story narration
+  schedule work, with a +-30 minute tolerance per session. When beyond that, cut optional tasks first, then story narration
   (keep the data, revert to the original wording), then required tasks. Ch2
   must keep "policy cannot be bypassed" and DLP fail-closed. Ch4 must keep the
   skill, kit, proposal flow. The mod exercises are the first thing to shrink

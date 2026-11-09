@@ -18,20 +18,20 @@
 - About 1,000 customers; tens of thousands of transactions; fixed seed.
 - `pseudo/` has zero DLP matches; `raw/` has many.
 - Every identifier is a format-only fake value; card numbers use test ranges.
-- Each chapter keeps its existing TASK skeleton and learning objectives; required-task minutes per page must not exceed the page's current total (baseline commit `1c58d26`).
+- Each chapter keeps its existing TASK skeleton and learning objectives; required-task minutes per page may exceed the page's current total (baseline commit `1c58d26`) by at most 30 (rough budgets; user schedule +-30 min).
 - Each chapter starts with policy check/reset and ends with restore, as today.
 - Ch2 keeps "policy cannot be bypassed" and DLP fail-closed; Ch3 keeps the three dispatch patterns; Ch4 keeps skill -> kit -> proposal; Ch6 keeps gateway login, group model policy, spend limit.
 - Characters: the analyst (Ch1, Ch3, Ch4, Ch5) and the IT security/platform engineer (Ch2, Ch6). `alice` = asset-analysis team, `bob` = other team.
 - Agent, skill, kit names: `spending-analyst`, `portfolio-analyst`, `risk-reviewer`, `retirement-gap`, kit `asset-team-kit` (replaces `fsi-team-kit`).
 - Learner-facing text stays Korean; repo docs (README, CHANGELOG, architecture) stay English.
 - Nothing under `tools/` is published; `tools/mydata/dist/` is gitignored.
-- The download URL must still work at 2026-11-17 18:00 KST and must not depend on the ap-northeast-2 regional S3 hostname.
+- Learners download the kit with `aws s3 cp s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip` (Workshop Studio assets bucket, instance role); no curl, no signed URL.
 
 ## Review Focus
 
 1. **A pseudonymized value, date, or amount accidentally matches the DLP regex** -> the analyst's Ch3/Ch4 session is blocked. Expect zero matches across every `pseudo/` file, CSV and JSON. Pinned in Task 2 (`test_pseudo_has_no_dlp_match_any_file`) and Task 1 (`test_dates_and_amounts_never_hyphenated_like_ids`).
 2. **A learner starts Day 2 on a fresh instance or skipped a chapter** -> each chapter's TASK 00 must restore what it needs from the kit alone. Pinned in Task 4 (`test_every_task00_restore_path_in_manifest`).
-3. **The download URL expires or is network-blocked on Day 2** -> learners cannot fetch data or checkpoints. Pinned in Task 12 (`check_url.py` expiry and host assertions).
+3. **Learner shell cannot read the assets bucket (event-region bucket or instance-role permission differs)** -> learners cannot fetch data or checkpoints. Verified in the Task 13 rehearsal.
 4. **The DLP regex in the lab HTML drifts from the one the validator uses** -> data passes validation but gets blocked, or raw data is not blocked. Pinned in Task 4 (`test_lab_dlp_pattern_matches_source`).
 5. **Ch1 or Ch3 prompts make Claude read the large transaction files before Ch5** -> slow, costly sessions that blow the chapter time. Expect Ch1/Ch3 work on small summary files. Pinned in Task 1 (`test_summary_files_small`) and Task 4 (`test_ch1_ch3_do_not_reference_transaction_files`).
 
@@ -47,7 +47,6 @@ tools/mydata/
   validate.py               # validate(data_dir: Path) -> list[str]  (empty = pass); CLI exit 1 on errors
   build.py                  # build_kit(data_dir, checkpoints_dir, out_zip) -> Path; writes SHA256SUMS
   check_labs.py             # check(labs_dir, manifest) -> list[str]; CLI exit 1 on errors
-  check_url.py              # check_url(url, not_before_kst="2026-11-17T18:00") -> list[str]
   checkpoints/
     ch2/dlp-guard.sh
     ch3/agents/{spending-analyst,portfolio-analyst,risk-reviewer}.md
@@ -146,13 +145,13 @@ Seeded segments (each ≥ 8% of customers so Ch3 finds them): (a) age 40-55, inc
 - Produces: `check(labs_dir: Path, manifest: set[str], baseline_rev: str = "1c58d26") -> list[str]`. Lab pages = Preflight + the seven chapter pages in the Global Constraints table. Checks:
   1. Every `~/claude-lab/mydata/<path>` in a page (HTML-unescaped) exists in `manifest`.
   2. Every `PAT='...'` in a page equals `dlp_pattern.txt` exactly.
-  3. Each chapter page's TASK 00 section contains a restore command referencing `~/claude-lab/mydata/checkpoints/` for every prior artifact the page uses (rule table in the module: Ch2 Guardrails -> none, Ch3 -> `ch2/`, Ch4 -> `ch2/`, `ch3/`, Ch5 -> `ch4/`, Ch6 -> none), and a re-download fallback using `MYDATA_KIT_URL`.
-  4. Sum of `(N분)` in required-task `<h2>` headings (not starting with `선택`) ≤ the same sum in `git show <baseline_rev>:20261116/<page>`.
+  3. Each chapter page's TASK 00 section contains a restore command referencing `~/claude-lab/mydata/checkpoints/` for every prior artifact the page uses (rule table in the module: Ch2 Guardrails -> none, Ch3 -> `ch2/`, Ch4 -> `ch2/`, `ch3/`, Ch5 -> `ch4/`, Ch6 -> none), and a re-download fallback using `aws s3 cp` of the `s3://.../mydata-kit.zip` URI.
+  4. Sum of `(N분)` in required-task `<h2>` headings (not starting with `선택`) ≤ the same sum in `git show <baseline_rev>:20261116/<page>` plus `TIME_TOLERANCE_MIN` (30).
   5. Ch1 and Ch3 pages never reference `bank_transactions.csv` or `card_transactions.csv`.
-  6. Every page that downloads the kit uses the same URL string.
+  6. Every page that downloads the kit uses the identical `s3://.../mydata-kit.zip` URI; any `https://MYDATA_KIT_URL` or `curl` of `mydata-kit.zip` is an error.
   CLI: `python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip`.
 
-- [ ] **Step 1: Write failing tests** with small fixture HTML strings: `test_unknown_mydata_path`, `test_lab_dlp_pattern_matches_source`, `test_every_task00_restore_path_in_manifest`, `test_time_budget_exceeded`, `test_ch1_ch3_do_not_reference_transaction_files`, `test_inconsistent_kit_url`.
+- [ ] **Step 1: Write failing tests** with small fixture HTML strings: `test_unknown_mydata_path`, `test_lab_dlp_pattern_matches_source`, `test_every_task00_restore_path_in_manifest`, `test_time_budget_exceeded`, `test_time_budget_within_tolerance`, `test_curl_kit_download_rejected`, `test_ch1_ch3_do_not_reference_transaction_files`, `test_inconsistent_kit_url`.
 - [ ] **Step 2: Run** — FAIL.
 - [ ] **Step 3: Implement** using `html.parser` to split sections by `<h2>`.
 - [ ] **Step 4: Run** — PASS. Running the CLI on the current pages is expected to fail (pages not yet converted); record the error list in the commit body.
@@ -160,9 +159,9 @@ Seeded segments (each ≥ 8% of customers so Ch3 finds them): (a) age 40-55, inc
 
 > Tasks 5-11 each edit one or two lab pages. Shared rules for all of them:
 > - Edit HTML directly; keep the existing `code copyable` blocks, `alert` boxes, `check` checkpoints, TOC, and pager.
-> - Use the placeholder URL `https://MYDATA_KIT_URL/mydata-kit.zip` until Task 12 swaps in the real one.
+> - Kit download uses `KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip` and `aws s3 cp`, never curl.
 > - Every TASK 00 ends with this restore idiom (adapt the checkpoint list per page):
->   `[ -d ~/claude-lab/mydata/pseudo ] || (curl -fsSL "$URL" -o /tmp/kit.zip && unzip -qo /tmp/kit.zip -d ~/claude-lab/mydata)`, then copy the needed `checkpoints/chN/` items only if the learner's own are missing.
+>   `[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp "$KIT" /tmp/mydata-kit.zip --only-show-errors && mkdir -p ~/claude-lab/mydata && unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)`, then copy the needed `checkpoints/chN/` items only if the learner's own are missing.
 > - Each task ends by running `python3 -m unittest discover -s tools/mydata/tests` and `python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip`, filtering to errors for the page(s) it touched — Expected: none for those pages. Then `git diff --check`, preview the page in a browser at `20261116/<page>`, and commit `docs(20261116): <chapter> on the MyData storyline`.
 > - Checkpoint files the task adds must be byte-identical to what the page tells learners to create (copy from the page's heredoc).
 
@@ -170,7 +169,7 @@ Seeded segments (each ≥ 8% of customers so Ch3 finds them): (a) age 40-55, inc
 
 **Files:** Modify `20261116/ClaudeCode_Preflight_Check.html`
 
-- [ ] Add CHECK 06 "마이데이터 내려받기 (2분)": `mkdir -p ~/claude-lab/mydata`, `curl -fsSL` the kit URL, `unzip -qo`, `cd ~/claude-lab/mydata && sha256sum -c SHA256SUMS | tail -3`, `cat VERSION`, `chmod -R a-w raw pseudo`. Checkpoint: `ls ~/claude-lab/mydata` shows `raw pseudo checkpoints`. Add a "테스트 데이터만" warning box and a 문제가 있을 때 row for a failed download (retry once, then raise your hand).
+- [ ] Add CHECK 06 "마이데이터 내려받기 (2분)": `mkdir -p ~/claude-lab/mydata`, `aws s3 cp` the kit, `unzip -qo`, `cd ~/claude-lab/mydata && sha256sum -c SHA256SUMS | tail -3`, `cat VERSION`, `chmod -R a-w raw pseudo`. Checkpoint: `ls ~/claude-lab/mydata` shows `raw pseudo checkpoints`. Add a "테스트 데이터만" warning box and a 문제가 있을 때 row for a failed download (retry once, then raise your hand).
 - [ ] Verify, preview, commit (shared rules).
 
 ### Task 6: Ch1 on MyData
@@ -232,19 +231,16 @@ Seeded segments (each ≥ 8% of customers so Ch3 finds them): (a) age 40-55, inc
 - [ ] Ch6: intro in the security engineer's voice; `alice` = 자산분석팀, `bob` = 타 부서, in the account table. Verify against the running Apps Gateway whether group-level plugin distribution exists (gateway admin console or its docs in `../claude-code-on-bedrock-deep-dive-workshop-with-apps-gateway`). If yes, add a step showing `bob` cannot install `asset-team-kit`; if no, add one sentence framing the model policy and spend limit as the control and record the finding in the commit body. Closing paragraph: the analyst's proposal is done; the organization sees and controls usage.
 - [ ] Verify both pages, preview, commit.
 
-### Task 12: Build, host, and wire the real URL
+### Task 12: Build, upload, and verify the kit
 
-**Files:** Create `tools/mydata/check_url.py`, `tools/mydata/README.md`; Modify all pages using the placeholder URL
+**Files:** Create `tools/mydata/README.md`
 
-**Interfaces:**
-- Produces: `check_url(url: str, not_before_kst: str = "2026-11-17T18:00") -> list[str]` — errors if a presigned URL's `X-Amz-Date` + `X-Amz-Expires` ends before `not_before_kst`, if the host matches `s3.ap-northeast-2.amazonaws.com` or `*.s3.ap-northeast-2.amazonaws.com`, or if `GET` is not 200 with the expected sha256.
-
-- [ ] **Step 1:** Unit-test `check_url` expiry and host logic with fabricated URLs (no network): `test_expired_presigned`, `test_regional_host_rejected`, `test_unsigned_global_ok`.
-- [ ] **Step 2:** Ask the user to refresh the `workshop-2` credentials (`! <their login command>`), then `aws sts get-caller-identity --profile workshop-2`.
-- [ ] **Step 3:** `python3 tools/mydata/build.py --version 2026.11.1`; `python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip` — Expected: `OK` for all pages.
-- [ ] **Step 4:** Upload to the Workshop Studio assets location reachable by `workshop-2`. A presigned URL signed with temporary (SSO/STS) credentials dies with the session, and SigV4 caps presigning at 7 days, so a URL created now cannot be assumed to last to Day 2. If the only option is a short-lived presigned URL, **stop and bring the user the choice**: a public-read object or CloudFront path in the same account, or regenerating the URL each morning. Do not pick silently.
-- [ ] **Step 5:** `python3 tools/mydata/check_url.py "<url>"` — Expected: `OK`. Replace the placeholder in every page; rerun `check_labs.py` (check 6) — `OK`.
-- [ ] **Step 6:** Write `tools/mydata/README.md` (generate, validate, build, upload, check_url, how to rotate the URL). Commit `feat(20261116): host the MyData kit and wire its URL`.
+- [ ] **Step 1:** Ask the user to refresh the `workshop-2` credentials (`! <their login command>`), then `aws sts get-caller-identity --profile workshop-2`.
+- [ ] **Step 2:** `python3 tools/mydata/build.py --version 2026.11.1`; `python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip` — Expected: `OK` for all pages.
+- [ ] **Step 3:** Copy `tools/mydata/dist/mydata-kit.zip` into `/Users/atomoh/github/claude-code/claude-code-on-bedrock-deep-dive-workshop-with-apps-gateway/assets/`.
+- [ ] **Step 4:** Upload that one object: `aws s3 cp --profile workshop-2 <zip> s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip`. Do NOT sync the whole directory and do NOT delete anything in the bucket prefix.
+- [ ] **Step 5:** Verify with `aws s3api head-object --profile workshop-2` (size equals the local zip) and download the object again, then compare its sha256 with the local zip.
+- [ ] **Step 6:** Write `tools/mydata/README.md` (generate, validate, build, upload, verify). Commit `feat(20261116): host the MyData kit`. `check_url.py` is dropped: there is no signed URL to check.
 
 ### Task 13: Rehearsal, delivery copy, docs
 
