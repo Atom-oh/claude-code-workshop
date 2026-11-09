@@ -26,6 +26,11 @@ class SegmentsReferenceTest(unittest.TestCase):
         self.assertGreaterEqual(self.stats["b"]["count"], 100)
         self.assertGreaterEqual(self.stats["c"]["count"], 120)
 
+    def test_exact_counts_for_default_seed(self):
+        # (b) denominator is DB + DC + IRP only; 연금저축 is excluded (ruling R14).
+        self.assertEqual(
+            [self.stats[k]["count"] for k in "abc"], [149, 121, 120])
+
     def test_segment_profiles_match_definitions(self):
         self.assertTrue(40 <= self.stats["a"]["age"] <= 55)
         self.assertTrue(58 <= self.stats["b"]["age"] <= 64)

@@ -15,6 +15,7 @@ from pathlib import Path
 
 HIGH_SPEND_3M = 5000000  # 3-month card total; roughly 12-month >= 18,000,000 KRW
 IRP_MIN = 5000000
+RETIREMENT = ("DB", "DC", "IRP")  # excludes 연금저축
 
 
 def _rows(path):
@@ -46,7 +47,7 @@ def compute(pseudo_dir):
     for c in customers:
         cid, age, band = c["customer_id"], int(c["age"]), int(c["income_band"])
         p = pension[cid]
-        total = sum(p.values())
+        total = sum(p.get(t, 0) for t in RETIREMENT)  # 퇴직연금 = DB + DC + IRP
         if 40 <= age <= 55 and band >= 9 and p.get("IRP", 0) < IRP_MIN:
             members["a"].append((c, p.get("IRP", 0)))
         if 58 <= age <= 64 and total and p.get("DB", 0) * 10 >= total * 8:
@@ -71,7 +72,7 @@ def render(stats):
          "40~55세, 소득 구간 상위 2개(9~10), IRP 없음 또는 잔액 500만 원 미만",
          a, "평균 IRP 잔액 " + _won(a["metric"])),
         ("(b) 퇴직을 앞둔 DB형 가입자",
-         "58~64세, 퇴직연금 중 DB형 비중 80% 이상",
+         "58~64세, 퇴직연금(DB·DC·IRP) 잔액 중 DB형 비중 80% 이상",
          b, "평균 DB형 비중 {:.0f}%".format(b["metric"] * 100)),
         ("(c) 소비는 크지만 연금 저축이 없는 청년층",
          "25~34세, 최근 3개월 카드 사용액 상위(합계 500만 원 이상), 연금 저축 없음",

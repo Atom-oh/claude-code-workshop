@@ -255,7 +255,7 @@ tools: Read, Grep, Glob
 model: sonnet
 ---
 당신은 분석 결과를 공유 전에 점검하는 리스크 리뷰어입니다.
-파일을 읽고 검색만 하며, 아무것도 수정하지 않습니다.
+점검 결과를 보고합니다. 분석 대상 데이터 파일은 수정하지 않습니다.
 
 # 점검 항목
 1. 근거: 주장마다 pseudo/ 아래 어느 파일, 어느 열에서 나왔는지 확인되는가
@@ -405,10 +405,10 @@ ls .claude/agents/</code></pre></div>
 <p><strong>Claude 세션 입력</strong></p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>고객을 세그먼트로 나누고 맞춤 서비스를 제안하는 segments.md를 작성해 주세요. 세 에이전트를 병렬로 진행해 주세요.
 1) spending-analyst: 25~34세이면서 최근 3개월 카드 사용액 합계가 500만 원 이상이고 연금 저축이 없는 고객의 소비 패턴과 생애 단계
-2) portfolio-analyst: (a) 40~55세, 소득 구간 9~10, IRP가 없거나 잔액 500만 원 미만인 고객, (b) 58~64세이면서 퇴직연금 중 DB형 비중이 80% 이상인 고객의 자산 구성과 노후 준비 격차
+2) portfolio-analyst: (a) 40~55세, 소득 구간 9~10, IRP가 없거나 잔액 500만 원 미만인 고객, (b) 58~64세이면서 퇴직연금(DB, DC, IRP) 잔액 중 DB형 비중이 80% 이상인 고객(연금저축은 제외)의 자산 구성과 노후 준비 격차
 3) risk-reviewer: 위 분석의 근거가 pseudo/ 파일과 열에서 확인되는지, 결과물에 식별자 형태의 값이 없는지 점검
 
-segments.md에는 세그먼트 (a) 40~55세 고소득 IRP 미흡, (b) 58~64세 DB형 중심, (c) 25~34세 고소비 연금 저축 없음을 표로 정리해 주세요.
+segments.md에는 세그먼트 (a) 40~55세 고소득 IRP 미흡, (b) 58~64세 퇴직연금(DB, DC, IRP) 중 DB형 비중 80% 이상, (c) 25~34세 고소비 연금 저축 없음을 표로 정리해 주세요.
 표 열은 세그먼트, 정의, 고객 수, 평균 나이, 평균 계좌 잔액, 대표 지표 한 가지입니다.
 표 아래에 세그먼트마다 맞춤 서비스 제안을 한 문장씩 쓰고, 근거 파일을 적어 주세요. 개별 고객 ID와 토큰 값은 쓰지 마세요.</code></pre></div>
 <p><strong>관찰 포인트</strong></p>
