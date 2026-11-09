@@ -464,11 +464,17 @@
   /* ---------- start ---------- */
 
   function init() {
-    document.querySelectorAll("details.cmd-explain").forEach(setupExplainer);
-    document.querySelectorAll(".code").forEach(setupBadge);
+    document.querySelectorAll("details.cmd-explain").forEach(function (d) {
+      try { setupExplainer(d); } catch (e) { console.warn("labviz: explainer setup failed", e); }
+    });
+    document.querySelectorAll(".code").forEach(function (c) {
+      try { setupBadge(c); } catch (e) { console.warn("labviz: badge setup failed", e); }
+    });
     document.querySelectorAll("figure.viz[data-viz]").forEach(function (fig) {
-      var def = LabViz.defs[fig.getAttribute("data-viz")];
-      if (def && !fig.classList.contains("lv-ready")) new Player(fig, def);
+      try {
+        var def = LabViz.defs[fig.getAttribute("data-viz")];
+        if (def && !fig.classList.contains("lv-ready")) new Player(fig, def);
+      } catch (e) { console.warn("labviz: figure failed", fig.getAttribute("data-viz"), e); }
     });
   }
   LabViz.init = init;
@@ -526,7 +532,7 @@
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 360, y: 232, w: 390, h: 384 },
       { id: "tools", shape: "group", label: "도구: Read · Bash", x: 360, y: 305, w: 350, h: 134 },
       { id: "user", shape: "note", tone: "info", label: "사용자\n(터미널)", x: 80, y: 120, w: 110, h: 60 },
-      { id: "claude", shape: "icon", icon: "EC2", label: "Claude Code", x: 360, y: 125 },
+      { id: "claude", shape: "note", label: "Claude Code\n(터미널 프로그램)", x: 360, y: 125, w: 150, h: 58 },
       { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델 Opus 5.5)", x: 700, y: 125 },
       { id: "customers", shape: "file", label: "customers.csv", x: 285, y: 330, w: 130, h: 50 },
       { id: "pensions", shape: "file", label: "pensions.csv", x: 435, y: 330, w: 130, h: 50 },
@@ -555,10 +561,10 @@
         on: ["tools", "claude", "bedrock", "e-result", "e-ask"], flow: { edge: "e-result", token: "앞 5행" } },
       { cmd: "수행",
         caption: "1,000행이 넘는 파일을 눈으로 읽을 수는 없습니다. 모델이 Python 집계 코드를 짜고, Claude Code가 Bash로 실행해 연령대별 수치를 계산합니다.",
-        on: ["claude", "tools", "pycalc", "e-exec"], flow: { edge: "e-exec", token: "python3" } },
+        on: ["claude", "bedrock", "e-ask", "e-resp", "tools", "pycalc", "e-exec"], flow: { edge: "e-exec", token: "python3" } },
       { cmd: "검증",
         caption: "프롬프트가 요청한 대로 다른 방법으로 다시 계산해 합계와 중복 고객을 확인합니다. 숫자가 어긋나면 수행 단계로 돌아가 고칩니다.",
-        on: ["claude", "tools", "pycalc", "e-result"], flow: { edge: "e-result", token: "검산 결과" } },
+        on: ["claude", "bedrock", "e-ask", "e-resp", "tools", "pycalc", "e-result"], flow: { edge: "e-result", token: "검산 결과" } },
       { cmd: "답 표시",
         caption: "검증을 통과한 숫자로 표를 만들어 터미널에 보여줍니다. 한 번의 프롬프트 안에서 수집, 수행, 검증이 이렇게 돌았습니다.",
         on: ["claude", "user", "e-answer"], flow: { edge: "e-answer", token: "연령대별 표" } }
@@ -571,7 +577,7 @@
     viewBox: "0 0 800 360",
     nodes: [
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 400, y: 190, w: 760, h: 320 },
-      { id: "claude", shape: "icon", icon: "EC2", label: "Claude Code", x: 105, y: 190 },
+      { id: "claude", shape: "note", label: "Claude Code\n(터미널 프로그램)", x: 105, y: 190, w: 150, h: 58 },
       { id: "dir", shape: "group", label: "~/.claude/projects/*ch1-loop*/", x: 410, y: 215, w: 330, h: 150 },
       { id: "jsonl", shape: "file", label: "<session>.jsonl", sub: "한 줄에 JSON 하나", x: 410, y: 238, w: 220, h: 60 },
       { id: "grepnote", shape: "note", tone: "info", label: "터미널\ngrep -o '고객0'", x: 670, y: 150, w: 170, h: 54, appear: 3 },

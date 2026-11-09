@@ -180,7 +180,7 @@ echo &#x27;{&quot;prompt&quot;:&quot;안녕하세요&quot;}&#x27; | /opt/dlp/dlp
 <li data-lines="5"><code>jq -r</code>로 JSON에서 검사할 글자를 꺼냅니다. <code>.prompt</code>가 있으면(프롬프트 훅) 그 값을, 없으면 <code>//</code> 뒤의 <code>.tool_input</code>(도구 호출 훅)을 <code>tostring</code>으로 글자로 바꿔 TEXT에 담습니다. <code>-r</code>은 따옴표 없이 글자만 출력하는 옵션입니다.</li>
 <li data-lines="7-8">탐지할 패턴을 PAT에 담습니다. <code>|</code>로 이은 다섯 개 정규식입니다. 주민등록번호(<code>[0-9]{6}-[1-4][0-9]{6}</code>), 카드번호(4자리 4묶음), 휴대폰(<code>01[016789]-…</code>), 계좌번호, AWS 액세스 키(<code>AKIA</code> + 16자)입니다. 작은따옴표 안이라 셸이 내용을 바꾸지 않습니다.</li>
 <li data-lines="10"><code>grep -Eq</code>로 TEXT에 패턴이 있는지 검사합니다. <code>-E</code>는 확장 정규식, <code>-q</code>는 출력 없이 종료 코드만 돌려 줍니다. 일치하면 종료 코드 0이라 <code>then</code> 쪽으로 갑니다.</li>
-<li data-lines="11">차단 이유를 표준 오류(<code>&gt;&amp;2</code>)로 출력합니다. exit 2일 때 이 메시지가 사용자에게 보입니다.</li>
+<li data-lines="11">차단 이유를 표준 오류(<code>&gt;&amp;2</code>)로 출력합니다. 프롬프트 훅이면 사용자에게, 도구 호출 훅이면 Claude에게 차단 이유로 전달됩니다.</li>
 <li data-lines="12"><code>exit 2</code>는 &quot;차단&quot;입니다. 훅에서 차단하는 종료 코드는 2뿐입니다.</li>
 <li data-lines="13-14">패턴이 없으면 <code>if</code>를 지나 <code>exit 0</code>으로 끝나고, Claude Code는 그대로 진행합니다.</li>
 <li data-lines="16"><code>chmod 755</code>는 모든 사용자가 실행할 수 있게 하고 쓰기는 소유자(root)만 허용합니다.</li>
@@ -789,7 +789,7 @@ aws bedrock-runtime apply-guardrail --region us-east-1 --guardrail-identifier &q
     &quot;ANTHROPIC_CUSTOM_HEADERS&quot;: &quot;X-Amzn-Bedrock-GuardrailIdentifier: &lt;guardrail-id&gt;\nX-Amzn-Bedrock-GuardrailVersion: 1&quot;
   }
 }</code></pre></div>
-<details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 붙여넣지 않음, 참고용)</summary>
+<details class="cmd-explain"><summary>이 JSON이 하는 일 (붙여넣지 않음, 참고용)</summary>
 <ol>
 <li data-lines="1-5"><code>settings.json</code>의 <code>env</code>에 들어갈 모양입니다. <code>ANTHROPIC_CUSTOM_HEADERS</code>에 헤더 두 줄(Guardrail ID와 버전)을 <code>\n</code>으로 이어 Claude Code가 보내는 요청에 붙입니다. 버전은 발행한 번호입니다. 이 랩에서는 읽기만 합니다.</li>
 </ol></details>

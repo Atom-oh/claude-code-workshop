@@ -6,9 +6,7 @@ to short names for the lab diagrams drawn by `../labviz.js`.
 
 | File | Source icon |
 | --- | --- |
-| `S3.svg` | Arch_Storage/48/Arch_Amazon-Simple-Storage-Service_48.svg |
 | `S3-Bucket.svg` | Res_Storage/Res_Amazon-Simple-Storage-Service_Bucket_48.svg |
-| `EC2.svg` | Arch_Compute/48/Arch_Amazon-EC2_48.svg |
 | `EC2-Instance.svg` | Res_Compute/Res_Amazon-EC2_Instance_48.svg |
 | `Bedrock.svg` | Arch_Artificial-Intelligence/48/Arch_Amazon-Bedrock_48.svg |
 | `IAM.svg` | Arch_Security-Identity-Compliance/48/Arch_AWS-Identity-and-Access-Management_48.svg |
