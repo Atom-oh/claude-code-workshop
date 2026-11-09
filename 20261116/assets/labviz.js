@@ -680,6 +680,111 @@
 
   /* ==== end Ch2 Lab 1 =============================================== */
 
+  /* ==== Ch2 Lab 2 ================================================== */
+
+  /* ---- Ch2 Lab 2 TASK 01: the DLP hook pipeline ---- */
+  LabViz.register("dlp-hook", {
+    title: "프롬프트나 도구 입력이 훅과 dlp-guard.sh를 거쳐 exit 2로 차단되거나 exit 0으로 통과하는 과정",
+    viewBox: "0 0 900 430",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 525, y: 245, w: 720, h: 340 },
+      { id: "in-gen", shape: "note", label: "입력\n프롬프트 또는\n도구 입력", x: 77, y: 165, w: 150, h: 66, appear: 1, until: 3 },
+      { id: "in-rrn", shape: "note", tone: "info", label: "프롬프트\n고객 900101-1234567\n의 가입 이력…", x: 77, y: 165, w: 150, h: 66, appear: 4, until: 4 },
+      { id: "in-card", shape: "note", tone: "info", label: "Write 도구 입력\n(파일 내용에\n카드번호)", x: 77, y: 165, w: 150, h: 66, appear: 5, until: 5 },
+      { id: "in-pseudo", shape: "note", tone: "info", label: "프롬프트\npseudo/customers.csv\n연령대 요약", x: 77, y: 165, w: 150, h: 66, appear: 6, until: 6 },
+      { id: "claude", shape: "note", label: "Claude Code\n(터미널 프로그램)", x: 275, y: 165, w: 140, h: 60 },
+      { id: "hook", shape: "note", label: "훅 호출\nUserPromptSubmit\nPreToolUse", x: 470, y: 165, w: 200, h: 66 },
+      { id: "guard", shape: "note", label: "dlp-guard.sh\n/opt/dlp", x: 705, y: 165, w: 150, h: 60 },
+      { id: "check", shape: "note", label: "jq로 입력을 꺼내\ngrep -E로 패턴 검사", x: 705, y: 270, w: 200, h: 62 },
+      { id: "block", shape: "note", tone: "err", label: "패턴 있음 → exit 2 차단\noperation blocked by hook", x: 545, y: 360, w: 250, h: 56 },
+      { id: "pass", shape: "note", tone: "ok", label: "패턴 없음 →\nexit 0 통과", x: 790, y: 360, w: 160, h: 56 },
+      { id: "toolres", shape: "note", tone: "info", label: "도구 실행 결과\n(훅은 보지 못함)", x: 285, y: 360, w: 200, h: 56 }
+    ],
+    edges: [
+      { id: "e-in", from: "in-gen", to: "claude" },
+      { id: "e-claude", from: "claude", to: "hook" },
+      { id: "e-hook", from: "hook", to: "guard" },
+      { id: "e-chk", from: "guard", to: "check" },
+      { id: "e-block", from: "check", to: "block" },
+      { id: "e-pass", from: "check", to: "pass" },
+      { id: "e-res", from: "claude", to: "toolres" }
+    ],
+    steps: [
+      { cmd: "입력",
+        caption: "검사는 두 가지 입력에서 시작합니다. 하나는 분석가가 Claude에 보내는 프롬프트이고, 다른 하나는 Claude가 실행하려는 도구 호출(Bash·Write·Edit·WebFetch)의 입력입니다.",
+        on: ["in-gen", "e-in", "claude"] },
+      { cmd: "훅 호출",
+        caption: "managed 정책에 등록한 훅이 호출됩니다. 프롬프트를 처리하기 전에는 UserPromptSubmit이, Bash·Write·Edit·WebFetch 도구를 실행하기 직전에는 PreToolUse가 /opt/dlp/dlp-guard.sh를 부르고, 입력 내용을 JSON으로 넘깁니다.",
+        on: ["claude", "hook", "guard", "e-claude", "e-hook"] },
+      { cmd: "dlp-guard.sh",
+        caption: "스크립트는 jq로 JSON에서 .prompt를(도구 호출이면 .tool_input을) 꺼내 글자로 만들고, grep -E로 주민등록번호·카드번호·휴대폰·계좌번호·AWS 키 패턴과 비교합니다. 결과는 종료 코드로 알립니다. exit 2는 차단, exit 0은 통과입니다.",
+        on: ["guard", "check", "e-chk"] },
+      { cmd: "주민번호 프롬프트",
+        caption: "고객 900101-1234567이 든 프롬프트는 주민등록번호 패턴에 맞아 exit 2로 끝납니다. 프롬프트 처리가 막히고 UserPromptSubmit operation blocked by hook이 표시되며, 보낸 문장은 입력창에 그대로 돌아옵니다.",
+        on: ["in-rrn", "e-in", "claude", "e-claude", "hook", "e-hook", "guard", "e-chk", "check", "e-block", "block"],
+        flow: { edge: "e-block", token: "exit 2" }, marks: { block: "x" } },
+      { cmd: "카드번호 Write",
+        caption: "cards.csv를 읽는 것은 통과합니다. Read는 이 훅의 대상이 아닙니다. 하지만 읽은 카드번호를 Write 도구로 notes.txt에 쓰려 하면, PreToolUse가 Write의 입력(파일 내용)을 검사해 패턴을 찾고 PreToolUse:Write hook error … DLP로 차단합니다.",
+        on: ["in-card", "e-in", "claude", "e-claude", "hook", "e-hook", "guard", "e-chk", "check", "e-block", "block"],
+        flow: { edge: "e-block", token: "exit 2" }, marks: { block: "x" } },
+      { cmd: "pseudo 분석",
+        caption: "가명 토큰(CI_…)만 다루는 pseudo/ 분석 요청에는 패턴이 없어 grep이 일치하지 않고 exit 0으로 통과합니다. 분석팀의 일상 업무는 그대로 진행됩니다.",
+        on: ["in-pseudo", "e-in", "claude", "e-claude", "hook", "e-hook", "guard", "e-chk", "check", "e-pass", "pass"],
+        flow: { edge: "e-pass", token: "exit 0" }, marks: { block: null, pass: "check" } },
+      { cmd: "훅이 보는 것",
+        caption: "훅은 도구에 들어가는 입력만 봅니다. Read로 읽은 파일 내용이나 도구 실행 결과는 검사하지 않고, 그 내용이 모델 컨텍스트에 들어가는 것도 막지 못합니다. Bash 리다이렉션(awk … > notes.txt)도 명령 문자열에 카드번호가 없으면 통과합니다. 민감 파일 자체는 permissions.deny의 Read(...)와 샌드박스로 막습니다.",
+        on: ["claude", "e-res", "toolres"],
+        flow: { edge: "e-res", token: "실행 결과" }, marks: { pass: null } }
+    ]
+  });
+
+  /* ---- Ch2 Lab 2 TASK 02: fail-open vs fail-closed ---- */
+  LabViz.register("fail-open-closed", {
+    title: "jq 없음, 스크립트 없음, 스크립트 멈춤 같은 고장에서 고치기 전(fail-open)은 통과하고 고친 뒤(fail-closed)는 차단되는 과정",
+    viewBox: "0 0 900 440",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 450, y: 240, w: 860, h: 360 },
+      { id: "claude", shape: "note", label: "Claude Code\n(터미널 프로그램)", x: 110, y: 150, w: 140, h: 60 },
+      { id: "hook", shape: "note", label: "훅 호출\n(managed 정책)", x: 310, y: 150, w: 170, h: 60 },
+      { id: "guard", shape: "note", label: "dlp-guard.sh\n/opt/dlp", x: 530, y: 150, w: 150, h: 60 },
+      { id: "f-ask", shape: "note", tone: "info", label: "고장 나면?\n(jq · 스크립트 · 멈춤)", x: 530, y: 260, w: 230, h: 58, appear: 1, until: 1 },
+      { id: "f-jq", shape: "note", tone: "err", label: "jq 없음\n(명령을 찾지 못함)", x: 530, y: 260, w: 230, h: 58, appear: 2, until: 3 },
+      { id: "f-gone", shape: "note", tone: "err", label: "스크립트 없음 · 시작 못함\n또는 멈춤(시간 초과)", x: 530, y: 260, w: 230, h: 58, appear: 4, until: 5 },
+      { id: "open", shape: "note", tone: "err", label: "fail-open (고치기 전)\nexit 2가 아니면 비차단 오류 → 작업 계속", x: 230, y: 360, w: 340, h: 60 },
+      { id: "closed", shape: "note", tone: "ok", label: "fail-closed (고친 뒤)\n오류도 exit 2 또는 onFailure: block → 차단", x: 680, y: 360, w: 340, h: 60 }
+    ],
+    edges: [
+      { id: "e-claude", from: "claude", to: "hook" },
+      { id: "e-hook", from: "hook", to: "guard" },
+      { id: "e-fail", from: "guard", to: "f-ask", label: "고장" },
+      { id: "e-open", from: "f-ask", to: "open" },
+      { id: "e-closed", from: "f-ask", to: "closed" }
+    ],
+    steps: [
+      { cmd: "정상일 때",
+        caption: "정상일 때는 훅이 dlp-guard.sh를 부르고, 스크립트가 패턴을 찾으면 exit 2로 차단합니다. 그런데 이 줄 중간이 고장 나면 어떻게 될까요? 세 가지 고장을 차례로 봅니다. jq 없음, 스크립트 없음, 스크립트 멈춤입니다.",
+        on: ["claude", "e-claude", "hook", "e-hook", "guard", "f-ask"] },
+      { cmd: "jq 없음 · 고치기 전",
+        caption: "jq가 없는 PC를 흉내 내면(sed로 jq를 jq-missing으로 바꿈) 스크립트가 jq를 못 찾아 TEXT가 비고, grep이 패턴을 못 찾아 exit=0으로 끝납니다. 훅에서 차단은 exit 2뿐이고 그 밖의 오류는 비차단 오류라서, 주민등록번호가 든 프롬프트도 그대로 통과합니다. 이것이 fail-open입니다.",
+        on: ["guard", "e-fail", "f-jq", "e-open", "open"],
+        flow: { edge: "e-open", token: "exit=0" }, marks: { open: "x" } },
+      { cmd: "jq 없음 · 고친 뒤",
+        caption: "고친 스크립트는 command -v jq로 jq가 있는지 먼저 확인하고, 없으면 exit 2로 막습니다. jq 실행이 실패해도, grep 종료 코드가 0(일치)·1(불일치) 이외의 오류여도 exit 2입니다. 통과는 grep이 확실히 불일치(1)일 때뿐입니다. 이것이 fail-closed입니다.",
+        on: ["guard", "e-fail", "f-jq", "e-closed", "closed"],
+        flow: { edge: "e-closed", token: "exit 2" }, marks: { open: null, closed: "check" } },
+      { cmd: "스크립트 없음·멈춤 · 고치기 전",
+        caption: "스크립트를 고쳐도, 스크립트 파일이 없거나 시작하지 못하거나 시간 초과가 되면 스크립트 안의 처리는 실행되지 않습니다. 이때도 그대로 통과합니다.",
+        on: ["guard", "e-fail", "f-gone", "e-open", "open"],
+        flow: { edge: "e-open", token: "비차단 오류" }, marks: { closed: null, open: "x" } },
+      { cmd: "onFailure: block",
+        caption: "훅 설정에 \"onFailure\": \"block\"(v2.1.295+)을 넣으면 이런 실패도 차단으로 처리됩니다. 스크립트를 치운 뒤에는 민감정보가 없는 프롬프트도 UserPromptSubmit operation blocked by hook … blocking because onFailure is \"block\"으로 막힙니다.",
+        on: ["guard", "e-fail", "f-gone", "e-closed", "closed"],
+        flow: { edge: "e-closed", token: "onFailure: block" }, marks: { open: null, closed: "check" } }
+    ]
+  });
+
+  /* ==== end Ch2 Lab 2 =============================================== */
+
   /* ---- end of diagram definitions ---- */
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
