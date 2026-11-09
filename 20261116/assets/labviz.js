@@ -597,6 +597,89 @@
 
   /* ==== end Ch1 ===================================================== */
 
+  /* ==== Ch2 Lab 1 ================================================== */
+
+  /* ---- Ch2 TASK 01: how a request reaches the model ---- */
+  LabViz.register("bedrock-path", {
+    title: "Claude Code의 요청이 IAM 역할과 Bedrock 추론 프로파일을 거쳐 모델에 닿는 길, 그리고 게이트웨이 모드의 다른 길",
+    viewBox: "0 0 800 400",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint\n(실습 PC)", x: 120, y: 205, w: 200, h: 250 },
+      { id: "claude", shape: "note", label: "Claude Code\n(터미널 프로그램)", x: 120, y: 218, w: 150, h: 58 },
+      { id: "iam", shape: "icon", icon: "IAM", label: "IAM 역할\n(인스턴스 역할)", x: 330, y: 218 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n추론 프로파일", sub: "global. · us. · apac.", x: 540, y: 218 },
+      { id: "model", shape: "note", tone: "info", label: "모델\nClaude 5.5", x: 722, y: 218, w: 112, h: 58 },
+      { id: "gateway", shape: "note", label: "Claude Apps Gateway\n(게이트웨이 모드)", x: 330, y: 360, w: 200, h: 54 }
+    ],
+    edges: [
+      { id: "e-sig", from: "claude", to: "iam", label: "SigV4 서명" },
+      { id: "e-prof", from: "iam", to: "bedrock", label: "모델 ID 요청" },
+      { id: "e-model", from: "bedrock", to: "model", label: "호출" },
+      { id: "e-gw1", from: "claude", to: "gateway", label: "로그인", via: [[120, 360]] },
+      { id: "e-gw2", from: "gateway", to: "bedrock", label: "허용 모델만", via: [[540, 360]] }
+    ],
+    steps: [
+      { cmd: "Claude Code",
+        caption: "Claude Code는 ccb-endpoint 안에서 도는 프로그램입니다. 질문을 처리하려면 Bedrock에 요청을 보내야 합니다. settings.json의 CLAUDE_CODE_USE_BEDROCK=1과 AWS_REGION=us-east-1이 이 길을 정합니다.",
+        on: ["claude"] },
+      { cmd: "IAM 역할",
+        caption: "요청은 이 PC에 붙은 IAM 역할(인스턴스 역할)의 권한으로 서명됩니다. 이 랩 환경에는 키를 나눠 주는 경로가 없고, 이 역할이 bedrock:InvokeModel 같은 권한을 가집니다.",
+        on: ["claude", "iam", "e-sig"], flow: { edge: "e-sig", token: "SigV4 서명" } },
+      { cmd: "추론 프로파일",
+        caption: "요청에는 모델 ID가 들어 있고, 이 환경은 global.anthropic.claude-*-5-5처럼 global. 프로파일로 고정했습니다. 추론 프로파일은 요청을 받아 어느 리전의 모델이 처리할지 정해 주는 입구입니다. global.은 전 세계, us.는 미국, apac.은 아시아 태평양 범위이고, 서울 리전 고객은 apac.을 고정하는 것이 기본입니다.",
+        on: ["iam", "bedrock", "e-prof"], flow: { edge: "e-prof", token: "모델 ID" } },
+      { cmd: "모델",
+        caption: "프로파일이 고른 곳의 모델이 답을 만들어 같은 길로 돌려줍니다. 모델 ID를 고정하지 않으면 Bedrock의 기본 주 모델인 Opus 5.5가 쓰이고 Opus 단가로 청구됩니다.",
+        on: ["bedrock", "model", "e-model"], flow: { edge: "e-model", token: "모델 호출" } },
+      { cmd: "게이트웨이 모드",
+        caption: "use_gateway로 바꾸면 Claude Code는 Bedrock으로 바로 가지 않고 Claude Apps Gateway에 로그인해 요청을 보냅니다. 게이트웨이가 로그인한 사람의 그룹에 허용된 모델만 Bedrock으로 넘기므로, 실제 배포에서는 사용자에게 Bedrock IAM을 주지 않아도 됩니다.",
+        on: ["claude", "gateway", "bedrock", "model", "e-gw1", "e-gw2", "e-model"], flow: { edge: "e-gw1", token: "로그인 · 요청" } }
+    ]
+  });
+
+  /* ---- Ch2 TASK 03: the three settings layers and deny beats allow ---- */
+  LabViz.register("policy-layers", {
+    title: "managed, user, project 세 설정 층에서 raw/ 읽기 요청은 거부되고 pseudo/ 읽기 요청은 허용되는 과정",
+    viewBox: "0 0 800 450",
+    nodes: [
+      { id: "managed", shape: "group", label: "managed · 보안 담당자가 배포 (가장 우선)", x: 485, y: 95, w: 590, h: 150 },
+      { id: "user", shape: "group", label: "user · 분석가가 직접 고치는 개인 설정", x: 485, y: 245, w: 590, h: 120 },
+      { id: "project", shape: "group", label: "project · 팀이 저장소에 담는 설정", x: 485, y: 375, w: 590, h: 110 },
+      { id: "mfile", shape: "file", label: "/etc/claude-code/\nmanaged-settings.json", sub: "deny: raw/**", x: 335, y: 112, w: 200, h: 82 },
+      { id: "dfile", shape: "file", label: "managed-settings.d/\n10-security.json", sub: "ask: git push", x: 585, y: 112, w: 200, h: 82 },
+      { id: "ufile", shape: "file", label: "~/.claude/\nsettings.json", x: 335, y: 258, w: 200, h: 60 },
+      { id: "unote", shape: "note", tone: "info", label: "분석가가 넣은 allow\nRead(…/raw/**)", x: 610, y: 258, w: 190, h: 54, appear: 4, until: 4 },
+      { id: "pfile", shape: "file", label: ".claude/\nsettings.json", x: 335, y: 386, w: 200, h: 60 },
+      { id: "req", shape: "note", tone: "info", label: "Read 요청\n(Claude 도구)", x: 75, y: 112, w: 118, h: 56 },
+      { id: "deny1", shape: "note", tone: "err", label: "거부\n(deny raw/**)", x: 75, y: 245, w: 118, h: 56, appear: 2, until: 2 },
+      { id: "ok1", shape: "note", tone: "ok", label: "허용\n(걸리는 deny 없음)", x: 75, y: 245, w: 118, h: 56, appear: 3, until: 3 },
+      { id: "deny2", shape: "note", tone: "err", label: "여전히 거부\n(deny가 먼저)", x: 75, y: 245, w: 118, h: 56, appear: 4, until: 4 },
+      { id: "merge", shape: "note", tone: "ok", label: "deny + ask\n함께 적용", x: 75, y: 245, w: 118, h: 56, appear: 5, until: 5 }
+    ],
+    edges: [
+      { id: "e-req", from: "req", to: "mfile" }
+    ],
+    steps: [
+      { cmd: "세 층",
+        caption: "Claude Code는 설정 파일을 세 층에서 읽습니다. 보안 담당자는 /etc/claude-code/ 아래 managed 파일을 배포하고, 분석가는 자기 홈의 ~/.claude/settings.json과 프로젝트의 .claude/settings.json을 고칩니다. 위쪽 층이 이깁니다.",
+        on: ["managed", "user", "project", "mfile", "dfile", "ufile", "pfile", "req"] },
+      { cmd: "raw/ 요청",
+        caption: "분석가가 Read 도구로 raw/customers.csv를 읽으려 합니다. 세 층의 규칙을 합치면 managed의 deny Read(…/raw/**)에 걸려 거부됩니다.",
+        on: ["req", "e-req", "managed", "mfile", "deny1"], flow: { edge: "e-req", token: "raw/ 요청" } },
+      { cmd: "pseudo/ 요청",
+        caption: "같은 도구로 pseudo/customers.csv를 읽으면 걸리는 deny가 없어 허용됩니다. 원본만 막고 분석 작업은 그대로 할 수 있습니다.",
+        on: ["req", "e-req", "managed", "user", "project", "ok1"], flow: { edge: "e-req", token: "pseudo/ 요청" } },
+      { cmd: "allow로 덮어쓰기",
+        caption: "분석가가 자기 settings.json에 raw/ 읽기 allow를 넣어도 소용없습니다. 규칙은 모든 층에서 합쳐진 뒤 deny가 먼저 평가되므로 raw/ 읽기는 여전히 거부됩니다.",
+        on: ["req", "e-req", "user", "ufile", "unote", "managed", "mfile", "deny2"], flow: { edge: "e-req", token: "raw/ 요청" } },
+      { cmd: "drop-in 조각",
+        caption: "TASK 04에서는 managed-settings.d/ 아래에 조각 파일을 더합니다. 본 파일의 deny와 조각의 ask가 한 정책으로 합쳐져 함께 적용됩니다.",
+        on: ["managed", "mfile", "dfile", "merge"] }
+    ]
+  });
+
+  /* ==== end Ch2 Lab 1 =============================================== */
+
   /* ---- end of diagram definitions ---- */
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
