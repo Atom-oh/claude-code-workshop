@@ -920,7 +920,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
 <section class="task" id="m2">
   <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 수집기와 스토어</h2><span class="time-badge">35분</span></div>
   <p class="task-goal">수집 루프가 돌고, 스냅샷이 <strong>멱등하게</strong> 쌓이고, /api/trending이 delta까지 얹어 주면 이 Phase는 끝입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 code-reviewer 서브에이전트에게 수집기/스토어 리뷰를 맡겨 보세요.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 배운 방식으로 code-reviewer 서브에이전트를 만들어 수집기/스토어 리뷰를 맡겨 보세요.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 1만 구현하고 멈춰줘. backend venv + requirements(fastapi, uvicorn, httpx, apscheduler), collector(videos.list + 기동 시 카테고리 1회 + _stat_int 격리), 스냅샷 링버퍼(멱등, 최근 48개), derive(delta/NEW/이탈/점유율), /api/trending(+?category=)와 /healthz. 수집 주기 60초(config). uvicorn 실행과 curl 검증 방법까지.</code></pre>

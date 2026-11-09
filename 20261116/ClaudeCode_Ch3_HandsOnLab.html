@@ -227,7 +227,7 @@ EOF</code></pre></div>
   근거: card_spend_monthly.csv(merchant_category, amount), customers.csv(age)</code></pre></div>
 <p>서브에이전트는 <strong>백그라운드로</strong> 실행되고, 입력창 아래 패널에 진행 상황이 보입니다(↓로 관리, <code>/tasks</code>로 목록). 결과를 받으면 <strong>출력 형식이 시스템 프롬프트에서 지정한 구조(대상 그룹, 소비 패턴, 생애 단계, 근거)를 따르는지</strong>, 개별 고객 ID 없이 집계만 보고하는지 확인하세요. 카드 소비는 <strong>최근 3개월</strong> 요약이므로 연간 추세는 말할 수 없습니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>메인이 빈틈을 대신 채우기도 합니다</strong></p>
-<p>spending-analyst는 <code>python3</code> 집계만 실행할 수 있어서 결과를 파일로 저장하지 못합니다. 실습 환경에서는 메인이 "분석가가 파일을 저장할 수 없으니 제가 직접 정리하겠습니다"라며 대신 처리하는 경우가 있었습니다. 서브에이전트의 권한 울타리는 지켜지지만, <strong>메인 세션의 권한</strong>(여기서는 auto mode)이 최종 경계라는 뜻입니다.</p>
+<p>spending-analyst는 <code>Write</code> 도구가 없어서 결과를 파일로 저장하지 못합니다. 실습 환경에서는 메인이 "분석가가 파일을 저장할 수 없으니 제가 직접 정리하겠습니다"라며 대신 처리하는 경우가 있었습니다. 서브에이전트의 권한 울타리는 지켜지지만, <strong>메인 세션의 권한</strong>(여기서는 auto mode)이 최종 경계라는 뜻입니다.</p>
 </div></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
@@ -401,14 +401,14 @@ ls .claude/agents/</code></pre></div>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>risk-reviewer 에이전트를 사용해서 pseudo/ 폴더의 customers.csv, bank_accounts.csv, cards.csv에 주민등록번호, 카드번호, 휴대폰, 계좌번호 형태의 값이 남아 있는지 Grep으로 점검해 주세요</code></pre></div>
 <p>risk-reviewer가 파일을 직접 읽거나 검색하고, 항목별 <code>PASS | WARN | FAIL</code> 형식으로 보고하는지 지켜보세요(시스템 프롬프트의 출력 형식). 특정 에이전트 실행을 <strong>보장</strong>하고 싶다면 자연어 대신 <code>@</code>를 입력해 typeahead에서 risk-reviewer (agent)를 선택하는 @-멘션 방식을 쓸 수 있습니다.</p>
 <h3 id="step-3-패턴-c-병렬-호출">Step 3 · 패턴 C, 병렬 호출</h3>
-<p>독립적인 3개 작업을 한 번에 요청해 고객을 세그먼트로 나눕니다. 메인이 <strong>3개의 Agent를 동시에 발행</strong>하고, 총 시간은 합산이 아니라 가장 오래 걸린 작업 기준(max)이 됩니다. 세 에이전트는 파일을 저장할 수 없으므로 <code>segments.md</code>는 메인이 결과를 모아 씁니다.</p>
+<p>독립적인 3개 작업을 한 번에 요청해 고객을 세그먼트로 나눕니다. 메인이 <strong>3개의 Agent를 동시에 발행</strong>하고, 총 시간은 합산이 아니라 가장 오래 걸린 작업 기준(max)이 됩니다. 세 에이전트는 <code>Write</code> 도구가 없어서 파일을 저장할 수 없으므로 <code>segments.md</code>는 메인이 결과를 모아 씁니다.</p>
 <p><strong>Claude 세션 입력</strong></p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>고객을 세그먼트로 나누고 맞춤 서비스를 제안하는 segments.md를 작성해 주세요. 세 에이전트를 병렬로 진행해 주세요.
-1) spending-analyst: 25~34세이면서 최근 3개월 카드 사용액 합계가 500만 원 이상이고 연금 저축이 없는 고객의 소비 패턴과 생애 단계
+1) spending-analyst: 25~34세이면서 최근 3개월 카드 사용액 합계가 500만 원 이상이고 연금(모든 유형)이 없는 고객의 소비 패턴과 생애 단계
 2) portfolio-analyst: (a) 40~55세, 소득 구간 9~10, IRP가 없거나 잔액 500만 원 미만인 고객, (b) 58~64세이면서 퇴직연금(DB, DC, IRP) 잔액 중 DB형 비중이 80% 이상인 고객(연금저축은 제외)의 자산 구성과 노후 준비 격차
 3) risk-reviewer: 위 분석의 근거가 pseudo/ 파일과 열에서 확인되는지, 결과물에 식별자 형태의 값이 없는지 점검
 
-segments.md에는 세그먼트 (a) 40~55세 고소득 IRP 미흡, (b) 58~64세 퇴직연금(DB, DC, IRP) 중 DB형 비중 80% 이상, (c) 25~34세 고소비 연금 저축 없음을 표로 정리해 주세요.
+segments.md에는 세그먼트 (a) 40~55세 고소득 IRP 미흡, (b) 58~64세 퇴직연금(DB, DC, IRP) 중 DB형 비중 80% 이상, (c) 25~34세 고소비 연금(모든 유형) 없음을 표로 정리해 주세요.
 표 열은 세그먼트, 정의, 고객 수, 평균 나이, 평균 계좌 잔액, 대표 지표 한 가지입니다.
 표 아래에 세그먼트마다 맞춤 서비스 제안을 한 문장씩 쓰고, 근거 파일을 적어 주세요. 개별 고객 ID와 토큰 값은 쓰지 마세요.</code></pre></div>
 <p><strong>관찰 포인트</strong></p>
@@ -420,7 +420,7 @@ segments.md에는 세그먼트 (a) 40~55세 고소득 IRP 미흡, (b) 58~64세 �
 ● segments.md를 작성했습니다 (세그먼트 3개, risk-reviewer 점검 PASS)
 ✻ Crunched for 1m 12s</code></pre></div>
 <p>세 에이전트가 <strong>동시에</strong> 뜨는지 확인하세요. 에이전트가 모두 뜨는지, 일부를 메인이 직접 처리하는지는 매번 다릅니다. 에이전트의 <code>python3</code> 외 명령(예: <code>curl</code>)은 좁은 Bash 패턴 때문에 실행되지 않고, 막히면 메인이 대신 실행하는 일도 있습니다. 좁은 Bash 패턴이 실제로 동작한다는 증거입니다.</p>
-<p>저장된 <code>segments.md</code>의 표를 열어 세그먼트 (a)~(c)가 모두 있고 서비스 제안이 한 문장씩 붙어 있는지 확인합니다. 숫자는 실행마다 정의 해석이 조금씩 달라 다를 수 있으며, 참고용 결과는 키트의 <code>~/claude-lab/mydata/checkpoints/ch3/segments.md</code>에 있습니다.</p>
+<p>저장된 <code>segments.md</code>의 표를 열어 세그먼트 (a)~(c)가 모두 있고 서비스 제안이 한 문장씩 붙어 있는지 확인합니다. 세그먼트 (c)는 <code>pensions.csv</code>에 연금(DB, DC, IRP, 연금저축 모든 유형)이 하나도 없는 고객입니다. 참고 결과의 "연금 저축 없음"도 같은 뜻입니다. 숫자는 실행마다 정의 해석이 조금씩 달라 다를 수 있으며, 참고용 결과는 키트의 <code>~/claude-lab/mydata/checkpoints/ch3/segments.md</code>에 있습니다.</p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat segments.md
 ls -l ~/claude-lab/mydata/checkpoints/ch3/segments.md   # 참고본</code></pre></div>
 <h3 id="step-4-비용-확인">Step 4 · 비용 확인</h3>

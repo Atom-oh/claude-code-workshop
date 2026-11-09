@@ -126,6 +126,7 @@ KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7
 [ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
   &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. Ch2 Lab 1 TASK 00의 &#x27;정책 초기화&#x27;를 실행하세요&quot;
+rm -rf ~/claude-lab/ch6 2&gt;/dev/null
 mkdir -p ~/claude-lab/ch6 &amp;&amp; cd ~/claude-lab/ch6
 ln -sfn ~/claude-lab/mydata/pseudo pseudo
 [ -d .git ] || git init -q
@@ -254,7 +255,7 @@ done</code></pre></div>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>head -n 400 pseudo/card_transactions.csv를 그대로 한 번 실행하고, 어떤 데이터인지 세 줄로 요약해줘</code></pre></div>
 
 <p>TASK 01과 같은 요청입니다. 화면의 도구 호출은 <strong>원래 명령</strong> <code>Bash(head -n 400 pseudo/card_transactions.csv)</code>로 표시되지만, Claude가 받은 결과는 머리글과 50행, 그리고 <code>[필터] 전체 36061행 …</code> 한 줄뿐입니다(약 20,000자가 약 2,600자로 줄어듭니다). 훅이 바꾼 것은 실행되는 명령이지 화면 표시가 아닙니다. 다시 <code>/context</code>를 실행해 TASK 01과 Messages 토큰을 비교하세요. 요약 내용은 거의 같은데 토큰은 크게 줄어 있어야 합니다.</p>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>왜 "cat으로 그대로"라고 지시하나요</strong></p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>왜 "head -n 400으로 그대로"라고 지시하나요</strong></p>
 <p>그냥 "요약해줘"라고 하면 Claude가 스스로 <code>python3</code>나 <code>awk</code>로 집계해서 거래 행이 컨텍스트에 들어오지 않을 수 있습니다. 그러면 훅이 낄 자리가 없습니다. 훅은 <strong>모델이 <code>head</code>나 <code>cat</code>으로 열 때, 모델이 잊었을 때, 다른 모델·서브에이전트가 실행할 때도</strong> 같은 기준을 보장하는 안전망입니다. 실습에서는 차이를 보기 위해 <code>head -n 400</code>으로 열게 합니다.</p></div></div>
 
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>명령이 바뀌지 않았다면</strong></p>

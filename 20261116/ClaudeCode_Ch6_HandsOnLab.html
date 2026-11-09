@@ -228,7 +228,7 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <p>질문이 모델 오류로 실패하면 <code>/model</code>에서 다른 모델(Sonnet ↔ Haiku)로 바꿔 다시 보냅니다.</p>
 <p>이 세션은 열어 둔 채로 다음 Task로 갑니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>팀 킷은 어떻게 막나요</strong></p>
-<p>게이트웨이의 그룹 정책이 내려주는 항목은 모델 허용 목록과 지출 한도처럼 요청 단위 통제입니다. 그룹별로 플러그인이나 마켓플레이스를 나눠 주는 설정은 게이트웨이에 없으므로, bob이 <code>asset-team-kit</code>을 받지 못하게 하는 단계는 이 랩에 없습니다. 타 부서의 사용은 모델 정책과 지출 한도로 통제하고, 플러그인 배포 제한은 Ch4에서 본 로컬 managed settings의 몫입니다.</p></div></div>
+<p>게이트웨이의 그룹 정책이 내려주는 항목은 모델 허용 목록과 지출 한도처럼 요청 단위 통제입니다. 이 랩의 게이트웨이 그룹 정책에는 플러그인·마켓플레이스 설정이 들어 있지 않으므로, bob이 <code>asset-team-kit</code>을 받지 못하게 하는 단계는 이 랩에 없습니다. 타 부서의 사용은 모델 정책과 지출 한도로 통제하고, 플러그인 배포 제한은 Ch4에서 본 로컬 managed settings의 몫입니다.</p></div></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
