@@ -138,3 +138,21 @@ ffmpeg -i ../../fsi-workshop-video/out/fsi-workshop-intro.mp4 -c:v libx264 \
 ffmpeg -ss 3.8 -i media/intro-90s.mp4 -frames:v 1 -vf scale=1280:720 \
   -q:v 4 media/intro-poster.jpg
 ```
+
+## Chapter Preview Videos
+
+`media/chapters/chN-preview.mp4` (with a `chN-preview.jpg` poster) is the
+one-minute landscape preview of chapter N. Each reactive deck shows a
+"▶ 1분 미리보기" button on its cover that plays it in an in-deck player
+(`reactive/assets/chapter-video.js` and `chapter-video.css`, loaded by
+`assets/stepviz.js`, so no deck HTML changes). The videos are web encodes of the
+`Wide-CHN` renders from the local, untracked Remotion project in `video/`
+(Amazon Polly narration, synthesized BGM). Re-encode after a new render, from
+this folder:
+
+```
+ffmpeg -i video/out/Wide-CH1.mp4 -c:v libx264 -preset slow -crf 28 \
+  -pix_fmt yuv420p -c:a aac -b:a 112k -movflags +faststart media/chapters/ch1-preview.mp4
+ffmpeg -ss 1.5 -i media/chapters/ch1-preview.mp4 -frames:v 1 -vf scale=1280:720 \
+  -q:v 4 media/chapters/ch1-preview.jpg
+```
