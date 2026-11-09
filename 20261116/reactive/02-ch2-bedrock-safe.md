@@ -1202,13 +1202,13 @@ Chapter 2 Key Takeaways
 @type: thankyou
 @toc: toc.html
 @next: 03-ch3-subagents.html
-@next-label: Chapter 3 (14:50)
-@message: 다음은 11:30 Preflight와 Ch1 Lab입니다. 오늘 본 정책과 훅은 점심 뒤 13:00 Ch2 Lab 1, 13:50 Lab 2에서 직접 배포하고 뚫어 봅니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
+@next-label: Chapter 3 (14:00)
+@message: 다음은 점심입니다. 13:00 통합 랩에서 Preflight와 Ch1 Lab을 마친 뒤, 오늘 본 정책과 훅을 Ch2 Lab 1, Lab 2에서 직접 배포하고 뚫어 봅니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
 
 :::notes
 {timing: 0.5min}
 [요약]
-• 다음은 11:30 Preflight와 Ch1 Lab, 점심 뒤 13:00 Ch2 Lab 1, 13:50 Lab 2
+• 다음은 점심, 13:00 통합 랩에서 Preflight와 Ch1 Lab, 이어서 Ch2 Lab 1과 Lab 2
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
 감사합니다. 바로 이어서 11시 30분에 Preflight와 Ch1 Lab을 하고, 오늘 본 정책과 훅은 점심 뒤 13시 Ch2 Lab 1, 13시 50분 Lab 2에서 직접 배포하고 뚫어 보겠습니다.
