@@ -792,7 +792,7 @@
   /* ---- Ch3 TASK 04: three dispatch patterns ---- */
   LabViz.register("subagent-dispatch", {
     title: "메인 Claude가 서브에이전트 3종에게 자동, 명시, 병렬로 일을 나눠 맡기고 요약만 돌려받아 segments.md를 쓰는 과정",
-    viewBox: "0 0 980 535",
+    viewBox: "0 0 1010 535",
     nodes: [
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 490, y: 275, w: 680, h: 490 },
       { id: "user", shape: "note", tone: "info", label: "사용자\n(터미널)", x: 70, y: 120, w: 100, h: 54 },
@@ -819,6 +819,7 @@
       { id: "r-pa", from: "pa", to: "main", via: [[530, 290], [530, 150]] },
       { id: "e-rr", from: "main", to: "rr", via: [[710, 150], [710, 290]] },
       { id: "r-rr", from: "rr", to: "main", via: [[680, 290], [680, 170]] },
+      { id: "e-sub", from: "ec2", to: "bedrock", via: [[880, 390], [995, 390], [995, 120]] },
       { id: "e-write", from: "main", to: "seg", via: [[420, 150], [420, 195]], appear: 9 }
     ],
     steps: [
@@ -832,24 +833,24 @@
         caption: "Claude Code가 요청과 각 에이전트의 description을 모델에 보내고, 모델이 가장 맞는 portfolio-analyst를 고릅니다. 집계 한 번이면 위임하지 않고 메인이 직접 처리하기도 하므로 자동 위임은 보장되지 않습니다.",
         on: ["main", "bedrock", "e-ask", "e-resp"], flow: { edge: "e-resp", token: "portfolio-analyst" } },
       { cmd: "A 자동 · 위임",
-        caption: "메인이 portfolio-analyst에게 일을 맡깁니다. 이 에이전트는 자기 컨텍스트 창에서 securities, insurance, pensions, bank_accounts 파일을 읽고 집계합니다.",
-        on: ["main", "e-pa", "pa", "pa-f1", "pa-f2"], flow: { edge: "e-pa", token: "위임" } },
+        caption: "메인이 portfolio-analyst에게 일을 맡깁니다. 이 에이전트는 자기 컨텍스트 창에서 securities, insurance, pensions, bank_accounts 파일을 읽고 집계하며, 서브에이전트도 각자 Bedrock 모델(sonnet)로 생각합니다.",
+        on: ["main", "e-pa", "pa", "pa-f1", "pa-f2", "bedrock", "e-sub"], flow: { edge: "e-pa", token: "위임" } },
       { cmd: "A 자동 · 요약 반환",
         caption: "긴 읽기와 집계는 에이전트의 컨텍스트 창에서 끝나고, 메인에는 요약만 돌아옵니다. 메인 컨텍스트가 무거워지지 않습니다.",
         on: ["pa", "r-pa", "main"], flow: { edge: "r-pa", token: "요약만" } },
       { cmd: "B 명시",
-        caption: "패턴 B입니다. 사용자가 \"risk-reviewer 에이전트를 사용해서\"처럼 이름을 직접 지정합니다. 메인은 다른 에이전트를 따져 보지 않고 risk-reviewer에게 맡기고, 이 에이전트는 읽기 도구만 있어 점검 결과만 돌려줍니다.",
-        on: ["user", "e-req", "main", "e-rr", "rr", "rr-f1", "rr-f2"], flow: { edge: "e-rr", token: "risk-reviewer" }, marks: { rr: "lock" } },
+        caption: "패턴 B입니다. 사용자가 \"risk-reviewer 에이전트를 사용해서\"처럼 이름을 직접 지정합니다. 메인은 다른 에이전트를 따져 보지 않고 risk-reviewer에게 맡기고, 이 에이전트는 읽기 도구만 있어 점검 결과만 돌려줍니다. 호출을 만드는 일에는 메인의 모델이 쓰입니다.",
+        on: ["user", "e-req", "main", "bedrock", "e-ask", "e-resp", "e-rr", "rr", "rr-f1", "rr-f2"], flow: { edge: "e-rr", token: "risk-reviewer" }, marks: { rr: "lock" } },
       { cmd: "C 병렬 · 동시 위임",
-        caption: "패턴 C입니다. 세 작업이 서로 독립이라 모델이 Agent 호출 3개를 한 번에 내고, 메인이 세 에이전트를 동시에 띄웁니다. 총 시간은 가장 오래 걸린 쪽 기준이고, 비용은 합산됩니다.",
-        on: ["main", "bedrock", "e-ask", "e-resp", "e-sa", "e-pa", "e-rr", "sa", "pa", "rr", "sa-f1", "sa-f2", "pa-f1", "pa-f2", "rr-f1", "rr-f2"],
+        caption: "패턴 C입니다. 세 작업이 서로 독립이라 모델이 Agent 호출 3개를 한 번에 내고, 메인이 세 에이전트를 동시에 띄웁니다. 세 에이전트도 각자 Bedrock 모델로 생각합니다. 총 시간은 가장 오래 걸린 쪽 기준이고, 비용은 합산됩니다.",
+        on: ["main", "bedrock", "e-ask", "e-resp", "e-sa", "e-pa", "e-rr", "e-sub", "sa", "pa", "rr", "sa-f1", "sa-f2", "pa-f1", "pa-f2", "rr-f1", "rr-f2"],
         flow: { edge: "e-pa", token: "동시에 3개" } },
       { cmd: "C 병렬 · 요약 반환",
-        caption: "세 에이전트는 각자 컨텍스트 창에서 일하고 요약만 돌려줍니다. 메인 컨텍스트에는 요약 세 개만 쌓입니다.",
-        on: ["sa", "pa", "rr", "r-sa", "r-pa", "r-rr", "main"], flow: { edge: "r-pa", token: "요약만" } },
+        caption: "세 에이전트는 각자 컨텍스트 창에서 일하고 요약만 돌려줍니다. 메인 컨텍스트에는 요약 세 개만 쌓입니다. 에이전트마다 Bedrock 모델을 따로 호출하므로 비용은 합산됩니다.",
+        on: ["sa", "pa", "rr", "r-sa", "r-pa", "r-rr", "main", "bedrock", "e-sub"], flow: { edge: "r-pa", token: "요약만" } },
       { cmd: "segments.md 저장",
-        caption: "세 에이전트에는 Write 도구가 없어서 메인이 요약을 모아 segments.md를 씁니다. 참고 결과는 (a) 149명, (b) 121명, (c) 120명이고, 숫자는 실행마다 다를 수 있습니다.",
-        on: ["main", "e-write", "seg"], flow: { edge: "e-write", token: "Write" } }
+        caption: "세 에이전트에는 Write 도구가 없어서 메인이 요약을 모아 segments.md를 씁니다. 참고 결과는 (a) 149명, (b) 121명, (c) 120명이고, 숫자는 실행마다 다를 수 있습니다. 표와 서비스 제안 문장은 메인의 모델이 요약을 보고 씁니다.",
+        on: ["main", "bedrock", "e-ask", "e-resp", "e-write", "seg"], flow: { edge: "e-write", token: "Write" } }
     ]
   });
 
@@ -878,7 +879,7 @@
     edges: [
       { id: "e-req", from: "user", to: "main", label: "요청" },
       { id: "e-del", from: "main", to: "rr", label: "위임" },
-      { id: "e-write", from: "rr", to: "disk", label: "Write" },
+      { id: "e-write", from: "rr", to: "disk", label: "Write", appear: 6, until: 6 },
       { id: "e-term", from: "term", to: "rr" }
     ],
     steps: [
