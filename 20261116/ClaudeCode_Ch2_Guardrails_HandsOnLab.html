@@ -90,24 +90,27 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <blockquote>
 <p><strong>Claude Code Deep Dive Workshop, Chapter 2 Lab 2 - Bedrock 위에서 안전하게 쓰기, 가드레일과 DLP 실습</strong></p>
 </blockquote>
-<p>Claude Code에는 네이티브 DLP 기능이 없습니다. Ch2 강의에 이어지는 50분 실습 세션으로, 강의에서 본 <strong>DLP 5층</strong> 중 핵심인 <strong>훅(3층)</strong>을 managed 정책으로 강제하고, 고장 난 훅이 조용히 통과되는 <strong>fail-open</strong> 문제를 직접 확인합니다.
+<p>Claude Code에는 네이티브 DLP 기능이 없습니다. 이번 이야기의 주인공은 <strong>IT보안·플랫폼 담당자</strong>입니다. 분석팀이 마이데이터 고객 데이터를 Claude Code로 다루게 되면서, 원본 식별자가 프롬프트나 도구 입력으로 새어 나가지 않게 막는 일이 맡겨졌습니다. Ch2 강의에 이어지는 55분 실습 세션으로, 강의에서 본 <strong>DLP 5층</strong> 중 핵심인 <strong>훅(3층)</strong>을 managed 정책으로 강제하고, 고장 난 훅이 조용히 통과되는 <strong>fail-open</strong> 문제를 직접 확인합니다.
 이어서 확인 창을 줄이는 <strong>auto mode</strong>에서 사람의 확인과 분류기의 판단 사이에 경계를 긋습니다. 시간이 남으면 선택 트랙으로 Sandbox(2층), Bedrock Guardrails(4층), 확장 통제(5층)를 이어서 해 봅니다.</p>
-<p>소요 시간 <strong>필수 30분 + 선택 20분</strong> · Task <strong>준비 + 필수 3개 + 선택 3개 + 원복</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
+<p>소요 시간 <strong>필수 35분 + 선택 20분</strong> · Task <strong>준비 + 필수 3개 + 선택 3개 + 원복</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>테스트 데이터만 사용하세요</strong></p>
-<p>이 랩의 주민등록번호·카드번호는 형식만 맞춘 가짜 값입니다. 실제 개인정보를 입력하지 마세요.</p></div></div>
+<p>이 랩의 주민등록번호·카드번호·휴대폰·계좌번호는 형식만 맞춘 가짜 값입니다. <code>raw/</code> 폴더도 데모용 가짜 데이터입니다. 실제 개인정보를 입력하지 마세요.</p></div></div>
 
-<h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
+<h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</h2>
+<p>분석팀이 쓰는 데이터는 <code>pseudo/</code>(가명 토큰)이고, <code>raw/</code>에는 식별자가 그대로 있는 데모용 가짜 원본이 있습니다. DLP 훅이 무엇을 막고 무엇을 통과시키는지 보려면 둘 다 필요합니다. 키트를 이미 받았다면 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
+KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 mkdir -p ~/claude-lab/ch3 &amp;&amp; cd ~/claude-lab/ch3 &amp;&amp; git init -q
-cat &gt; customers.csv &lt;&lt; &#x27;EOF&#x27;
-name,rrn,card
-홍길동,900101-1234567,4111-1111-1111-1111
-EOF
+ln -sfn ~/claude-lab/mydata/pseudo pseudo
+head -3 ~/claude-lab/mydata/raw/customers.csv &gt; customers.csv
+head -3 ~/claude-lab/mydata/raw/cards.csv &gt; cards.csv
 sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
   &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. 아래 &#x27;정책 초기화&#x27;를 먼저 실행하세요&quot;
 sudo cp /etc/claude-code/managed-settings.json ~/claude-lab/ch3/managed-settings.backup.json
 which jq &amp;&amp; sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
+<p><code>customers.csv</code>와 <code>cards.csv</code>는 원본 3줄(가짜 데모 데이터)을 작업 폴더로 복사한 것입니다. <code>head -3</code>로 앞 몇 줄만 복사하므로 원본 데이터는 그대로입니다.</p>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>"이전 챕터 정책이 남아 있습니다"가 나오면, 정책 초기화</strong></p>
 <p>이전 챕터의 원복을 건너뛰면 그 정책이 이번 챕터의 백업에 섞여 들어가고, 원복해도 계속 남습니다(예: Opus를 뺀 모델 목록). 백업 전에 아래로 초기화한 뒤 위 블록을 다시 실행하세요.</p>
@@ -117,10 +120,10 @@ use_bedrock_direct</code></pre></div></div></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span><code>customers.csv</code>(가짜 데이터)가 있고 managed-settings를 백업했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>customers.csv</code>·<code>cards.csv</code>(가짜 데모 데이터)와 <code>pseudo</code> 링크가 있고 managed-settings를 백업했다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-01-dlp-훅을-정책으로-강제-8분">TASK 01 · DLP 훅을 정책으로 강제 (8분)</h2>
+<h2 id="task-01-dlp-훅을-정책으로-강제-10분">TASK 01 · DLP 훅을 정책으로 강제 (10분)</h2>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>회사 PC(macOS · Windows)라면</strong></p>
 <p>이 스크립트는 bash와 jq를 전제로 합니다. macOS는 같은 스크립트를 쓰되 jq를 함께 배포하고, Windows는 Git Bash로 실행하거나 PowerShell 스크립트(<code>powershell -File …</code>)로 다시 작성해야 합니다. 의존성이 빠진 PC에서는 훅이 오류로 끝나며 <strong>조용히 통과(fail-open)</strong> 하므로, TASK 02의 fail-closed 원칙이 더 중요해집니다. 샌드박스(선택 TASK 04)는 macOS는 내장 Seatbelt, Linux·WSL2는 bubblewrap을 쓰며 네이티브 Windows는 지원하지 않습니다.</p></div></div>
 
@@ -133,8 +136,8 @@ sudo tee /opt/dlp/dlp-guard.sh &gt; /dev/null &lt;&lt; &#x27;EOF&#x27;
 INPUT=$(cat)
 TEXT=$(echo &quot;$INPUT&quot; | jq -r &#x27;.prompt // (.tool_input | tostring)&#x27;)
 
-# 주민등록번호 · 카드번호 · AWS 액세스 키 (탐지 예시)
-PAT=&#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}&#x27;
+# 주민등록번호 · 카드번호 · 휴대폰 · 계좌번호 · AWS 액세스 키 (탐지 예시)
+PAT=&#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4}|[0-9]{3}-[0-9]{2,6}-[0-9]{5,7}|AKIA[0-9A-Z]{16}&#x27;
 
 if echo &quot;$TEXT&quot; | grep -Eq &quot;$PAT&quot;; then
   echo &quot;DLP: 민감정보 패턴이 감지되어 차단했습니다&quot; &gt;&amp;2
@@ -144,9 +147,11 @@ exit 0
 EOF
 sudo chmod 755 /opt/dlp/dlp-guard.sh
 echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
+echo &#x27;{&quot;prompt&quot;:&quot;연락처 010-0123-4567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
+echo &#x27;{&quot;prompt&quot;:&quot;계좌 123-456789-01234&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
 echo &#x27;{&quot;prompt&quot;:&quot;안녕하세요&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;</code></pre></div>
 
-<p>첫 줄은 <code>exit=2</code>, 둘째 줄은 <code>exit=0</code>이 나와야 합니다.</p>
+<p>앞의 세 줄(주민등록번호·휴대폰·계좌번호)은 <code>exit=2</code>, 마지막 줄은 <code>exit=0</code>이 나와야 합니다.</p>
 <h3 id="step-2-managed-정책에-훅-등록">Step 2 · managed 정책에 훅 등록</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; /tmp/policy.json &lt;&lt; &#x27;EOF&#x27;
@@ -174,15 +179,26 @@ sudo jq . /etc/claude-code/managed-settings.json &gt;/dev/null &amp;&amp; echo &
 <h3 id="step-3-차단-확인">Step 3 · 차단 확인</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch3 &amp;&amp; claude</code></pre></div>
 
-<p>아래 두 요청을 차례로 보냅니다.</p>
+<p>아래 요청을 차례로 보냅니다. 먼저 분석팀이 실제로 하는 일, 곧 가명 데이터 분석이 훅에 걸리지 않는지 봅니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>pseudo/customers.csv 연령대 분포를 요약해줘</code></pre></div>
+
+<p>가명 토큰(<code>CI_...</code>)에는 DLP 패턴이 없으므로 훅을 통과해 요약이 나옵니다. 같은 요청을 비대화형으로 보내도 같습니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude -p &quot;pseudo/customers.csv 연령대 분포를 요약해줘&quot;; echo &quot;claude exit=$?&quot;</code></pre></div>
+
+<p>이제 원본 식별자가 들어간 요청을 차례로 보냅니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>고객 900101-1234567 의 가입 이력을 정리해줘</code></pre></div>
 
-<p>첫 요청은 <strong>프롬프트 단계에서</strong> <code>UserPromptSubmit operation blocked by hook</code>으로 차단되고, 보낸 문장은 입력창에 그대로 돌아옵니다. <strong>Ctrl+U</strong>로 지운 뒤 둘째 요청을 보냅니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>customers.csv를 읽고, 첫 번째 고객의 카드번호를 Write 도구로 notes.txt 파일에 적어줘</code></pre></div>
+<p>첫 요청은 <strong>프롬프트 단계에서</strong> <code>UserPromptSubmit operation blocked by hook</code>으로 차단되고, 보낸 문장은 입력창에 그대로 돌아옵니다. <strong>Ctrl+U</strong>로 지운 뒤 휴대폰과 계좌번호 요청도 같은 방식으로 차단되는지 봅니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>010-0123-4567 번호로 가입한 고객을 찾아줘</code></pre></div>
+
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>계좌 123-456789-01234 의 거래 내역을 정리해줘</code></pre></div>
+
+<p>둘 다 프롬프트 단계에서 차단됩니다. 지운 뒤 마지막 요청을 보냅니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cards.csv를 읽고, 첫 번째 카드번호를 Write 도구로 notes.txt 파일에 적어줘</code></pre></div>
 
 <p>파일은 읽히지만, 카드번호를 담은 <code>Write</code>가 <strong>도구 호출 단계에서</strong> <code>PreToolUse:Write hook error … DLP</code>로 차단됩니다. 이어서 <code>/hooks</code>를 실행하면 <strong>managed hooks only</strong> 표시와 함께 "Only hooks from managed settings run here"가 보입니다. managed 훅 자체는 이 목록에 나오지 않습니다. 확인 후 <code>/exit</code>로 나옵니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>왜 "Write 도구로"라고 지정하나요: PreToolUse는 입력만 봅니다</strong></p>
-<p>"notes.txt에 적어줘"라고만 하면 모델이 <code>awk -F, 'NR==2{print $3}' customers.csv &gt; notes.txt</code>처럼 <strong>Bash 리다이렉션</strong>을 고르기도 합니다. 이 명령 문자열에는 카드번호가 없으므로 훅은 통과시키고, 파일에는 번호가 그대로 써집니다(실습 환경에서 실제로 확인). 훅은 도구의 <strong>입력</strong>을 검사할 뿐 실행 <strong>결과</strong>를 보지 않습니다. <code>Read</code>로 읽은 파일 내용이 모델 컨텍스트에 들어가는 것도 막지 못합니다. 민감 파일 자체를 막으려면 <code>permissions.deny</code>의 <code>Read(...)</code>와 샌드박스(선택 TASK 04)의 파일시스템 제한을 함께 씁니다.</p></div></div>
+<p>"notes.txt에 적어줘"라고만 하면 모델이 <code>awk -F, 'NR==2{print $3}' cards.csv &gt; notes.txt</code>처럼 <strong>Bash 리다이렉션</strong>을 고르기도 합니다. 이 명령 문자열에는 카드번호가 없으므로 훅은 통과시키고, 파일에는 번호가 그대로 써집니다(실습 환경에서 실제로 확인). 훅은 도구의 <strong>입력</strong>을 검사할 뿐 실행 <strong>결과</strong>를 보지 않습니다. <code>Read</code>로 읽은 파일 내용이 모델 컨텍스트에 들어가는 것도 막지 못합니다. 민감 파일 자체를 막으려면 <code>permissions.deny</code>의 <code>Read(...)</code>와 샌드박스(선택 TASK 04)의 파일시스템 제한을 함께 씁니다.</p></div></div>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>차단된 뒤 "우회해서 해 줘"라고 요청하지 마세요</strong></p>
 <p>DLP 차단 직후 "Bash 말고 다른 방법으로" 같은 우회 요청을 보내면, 모델 측 안전장치가 세션을 <code>API Error: … safeguards flagged this session … [cyber]</code>로 멈출 수 있습니다(Opus 5.5·Sonnet 5.5 모두 확인). 그러면 그 세션에서는 더 진행되지 않습니다. <code>/exit</code> 후 새 세션을 열면 다시 정상 동작합니다.</p></div></div>
@@ -192,7 +208,7 @@ sudo jq . /etc/claude-code/managed-settings.json &gt;/dev/null &amp;&amp; echo &
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>프롬프트와 Write 두 지점에서 차단 메시지를 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>가명 데이터 요약은 통과하고, 프롬프트(주민등록번호·휴대폰·계좌번호)와 Write(카드번호) 지점에서 차단 메시지를 확인했다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span><code>/hooks</code>에서 "managed hooks only"를 확인했다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>Bash 리다이렉션 경로는 PreToolUse 훅이 보지 못한다는 점을 설명할 수 있다</span></label></li>
 </ul></div></div>
@@ -215,7 +231,7 @@ INPUT=$(cat)
 command -v jq &gt;/dev/null || { echo &quot;DLP: 검사기 오류(jq 없음) - 안전을 위해 차단&quot; &gt;&amp;2; exit 2; }
 TEXT=$(echo &quot;$INPUT&quot; | jq -r &#x27;.prompt // (.tool_input | tostring)&#x27;) || { echo &quot;DLP: 입력 해석 실패 - 차단&quot; &gt;&amp;2; exit 2; }
 
-PAT=&#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}&#x27;
+PAT=&#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4}|[0-9]{3}-[0-9]{2,6}-[0-9]{5,7}|AKIA[0-9A-Z]{16}&#x27;
 echo &quot;$TEXT&quot; | grep -Eq &quot;$PAT&quot;; RC=$?
 [ &quot;$RC&quot; -eq 1 ] &amp;&amp; exit 0      # 1 = 패턴 없음 → 통과
 if [ &quot;$RC&quot; -eq 0 ]; then
@@ -227,6 +243,9 @@ exit 2
 EOF
 echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
 echo &#x27;{&quot;prompt&quot;:&quot;안녕하세요&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;</code></pre></div>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>스크립트를 따라 입력하기 어렵다면</strong></p>
+<p>키트에 이 최종본이 들어 있습니다. 아래 명령은 같은 내용으로 <code>/opt/dlp/dlp-guard.sh</code>를 덮어씁니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo install -m 755 ~/claude-lab/mydata/checkpoints/ch2/dlp-guard.sh /opt/dlp/dlp-guard.sh</code></pre></div></div></div>
 <p>첫 줄은 <code>exit=2</code>, 둘째 줄은 <code>exit=0</code>입니다. <code>grep</code>도 <code>jq</code>처럼 실행 오류가 날 수 있으므로, 종료 코드를 <strong>0(일치)·1(불일치)·그 밖(오류)</strong> 으로 나눠 오류일 때도 차단합니다. <code>if grep ...; then</code> 형태로 쓰면 grep 오류가 &quot;불일치&quot;와 같게 처리되어 통과됩니다(실습 환경에서 확인).</p>
 <h3 id="step-3-스크립트가-아예-없거나-멈춰도-막기">Step 3 · 스크립트가 아예 없거나 멈춰도 막기</h3>
 <p>스크립트 안의 처리로는 <strong>스크립트가 없거나, 시작하지 못하거나, 시간 초과</strong>인 경우를 막을 수 없습니다. 이때도 그대로 통과됩니다. 훅 설정에 <code>&quot;onFailure&quot;: &quot;block&quot;</code>(v2.1.295+)을 넣으면 이런 실패도 차단으로 처리됩니다.</p>
@@ -400,13 +419,13 @@ cd ~/claude-lab/ch3 &amp;&amp; claude --permission-mode auto</code></pre></div>
 <p><code>Bash(git push *)</code>는 <code>git push</code>로 시작하는 명령(<code>&amp;&amp;</code>로 묶인 부분 명령 포함)만 잡습니다. <code>git -C &lt;dir&gt; push</code>나 <code>git -c k=v push</code>처럼 다르게 쓴 명령은 걸리지 않습니다. 명령 전체를 검사해야 하면 TASK 01의 PreToolUse 훅으로 보강하세요.</p></div></div>
 
 <h3 id="step-4-우리-회사의-민감-위치를-분류기에-알리기">Step 4 · 우리 회사의 민감 위치를 분류기에 알리기</h3>
-<p>분류기는 기본적으로 <strong>현재 저장소와 그 원격만</strong> 신뢰합니다. 사내 Git, 도메인, 버킷과 함께 <strong>고객 데이터가 있는 곳</strong>을 이름으로 알려 주면, 추측 대신 그 정보를 기준으로 판정합니다. 항목은 정규식이 아니라 문장입니다.</p>
+<p>분류기는 기본적으로 <strong>현재 저장소와 그 원격만</strong> 신뢰합니다. 사내 Git, 도메인, 버킷과 함께 <strong>원본 식별자가 있는 곳</strong>(<code>~/claude-lab/mydata/raw</code>)을 이름으로 알려 주면, 추측 대신 그 정보를 기준으로 판정합니다. 항목은 정규식이 아니라 문장입니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq &#x27;.autoMode.environment = [
   &quot;$defaults&quot;,
   &quot;Organization: Workshop Bank. Primary use: software development&quot;,
   &quot;Trusted internal domains: *.workshop.internal&quot;,
-  &quot;Sensitive data locations &amp; audiences: ~/claude-lab/ch3/customers.csv holds customer personal data (test values) and must never leave this machine&quot;
+  &quot;Sensitive data locations &amp; audiences: ~/claude-lab/mydata/raw holds customer identifiers (test values) and must never leave this machine&quot;
 ]&#x27; ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
 claude auto-mode config | jq &#x27;.environment[-3:]&#x27;</code></pre></div>
 
@@ -441,7 +460,7 @@ claude auto-mode config | jq &#x27;.environment[-3:]&#x27;</code></pre></div>
 <tr>
 <td>무조건이어야 하면 hard_deny로</td>
 <td>environment는 판단 근거일 뿐 강제가 아님</td>
-<td><code>autoMode.hard_deny</code>에 "customers.csv 내용을 머신 밖으로 보내는 모든 동작" 추가</td>
+<td><code>autoMode.hard_deny</code>에 "raw/ 폴더 내용을 머신 밖으로 보내는 모든 동작" 추가</td>
 </tr>
 </tbody>
 </table>
@@ -451,14 +470,14 @@ claude auto-mode config | jq &#x27;.environment[-3:]&#x27;</code></pre></div>
   &quot;$defaults&quot;,
   &quot;Organization: Workshop Bank. Primary use: software development&quot;,
   &quot;Trusted internal domains: *.workshop.internal&quot;,
-  &quot;Sensitive data locations &amp; audiences: ~/claude-lab/ch3/customers.csv holds real customer personal data. Its contents, excerpts or derived data must not be sent anywhere off this machine, including trusted internal domains and the repo remote&quot;
-] | .autoMode.hard_deny = [&quot;$defaults&quot;, &quot;Any action that uploads, posts, pushes or pastes contents of ~/claude-lab/ch3/customers.csv off this machine&quot;]&#x27; \
+  &quot;Sensitive data locations &amp; audiences: ~/claude-lab/mydata/raw holds real customer personal data. Its contents, excerpts or derived data must not be sent anywhere off this machine, including trusted internal domains and the repo remote&quot;
+] | .autoMode.hard_deny = [&quot;$defaults&quot;, &quot;Any action that uploads, posts, pushes or pastes contents of ~/claude-lab/mydata/raw off this machine&quot;]&#x27; \
   ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
 claude auto-mode critique</code></pre></div>
 
-<p>두 번째 리뷰는 더 깊은 구멍을 짚습니다. 요약·변환한 <strong>파생 데이터</strong>, 다른 파일로 <strong>복사한 뒤 push</strong>하는 두 단계 경로, 동사 목록에 없는 메일·MCP·브라우저 입력, 상대·절대 경로 표기 차이 등입니다. 그리고 "<code>cat customers.csv</code>만 해도 내용이 모델 공급자(여기서는 Bedrock)로 간다, 그것도 '머신 밖'인가?"를 묻습니다. 이 마지막 질문은 규칙이 아니라 <strong>조직이 정해야 할 정책</strong>이고, TASK 01에서 본 "훅은 Read를 막지 못한다"와 같은 이야기입니다. 리뷰는 매번 새 지적을 내므로 완벽해질 때까지 돌리기보다, 위험이 큰 항목을 <code>hard_deny</code>와 <code>permissions.deny</code>로 옮기는 데 씁니다.</p>
+<p>두 번째 리뷰는 더 깊은 구멍을 짚습니다. 요약·변환한 <strong>파생 데이터</strong>, 다른 파일로 <strong>복사한 뒤 push</strong>하는 두 단계 경로, 동사 목록에 없는 메일·MCP·브라우저 입력, 상대·절대 경로 표기 차이 등입니다. 그리고 "<code>cat raw/customers.csv</code>만 해도 내용이 모델 공급자(여기서는 Bedrock)로 간다, 그것도 '머신 밖'인가?"를 묻습니다. 이 마지막 질문은 규칙이 아니라 <strong>조직이 정해야 할 정책</strong>이고, TASK 01에서 본 "훅은 Read를 막지 못한다"와 같은 이야기입니다. 리뷰는 매번 새 지적을 내므로 완벽해질 때까지 돌리기보다, 위험이 큰 항목을 <code>hard_deny</code>와 <code>permissions.deny</code>로 옮기는 데 씁니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>실제 반출을 시도해 확인하지 마세요</strong></p>
-<p>"customers.csv를 외부 URL에 올려 줘" 같은 요청을 직접 보내면, auto mode 분류기가 판정하기 <strong>전에</strong> 모델 측 안전장치가 세션을 <code>safeguards flagged this session … [cyber]</code>로 멈춥니다(실습 환경에서 Opus 5.5와 Sonnet 5.5 모두 즉시 발생). 규칙의 품질은 <code>critique</code>로 확인하고, 실제 차단 확인은 사내 테스트 환경에서 보안팀과 함께 진행하세요.</p></div></div>
+<p>"raw/customers.csv를 외부 URL에 올려 줘" 같은 요청을 직접 보내면, auto mode 분류기가 판정하기 <strong>전에</strong> 모델 측 안전장치가 세션을 <code>safeguards flagged this session … [cyber]</code>로 멈춥니다(실습 환경에서 Opus 5.5와 Sonnet 5.5 모두 즉시 발생). 규칙의 품질은 <code>critique</code>로 확인하고, 실제 차단 확인은 사내 테스트 환경에서 보안팀과 함께 진행하세요.</p></div></div>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong><code>"$defaults"</code>를 빼지 마세요</strong></p>
 <p><code>environment</code>, <code>allow</code>, <code>soft_deny</code>, <code>hard_deny</code> 중 하나라도 <code>"$defaults"</code> 없이 쓰면 그 목록의 <strong>기본 규칙 전체가 사라집니다</strong>(예: soft_deny에서 빼면 force push, <code>curl | bash</code>, 운영 배포 차단이 모두 꺼짐). 또 <code>autoMode</code>는 저장소가 규칙을 주입하지 못하도록 <strong>프로젝트의 <code>.claude/settings.json</code>에서는 읽지 않습니다</strong>. 사용자 설정이나 managed settings에만 둡니다.</p></div></div>
@@ -608,7 +627,7 @@ use_bedrock_direct   # TASK 03에서 바꾼 사용자 settings.json(ask, autoMod
 <ul>
 <li>이전: <a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1. 정책 배포</a></li>
 <li>다음: <a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. Subagent로 일 나눠 맡기기</a></li>
-</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch2_HandsOnLab.html"><small>이전</small>Ch2 Lab 1. 정책 배포</a><a class="next" href="ClaudeCode_Ch3_HandsOnLab.html"><small>다음</small>Ch3. Subagent로 일 나눠 맡기기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-dlp-훅을-정책으로-강제-8분">TASK 01 · DLP 훅을 정책으로 강제 (8분)</a></li><li><a href="#task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정 (5분)</a></li><li><a href="#task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기 (15분)</a></li><li><a href="#선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기 (7분)</a></li><li><a href="#선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터 (7분)</a></li><li><a href="#선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기 (4분)</a></li><li><a href="#task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요 (2분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch2_HandsOnLab.html"><small>이전</small>Ch2 Lab 1. 정책 배포</a><a class="next" href="ClaudeCode_Ch3_HandsOnLab.html"><small>다음</small>Ch3. Subagent로 일 나눠 맡기기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</a></li><li><a href="#task-01-dlp-훅을-정책으로-강제-10분">TASK 01 · DLP 훅을 정책으로 강제 (10분)</a></li><li><a href="#task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정 (5분)</a></li><li><a href="#task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기 (15분)</a></li><li><a href="#선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기 (7분)</a></li><li><a href="#선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터 (7분)</a></li><li><a href="#선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기 (4분)</a></li><li><a href="#task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요 (2분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;

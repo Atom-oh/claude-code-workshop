@@ -964,7 +964,7 @@ NEWS_FEEDS = {
 <section class="task" id="m2">
   <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 백엔드 코어</h2><span class="time-badge">35분</span></div>
   <p class="task-goal">FastAPI가 <strong>overview / quotes / 종목 상세 / 차트</strong>를 캐시 뒤에서 돌려주면 이 Phase는 끝입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 code-reviewer 서브에이전트에게 캐시 모듈 리뷰를 맡겨 보세요.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 배운 방식으로 code-reviewer 서브에이전트를 만들어 캐시 모듈 리뷰를 맡겨 보세요.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 1만 구현하고 멈춰줘. backend venv + requirements, config.py(제공한 실데이터, US/KR 각 20개 활성), services(yfinance 벌크 + pykrx, 개별 실패 스킵), 인메모리 TTL 캐시 + single-flight, 라우트 4종(overview, quotes, stocks/{symbol}, chart?range=). uvicorn 실행과 curl 검증 방법까지.</code></pre>

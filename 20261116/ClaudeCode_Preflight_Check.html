@@ -88,11 +88,11 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <aside class="side"><ul><li><a href="index.html">실습 포털</a></li><li class="cur"><a href="ClaudeCode_Preflight_Check.html">Preflight. 시작 전 확인</a></li><li><a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. Claude Code는 어떻게 동작하는가</a></li><li><a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1. 정책 배포</a></li><li><a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2. 가드레일과 DLP</a></li><li><a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. Subagent로 일 나눠 맡기기</a></li><li><a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Claude Code 확장하기</a></li><li><a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. 비용 효율적으로 쓰기</a></li><li><a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 조직의 비용 보고 통제하기</a></li></ul><div class="side-foot">FSI 2026.11 · ko</div></aside>
 <main><article><h1 class="page-title">Preflight. 시작 전 확인</h1><div class="progress" hidden><span class="bar"></span><span class="txt"></span></div><p><strong>HANDS-ON LAB / PREFLIGHT CHECK</strong></p>
 <blockquote>
-<p><strong>Chapter 1을 열기 전, 5분 프리플라이트</strong></p>
+<p><strong>Chapter 1을 열기 전, 7분 프리플라이트</strong></p>
 </blockquote>
 <p>실습 환경이 켜져 있고 브라우저로 닿는지만 확인하면 준비 끝입니다.
-아래 다섯 항목을 순서대로 체크하세요. 전부 초록이 되면 그대로 Chapter 1로 진입합니다.</p>
-<p>소요 시간 <strong>5분</strong> · 확인 항목 <strong>5개</strong> · 환경 <strong>Workshop Studio + EC2 code-server + Claude Apps Gateway</strong> · Update <strong>2026.11</strong></p>
+아래 여섯 항목을 순서대로 체크하세요. 전부 초록이 되면 그대로 Chapter 1로 진입합니다.</p>
+<p>소요 시간 <strong>7분</strong> · 확인 항목 <strong>6개</strong> · 환경 <strong>Workshop Studio + EC2 code-server + Claude Apps Gateway</strong> · Update <strong>2026.11</strong></p>
 <h2 id="check-01-워크샵-접속-1분">CHECK 01 · 워크샵 접속 (1분)</h2>
 <p>배부받은 Workshop Studio 이벤트 링크로 접속해 <strong>AWS 콘솔이 열리는 것</strong>까지 확인합니다.</p>
 <p>이벤트 접속 코드는 현장에서 배부됩니다. 접속 후 좌측 메뉴의 콘솔 열기로 AWS Management Console에 들어가면 이 계정이 오늘 하루 여러분의 실습 계정입니다. 리전은 <code>us-east-1 (버지니아 북부)</code>인지 우측 상단에서 확인하세요.</p>
@@ -180,6 +180,34 @@ https://d3f4g87xxxxx.cloudfront.net</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span>게이트웨이가 VPC 안에서 응답한다, 프리플라이트 완료</span></label></li>
 </ul></div></div>
 
+<h2 id="check-06-마이데이터-내려받기-2분">CHECK 06 · 마이데이터 내려받기 (2분)</h2>
+<p>이번 실습은 마이데이터 시나리오 위에서 진행합니다. 고객자산 분석 담당자와 IT보안·플랫폼 담당자가 함께 쓰는 테스트 데이터 묶음(<code>mydata-kit.zip</code>)을 ccb-endpoint에 미리 내려받아 둡니다. <code>raw/</code>는 DLP 시연용 원본, <code>pseudo/</code>는 분석용 가명처리 데이터입니다.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>테스트 데이터만 사용하세요</strong></p>
+<p>키트의 모든 식별자는 형식만 흉내 낸 가짜 값입니다. 실제 고객 데이터는 이 환경에 올리지 마세요.</p></div></div>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+mkdir -p ~/claude-lab/mydata
+chmod -R u+w ~/claude-lab/mydata
+aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors \
+  &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata \
+  &amp;&amp; cd ~/claude-lab/mydata \
+  &amp;&amp; sha256sum -c --quiet SHA256SUMS &amp;&amp; echo &quot;체크섬 OK&quot; \
+  &amp;&amp; cat VERSION \
+  &amp;&amp; chmod -R a-w raw pseudo \
+  &amp;&amp; ls ~/claude-lab/mydata</code></pre></div>
+
+<p><strong>출력 예시</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>체크섬 OK
+2026.11.1
+checkpoints  pseudo  raw  SHA256SUMS  VERSION</code></pre></div>
+
+<p><code>체크섬 OK</code>와 버전이 보이면 됩니다. 체크섬이 하나라도 맞지 않으면 <code>FAILED</code> 줄과 &quot;did NOT match&quot; 경고가 나오고 거기서 멈춥니다. 다운로드나 압축 해제가 실패해도 뒤 단계는 실행되지 않습니다. <code>raw</code>와 <code>pseudo</code>는 읽기 전용으로 잠가 두므로 실수로 원본을 고칠 일이 없습니다. 이 블록은 다시 실행해도 안전합니다.</p>
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span><code>ls ~/claude-lab/mydata</code>에 <code>raw pseudo checkpoints</code>가 보인다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>체크섬 OK</code>가 출력된다</span></label></li>
+</ul></div></div>
+
 <h2 id="문제가-있을-때">문제가 있을 때</h2>
 <table>
 <thead>
@@ -210,6 +238,11 @@ https://d3f4g87xxxxx.cloudfront.net</code></pre></div>
 <td>게이트웨이 부팅 중</td>
 <td>게이트웨이는 Ch2 Lab 1의 TASK 06과 Ch6에서만 씁니다. 그 전에 다시 확인하고, 그때도 실패하면 진행자에게 알림</td>
 </tr>
+<tr>
+<td>마이데이터 내려받기가 실패하거나 <code>FAILED</code> 줄과 &quot;did NOT match&quot; 경고가 보임</td>
+<td>네트워크 지연 또는 불완전한 다운로드</td>
+<td>자격 증명은 필요하지 않습니다. 같은 블록을 한 번 더 실행하고, 그래도 실패하면 손을 들어 진행자에게 알림</td>
+</tr>
 </tbody>
 </table>
 <h2 id="이전-다음">이전 / 다음</h2>
@@ -218,7 +251,7 @@ https://d3f4g87xxxxx.cloudfront.net</code></pre></div>
 <li>다음: <a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. Claude Code는 어떻게 동작하는가</a></li>
 </ul>
 <hr />
-<p>원문: <a href="https://whchoi98.github.io/ccw-hands-on-lab/ClaudeCode_Preflight_Check.html" target="_blank" rel="noopener">Claude Code Deep Dive Workshop · Preflight. 시작 전 확인</a> · 기준: 2026.07, 2026.11 환경에 맞게 수정</p><div class="pager"><a class="prev" href="index.html"><small>이전</small>실습 포털</a><a class="next" href="ClaudeCode_Ch1_HandsOnLab.html"><small>다음</small>Ch1. Claude Code는 어떻게 동작하는가</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#check-01-워크샵-접속-1분">CHECK 01 · 워크샵 접속 (1분)</a></li><li><a href="#check-02-실습-인스턴스-확인-1분">CHECK 02 · 실습 인스턴스 확인 (1분)</a></li><li><a href="#check-03-접속-주소-확인-1분">CHECK 03 · 접속 주소 확인 (1분)</a></li><li><a href="#check-04-code-server-접속-1분">CHECK 04 · code-server 접속 (1분)</a></li><li><a href="#check-05-claude-code와-게이트웨이-확인-1분">CHECK 05 · Claude Code와 게이트웨이 확인 (1분)</a></li><li><a href="#문제가-있을-때">문제가 있을 때</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+<p>원문: <a href="https://whchoi98.github.io/ccw-hands-on-lab/ClaudeCode_Preflight_Check.html" target="_blank" rel="noopener">Claude Code Deep Dive Workshop · Preflight. 시작 전 확인</a> · 기준: 2026.07, 2026.11 환경에 맞게 수정</p><div class="pager"><a class="prev" href="index.html"><small>이전</small>실습 포털</a><a class="next" href="ClaudeCode_Ch1_HandsOnLab.html"><small>다음</small>Ch1. Claude Code는 어떻게 동작하는가</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#check-01-워크샵-접속-1분">CHECK 01 · 워크샵 접속 (1분)</a></li><li><a href="#check-02-실습-인스턴스-확인-1분">CHECK 02 · 실습 인스턴스 확인 (1분)</a></li><li><a href="#check-03-접속-주소-확인-1분">CHECK 03 · 접속 주소 확인 (1분)</a></li><li><a href="#check-04-code-server-접속-1분">CHECK 04 · code-server 접속 (1분)</a></li><li><a href="#check-05-claude-code와-게이트웨이-확인-1분">CHECK 05 · Claude Code와 게이트웨이 확인 (1분)</a></li><li><a href="#check-06-마이데이터-내려받기-2분">CHECK 06 · 마이데이터 내려받기 (2분)</a></li><li><a href="#문제가-있을-때">문제가 있을 때</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;

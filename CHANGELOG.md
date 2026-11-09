@@ -7,6 +7,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Added
 
+- Add `tools/mydata/`, stdlib Python tooling for the November labs: a seeded synthetic MyData generator (raw and pseudonymized), a validator against `dlp_pattern.txt`, a `mydata-kit.zip` builder with per-chapter checkpoints, a lab-page guard (`check_labs.py`), and a segment reference. Nothing under it is published.
 - Add one-minute chapter preview videos (`20261116/media/chapters/ch1..6-preview.mp4`, about 4.4–5.5 MB each, with posters) and a "▶ 1분 미리보기" button on every reactive deck cover that plays the chapter's video in an in-deck player (`reactive/assets/chapter-video.js`, loaded by `stepviz.js`; deck HTML unchanged).
 - Add a dark/light theme switch to the November reactive decks (`20261116/reactive/assets/theme-toggle.js`, loaded by `assets/stepviz.js`): a button at the top right or the T key swaps the framework's theme classes on the deck, covers and sidebar thumbnails; `?theme=light|dark` or the last choice (localStorage) sets the start theme, and open presenter windows follow. Light mode overrides the compiler's literal white cover text and inverts the white AWS logo. No deck HTML is rebuilt.
 - Add `20261116/reactive/`, interactive HTML slide decks for the six November chapters (Remarp sources `*.md` and built `*.html`, a table of contents and a combined `index.html`). The Pages workflow publishes them at `/20261116/reactive/` and `/reactive/`.
@@ -23,6 +24,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
+- Rework the November Preflight and Chapter 1-6 labs into one storyline: a bank customer-asset analyst working on synthetic MyData and ending in a pension product proposal. Learners download the kit with `aws s3 cp` and restore earlier chapters' artifacts from checkpoints in TASK 00.
 - Redesign `20261116/reactive/toc.html` as a hand-maintained Korean chapter index: Day 1 and Day 2 groups of chapter cards with the preview poster, session time, Korean title and tagline, slide count, and links to the slides, the one-minute preview, the hands-on labs and the PDF; the per-deck and whole-deck PDF/ZIP/PPTX exports stay. Dark by default with the shared projector mode.
 - Make the November light theme a projector mode: every page (eDM, portal, chapter labs, capstones, references, reactive decks) opens dark, and one shared switch (`fsi-theme` in localStorage, or `?theme=light|dark`) applies to all of them; old per-page keys are still read. Light palettes are darkened for projectors (muted text #3D4654, borders #8A95A3, accent text #9A4300 or #B45309) and toggles are labelled 프로젝터 모드. Chapter labs no longer follow the OS theme.
 - Replace the November slide PDFs (`20261116/slides/ClaudeCode_FSI_Ch1..6_20261116.pdf`) with image-only exports of the six-chapter reactive decks, so the PDF numbers now match the chapters; `eDM.html` links each chapter card to its own PDF (the Ch2 card had linked two old PDFs). Instructions and notes no longer call the PDF numbering legacy.

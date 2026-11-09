@@ -90,7 +90,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <blockquote>
 <p><strong>Claude Code Deep Dive Workshop, Chapter 6 - 조직의 비용 보고 통제하기 (FinOps) 실습</strong></p>
 </blockquote>
-<p>Ch5에서 한 사람의 세션이 토큰을 덜 쓰게 만들었다면, 이번에는 <strong>조직이 비용을 보고 막는</strong> 방법을 실습합니다. 핵심은 이 환경에 함께 배포된 <strong>Claude Apps Gateway</strong>에 직접 로그인해 그룹별 모델 허용 목록과 지출 한도를 체험하는 것입니다.</p>
+<p>고객자산 분석 담당자의 연금상품 기획서는 Ch4에서 끝났고, Ch5에서 한 사람의 세션이 토큰을 덜 쓰게 만들었습니다. 이번에는 <strong>IT보안·플랫폼 담당자</strong>로 돌아와, 조직이 누가 무엇을 얼마나 썼는지 <strong>보고 막는</strong> 방법을 실습합니다. 핵심은 이 환경에 함께 배포된 <strong>Claude Apps Gateway</strong>에 직접 로그인해 그룹별 모델 허용 목록과 지출 한도를 체험하는 것입니다.</p>
 <p>소요 시간 <strong>30분 내외 + 선택 10분</strong>, Task <strong>준비 + 3개 + 선택 1개</strong>, 기준 버전 <strong>Claude Code 2.1.290 이상</strong>, Update <strong>2026.11</strong></p>
 <table>
 <thead>
@@ -122,37 +122,22 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
 claude --version
+KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
   &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. Ch2 Lab 1 TASK 00의 &#x27;정책 초기화&#x27;를 실행하세요&quot;
 rm -rf ~/claude-lab/ch6 2&gt;/dev/null
-if [ -d ~/claude-lab/ch4/src ]; then
-  cp -r ~/claude-lab/ch4 ~/claude-lab/ch6
-else
-  # Ch3을 건너뛴 경우: 같은 구조의 최소 프로젝트를 만듭니다
-  mkdir -p ~/claude-lab/ch6/src &amp;&amp; cd ~/claude-lab/ch6 &amp;&amp; git init -q
-  echo &#x27;{ &quot;name&quot;: &quot;ch6-lab&quot;, &quot;version&quot;: &quot;1.0.0&quot;, &quot;type&quot;: &quot;module&quot;, &quot;scripts&quot;: { &quot;test&quot;: &quot;node test.js&quot; } }&#x27; &gt; package.json
-  cat &gt; src/userService.js &lt;&lt; &#x27;EOF&#x27;
-const users = [{ id: 1, profile: { plan: &quot;pro&quot; } }, { id: 2 }];
-export function getUserPlan(id) {
-  return users.find((u) =&gt; u.id === id)?.profile?.plan ?? &quot;unknown&quot;;
-}
-EOF
-  cat &gt; test.js &lt;&lt; &#x27;EOF&#x27;
-import assert from &quot;node:assert&quot;;
-import { getUserPlan } from &quot;./src/userService.js&quot;;
-assert.equal(getUserPlan(1), &quot;pro&quot;); console.log(&quot;PASS plan&quot;);
-assert.equal(getUserPlan(2), &quot;unknown&quot;); console.log(&quot;PASS no profile&quot;);
-EOF
-  git add -A &amp;&amp; git -c user.name=lab -c user.email=lab@example.com commit -qm init
-fi
-cd ~/claude-lab/ch6 &amp;&amp; npm test</code></pre></div>
+mkdir -p ~/claude-lab/ch6 &amp;&amp; cd ~/claude-lab/ch6
+ln -sfn ~/claude-lab/mydata/pseudo pseudo
+[ -d .git ] || git init -q
+ls pseudo | head -4</code></pre></div>
 
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 챕터도 Ch3의 Node 프로젝트를 복사해 씁니다</strong></p>
-<p>Ch3 실습 폴더(<code>~/claude-lab/ch4</code>)는 건드리지 않습니다. Ch5에서 쓰던 <code>~/claude-lab/ch6</code>은 지우고 새로 만들므로, Ch5의 훅 설정 없이 깨끗한 상태에서 시작합니다. Ch3을 건너뛰었다면 같은 블록이 최소 프로젝트를 대신 만듭니다. <code>npm test</code>가 PASS로 끝나면 준비 완료입니다.</p></div></div>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 챕터는 빈 작업 폴더에서 시작합니다</strong></p>
+<p>Ch5에서 쓰던 <code>~/claude-lab/ch6</code>은 지우고 새로 만들므로, Ch5의 훅 설정 없이 깨끗한 상태에서 시작합니다. 이번 챕터는 데이터를 분석하지 않고 게이트웨이 정책과 비용만 다루므로 가명 데이터 링크(<code>pseudo</code>)만 걸어 둡니다. <code>ls</code>에 CSV 파일 이름이 보이면 준비 완료입니다.</p></div></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>managed-settings에 이전 챕터 정책이 남아 있지 않고, 기본 모드(<code>use_bedrock_direct</code>)이며 <code>~/claude-lab/ch6</code>에서 <code>npm test</code>가 통과한다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>managed-settings에 이전 챕터 정책이 남아 있지 않고, 기본 모드(<code>use_bedrock_direct</code>)이며 <code>~/claude-lab/ch6</code>에 <code>pseudo</code> 링크가 있다</span></label></li>
 </ul></div></div>
 
 <h2 id="task-01-텔레메트리는-어디로-가는가-6분">TASK 01 · 텔레메트리는 어디로 가는가 (6분)</h2>
@@ -178,11 +163,12 @@ sudo grep -n &#x27;exporters: \[&#x27; /etc/otelcol/config.yaml</code></pre></di
 </ul></div></div>
 
 <h2 id="task-02-apps-gateway-로그인과-그룹별-모델-정책-12분">TASK 02 · Apps Gateway 로그인과 그룹별 모델 정책 (12분)</h2>
-<p>Ch2 Lab 1 TASK 06에서 bob으로 그룹 모델 정책을 봤습니다. 이번에는 alice와 비교하고 지출 한도까지 다룹니다. 같은 VPC의 <strong>Claude Apps Gateway</strong>를 거치도록 바꿉니다. 게이트웨이는 사내 IdP(이 랩에서는 Cognito)로 사용자를 식별하고, 그룹별로 모델과 지출 한도를 적용한 뒤 Bedrock을 대신 호출합니다.</p>
+<p>Ch2 Lab 1 TASK 06에서 bob으로 그룹 모델 정책을 봤습니다. 이번에는 자산분석팀의 alice와 타 부서의 bob을 비교하고 지출 한도까지 다룹니다. 같은 VPC의 <strong>Claude Apps Gateway</strong>를 거치도록 바꿉니다. 게이트웨이는 사내 IdP(이 랩에서는 Cognito)로 사용자를 식별하고, 그룹별로 모델과 지출 한도를 적용한 뒤 Bedrock을 대신 호출합니다.</p>
 <table>
 <thead>
 <tr>
 <th>계정</th>
+<th>소속</th>
 <th>그룹</th>
 <th>허용 모델</th>
 <th>일일 한도</th>
@@ -191,12 +177,14 @@ sudo grep -n &#x27;exporters: \[&#x27; /etc/otelcol/config.yaml</code></pre></di
 <tbody>
 <tr>
 <td><code>alice@workshop.example</code></td>
+<td>자산분석팀 (상위 모델 허용)</td>
 <td>power-users</td>
 <td>Opus, Sonnet, Haiku 5.5</td>
 <td>$200</td>
 </tr>
 <tr>
 <td><code>bob@workshop.example</code></td>
+<td>타 부서 (제한)</td>
 <td>standard-users</td>
 <td>Sonnet, Haiku 5.5</td>
 <td>$50</td>
@@ -236,10 +224,13 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/logout</code></pre></div>
 
 <p><code>/exit</code> 후 다시 <code>claude</code>를 실행하고 같은 절차로 <code>bob@workshop.example</code>에 로그인합니다. 로그인 화면 대신 alice 세션이 그대로 열리면 <code>use_bedrock_direct &amp;&amp; use_gateway</code>를 실행해 로그인 정보를 지운 뒤 다시 <code>claude</code>를 실행합니다. <code>/model</code>에서 <strong>Opus가 없는 것</strong>을 확인한 뒤, 지출 기록이 생기도록 질문을 하나 보냅니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 프로젝트의 src 폴더 구조를 세 줄로 설명해줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 폴더의 pseudo 디렉터리에 어떤 파일이 있는지 이름만 알려줘</code></pre></div>
 
 <p>질문이 모델 오류로 실패하면 <code>/model</code>에서 다른 모델(Sonnet ↔ Haiku)로 바꿔 다시 보냅니다.</p>
 <p>이 세션은 열어 둔 채로 다음 Task로 갑니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>팀 킷은 어떻게 막나요</strong></p>
+<p>게이트웨이의 그룹 정책이 내려주는 항목은 모델 허용 목록과 지출 한도처럼 요청 단위 통제입니다. 이 랩의 게이트웨이 그룹 정책에는 플러그인·마켓플레이스 설정이 들어 있지 않으므로, bob이 <code>asset-team-kit</code>을 받지 못하게 하는 단계는 이 랩에 없습니다. 타 부서의 사용은 모델 정책과 지출 한도로 통제하고, 플러그인 배포 제한은 Ch4에서 본 로컬 managed settings의 몫입니다.</p></div></div>
+
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span>alice는 Opus를 고를 수 있고 bob은 고를 수 없다</span></label></li>
@@ -293,7 +284,7 @@ LIMIT_ID=$(jq -r .id /tmp/lim.json); echo &quot;LIMIT_ID=$LIMIT_ID&quot;</code><
 <p><code>LIMIT_ID</code>는 <code>spl_…</code> 형태입니다. <code>amount</code>는 US 센트 단위 문자열이고, 사용자 한도는 그룹 한도보다 우선합니다.</p>
 <h3 id="step-3-bob-세션에서-확인">Step 3 · bob 세션에서 확인</h3>
 <p>첫 번째 터미널의 bob 세션에서 질문을 하나 더 보냅니다. 지출 집계가 반영되는 데 약간 걸릴 수 있으니, 바로 막히지 않으면 질문을 1~2개 더 보내 보세요.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>package.json의 scripts를 알려줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>pseudo 디렉터리에 파일이 몇 개 있는지 알려줘</code></pre></div>
 
 <p>요청이 <code>spend limit reached (daily; resets … UTC)</code>와 <strong>"You have reached your spend limit. Contact your administrator to request an increase."</strong> 메시지로 거절됩니다. <code>/usage</code>를 열면 Spend limit 막대가 100%를 넘어(예: <code>823% used, $0.08 / $0.01</code>) 표시됩니다. 오늘 이미 쓴 금액이 새 한도보다 크기 때문입니다. <code>Esc</code>로 닫습니다. 회사에서는 이 메시지에 사내 증액 요청 절차를 적어 둡니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>한도가 동작하는 방식</strong></p>
@@ -367,6 +358,7 @@ cd ~/claude-lab/ch6 &amp;&amp; claude</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span>게이트웨이로 모델 정책과 지출 한도를 IdP 그룹 단위로 걸어 봤다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>(선택) <code>modelPricing</code>은 화면과 텔레메트리의 추정치만 보정하고, 정산은 AWS 청구서가 기준이라는 것을 안다</span></label></li>
 </ul>
+<p>분석 담당자의 연금상품 기획서는 이미 끝났고, 이제 조직은 누가 무엇을 얼마나 썼는지 보고(텔레메트리), 그룹마다 쓸 수 있는 모델과 하루 한도를 정해 통제합니다.</p>
 <h2 id="이전-다음">이전 / 다음</h2>
 <ul>
 <li>이전: <a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. 비용 효율적으로 쓰기</a></li>

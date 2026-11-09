@@ -23,3 +23,6 @@ Thumbs.db
 # published directory (Pages copies 20261116/ wholesale), so keep its sources,
 # narration MP3s, and renders out of git. Publish only web encodes in 20261116/media/.
 /20261116/video/
+
+# Generated synthetic MyData
+tools/mydata/dist/

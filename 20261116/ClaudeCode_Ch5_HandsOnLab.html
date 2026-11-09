@@ -90,7 +90,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <blockquote>
 <p><strong>Claude Code Deep Dive Workshop, Chapter 5 - 비용 효율적으로 쓰기 (컨텍스트 엔지니어링) 실습</strong></p>
 </blockquote>
-<p>한 사람의 세션이 <strong>같은 일을 더 적은 토큰으로</strong> 하도록 만드는 컨텍스트 엔지니어링을 실습합니다. 먼저 기준선을 재고, 테스트 로그를 줄이는 출력 필터 훅, CLAUDE.md 다이어트와 모델 선택, 압축(compaction)을 내가 정한 때에 하는 법까지 차례로 해 봅니다. 조직이 비용을 보고 막는 방법은 Ch6에서 이어집니다.</p>
+<p>한 사람의 세션이 <strong>같은 일을 더 적은 토큰으로</strong> 하도록 만드는 컨텍스트 엔지니어링을 실습합니다. 고객자산 분석 담당자가 Ch4까지 만든 팀 킷으로 카드 거래 파일을 매일 열어 보다 보면 토큰이 순식간에 쌓입니다. 먼저 기준선을 재고, 거래 CSV 출력을 줄이는 출력 필터 훅, CLAUDE.md 다이어트와 모델 선택, 압축(compaction)을 내가 정한 때에 하는 법까지 차례로 해 봅니다. 조직이 비용을 보고 막는 방법은 Ch6에서 이어집니다.</p>
 <p>소요 시간 <strong>40분 내외</strong>, Task <strong>준비 + 4개</strong>, 기준 버전 <strong>Claude Code 2.1.290 이상</strong>, Update <strong>2026.11</strong></p>
 <table>
 <thead>
@@ -106,7 +106,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 </tr>
 <tr>
 <td>TASK 02</td>
-<td>출력 필터 훅으로 테스트 로그 줄이기</td>
+<td>출력 필터 훅으로 거래 CSV 출력 줄이기</td>
 </tr>
 <tr>
 <td>TASK 03</td>
@@ -118,48 +118,54 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 </tr>
 </tbody>
 </table>
-<h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
+<h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</h2>
+<p>이번 챕터의 작업 폴더는 <code>~/claude-lab/ch6</code>이고, 분석 데이터는 가명 처리된 <code>pseudo/</code>만 씁니다. Ch4에서 만든 <code>asset-team-kit</code>이 설치되어 있으면 그대로 쓰고, 없을 때만 키트의 기준본으로 설치합니다. 키트를 이미 받았다면 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
 claude --version
+KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
   &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. Ch2 Lab 1 TASK 00의 &#x27;정책 초기화&#x27;를 실행하세요&quot;
 rm -rf ~/claude-lab/ch6 2&gt;/dev/null
-if [ -d ~/claude-lab/ch4/src ]; then
-  cp -r ~/claude-lab/ch4 ~/claude-lab/ch6
-else
-  # Ch3을 건너뛴 경우: 같은 구조의 최소 프로젝트를 만듭니다
-  mkdir -p ~/claude-lab/ch6/src &amp;&amp; cd ~/claude-lab/ch6 &amp;&amp; git init -q
-  echo &#x27;{ &quot;name&quot;: &quot;ch6-lab&quot;, &quot;version&quot;: &quot;1.0.0&quot;, &quot;type&quot;: &quot;module&quot;, &quot;scripts&quot;: { &quot;test&quot;: &quot;node test.js&quot; } }&#x27; &gt; package.json
-  cat &gt; src/userService.js &lt;&lt; &#x27;EOF&#x27;
-const users = [{ id: 1, profile: { plan: &quot;pro&quot; } }, { id: 2 }];
-export function getUserPlan(id) {
-  return users.find((u) =&gt; u.id === id)?.profile?.plan ?? &quot;unknown&quot;;
+mkdir -p ~/claude-lab/ch6 &amp;&amp; cd ~/claude-lab/ch6
+ln -sfn ~/claude-lab/mydata/pseudo pseudo
+[ -d .git ] || git init -q
+if ! claude plugin list 2&gt;/dev/null | grep -q asset-team-kit; then
+  # Ch4를 건너뛰었거나 플러그인이 없는 경우: 키트의 기준본을 Ch4와 같은 방식으로 설치합니다
+  M=~/claude-lab/ch5/marketplace
+  mkdir -p $M/.claude-plugin $M/plugins
+  [ -d $M/plugins/asset-team-kit ] || cp -r ~/claude-lab/mydata/checkpoints/ch4/asset-team-kit $M/plugins/
+  cat &gt; $M/.claude-plugin/marketplace.json &lt;&lt; &#x27;EOF&#x27;
+{
+  &quot;name&quot;: &quot;fsi-local&quot;,
+  &quot;owner&quot;: { &quot;name&quot;: &quot;Platform Team&quot; },
+  &quot;plugins&quot;: [
+    { &quot;name&quot;: &quot;asset-team-kit&quot;, &quot;source&quot;: &quot;./plugins/asset-team-kit&quot;, &quot;description&quot;: &quot;고객자산 분석팀 킷&quot; }
+  ]
 }
 EOF
-  cat &gt; test.js &lt;&lt; &#x27;EOF&#x27;
-import assert from &quot;node:assert&quot;;
-import { getUserPlan } from &quot;./src/userService.js&quot;;
-assert.equal(getUserPlan(1), &quot;pro&quot;); console.log(&quot;PASS plan&quot;);
-assert.equal(getUserPlan(2), &quot;unknown&quot;); console.log(&quot;PASS no profile&quot;);
-EOF
-  git add -A &amp;&amp; git -c user.name=lab -c user.email=lab@example.com commit -qm init
+  claude plugin marketplace add $M &gt;/dev/null 2&gt;&amp;1
+  claude plugin install asset-team-kit@fsi-local
 fi
-cd ~/claude-lab/ch6 &amp;&amp; npm test</code></pre></div>
+claude plugin list | grep -A2 asset-team-kit
+ls pseudo | head -4</code></pre></div>
 
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 챕터는 Ch3의 Node 프로젝트를 복사해 씁니다</strong></p>
-<p>Ch3 실습 폴더(<code>~/claude-lab/ch4</code>)는 건드리지 않습니다. Ch3을 건너뛰었다면 같은 블록이 최소 프로젝트를 대신 만듭니다. <code>npm test</code>가 PASS로 끝나면 준비 완료입니다.</p></div></div>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Ch4의 asset-team-kit이 <code>disabled</code>로 보여도 됩니다</strong></p>
+<p>Ch4 마지막의 <code>use_bedrock_direct</code>가 사용자 설정을 기본값으로 되돌리므로 플러그인이 꺼져 있을 수 있습니다. 이 챕터는 플러그인 없이도 진행되고, 켜 두면 DLP 훅이 함께 동작할 뿐입니다. 위 블록은 목록에 이름이 아예 없을 때만 설치합니다.</p></div></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>managed-settings에 이전 챕터 정책이 남아 있지 않고, 기본 모드(<code>use_bedrock_direct</code>)이며 <code>~/claude-lab/ch6</code>에서 <code>npm test</code>가 통과한다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>managed-settings에 이전 챕터 정책이 남아 있지 않고, 기본 모드(<code>use_bedrock_direct</code>)이며 <code>~/claude-lab/ch6/pseudo</code>에 CSV가 보인다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>claude plugin list</code>에 asset-team-kit이 보인다(켜짐 또는 꺼짐 모두 가능)</span></label></li>
 </ul></div></div>
 
 <h2 id="task-01-기준선-재기-5분">TASK 01 · 기준선 재기 (5분)</h2>
+<p>분석 담당자가 가장 먼저 하는 일은 카드 거래 파일을 열어 보는 것입니다. <code>pseudo/card_transactions.csv</code>는 머리글을 뺀 <strong>36,061행, 약 1.8MB</strong>입니다. 이 가운데 앞 400행(약 20KB)을 열어 달라고 했을 때 토큰이 얼마나 나가는지 기준선으로 재 둡니다.</p>
 <p><strong>Terminal</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch6 &amp;&amp; claude</code></pre></div>
 
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>테스트를 실행하고 결과를 한 줄로 요약해줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>head -n 400 pseudo/card_transactions.csv를 그대로 한 번 실행하고, 어떤 데이터인지 세 줄로 요약해줘</code></pre></div>
 
 <p>끝나면 두 명령으로 현재 상태를 기록해 둡니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/context</code></pre></div>
@@ -179,7 +185,7 @@ cd ~/claude-lab/ch6 &amp;&amp; npm test</code></pre></div>
 <tr>
 <td>Messages 토큰</td>
 <td><code>/context</code></td>
-<td>대화와 도구 결과가 차지한 양. 테스트 로그가 길면 여기가 커진다</td>
+<td>대화와 도구 결과가 차지한 양. 거래 파일처럼 긴 출력이 들어오면 여기가 커진다</td>
 </tr>
 <tr>
 <td>Memory files</td>
@@ -197,83 +203,86 @@ cd ~/claude-lab/ch6 &amp;&amp; npm test</code></pre></div>
 <p>엔터프라이즈 평균은 활성 개발일 하루 개발자당 약 $13, 월 $150~250 수준입니다. 비용을 키우는 쪽은 대부분 모델 선택보다 <strong>컨텍스트 크기와 반복 읽기</strong>입니다.</p></div></div>
 
 <p><code>/exit</code>로 나옵니다.</p>
-<h2 id="task-02-출력-필터-훅으로-로그-줄이기-10분">TASK 02 · 출력 필터 훅으로 로그 줄이기 (10분)</h2>
-<p>테스트나 빌드 로그 전체가 컨텍스트에 들어가는 것을 막고, 실패 줄만 넘기도록 Bash 명령을 바꿔 주는 PreToolUse 훅입니다. 공식 비용 문서의 <code>filter-test-output.sh</code> 예시를 이 프로젝트에 맞게 씁니다.</p>
-<h3 id="step-1-시끄러운-테스트-만들기">Step 1 · 시끄러운 테스트 만들기</h3>
-<p><strong>Terminal, 전체 복사</strong></p>
+<h2 id="task-02-출력-필터-훅으로-거래-csv-출력-줄이기-10분">TASK 02 · 출력 필터 훅으로 거래 CSV 출력 줄이기 (10분)</h2>
+<p>거래 파일 전체가 컨텍스트에 들어가는 것을 막고, 머리글과 앞 50행, 전체 행 수만 넘기도록 Bash 명령을 바꿔 주는 PreToolUse 훅입니다. 공식 비용 문서의 <code>filter-test-output.sh</code> 예시와 같은 방식으로, 걸러내는 대상만 <code>*_transactions.csv</code>로 바꿨습니다.</p>
+<h3 id="step-1-큰-거래-파일-확인">Step 1 · 큰 거래 파일 확인</h3>
+<p><strong>Terminal</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch6
-cat &gt; noisy-test.js &lt;&lt; &#x27;EOF&#x27;
-for (let i = 1; i &lt;= 400; i++) console.log(`ok ${i} - fixture case ${i} passed`);
-console.log(&quot;FAIL getUserPlan: expected &#x27;pro&#x27; but got &#x27;unknown&#x27;&quot;);
-process.exit(1);
-EOF
-node -e &#x27;const p=require(&quot;./package.json&quot;);p.scripts[&quot;test:all&quot;]=&quot;node test.js &amp;&amp; node noisy-test.js&quot;;require(&quot;fs&quot;).writeFileSync(&quot;package.json&quot;,JSON.stringify(p,null,2))&#x27;
-npm run test:all 2&gt;&amp;1 | wc -l</code></pre></div>
+wc -lc pseudo/card_transactions.csv pseudo/bank_transactions.csv</code></pre></div>
 
-<p>400줄이 넘는 출력이 나옵니다. 이것이 그대로 Claude의 컨텍스트로 들어갑니다.</p>
+<p>카드 거래는 36,062줄(머리글 포함), 은행 거래는 29,890줄입니다. <code>cat</code>으로 열면 파일 전체가 출력되지만, Claude Code는 약 30,000자를 넘는 Bash 출력을 파일로 저장하고 짧은 미리보기만 모델에 보여 줍니다. 그래서 이 랩은 한도 안에 들어오는 <code>head -n 400</code>(약 20,000자)으로 비교합니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>왜 400행인가요</strong></p>
+<p>Claude Code 자체가 약 30,000자를 넘는 Bash 출력을 파일에 저장하고 미리보기만 보여 주기 때문에, 전체 <code>cat</code>으로는 훅 전후 차이가 흐려집니다. 앞 400행은 약 20,000자라 한도 안에 들어오고, 훅을 거치면 약 2,600자가 됩니다.</p></div></div>
 <h3 id="step-2-필터-훅-설치">Step 2 · 필터 훅 설치</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>mkdir -p .claude/hooks
-cat &gt; .claude/hooks/filter-test-output.sh &lt;&lt; &#x27;EOF&#x27;
+cat &gt; .claude/hooks/filter-tx-output.sh &lt;&lt; &#x27;EOF&#x27;
 #!/bin/bash
-# npm test / npm run test* 를 &quot;그대로&quot; 실행할 때만 실패 줄 중심으로 줄여서 컨텍스트로 넘긴다
+# cat, head -n N, tail -n N (N &gt; 50) 로 *_transactions.csv 를 &quot;그대로&quot; 열 때만
+# 머리글 + 50줄 + 전체 행 수로 줄여서 컨텍스트로 넘긴다
 input=$(cat)
 cmd=$(echo &quot;$input&quot; | jq -r &#x27;.tool_input.command // empty&#x27;)
-if [[ &quot;$cmd&quot; =~ ^npm\ (test|run\ test[[:alnum:]:_-]*)$ ]]; then
-  filtered=&quot;$cmd 2&gt;&amp;1 | grep -E -A 3 &#x27;(FAIL|Error|error:)&#x27; | head -50; exit \${PIPESTATUS[0]}&quot;
-  jq -n --arg c &quot;$filtered&quot; &#x27;{hookSpecificOutput:{hookEventName:&quot;PreToolUse&quot;,permissionDecision:&quot;allow&quot;,updatedInput:{command:$c}}}&#x27;
-else
-  echo &#x27;{}&#x27;
+re=&#x27;^(cat|head|tail)( +-n +([0-9]+))? +([[:alnum:]_./-]*_transactions\.csv)$&#x27;
+if [[ &quot;$cmd&quot; =~ $re ]]; then
+  op=&quot;${BASH_REMATCH[1]}&quot;; n=&quot;${BASH_REMATCH[3]}&quot;; f=&quot;${BASH_REMATCH[4]}&quot;
+  if [ &quot;$op&quot; = cat ] || { [ -n &quot;$n&quot; ] &amp;&amp; [ &quot;$n&quot; -gt 50 ]; }; then
+    if [ &quot;$op&quot; = tail ]; then body=&quot;head -n 1 $f; tail -n 50 $f&quot;; else body=&quot;head -n 51 $f&quot;; fi
+    filtered=&quot;$body; echo \&quot;[필터] 전체 \$((\$(wc -l &lt; $f) - 1))행 중 머리글과 50행만 표시\&quot;&quot;
+    jq -n --arg c &quot;$filtered&quot; &#x27;{hookSpecificOutput:{hookEventName:&quot;PreToolUse&quot;,permissionDecision:&quot;allow&quot;,updatedInput:{command:$c}}}&#x27;
+    exit 0
+  fi
 fi
+echo &#x27;{}&#x27;
 EOF
-chmod 755 .claude/hooks/filter-test-output.sh
+chmod 755 .claude/hooks/filter-tx-output.sh
 cat &gt; .claude/settings.json &lt;&lt; &#x27;EOF&#x27;
 {
   &quot;hooks&quot;: {
     &quot;PreToolUse&quot;: [
-      { &quot;matcher&quot;: &quot;Bash&quot;, &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;$CLAUDE_PROJECT_DIR/.claude/hooks/filter-test-output.sh&quot; }] }
+      { &quot;matcher&quot;: &quot;Bash&quot;, &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;$CLAUDE_PROJECT_DIR/.claude/hooks/filter-tx-output.sh&quot; }] }
     ]
   }
 }
 EOF
-for c in &quot;npm run test:all&quot; &quot;npm test&quot; &quot;npm run test:all | tail -80&quot; &quot;cat package.json &amp;&amp; npm test&quot;; do
-  printf &#x27;%-32s -&gt; &#x27; &quot;$c&quot;
-  jq -n --arg c &quot;$c&quot; &#x27;{tool_input:{command:$c}}&#x27; | .claude/hooks/filter-test-output.sh | jq -c &#x27;.hookSpecificOutput.updatedInput.command // &quot;(그대로)&quot;&#x27;
+for c in &quot;head -n 400 pseudo/card_transactions.csv&quot; &quot;tail -n 200 pseudo/bank_transactions.csv&quot; &quot;head -n 5 pseudo/card_transactions.csv&quot; &quot;cat pseudo/customers.csv&quot; &quot;cat pseudo/card_transactions.csv | wc -l&quot;; do
+  printf &#x27;%-44s -&gt; &#x27; &quot;$c&quot;
+  jq -n --arg c &quot;$c&quot; &#x27;{tool_input:{command:$c}}&#x27; | .claude/hooks/filter-tx-output.sh | jq -c &#x27;.hookSpecificOutput.updatedInput.command // &quot;(그대로)&quot;&#x27;
 done</code></pre></div>
 
-<p>앞의 두 줄은 <code>… | grep -E -A 3 … | head -50; exit ${PIPESTATUS[0]}</code>로 바뀌고, 뒤의 두 줄은 <code>(그대로)</code>여야 합니다. 정규식 끝의 <code>$</code>가 <strong>명령 전체가 정확히 테스트 명령일 때만</strong> 바꾸게 합니다. 이것이 없으면 <code>npm run test:all &gt; out.txt; cat x</code>처럼 이어 붙인 명령의 마지막 조각에만 파이프가 붙어 엉뚱하게 동작합니다.</p>
+<p>앞의 두 줄은 <code>head -n 51 … ; echo "[필터] 전체 …행 중 …"</code> 꼴로 바뀌고(<code>tail</code>은 머리글 한 줄과 마지막 50행), 뒤의 세 줄은 <code>(그대로)</code>여야 합니다. 5행만 보는 <code>head -n 5</code>는 이미 작아서, 다른 파일(<code>customers.csv</code>)은 거래 파일이 아니어서, 파이프가 붙은 명령은 정규식 끝의 <code>$</code>에 걸려서 건드리지 않습니다. 이 앵커가 없으면 <code>cat x_transactions.csv &gt; out.txt; cat y</code>처럼 이어 붙인 명령의 마지막 조각만 바뀌어 엉뚱하게 동작합니다.</p>
+<p>바뀐 명령을 직접 실행해 보면 머리글 1줄, 거래 50줄, 요약 1줄로 총 52줄이 나옵니다. 마지막 줄은 <code>[필터] 전체 36061행 중 머리글과 50행만 표시</code>(카드 거래 기준)입니다.</p>
 <h3 id="step-3-비교">Step 3 · 비교</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude</code></pre></div>
 
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>npm run test:all 을 파이프나 다른 명령 없이 그대로 한 번 실행하고, 그 출력만 보고 실패 원인을 알려줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>head -n 400 pseudo/card_transactions.csv를 그대로 한 번 실행하고, 어떤 데이터인지 세 줄로 요약해줘</code></pre></div>
 
-<p>화면의 도구 호출은 <strong>원래 명령</strong> <code>Bash(npm run test:all)</code>로 표시되지만, Claude가 받은 결과는 <code>FAIL getUserPlan: expected 'pro' but got 'unknown'</code> <strong>한 줄</strong>과 <code>Exit code 1</code>뿐입니다(원래는 408줄). 훅이 바꾼 것은 실행되는 명령이지 화면 표시가 아닙니다. 다시 <code>/context</code>를 실행해 TASK 01과 Messages 토큰 증가량을 비교하세요.</p>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>왜 "그대로 실행"이라고 지시하나요</strong></p>
-<p>그냥 "실행하고 원인을 알려줘"라고 하면 Opus 5.5는 스스로 <code>| tail -80</code>이나 <code>&gt; /tmp/out.txt; grep -vn '^ok '</code>처럼 출력을 줄여 실행하는 경우가 많습니다(실습 환경에서 확인). 모델이 알아서 줄이면 훅이 낄 자리가 없습니다. 훅은 <strong>모델이 잊거나 다른 모델·서브에이전트가 실행할 때도</strong> 같은 기준을 보장하는 장치입니다. 실습에서는 차이를 보기 위해 그대로 실행하게 합니다.</p></div></div>
+<p>TASK 01과 같은 요청입니다. 화면의 도구 호출은 <strong>원래 명령</strong> <code>Bash(head -n 400 pseudo/card_transactions.csv)</code>로 표시되지만, Claude가 받은 결과는 머리글과 50행, 그리고 <code>[필터] 전체 36061행 …</code> 한 줄뿐입니다(약 20,000자가 약 2,600자로 줄어듭니다). 훅이 바꾼 것은 실행되는 명령이지 화면 표시가 아닙니다. 다시 <code>/context</code>를 실행해 TASK 01과 Messages 토큰을 비교하세요. 요약 내용은 거의 같은데 토큰은 크게 줄어 있어야 합니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>왜 "head -n 400으로 그대로"라고 지시하나요</strong></p>
+<p>그냥 "요약해줘"라고 하면 Claude가 스스로 <code>python3</code>나 <code>awk</code>로 집계해서 거래 행이 컨텍스트에 들어오지 않을 수 있습니다. 그러면 훅이 낄 자리가 없습니다. 훅은 <strong>모델이 <code>head</code>나 <code>cat</code>으로 열 때, 모델이 잊었을 때, 다른 모델·서브에이전트가 실행할 때도</strong> 같은 기준을 보장하는 안전망입니다. 실습에서는 차이를 보기 위해 <code>head -n 400</code>으로 열게 합니다.</p></div></div>
 
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>명령이 바뀌지 않았다면</strong></p>
 <p><code>/hooks</code>에서 PreToolUse 훅이 보이는지 확인합니다. 보이지 않으면 세션을 다시 시작하고, 프로젝트 신뢰 확인에서 <strong>Yes</strong>를 골랐는지 확인하세요. 그래도 바뀌지 않으면 진행자에게 버전을 알려 주세요.</p></div></div>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>필터 훅은 "무엇을 버리는가"를 정하는 정책입니다</strong></p>
-<p>너무 공격적으로 자르면 Claude가 원인을 못 찾아 재실행을 반복하고 오히려 토큰이 늘어납니다. 위 실습에서도 Claude는 "출력만으로는 어느 부분이 원인인지 알 수 없다, 소스를 열어 보겠다"고 답합니다. 실패 줄 앞뒤 몇 줄은 남기고, 팀 단위로는 Ch4의 플러그인 훅으로 배포하세요.</p></div></div>
+<p>앞 50행만 보고는 Claude가 전체 분포를 알 수 없습니다. 합계나 월별 추이처럼 전체가 필요한 질문은 <code>python3</code> 집계 스크립트를 쓰게 하고, 파일을 열어 보는 용도에만 이 훅을 씁니다. 팀 단위로는 Ch4의 플러그인 훅으로 배포하세요.</p></div></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>훅이 명령을 필터 버전으로 바꾸는 것을 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>같은 작업의 Messages 토큰이 줄어든 것을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>훅이 거래 CSV를 여는 명령을 필터 버전으로 바꾸는 것을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>같은 요청의 Messages 토큰이 TASK 01보다 줄어든 것을 확인했다</span></label></li>
 </ul></div></div>
 
 <h2 id="task-03-고정-비용-줄이기-claude-md-다이어트와-모델-선택-8분">TASK 03 · 고정 비용 줄이기, CLAUDE.md 다이어트와 모델 선택 (8분)</h2>
 <h3 id="step-1-부풀린-claude-md">Step 1 · 부풀린 CLAUDE.md</h3>
-<p>같은 세션에서 요청합니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 프로젝트 CLAUDE.md를 만들어줘. 코딩 규칙 10줄, 그리고 &quot;릴리스 절차&quot; 섹션에 버전 올리기·체인지로그·태그·배포 확인까지 단계별로 자세히 60줄 정도 써줘</code></pre></div>
+<p>같은 세션에서 요청합니다. 분석 담당자가 노후 연금 격차 계산 절차를 CLAUDE.md에 그대로 적어 두었다고 가정합니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 프로젝트 CLAUDE.md를 만들어줘. 작업 규칙 10줄(pseudo/ 가명 데이터만 쓴다, 개별 고객 식별자는 출력하지 않는다 등), 그리고 &quot;노후 연금 격차 산출 절차&quot; 섹션에 세그먼트 입력, 사용할 열, 계산식, 출력 표 형식을 단계별로 자세히 60줄 정도로 써줘</code></pre></div>
 
-<p>CLAUDE.md는 세션을 시작할 때 읽히므로 <code>/exit</code> 후 <code>claude -c</code>로 다시 열고 <code>/context</code>의 <strong>Memory files</strong>에서 <code>CLAUDE.md</code> 크기를 확인합니다(실습 환경에서 약 1.2k 토큰). 이 양이 이후 모든 요청에 실립니다.</p>
+<p>CLAUDE.md는 세션을 시작할 때 읽히므로 <code>/exit</code> 후 <code>claude -c</code>로 다시 열고 <code>/context</code>의 <strong>Memory files</strong>에서 <code>CLAUDE.md</code> 크기를 메모해 둡니다. 이 양이 이후 모든 요청에 실립니다.</p>
 <h3 id="step-2-가끔-쓰는-절차는-스킬로">Step 2 · 가끔 쓰는 절차는 스킬로</h3>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>CLAUDE.md의 릴리스 절차 섹션을 .claude/skills/release/SKILL.md 스킬로 옮기고, CLAUDE.md에는 &quot;릴리스는 release 스킬을 따른다&quot; 한 줄만 남겨줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>CLAUDE.md의 &quot;노후 연금 격차 산출 절차&quot; 섹션을 .claude/skills/retirement-gap/SKILL.md 스킬로 옮기고(앞머리 description에 언제 쓰는지 적어줘), CLAUDE.md에는 &quot;연금 격차 산출은 retirement-gap 스킬을 따른다&quot; 한 줄만 남겨줘</code></pre></div>
 
-<p><code>/exit</code> 후 <code>claude -c</code>로 다시 들어가 <code>/context</code>를 실행합니다. CLAUDE.md가 줄고(실습 환경에서 1.2k → 326 토큰), 스킬은 <strong>이름과 설명만</strong> 상시 로드되며 본문은 필요할 때만 읽힌다는 것을 확인합니다.</p>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Skills 목록에 release가 없다면</strong></p>
-<p>Claude가 SKILL.md에 <code>disable-model-invocation: true</code>를 넣었을 수 있습니다. 배포·태그처럼 되돌리기 어려운 절차는 모델이 스스로 고르지 않고 사람이 <code>/release</code>로만 부르게 하는 설정이고, 이때는 이름·설명조차 컨텍스트에 올라가지 않아 <strong>0 토큰</strong>입니다.</p></div></div>
+<p><code>/exit</code> 후 <code>claude -c</code>로 다시 들어가 <code>/context</code>를 실행합니다. CLAUDE.md가 눈에 띄게 줄고, 스킬은 <strong>이름과 설명만</strong> 상시 로드되며 본문은 필요할 때만 읽힌다는 것을 확인합니다. Ch4의 asset-team-kit이 켜져 있다면 목록에 <code>asset-team-kit:retirement-gap</code>도 함께 보이는데, 플러그인 스킬은 이름공간이 붙어 따로 보이는 것이니 정상입니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Skills 목록에 retirement-gap이 없다면</strong></p>
+<p>Claude가 SKILL.md에 <code>disable-model-invocation: true</code>를 넣었을 수 있습니다. 배포·태그처럼 되돌리기 어려운 절차는 모델이 스스로 고르지 않고 사람이 <code>/retirement-gap</code>처럼 직접 부르게 하는 설정이고, 이때는 이름·설명조차 컨텍스트에 올라가지 않아 <strong>0 토큰</strong>입니다. 읽기 전용 분석 절차에는 필요하지 않으니 줄을 지워 달라고 해도 됩니다.</p></div></div>
 
 <h3 id="step-3-일에-맞는-모델">Step 3 · 일에 맞는 모델</h3>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/model</code></pre></div>
@@ -334,7 +343,7 @@ done</code></pre></div>
 
 <p><strong>Messages</strong> 토큰과 <code>Prompt cache (main)</code> 줄을 적어 둡니다.</p>
 <h3 id="step-2-남길-것을-정해서-압축">Step 2 · 남길 것을 정해서 압축</h3>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/compact 테스트 실패 원인과 수정한 파일, 남은 할 일만 남겨줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/compact 확인한 파일 구조와 열 이름, 계산 결과, 남은 할 일만 남겨줘</code></pre></div>
 
 <p><code>Compacted (ctrl+o to see full summary)</code>가 나오면 다시 <code>/context</code>를 실행해 Messages가 줄어든 것을 확인합니다. 압축 직후 <code>/usage</code>에는 <code>Prompt cache (main)</code> 줄이 없다가, 다음 요청 뒤에 다시 나타나며 캐시 적중률이 낮아져 있습니다(실습 환경에서 88% → 64%). 압축으로 접두부가 바뀌어 캐시를 새로 쌓기 때문입니다.</p>
 <p>압축 후에 무엇이 다시 들어오는지 확인합니다.</p>
@@ -375,9 +384,9 @@ done</code></pre></div>
 cat &gt;&gt; CLAUDE.md &lt;&lt; &#x27;EOF&#x27;
 
 # Compact instructions
-압축할 때는 테스트 결과, 바꾼 파일 목록, 결정 사항만 남긴다.
+압축할 때는 확인한 파일 구조, 계산 결과 표, 결정 사항만 남긴다.
 EOF
-jq &#x27;.hooks.SessionStart = [{&quot;matcher&quot;:&quot;compact&quot;,&quot;hooks&quot;:[{&quot;type&quot;:&quot;command&quot;,&quot;command&quot;:&quot;echo \&quot;[사내 규정] 고객 주민등록번호·카드번호는 출력하거나 파일에 쓰지 않는다\&quot;&quot;}]}]&#x27; \
+jq &#x27;.hooks.SessionStart = [{&quot;matcher&quot;:&quot;compact&quot;,&quot;hooks&quot;:[{&quot;type&quot;:&quot;command&quot;,&quot;command&quot;:&quot;echo \&quot;[사내 규정] 고객 주민등록번호·카드번호·계좌번호·휴대폰 번호는 출력하거나 파일에 쓰지 않는다\&quot;&quot;}]}]&#x27; \
   .claude/settings.json &gt; /tmp/s.json &amp;&amp; cp /tmp/s.json .claude/settings.json
 jq &#x27;.hooks | keys&#x27; .claude/settings.json
 claude --continue</code></pre></div>
@@ -518,8 +527,8 @@ claude --continue</code></pre></div>
 <h2 id="마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</h2>
 <ul>
 <li class="check"><label><input type="checkbox"> <span>토큰을 키우는 주범이 컨텍스트 크기와 반복 읽기라는 것을 <code>/context</code>와 <code>/usage</code>의 숫자로 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>출력 필터 훅으로 긴 테스트 로그 대신 실패 줄만 컨텍스트에 넘겼다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>가끔 쓰는 절차를 CLAUDE.md에서 스킬로 옮겨 매 요청의 고정 비용을 줄였고, 일에 맞는 모델을 고를 수 있다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>출력 필터 훅으로 거래 CSV 전체 대신 머리글과 50행만 컨텍스트에 넘겼다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>가끔 쓰는 절차(retirement-gap)를 CLAUDE.md에서 스킬로 옮겨 매 요청의 고정 비용을 줄였고, 일에 맞는 모델을 고를 수 있다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>압축 시점과 남길 내용을 직접 정하고, Bedrock의 캐시 수명에 맞는 습관을 설명할 수 있다</span></label></li>
 </ul>
 <p>NEXT CHAPTER</p>
@@ -529,7 +538,7 @@ claude --continue</code></pre></div>
 <ul>
 <li>이전: <a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Claude Code 확장하기</a></li>
 <li>다음: <a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 조직의 비용 보고 통제하기</a></li>
-</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch4_HandsOnLab.html"><small>이전</small>Ch4. Claude Code 확장하기</a><a class="next" href="ClaudeCode_Ch6_HandsOnLab.html"><small>다음</small>Ch6. 조직의 비용 보고 통제하기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-기준선-재기-5분">TASK 01 · 기준선 재기 (5분)</a></li><li><a href="#task-02-출력-필터-훅으로-로그-줄이기-10분">TASK 02 · 출력 필터 훅으로 로그 줄이기 (10분)</a></li><li><a href="#task-03-고정-비용-줄이기-claude-md-다이어트와-모델-선택-8분">TASK 03 · 고정 비용 줄이기, CLAUDE.md 다이어트와 모델 선택 (8분)</a></li><li><a href="#task-04-압축-compaction-을-내가-정한-때에-15분">TASK 04 · 압축(compaction)을 내가 정한 때에 (15분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch4_HandsOnLab.html"><small>이전</small>Ch4. Claude Code 확장하기</a><a class="next" href="ClaudeCode_Ch6_HandsOnLab.html"><small>다음</small>Ch6. 조직의 비용 보고 통제하기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</a></li><li><a href="#task-01-기준선-재기-5분">TASK 01 · 기준선 재기 (5분)</a></li><li><a href="#task-02-출력-필터-훅으로-거래-csv-출력-줄이기-10분">TASK 02 · 출력 필터 훅으로 거래 CSV 출력 줄이기 (10분)</a></li><li><a href="#task-03-고정-비용-줄이기-claude-md-다이어트와-모델-선택-8분">TASK 03 · 고정 비용 줄이기, CLAUDE.md 다이어트와 모델 선택 (8분)</a></li><li><a href="#task-04-압축-compaction-을-내가-정한-때에-15분">TASK 04 · 압축(compaction)을 내가 정한 때에 (15분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;

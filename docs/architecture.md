@@ -23,6 +23,7 @@ to the curriculum; they are not repository infrastructure.
 | `20261123/eDM.html`, `20261123/image/` | Standalone one-day invitation for Hanwha Financial with the trimmed supplied logo; copied to `/20261123/` by the Pages workflow (no `index.html`, so use `/20261123/eDM.html`) |
 | `workshop-v2/` | Draft two-day workshop: HTML labs with `assets/`, runnable seed projects under `seed/`, and a facilitator guide. Copied to `/workshop-v2/` by the Pages workflow for team review; seed projects are downloadable files, not executed by Pages |
 | `20260525/`, `20260703/`, `20260901/`, `20260905/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
+| `tools/mydata/` | Stdlib Python that generates the seeded synthetic MyData (raw and pseudonymized), validates it against `dlp_pattern.txt`, packs `mydata-kit.zip` with per-chapter checkpoints, and guards the November lab pages (`check_labs.py`). Outside the Pages artifact; `dist/` is gitignored. The kit is hosted in the Workshop Studio assets bucket of the Apps Gateway workshop and learners fetch it with `aws s3 cp`. See [tools/mydata/README.md](../tools/mydata/README.md) |
 | `Script/workshop-code/` | Archived Markdown examples, outside the Pages artifact |
 
 The November site was imported separately and is not generated from the general
@@ -74,3 +75,10 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory "$preview_dir"
 Check `/` (November portal), `/eDM.html`, `/20261116/` and `/20261123/eDM.html`, including links, assets, navigation, and any changed
 JavaScript behavior. `file://` previews alone do not establish that the published
 relative paths work.
+
+When changing the November labs or `tools/mydata/`, also run:
+
+```bash
+python3 -m unittest discover -s tools/mydata/tests -t .
+python3 tools/mydata/build.py --version <v> && python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip
+```

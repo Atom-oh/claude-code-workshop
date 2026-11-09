@@ -90,419 +90,344 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <blockquote>
 <p><strong>Claude Code Deep Dive Workshop, Chapter 3 - Subagent로 일 나눠 맡기기 실습</strong></p>
 </blockquote>
-<p>이 랩에서는 <strong>code-reviewer, test-writer, docs-writer</strong> 3종의 서브에이전트를 직접 정의하고,
-도구 권한 격리를 체험한 뒤 자동 / 명시 / 병렬 디스패치 3가지 패턴과 Headless CI 통합까지 실습합니다.
-TASK 00에서 만드는 작은 Node 프로젝트(<code>~/claude-lab/ch4</code>)를 대상으로 진행합니다.</p>
-<p>소요 시간 <strong>40분 내외</strong> · Task <strong>준비 + 4개 + 선택 1개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
-<h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
-<p>실습용 Node 프로젝트를 <strong>커밋 2개</strong>(초기 + 버그 수정) 상태로 만듭니다. Task 1의 첫 리뷰 대상이 이 수정 커밋의 diff입니다.</p>
+<p>이번 이야기의 주인공은 <strong>고객자산 분석 담당자</strong>입니다. 고객 1,000명을 소비, 자산, 위험 점검까지 혼자 보기에는 일이 많아서, 일을 <strong>spending-analyst, portfolio-analyst, risk-reviewer</strong> 3종의 서브에이전트에게 나눠 맡기고 고객을 세그먼트로 묶어 세그먼트별 맞춤 서비스를 제안하려 합니다.
+이 랩에서는 세 에이전트를 직접 정의하고, 도구 권한 격리를 체험한 뒤 자동 / 명시 / 병렬 디스패치 3가지 패턴과 Headless 통합까지 실습합니다.
+TASK 00에서 준비하는 작업 폴더(<code>~/claude-lab/ch4</code>)에서 <code>pseudo/</code> 가명 데이터를 대상으로 진행합니다.</p>
+<p>소요 시간 <strong>필수 40분 + 선택 7분</strong> · Task <strong>준비 + 4개 + 선택 1개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>가명 데이터만 사용하세요</strong></p>
+<p>이 랩은 <code>pseudo/</code>(가명 토큰) 데이터만 읽습니다. 원본 식별자가 있는 <code>raw/</code>는 열지 않습니다. 모든 값은 형식만 맞춘 가짜 데이터입니다.</p>
+</div></div>
+<h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</h2>
+<p>분석 담당자의 작업 폴더를 만들고 가명 데이터를 연결합니다. <code>CLAUDE.md</code>에는 이번 작업의 목표를 적어, 세 에이전트와 메인이 같은 목표를 보게 합니다. 키트를 이미 받았다면 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>터미널 위치</strong></p>
-<p>이 랩은 <code>~/claude-lab/ch4</code>에서 진행합니다.
+<p>이 랩은 <code>~/claude-lab/ch4</code>에서 진행합니다(폴더 이름은 이전 구성의 것을 그대로 씁니다).
 아래에 나오는 <code>.claude/agents/</code> 같은 상대 경로도 전부 이 폴더 기준입니다.
-시작 전에 <code>cd ~/claude-lab/ch4</code>로 위치를 맞추세요.</p></div></div>
-
-<h3 id="step-1-실습-프로젝트-만들기">Step 1 · 실습 프로젝트 만들기</h3>
-<p><code>use_bedrock_direct</code> 기본 모드인지 확인한 뒤 아래 블록을 통째로 실행합니다.</p>
+시작 전에 <code>cd ~/claude-lab/ch4</code>로 위치를 맞추세요.</p>
+</div></div>
+<h3 id="step-1-작업-폴더와-데이터-연결">Step 1 · 작업 폴더와 데이터 연결</h3>
+<p><code>use_bedrock_direct</code> 기본 모드인지 확인한 뒤 아래 블록을 통째로 실행합니다. 여러 번 실행해도 안전합니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>mkdir -p ~/claude-lab/ch4/src &amp;&amp; cd ~/claude-lab/ch4
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
+KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
+mkdir -p ~/claude-lab/ch4 &amp;&amp; cd ~/claude-lab/ch4
+ln -sfn ~/claude-lab/mydata/pseudo pseudo
 
-cat &gt; package.json &lt;&lt; &#x27;EOF&#x27;
-{
-  &quot;name&quot;: &quot;user-service-lab&quot;,
-  &quot;version&quot;: &quot;1.0.0&quot;,
-  &quot;description&quot;: &quot;Claude Code Workshop sample project&quot;,
-  &quot;type&quot;: &quot;module&quot;,
-  &quot;scripts&quot;: { &quot;test&quot;: &quot;node test.js&quot; }
-}
-EOF
-
-cat &gt; src/users.js &lt;&lt; &#x27;EOF&#x27;
-// 사용자 데이터 저장소
-// 주의: 일부 사용자는 profile 필드가 없음 (마이그레이션 미수행 상황)
-export const users = [
-  { id: 1, name: &quot;Kim&quot;, profile: { email: &quot;kim@example.com&quot;, plan: &quot;pro&quot; } },
-  { id: 2, name: &quot;Lee&quot;, profile: { email: &quot;lee@example.com&quot;, plan: &quot;free&quot; } },
-  { id: 3, name: &quot;Park&quot; }
-];
-EOF
-
-cat &gt; src/userService.js &lt;&lt; &#x27;EOF&#x27;
-import { users } from &quot;./users.js&quot;;
-
-export function getUser(id) {
-  return users.find((u) =&gt; u.id === id);
-}
-
-export function getUserPlan(id) {
-  const user = getUser(id);
-  return user.profile.plan;
-}
-EOF
-
-cat &gt; test.js &lt;&lt; &#x27;EOF&#x27;
-import { getUserPlan } from &quot;./src/userService.js&quot;;
-
-function check(name, fn, expected) {
-  const actual = fn();
-  console.log(`${name}: ${actual === expected ? &quot;PASS&quot; : `FAIL (got ${actual})`}`);
-}
-
-check(&quot;Test 1 - pro 플랜 사용자&quot;, () =&gt; getUserPlan(1), &quot;pro&quot;);
-check(&quot;Test 2 - free 플랜 사용자&quot;, () =&gt; getUserPlan(2), &quot;free&quot;);
-check(&quot;Test 3 - profile 없는 사용자&quot;, () =&gt; getUserPlan(3), &quot;unknown&quot;);
+cat &gt; CLAUDE.md &lt;&lt; &#x27;EOF&#x27;
+# 고객 세그먼트 분석 (Ch3 실습)
+목표: 고객자산 분석 담당자로서 고객을 세그먼트로 나누고, 세그먼트별 맞춤 서비스를 제안한다.
+데이터: ./pseudo 아래 가명 데이터만 읽는다. 원본(raw)은 열지 않는다.
+이름에 transactions가 들어간 거래 원장 파일은 이번 작업에서 읽지 않는다.
+결과물에는 개별 고객 ID와 토큰 값을 쓰지 않고 집계만 쓴다.
 EOF
 
 git init -q
 git config user.name  &gt;/dev/null 2&gt;&amp;1 || git config user.name &quot;lab&quot;
 git config user.email &gt;/dev/null 2&gt;&amp;1 || git config user.email &quot;lab@example.com&quot;
-git add -A &amp;&amp; git commit -q -m &quot;chore: initial lab project (with bug)&quot;
-
-cat &gt; src/userService.js &lt;&lt; &#x27;EOF&#x27;
-import { users } from &quot;./users.js&quot;;
-
-export function getUser(id) {
-  return users.find((u) =&gt; u.id === id);
-}
-
-export function getUserPlan(id) {
-  const user = getUser(id);
-  return user?.profile?.plan ?? &quot;unknown&quot;;
-}
-EOF
-
-git add -A &amp;&amp; git commit -q -m &quot;fix: handle users without profile&quot;
-npm test &amp;&amp; git log --oneline</code></pre></div>
-
+git add -A &amp;&amp; git commit -q -m &quot;chore: start segment analysis&quot; 2&gt;/dev/null || true
+head -1 pseudo/customers.csv &amp;&amp; wc -l pseudo/customers.csv</code></pre></div>
+<p><strong>출력 예시</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>customer_id,name,rrn,mobile,age,gender,region,income_band,joined_date
+1001 pseudo/customers.csv</code></pre></div>
+<p>첫 줄은 헤더, 나머지 1,000줄이 고객입니다. <code>rrn</code>과 <code>mobile</code> 열에는 원본 대신 <code>CI_</code>로 시작하는 가명 토큰이 들어 있습니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Ch2에서 만든 DLP 훅은 이 랩에서 쓰지 않습니다</strong></p>
+<p>Ch3는 가명 데이터만 다루므로 DLP 훅을 강제하지 않습니다. 훅이 필요하면 키트의 <code>~/claude-lab/mydata/checkpoints/ch2/dlp-guard.sh</code>를 참고하세요.</p>
+</div></div>
 <h3 id="step-2-jq-설치-확인">Step 2 · jq 설치 확인</h3>
-<p>Task 5의 헤드리스 통합에서 <strong>JSON 출력 파싱</strong>에 <code>jq</code>를 사용합니다. 없으면 한 줄로 설치하세요.</p>
+<p>선택 TASK 05의 헤드리스 통합에서 <strong>JSON 출력 파싱</strong>에 <code>jq</code>를 사용합니다. 없으면 한 줄로 설치하세요.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq --version || sudo dnf install -y jq</code></pre></div>
-
 <p><strong>출력 예시</strong></p>
 <div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>jq-1.8.1</code></pre></div>
-
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>npm test 3개 PASS, git log에 커밋 2개 이상이 보인다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>pseudo</code> 링크로 <code>head -1 pseudo/customers.csv</code>가 헤더를 출력하고, <code>CLAUDE.md</code>가 있다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>jq --version이 버전을 출력한다</span></label></li>
 </ul></div></div>
-
-<h2 id="task-01-첫-subagent-code-reviewer-만들기-8분">TASK 01 · 첫 Subagent, code-reviewer 만들기 (8분)</h2>
-<p><code>.claude/agents/</code>에 code-reviewer를 정의하고 등록을 확인한 뒤, TASK 00의 <strong>버그 수정 커밋</strong>을 첫 리뷰 대상으로 호출합니다.</p>
+<h2 id="task-01-첫-subagent-spending-analyst-만들기-10분">TASK 01 · 첫 Subagent, spending-analyst 만들기 (10분)</h2>
+<p>분석 담당자가 가장 먼저 맡기는 일은 <strong>누가 어떻게 쓰는가</strong>를 읽는 것입니다. <code>.claude/agents/</code>에 spending-analyst를 정의하고 등록을 확인한 뒤, 연령대별 소비 패턴 분석을 첫 위임으로 보냅니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Subagent가 왜 필요한가, Context Isolation</strong></p>
 <p>서브에이전트는 <strong>자신만의 컨텍스트 창, 시스템 프롬프트, 도구 권한, 모델</strong>을 갖는 독립 에이전트입니다.
-파일 수십 개를 읽는 무거운 분석을 위임하면 서브에이전트 컨텍스트에서 소비되고,
-메인에는 <strong>요약만 반환</strong>되어 메인 컨텍스트가 보호됩니다.</p></div></div>
-
+고객 천 명의 데이터를 집계하는 무거운 분석을 위임하면 서브에이전트 컨텍스트에서 소비되고,
+메인에는 <strong>요약만 반환</strong>되어 메인 컨텍스트가 보호됩니다.</p>
+</div></div>
 <h3 id="step-1-에이전트-정의-파일-작성">Step 1 · 에이전트 정의 파일 작성</h3>
-<p>정의 파일은 <strong>YAML frontmatter 핵심 4필드</strong>(name / description / tools / model, 필수는 name과 description)와 시스템 프롬프트 본문으로 구성됩니다. 프로젝트 루트에서 아래 블록을 실행하세요.</p>
+<p>정의 파일은 <strong>YAML frontmatter 핵심 4필드</strong>(name / description / tools / model, 필수는 name과 description)와 시스템 프롬프트 본문으로 구성됩니다. 작업 폴더에서 아래 블록을 실행하세요.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch4
 mkdir -p .claude/agents
 
-cat &gt; .claude/agents/code-reviewer.md &lt;&lt; &#x27;EOF&#x27;
+cat &gt; .claude/agents/spending-analyst.md &lt;&lt; &#x27;EOF&#x27;
 ---
-name: code-reviewer
+name: spending-analyst
 description: |
-  PR diff를 검토하여 가독성, 안전성, 성능, 테스트 커버리지 관점에서
-  개선 사항을 제안하는 시니어 코드 리뷰어. 사용 시점: 코드 리뷰가
-  필요하다고 사용자가 요청하거나 git diff 검토가 필요한 경우.
-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*)
+  고객 또는 고객 그룹의 소비 패턴과 생애 단계를 추정하는 소비 분석가.
+  월별 카드 소비 요약, 계좌 잔액, 고객 기본 정보를 근거로 삼음.
+  사용 시점: 소비 성향, 선호 카테고리, 연령대별 생애 단계 분석이 필요한 경우.
+tools: Read, Grep, Glob, Bash(python3:*)
 model: sonnet
 ---
-당신은 10년 경력의 시니어 소프트웨어 엔지니어입니다.
+당신은 소비 데이터를 읽는 고객 분석가입니다.
 
-# 검토 우선순위
-1. 안전성: null 참조, race condition, 입력 검증 누락
-2. 가독성: 명명, 함수 크기, 주석 필요성
-3. 성능: 알고리즘 복잡도, 불필요한 I/O
-4. 테스트: 새 코드의 테스트 커버리지
+# 사용할 데이터 (pseudo/ 아래 가명 데이터만)
+- card_spend_monthly.csv: customer_id, month, merchant_category, amount (최근 3개월 월별 요약)
+- bank_accounts.csv: customer_id, account_type, balance
+- customers.csv: customer_id, age, gender, region, income_band
+- 이름에 transactions가 들어간 거래 원장 파일은 읽지 않습니다.
+
+# 분석 순서
+1. 대상 고객 그룹을 customers.csv에서 조건으로 고릅니다.
+2. python3(csv 모듈)로 카테고리별 비중과 월별 추세를 집계합니다.
+3. 나이, 소득 구간, 계좌 잔액으로 생애 단계를 추정합니다.
 
 # 출력 형식
-- Severity: high | medium | low
-- 파일:라인, 문제 설명, 권장 수정안
+- 대상 그룹: 고객 수, 평균 나이
+- 소비 패턴, 생애 단계, 근거(파일과 열 이름)
+- 개별 고객 ID와 토큰 값은 쓰지 않고 집계만 보고합니다.
 EOF</code></pre></div>
-
 <table>
 <thead>
-<tr>
-<th>필드</th>
-<th>역할</th>
-<th>이 예시의 선택</th>
-</tr>
+<tr><th>필드</th><th>역할</th><th>이 예시의 선택</th></tr>
 </thead>
 <tbody>
-<tr>
-<td><code>name</code></td>
-<td>고유 식별자, kebab-case 영문 소문자</td>
-<td>code-reviewer</td>
-</tr>
-<tr>
-<td><code>description</code></td>
-<td>자동 디스패치의 판단 기준, 사용 시점까지 명시</td>
-<td>리뷰 요청 / git diff 검토 시</td>
-</tr>
-<tr>
-<td><code>tools</code></td>
-<td>도구 화이트리스트, Bash는 명령 패턴으로 제한</td>
-<td>읽기 전용 + git diff / log만</td>
-</tr>
-<tr>
-<td><code>model</code></td>
-<td>별칭 sonnet / opus / haiku, 전체 모델 ID, 또는 inherit. 생략 시 inherit(메인 모델 상속)</td>
-<td>sonnet, 일상 리뷰의 표준</td>
-</tr>
+<tr><td><code>name</code></td><td>고유 식별자, kebab-case 영문 소문자</td><td>spending-analyst</td></tr>
+<tr><td><code>description</code></td><td>자동 디스패치의 판단 기준, 사용 시점까지 명시</td><td>소비 성향, 생애 단계 분석이 필요할 때</td></tr>
+<tr><td><code>tools</code></td><td>도구 화이트리스트, Bash는 명령 패턴으로 제한</td><td>읽기 도구 + <code>python3</code> 집계만</td></tr>
+<tr><td><code>model</code></td><td>별칭 sonnet / opus / haiku, 전체 모델 ID, 또는 inherit. 생략 시 inherit(메인 모델 상속)</td><td>sonnet, 일상 분석의 표준</td></tr>
 </tbody>
 </table>
 <h3 id="step-2-등록-확인">Step 2 · 등록 확인</h3>
 <p><strong>Terminal</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude</code></pre></div>
-
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>변경 안내, /agents 위저드 제거 (v2.1.198+)</strong></p>
 <p>구버전에서 쓰던 <code>/agents</code>는 이제 안내 문구만 출력합니다.
 에이전트 관리 자체가 파일 기반으로 바뀐 것은 아니며(파일 위치와 frontmatter는 동일),
-<strong>확인은 @ 멘션 typeahead 또는 Claude에게 질문</strong>으로, 생성/수정은 파일 편집 또는 Claude에게 요청으로 합니다.</p></div></div>
-
-<p>입력창에 <code>@</code>를 입력하면 파일 멘션과 함께 <strong>code-reviewer (agent)</strong>가 typeahead 목록에 나타납니다(Esc로 닫기). 또는 아래처럼 직접 물어봐도 됩니다.</p>
+<strong>확인은 @ 멘션 typeahead 또는 Claude에게 질문</strong>으로, 생성/수정은 파일 편집 또는 Claude에게 요청으로 합니다.</p>
+</div></div>
+<p>입력창에 <code>@</code>를 입력하면 파일 멘션과 함께 <strong>spending-analyst (agent)</strong>가 typeahead 목록에 나타납니다(Esc로 닫기). 또는 아래처럼 직접 물어봐도 됩니다.</p>
 <p><strong>Claude 세션 입력</strong></p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>현재 이 세션에서 사용할 수 있는 서브에이전트 목록을 알려주세요</code></pre></div>
-
 <p><strong>출력 예시</strong></p>
 <div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>사용 가능한 서브에이전트:
-  - code-reviewer : PR diff 검토 (프로젝트, .claude/agents/)
+  - spending-analyst : 소비 패턴과 생애 단계 분석 (프로젝트, .claude/agents/)
   - claude, claude-code-guide, Explore, general-purpose, Plan, statusline-setup : 내장 에이전트</code></pre></div>
-
 <p>처음 여는 폴더라 <strong>Accessing workspace</strong> 창이 뜨면 ↓로 <code>Yes, I trust this folder</code>를 고른 뒤 Enter를 누릅니다.</p>
-<h3 id="step-3-첫-호출-버그-수정-커밋-리뷰">Step 3 · 첫 호출, 버그 수정 커밋 리뷰</h3>
+<h3 id="step-3-첫-호출-연령대별-소비-패턴">Step 3 · 첫 호출, 연령대별 소비 패턴</h3>
 <p><strong>Claude 세션 입력</strong></p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>code-reviewer 에이전트를 사용해서 최근 커밋의 변경분(git diff HEAD~1)을 검토해 주세요</code></pre></div>
-
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>spending-analyst 에이전트를 사용해서 pseudo/customers.csv의 연령대(20대, 30대, 40대, 50대, 60대)별로 최근 3개월 카드 소비 상위 카테고리와 생애 단계를 요약해 주세요</code></pre></div>
 <p><strong>관찰 포인트</strong></p>
-<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● code-reviewer(최근 커밋 diff 리뷰)
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● spending-analyst(연령대별 소비 패턴 요약)
   └ Backgrounded agent (↓ to manage · ctrl+o to expand)
 ✳ Waiting for 1 background agent to finish
-   ○ code-reviewer  최근 커밋 diff 리뷰      22s · ↓ 6.0k tokens
+   ○ spending-analyst  연령대별 소비 패턴 요약      35s · ↓ 7.2k tokens
 …
-● Agent &quot;최근 커밋 diff 리뷰&quot; finished · 30s
-● 검토 결과: 4d47e9f fix: handle users without profile
-  심각도: 중간 / 위치: src/userService.js:9 / 내용: 없는 id도 &quot;unknown&quot;을 반환 …
-  심각도: 중간 / 위치: test.js:5, test.js:10 / 내용: 경계 사례 테스트 부재 …</code></pre></div>
-
-<p>서브에이전트는 <strong>백그라운드로</strong> 실행되고, 입력창 아래 패널에 진행 상황이 보입니다(↓로 관리, <code>/tasks</code>로 목록). 결과를 받으면 <strong>출력 형식이 시스템 프롬프트에서 지정한 Severity 구조를 따르는지</strong>, 우선순위 4개 관점이 반영되었는지 확인하세요.</p>
+● Agent &quot;연령대별 소비 패턴 요약&quot; finished · 41s
+● 분석 결과 (최근 3개월, 고객 1,000명 기준)
+  20대~30대: 소비 상위 카테고리와 월별 추세 … 생애 단계: 자산 형성 초기
+  50대~60대: 의료, 식비 비중 상승 … 생애 단계: 은퇴 준비
+  근거: card_spend_monthly.csv(merchant_category, amount), customers.csv(age)</code></pre></div>
+<p>서브에이전트는 <strong>백그라운드로</strong> 실행되고, 입력창 아래 패널에 진행 상황이 보입니다(↓로 관리, <code>/tasks</code>로 목록). 결과를 받으면 <strong>출력 형식이 시스템 프롬프트에서 지정한 구조(대상 그룹, 소비 패턴, 생애 단계, 근거)를 따르는지</strong>, 개별 고객 ID 없이 집계만 보고하는지 확인하세요. 카드 소비는 <strong>최근 3개월</strong> 요약이므로 연간 추세는 말할 수 없습니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>메인이 빈틈을 대신 채우기도 합니다</strong></p>
-<p>code-reviewer는 <code>git diff</code>·<code>git log</code>만 실행할 수 있어서 <code>npm test</code>를 돌리지 못합니다. 실습 환경에서는 메인이 "리뷰어가 테스트를 돌릴 수 없으니 제가 직접 확인하겠습니다"라며 <code>npm test</code>를 실행했습니다. 서브에이전트의 권한 울타리는 지켜지지만, <strong>메인 세션의 권한</strong>(여기서는 auto mode)이 최종 경계라는 뜻입니다.</p></div></div>
-
+<p>spending-analyst는 <code>Write</code> 도구가 없어서 결과를 파일로 저장하지 못합니다. 실습 환경에서는 메인이 "분석가가 파일을 저장할 수 없으니 제가 직접 정리하겠습니다"라며 대신 처리하는 경우가 있었습니다. 서브에이전트의 권한 울타리는 지켜지지만, <strong>메인 세션의 권한</strong>(여기서는 auto mode)이 최종 경계라는 뜻입니다.</p>
+</div></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>@ typeahead 또는 Claude 응답에서 code-reviewer 등록을 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>Severity 형식을 따르는 리뷰 결과를 받았다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>@ typeahead 또는 Claude 응답에서 spending-analyst 등록을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>대상 그룹, 소비 패턴, 생애 단계, 근거 형식을 따르는 분석 결과를 받았다</span></label></li>
 </ul></div></div>
-
-<h2 id="task-02-도구-권한-격리-체험-6분">TASK 02 · 도구 권한 격리 체험 (6분)</h2>
-<p>읽기 전용 에이전트에 <strong>일부러 권한 밖 요청</strong>을 보내 거부 동작을 관찰하고, tools 필드에 권한을 명시적으로 추가한 뒤 <strong>새 위임</strong>으로 차이를 체험합니다. 최소 권한 원칙과 정의 갱신 타이밍의 실습입니다.</p>
+<h2 id="task-02-도구-권한-격리-체험-7분">TASK 02 · 도구 권한 격리 체험 (7분)</h2>
+<p>분석 결과를 공유하기 전에 점검하는 <strong>risk-reviewer</strong>는 읽기만 해야 합니다. 이 읽기 전용 에이전트에 <strong>일부러 권한 밖 요청</strong>(파일 저장)을 보내 거부 동작을 관찰하고, tools 필드에 권한을 명시적으로 추가한 뒤 <strong>새 위임</strong>으로 차이를 체험합니다. 마지막에는 정의를 원래대로 되돌립니다. 최소 권한 원칙과 정의 갱신 타이밍의 실습입니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Tools란 무엇인가</strong></p>
 <p>서브에이전트 정의의 <code>tools</code> 필드는 그 에이전트가 쓸 수 있는 <strong>손발의 목록</strong>입니다.
 <code>Read</code>(파일 읽기), <code>Grep</code>/<code>Glob</code>(검색),
 <code>Edit</code>/<code>Write</code>(수정과 생성), <code>Bash</code>(명령 실행)처럼
 하나하나가 구체적 능력이고, <strong>목록에 없는 도구는 시도 자체가 차단</strong>됩니다.
-이 Task는 그 울타리를 일부러 밟아 보며 최소 권한이 실제로 동작하는지 확인하는 실험입니다.</p></div></div>
-
-<h3 id="step-1-읽기-전용-테스트-에이전트-작성">Step 1 · 읽기 전용 테스트 에이전트 작성</h3>
+이 Task는 그 울타리를 일부러 밟아 보며 최소 권한이 실제로 동작하는지 확인하는 실험입니다.</p>
+</div></div>
+<h3 id="step-1-읽기-전용-risk-reviewer-작성">Step 1 · 읽기 전용 risk-reviewer 작성</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; .claude/agents/dangerous-test.md &lt;&lt; &#x27;EOF&#x27;
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; .claude/agents/risk-reviewer.md &lt;&lt; &#x27;EOF&#x27;
 ---
-name: dangerous-test
-description: 의도적 권한 테스트용 에이전트. 사용 시점: 사용자가 이름으로 직접 지정할 때만.
-tools: Read, Grep
-model: haiku
+name: risk-reviewer
+description: |
+  분석 결과의 근거와 개인정보 노출 여부를 점검하는 읽기 전용 리스크 리뷰어.
+  사용 시점: 분석이나 제안서를 공유하기 전에 근거 검증과 PII 노출 점검이 필요한 경우.
+tools: Read, Grep, Glob
+model: sonnet
 ---
-당신은 테스트 에이전트입니다.
-파일을 분석하고 결과를 보고하세요.
+당신은 분석 결과를 공유 전에 점검하는 리스크 리뷰어입니다.
+점검 결과를 보고합니다. 분석 대상 데이터 파일은 수정하지 않습니다.
+
+# 점검 항목
+1. 근거: 주장마다 pseudo/ 아래 어느 파일, 어느 열에서 나왔는지 확인되는가
+2. PII 노출: 주민등록번호, 카드번호, 휴대폰, 계좌번호 형태의 값이나
+   개별 고객을 특정할 수 있는 ID와 토큰이 결과물에 들어 있지 않은가
+3. 범위: 이름에 transactions가 들어간 거래 원장 파일을 읽지 않았는가
+
+# 출력 형식
+- 항목별 PASS | WARN | FAIL
+- FAIL과 WARN은 파일 이름과 줄 위치, 권장 조치
 EOF</code></pre></div>
-
 <h3 id="step-2-일부러-권한을-벗어난-요청">Step 2 · 일부러 권한을 벗어난 요청</h3>
-<p>tools에 <strong>Edit이 없는 상태</strong>에서 파일 수정을 요청합니다. Claude Code가 <code>.claude/agents/</code>를 감시하므로 파일 저장 후 몇 초 안에 자동 인식됩니다(Task 1에서 디렉토리를 만든 뒤 세션을 시작했기 때문에 재시작 불필요).</p>
+<p>tools에 <strong>Write가 없는 상태</strong>에서 점검 결과를 파일로 저장하라고 요청합니다. Claude Code가 <code>.claude/agents/</code>를 감시하므로 파일 저장 후 몇 초 안에 자동 인식됩니다(TASK 01에서 디렉토리를 만든 뒤 세션을 시작했기 때문에 재시작 불필요).</p>
 <p><strong>Claude 세션 입력</strong></p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>dangerous-test 에이전트를 사용해서 src/users.js의 Park 사용자에게 profile 필드를 추가해 주세요</code></pre></div>
-
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>risk-reviewer 에이전트를 사용해서 CLAUDE.md와 pseudo/customers.csv의 앞 20줄에 주민등록번호, 카드번호, 휴대폰, 계좌번호 형태의 값이 있는지 점검하고, 점검 결과를 review-notes.md 파일로 저장해 주세요</code></pre></div>
 <p><strong>관찰 포인트</strong></p>
-<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● dangerous-test(Park 사용자 profile 추가)
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● risk-reviewer(PII 노출 점검)
   └ Backgrounded agent
 …
-● 결과: src/users.js는 수정되지 않았습니다
-  dangerous-test 에이전트는 Read, Grep만 쓸 수 있습니다. Edit을 호출해 봤지만
-  &quot;No such tool available&quot; 오류가 났고, 다른 쓰기 수단도 없었습니다.</code></pre></div>
-
-<p>메인이 "이 작업은 제가 직접 하겠습니다"라며 대신 고치는 경우도 있습니다. 그때는 <code>git diff</code>로 확인 후 <code>git checkout -- src/users.js</code>로 되돌리고 진행하세요.</p>
+● 결과: review-notes.md는 만들어지지 않았습니다
+  점검은 마쳤습니다(식별자 형태의 값 없음, 가명 토큰만 확인). 그러나 risk-reviewer는
+  Read, Grep, Glob만 쓸 수 있어서 Write를 호출해 봤지만 &quot;No such tool available&quot;
+  오류가 났고, 다른 쓰기 수단도 없었습니다.</code></pre></div>
+<p>메인이 "이 작업은 제가 직접 하겠습니다"라며 대신 저장하는 경우도 있습니다. 그때는 <code>rm -f review-notes.md</code>로 지우고 진행하세요.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>tools 필드 생략의 위험</strong></p>
 <p>tools 필드를 <strong>아예 생략하면 메인의 모든 도구를 상속</strong>합니다(지양).
-화이트리스트를 명시하는 습관이 안전의 기본입니다. 반대로 대부분을 상속하되 일부만 빼려면 <code>disallowedTools: Write, Edit</code>처럼 거부 목록을 쓸 수 있습니다.</p></div></div>
-
+화이트리스트를 명시하는 습관이 안전의 기본입니다. 반대로 대부분을 상속하되 일부만 빼려면 <code>disallowedTools: Write, Edit</code>처럼 거부 목록을 쓸 수 있습니다.</p>
+</div></div>
 <h3 id="step-3-권한을-명시적으로-부여">Step 3 · 권한을 명시적으로 부여</h3>
-<p><strong>Terminal, tools에 Edit 추가</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sed -i.bak &#x27;s/^tools: Read, Grep$/tools: Read, Grep, Edit/&#x27; .claude/agents/dangerous-test.md
-grep &#x27;^tools:&#x27; .claude/agents/dangerous-test.md   # tools: Read, Grep, Edit 확인</code></pre></div>
-
+<p><strong>Terminal, tools에 Write 추가</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sed -i.bak &#x27;s/^tools: Read, Grep, Glob$/tools: Read, Grep, Glob, Write/&#x27; .claude/agents/risk-reviewer.md
+grep &#x27;^tools:&#x27; .claude/agents/risk-reviewer.md   # tools: Read, Grep, Glob, Write 확인</code></pre></div>
 <h3 id="step-4-exit로-나갔다-들어와-새-위임으로-재시도">Step 4 · /exit로 나갔다 들어와 새 위임으로 재시도</h3>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>중요, 같은 요청을 그냥 반복하면 여전히 거부됩니다</strong></p>
 <p>정의 파일 변경은 <strong>다음 새 위임부터</strong> 적용됩니다. 그런데 메인은 직전 턴에서
-"이 에이전트는 수정 불가"를 이미 학습했기 때문에, 같은 요청을 반복하면 재위임 없이 기존 맥락으로
+"이 에이전트는 저장 불가"를 이미 학습했기 때문에, 같은 요청을 반복하면 재위임 없이 기존 맥락으로
 답하거나 이전 인스턴스를 재개(resume)할 수 있습니다. 재개된 서브에이전트는 <strong>스폰 시점의 도구 권한을 그대로 유지</strong>합니다.
-<code>/exit</code>로 세션을 완전히 나갔다가 <code>claude</code>로 다시 들어오세요. 갱신된 정의로 새 인스턴스가 뜹니다(같은 세션에서 <code>/clear</code>로 맥락만 비워도 동일 효과).</p></div></div>
-
+<code>/exit</code>로 세션을 완전히 나갔다가 <code>claude</code>로 다시 들어오세요. 갱신된 정의로 새 인스턴스가 뜹니다(같은 세션에서 <code>/clear</code>로 맥락만 비워도 동일 효과).</p>
+</div></div>
 <p><strong>Claude 세션 입력, 세션 종료</strong></p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/exit</code></pre></div>
-
 <p><strong>Terminal (~/claude-lab/ch4), 재진입</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude</code></pre></div>
-
 <p><strong>Claude 세션 입력, 재시도</strong></p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>dangerous-test 에이전트를 사용해서 src/users.js의 Park 사용자에게 profile 필드를 추가해 주세요</code></pre></div>
-
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>risk-reviewer 에이전트를 사용해서 CLAUDE.md와 pseudo/customers.csv의 앞 20줄에 주민등록번호, 카드번호, 휴대폰, 계좌번호 형태의 값이 있는지 점검하고, 점검 결과를 review-notes.md 파일로 저장해 주세요</code></pre></div>
 <p><strong>관찰 포인트</strong></p>
-<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>[dangerous-test] Read src/users.js
-[dangerous-test] Edit src/users.js   # 이번에는 Edit 도구 사용 (auto mode라 확인 창 없이 진행)
-  Park(id 3)에 profile 필드를 추가했습니다.</code></pre></div>
-
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>[risk-reviewer] Read CLAUDE.md
+[risk-reviewer] Read pseudo/customers.csv
+[risk-reviewer] Write review-notes.md   # 이번에는 Write 도구 사용 (auto mode라 확인 창 없이 진행)
+  PII 점검 결과를 review-notes.md에 저장했습니다.</code></pre></div>
 <p>이것이 <strong>의도적 권한 부여와 무분별한 전체 권한의 차이</strong>입니다. 동시에, 서브에이전트의 도구 권한이 <strong>인스턴스 스폰 시점에 고정</strong>된다는 점과 메인의 대화 맥락이 재위임을 가로막을 수 있다는 점, 그리고 <code>/exit</code> 재진입(또는 <code>/clear</code>)이 이런 상황의 실전 해결책이라는 점까지 함께 체득한 것입니다.</p>
-<h3 id="step-5-실습-프로젝트-원상-복구">Step 5 · 실습 프로젝트 원상 복구</h3>
-<p><strong>Terminal, 데이터 원복</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>git checkout -- src/users.js
-rm -f .claude/agents/dangerous-test.md .claude/agents/dangerous-test.md.bak</code></pre></div>
-
+<h3 id="step-5-risk-reviewer-원상-복구">Step 5 · risk-reviewer 원상 복구</h3>
+<p>점검 에이전트는 읽기 전용이어야 하므로 Write를 다시 뺍니다. 이 정의가 이후 TASK에서 쓰는 최종 버전입니다.</p>
+<p><strong>Terminal, 정의 원복</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>mv .claude/agents/risk-reviewer.md.bak .claude/agents/risk-reviewer.md
+rm -f review-notes.md
+grep &#x27;^tools:&#x27; .claude/agents/risk-reviewer.md   # tools: Read, Grep, Glob 확인</code></pre></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>Edit 권한이 없을 때 수정이 거부되는 것을 관찰했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>tools에 Edit 추가 + /exit 재진입 후 재시도에서 수정이 진행되는 차이를 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>Write 권한이 없을 때 저장이 거부되는 것을 관찰했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>tools에 Write 추가 + /exit 재진입 후 재시도에서 저장이 진행되는 차이를 확인했고, risk-reviewer를 읽기 전용(Read, Grep, Glob)으로 되돌렸다</span></label></li>
 </ul></div></div>
-
-<h2 id="task-03-에이전트-3종-완성-test-writer와-docs-writer-추가-7분">TASK 03 · 에이전트 3종 완성, test-writer와 docs-writer 추가 (7분)</h2>
-<p>Task 4의 디스패치 실습을 위해 <strong>test-writer</strong>(테스트 작성)와 <strong>docs-writer</strong>(문서 작성)를 추가합니다. 두 에이전트의 description이 서로 <strong>영역이 겹치지 않게</strong> 작성된 점에 주목하세요.</p>
-<h3 id="step-1-두-에이전트-한-번에-생성">Step 1 · 두 에이전트 한 번에 생성</h3>
+<h2 id="task-03-에이전트-3종-완성-portfolio-analyst-추가-8분">TASK 03 · 에이전트 3종 완성, portfolio-analyst 추가 (8분)</h2>
+<p>소비와 점검 담당은 정해졌으니, 이제 <strong>자산과 노후 준비</strong>를 맡을 portfolio-analyst를 추가해 3종을 완성합니다. 세 에이전트의 description이 서로 <strong>영역이 겹치지 않게</strong> 작성된 점에 주목하세요.</p>
+<h3 id="step-1-portfolio-analyst-생성">Step 1 · portfolio-analyst 생성</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; .claude/agents/test-writer.md &lt;&lt; &#x27;EOF&#x27;
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; .claude/agents/portfolio-analyst.md &lt;&lt; &#x27;EOF&#x27;
 ---
-name: test-writer
+name: portfolio-analyst
 description: |
-  기존 코드의 테스트 커버리지를 분석하고 누락된 엣지 케이스, 분기,
-  예외 경로에 대한 테스트를 작성. 사용 시점: 커버리지 부족이 확인되거나
-  새 함수에 테스트가 필요한 경우.
-tools: Read, Grep, Glob, Edit, Write, Bash(npm test:*)
+  고객의 자산 구성과 노후 준비 격차를 분석하는 자산 분석가.
+  증권, 보험, 연금, 계좌 잔액과 고객 기본 정보를 근거로 삼음.
+  사용 시점: 자산 배분, 연금(IRP, DB, DC) 보유 현황, 은퇴 준비 정도 분석이 필요한 경우.
+tools: Read, Grep, Glob, Bash(python3:*)
 model: sonnet
 ---
-당신은 테스트 자동화 전문가입니다.
+당신은 자산과 연금 데이터를 읽는 자산 분석가입니다.
 
-# 작업 절차
-1. 대상 함수의 시그니처와 분기 구조 분석
-2. 기존 테스트 파일이 있다면 스타일 일치
-3. 정상 케이스, 엣지 케이스, 예외 케이스 모두 커버
-4. 테스트 작성 후 실제로 실행하여 통과 확인
+# 사용할 데이터 (pseudo/ 아래 가명 데이터만)
+- securities.csv: customer_id, product_type, market_value
+- insurance.csv: customer_id, policy_type, monthly_premium, status
+- pensions.csv: customer_id, pension_type(DB, DC, IRP, 연금저축), balance, monthly_contribution
+- bank_accounts.csv: customer_id, account_type, balance
+- customers.csv: customer_id, age, income_band
+- 이름에 transactions가 들어간 거래 원장 파일은 읽지 않습니다.
 
-# 작성 원칙
-- 테스트 하나가 한 가지만 검증
-- 의미 있는 테스트 이름
-- AAA 패턴 (Arrange Act Assert)
-EOF
+# 분석 순서
+1. 대상 고객 그룹을 customers.csv에서 조건으로 고릅니다.
+2. python3(csv 모듈)로 예금, 증권, 보험, 연금의 자산 구성 비율을 집계합니다.
+3. 연금 보유 유형과 잔액, 월 납입액으로 노후 준비 격차를 평가합니다.
 
-cat &gt; .claude/agents/docs-writer.md &lt;&lt; &#x27;EOF&#x27;
----
-name: docs-writer
-description: |
-  README, API 문서, 아키텍처 결정 문서(ADR)를 코드와 일치하도록 작성하거나
-  업데이트. 사용 시점: 신규 기능 추가 후 문서 작성이 필요하거나 기존 문서가
-  코드와 불일치할 때.
-tools: Read, Grep, Glob, Edit, Write, Bash(git log:*)
-model: sonnet
----
-당신은 기술 문서 작성가입니다.
-
-# 문서 종류별 가이드
-- README: 프로젝트 개요, 설치, 사용법, 예시
-- API 문서: 함수 시그니처, 파라미터, 반환값, 예시
-- ADR: Context, Decision, Consequences 형식
-
-# 작성 원칙
-- 코드와 실제 동작이 일치해야 함
-- 예시는 실제로 실행 가능한 것
-- 한국어와 영어 혼용 가능, 일관성 유지
+# 출력 형식
+- 대상 그룹: 고객 수, 평균 나이
+- 자산 구성, 연금 보유 현황, 노후 준비 격차, 근거(파일과 열 이름)
+- 개별 고객 ID와 토큰 값은 쓰지 않고 집계만 보고합니다.
 EOF
 
 ls .claude/agents/</code></pre></div>
-
 <h3 id="step-2-3종-등록-확인">Step 2 · 3종 등록 확인</h3>
-<p>세션 입력창에 <code>@</code>를 입력해 typeahead에 <strong>3종 모두 (agent)로 표시</strong>되는지 확인하세요. 직접 <code>@agent-test-writer</code>처럼 입력해도 멘션이 인식됩니다. 또는 아래처럼 물어봐도 됩니다.</p>
+<p>세션 입력창에 <code>@</code>를 입력해 typeahead에 <strong>3종 모두 (agent)로 표시</strong>되는지 확인하세요. 직접 <code>@agent-portfolio-analyst</code>처럼 입력해도 멘션이 인식됩니다. 또는 아래처럼 물어봐도 됩니다.</p>
 <p><strong>Claude 세션 입력</strong></p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>사용 가능한 서브에이전트를 모두 알려주세요</code></pre></div>
-
 <p><strong>출력 예시</strong></p>
 <div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>프로젝트 서브에이전트 (.claude/agents/):
-  - code-reviewer : PR diff 검토
-  - test-writer   : 테스트 커버리지 확장
-  - docs-writer   : 문서 작성과 동기화</code></pre></div>
-
+  - spending-analyst  : 소비 패턴과 생애 단계 분석
+  - portfolio-analyst : 자산 구성과 노후 준비 격차 분석
+  - risk-reviewer     : 근거와 PII 노출 점검 (읽기 전용)</code></pre></div>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>description이 디스패치 정확도를 결정한다</strong></p>
 <p>메인은 사용자 요청과 각 에이전트의 <strong>description을 대조해 자동 선택</strong>합니다.
-"코드를 분석하는 도우미"처럼 모호하거나 "모든 개발 작업을 돕는 만능"처럼 광범위하면 잘못된 디스패치가 발생합니다.
-구체적 역할 + <strong>사용 시점</strong>을 명시하고, 에이전트끼리 경계를 겹치지 않게 하세요.</p></div></div>
-
+"데이터를 분석하는 도우미"처럼 모호하거나 "모든 고객 업무를 돕는 만능"처럼 광범위하면 잘못된 디스패치가 발생합니다.
+구체적 역할 + <strong>사용 시점</strong>을 명시하고, 에이전트끼리 경계를 겹치지 않게 하세요.</p>
+</div></div>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 정의 파일들은 Git으로 팀과 공유됩니다</strong></p>
 <p><code>.claude/agents/</code>는 프로젝트 단위(팀 공유, Git 커밋 대상),
 <code>~/.claude/agents/</code>는 개인 전역(모든 프로젝트에서 사용)입니다.
-지금 만든 3종을 커밋해 두면 팀 전체가 동일한 에이전트를 사용합니다.</p></div></div>
-
+지금 만든 3종을 커밋해 두면 팀 전체가 동일한 에이전트를 사용합니다.</p>
+</div></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>@ typeahead 또는 Claude 응답에서 code-reviewer, test-writer, docs-writer 3종을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>@ typeahead 또는 Claude 응답에서 spending-analyst, portfolio-analyst, risk-reviewer 3종을 확인했다</span></label></li>
 </ul></div></div>
-
-<h2 id="task-04-task-디스패치-3패턴-10분">TASK 04 · Task 디스패치 3패턴 (10분)</h2>
-<p>같은 에이전트들을 <strong>자동 디스패치, 명시적 호출, 병렬 호출</strong> 3가지 방식으로 부려 보고, <code>/usage</code>로 사용량을 비교합니다. 각 패턴 사이에 <code>/exit</code>로 나갔다 들어오거나 <code>/clear</code>로 컨텍스트를 정리하면 관찰이 깨끗해집니다.</p>
+<h2 id="task-04-task-디스패치-3패턴-12분">TASK 04 · Task 디스패치 3패턴 (12분)</h2>
+<p>이제 분석 담당자는 같은 에이전트들을 <strong>자동 디스패치, 명시적 호출, 병렬 호출</strong> 3가지 방식으로 부려 보고, 마지막 패턴에서 세그먼트 제안서 <code>segments.md</code>를 완성합니다. 끝나면 <code>/usage</code>로 사용량을 비교합니다. 각 패턴 사이에 <code>/exit</code>로 나갔다 들어오거나 <code>/clear</code>로 컨텍스트를 정리하면 관찰이 깨끗해집니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>현재 버전 참고, Agent 도구와 백그라운드 실행</strong></p>
 <p>위임에 쓰이는 내부 도구 이름이 <strong>Task에서 Agent로 변경</strong>되었습니다(구 Task 표기는 별칭으로 동작).
 또한 서브에이전트는 <strong>기본적으로 백그라운드로 실행</strong>됩니다. 진행 상황은 프롬프트 아래 패널과
-<code>/tasks</code>에서 확인하고, 권한 요청은 메인 세션에 표시되며, Ctrl + B로 실행 중 작업을 백그라운드로 보낼 수 있습니다.</p></div></div>
-
+<code>/tasks</code>에서 확인하고, 권한 요청은 메인 세션에 표시되며, Ctrl + B로 실행 중 작업을 백그라운드로 보낼 수 있습니다.</p>
+</div></div>
 <h3 id="step-1-패턴-a-자동-디스패치">Step 1 · 패턴 A, 자동 디스패치</h3>
-<p>에이전트를 지정하지 않고 요청합니다. 메인이 description을 대조해 <strong>스스로 code-reviewer를 선택</strong>하는지 관찰하세요.</p>
+<p>에이전트를 지정하지 않고 요청합니다. 메인이 description을 대조해 <strong>스스로 portfolio-analyst를 선택</strong>하는지 관찰하세요.</p>
 <p><strong>Claude 세션 입력</strong></p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 프로젝트의 최근 변경 사항을 코드 리뷰해 주세요</code></pre></div>
-
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>40~55세 고소득 고객(소득 구간 9~10)이 IRP를 얼마나 갖고 있는지, 자산 구성과 노후 준비 격차를 분석해 주세요</code></pre></div>
 <p><strong>관찰 포인트</strong></p>
-<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>[메인] 코드 리뷰 요청으로 판단, code-reviewer를 호출합니다.
-  → Agent(code-reviewer, &quot;Review recent changes&quot;)
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>[메인] 자산 구성과 연금 분석 요청으로 판단, portfolio-analyst를 호출합니다.
+  → Agent(portfolio-analyst, &quot;40~55세 고소득 고객의 IRP 보유와 노후 준비 격차 분석&quot;)
 # 사용자가 지정하지 않아도 description 매칭으로 선택됨</code></pre></div>
-
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>메인이 직접 해 버리면, 그것도 관찰 결과입니다</strong></p>
-<p>파일 세 개짜리 프로젝트에서는 메인(Opus 5.5)이 위임하지 않고 <code>git show</code>·<code>cat</code>으로 <strong>직접 리뷰</strong>하는 경우가 실습에서 확인되었습니다. 자동 디스패치는 "위임하는 편이 낫다"고 판단할 때만 일어나므로 보장되지 않습니다. 실행을 보장하려면 Step 2의 이름 지정이나 <code>@</code> 멘션을 씁니다.</p></div></div>
-
+<p>집계 한 번으로 끝나는 질문이면 메인(Opus 5.5)이 위임하지 않고 <code>python3</code>로 <strong>직접 분석</strong>하는 경우가 실습에서 확인되었습니다. 자동 디스패치는 "위임하는 편이 낫다"고 판단할 때만 일어나므로 보장되지 않습니다. 실행을 보장하려면 Step 2의 이름 지정이나 <code>@</code> 멘션을 씁니다.</p>
+</div></div>
 <h3 id="step-2-패턴-b-명시적-호출">Step 2 · 패턴 B, 명시적 호출</h3>
 <p>이름으로 직접 지정하면 메인은 다른 에이전트를 검토하지 않고 <strong>예측 가능하게</strong> 해당 에이전트를 호출합니다.</p>
 <p><strong>Claude 세션 입력</strong></p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>test-writer 에이전트를 사용해서 src/userService.js의 테스트 커버리지를 분석하고, 존재하지 않는 사용자 id 같은 누락된 엣지 케이스 테스트를 추가해 주세요</code></pre></div>
-
-<p>test-writer가 테스트를 추가하고 <strong>npm test를 직접 실행해 통과를 확인</strong>하는지 지켜보세요(시스템 프롬프트의 작업 절차 4번). 특정 에이전트 실행을 <strong>보장</strong>하고 싶다면 자연어 대신 <code>@</code>를 입력해 typeahead에서 test-writer (agent)를 선택하는 @-멘션 방식을 쓸 수 있습니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>risk-reviewer 에이전트를 사용해서 pseudo/ 폴더의 customers.csv, bank_accounts.csv, cards.csv에 주민등록번호, 카드번호, 휴대폰, 계좌번호 형태의 값이 남아 있는지 Grep으로 점검해 주세요</code></pre></div>
+<p>risk-reviewer가 파일을 직접 읽거나 검색하고, 항목별 <code>PASS | WARN | FAIL</code> 형식으로 보고하는지 지켜보세요(시스템 프롬프트의 출력 형식). 특정 에이전트 실행을 <strong>보장</strong>하고 싶다면 자연어 대신 <code>@</code>를 입력해 typeahead에서 risk-reviewer (agent)를 선택하는 @-멘션 방식을 쓸 수 있습니다.</p>
 <h3 id="step-3-패턴-c-병렬-호출">Step 3 · 패턴 C, 병렬 호출</h3>
-<p>독립적인 3개 작업을 한 번에 요청합니다. 메인이 <strong>3개의 Task를 동시에 발행</strong>하고, 총 시간은 합산이 아니라 가장 오래 걸린 작업 기준(max)이 됩니다.</p>
+<p>독립적인 3개 작업을 한 번에 요청해 고객을 세그먼트로 나눕니다. 메인이 <strong>3개의 Agent를 동시에 발행</strong>하고, 총 시간은 합산이 아니라 가장 오래 걸린 작업 기준(max)이 됩니다. 세 에이전트는 <code>Write</code> 도구가 없어서 파일을 저장할 수 없으므로 <code>segments.md</code>는 메인이 결과를 모아 씁니다.</p>
 <p><strong>Claude 세션 입력</strong></p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 코드베이스를 종합 점검해 주세요. 다음 세 가지를 병렬로 진행해 주세요.
-1) 코드 품질 리뷰
-2) 테스트 커버리지 분석
-3) README 문서 초안 작성</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>고객을 세그먼트로 나누고 맞춤 서비스를 제안하는 segments.md를 작성해 주세요. 세 에이전트를 병렬로 진행해 주세요.
+1) spending-analyst: 25~34세이면서 최근 3개월 카드 사용액 합계가 500만 원 이상이고 연금(모든 유형)이 없는 고객의 소비 패턴과 생애 단계
+2) portfolio-analyst: (a) 40~55세, 소득 구간 9~10, IRP가 없거나 잔액 500만 원 미만인 고객, (b) 58~64세이면서 퇴직연금(DB, DC, IRP) 잔액 중 DB형 비중이 80% 이상인 고객(연금저축은 제외)의 자산 구성과 노후 준비 격차
+3) risk-reviewer: 위 분석의 근거가 pseudo/ 파일과 열에서 확인되는지, 결과물에 식별자 형태의 값이 없는지 점검
 
+segments.md에는 세그먼트 (a) 40~55세 고소득 IRP 미흡, (b) 58~64세 퇴직연금(DB, DC, IRP) 중 DB형 비중 80% 이상, (c) 25~34세 고소비 연금(모든 유형) 없음을 표로 정리해 주세요.
+표 열은 세그먼트, 정의, 고객 수, 평균 나이, 평균 계좌 잔액, 대표 지표 한 가지입니다.
+표 아래에 세그먼트마다 맞춤 서비스 제안을 한 문장씩 쓰고, 근거 파일을 적어 주세요. 개별 고객 ID와 토큰 값은 쓰지 마세요.</code></pre></div>
 <p><strong>관찰 포인트</strong></p>
-<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● Running 2 agents… (ctrl+o to expand)
-  ├ code-reviewer (코드 품질 리뷰) · 0 tool uses
-  └ test-writer (테스트 커버리지 분석) · 0 tool uses
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● Running 3 agents… (ctrl+o to expand)
+  ├ spending-analyst (청년 고소비 세그먼트 소비 분석) · 0 tool uses
+  ├ portfolio-analyst (IRP 미흡, DB형 세그먼트 분석) · 0 tool uses
+  └ risk-reviewer (근거와 PII 노출 점검) · 0 tool uses
 …
-1) 코드 품질 리뷰 … 2) 테스트 커버리지 분석 … 3) README 초안 …
-✻ Crunched for 1m 8s</code></pre></div>
-
-<p>실습 환경에서는 <strong>두 에이전트가 동시에</strong> 떴고, README는 메인이 직접 썼습니다(docs-writer가 뜨는지는 매번 다릅니다). 또 test-writer는 <code>Bash(npm test:*)</code>만 허용되어 자신이 만든 <code>node test.coverage.js</code>를 실행하지 못했고, 메인이 대신 실행했습니다. 좁은 Bash 패턴이 실제로 동작한다는 증거입니다.</p>
+● segments.md를 작성했습니다 (세그먼트 3개, risk-reviewer 점검 PASS)
+✻ Crunched for 1m 12s</code></pre></div>
+<p>세 에이전트가 <strong>동시에</strong> 뜨는지 확인하세요. 에이전트가 모두 뜨는지, 일부를 메인이 직접 처리하는지는 매번 다릅니다. 에이전트의 <code>python3</code> 외 명령(예: <code>curl</code>)은 좁은 Bash 패턴 때문에 실행되지 않고, 막히면 메인이 대신 실행하는 일도 있습니다. 좁은 Bash 패턴이 실제로 동작한다는 증거입니다.</p>
+<p>저장된 <code>segments.md</code>의 표를 열어 세그먼트 (a)~(c)가 모두 있고 서비스 제안이 한 문장씩 붙어 있는지 확인합니다. 세그먼트 (c)는 <code>pensions.csv</code>에 연금(DB, DC, IRP, 연금저축 모든 유형)이 하나도 없는 고객입니다. 참고 결과의 "연금 저축 없음"도 같은 뜻입니다. 숫자는 실행마다 정의 해석이 조금씩 달라 다를 수 있으며, 참고용 결과는 키트의 <code>~/claude-lab/mydata/checkpoints/ch3/segments.md</code>에 있습니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat segments.md
+ls -l ~/claude-lab/mydata/checkpoints/ch3/segments.md   # 참고본</code></pre></div>
 <h3 id="step-4-비용-확인">Step 4 · 비용 확인</h3>
 <p><code>/usage</code>(별칭 <code>/cost</code>)로 세션 사용량을 확인합니다. 줄이는 방법은 Ch5에서 다룹니다.</p>
 <p><strong>Claude 세션 입력</strong></p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/usage</code></pre></div>
-
 <p><strong>출력 예시 (실습 환경, Usage 탭)</strong></p>
 <div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>Total cost:            $0.3585
 Total duration (API):  2m 15s
@@ -512,157 +437,115 @@ Usage by model:
      claude-opus-5-5:  14 input, 4.0k output, 131.2k cache read … ($0.1975)
    claude-sonnet-5-5:  417 input, 10.2k output, 35.4k cache read … ($0.1607)
 Prompt cache (main):   6 requests · 88% of input tokens from cache · warm (5m TTL …)</code></pre></div>
-
 <table>
 <thead>
-<tr>
-<th>읽는 법</th>
-<th>의미</th>
-</tr>
+<tr><th>읽는 법</th><th>의미</th></tr>
 </thead>
 <tbody>
-<tr>
-<td><code>Usage by model</code></td>
-<td>에이전트별이 아니라 <strong>모델별</strong> 합계입니다. 메인은 Opus, 세 에이전트는 <code>model: sonnet</code>이라 Sonnet 줄이 곧 서브에이전트 비용입니다</td>
-</tr>
-<tr>
-<td>API 시간 &gt; wall 시간</td>
-<td>병렬로 돌았다는 증거입니다(2분 15초어치 호출이 1분 21초에 끝남)</td>
-</tr>
-<tr>
-<td><code>Prompt cache … 5m TTL</code></td>
-<td>Bedrock 프롬프트 캐시는 5분 유지됩니다. Ch4 선택 TASK와 Ch5에서 이 숫자가 다시 나옵니다</td>
-</tr>
+<tr><td><code>Usage by model</code></td><td>에이전트별이 아니라 <strong>모델별</strong> 합계입니다. 메인은 Opus, 세 에이전트는 <code>model: sonnet</code>이라 Sonnet 줄이 곧 서브에이전트 비용입니다</td></tr>
+<tr><td>API 시간 &gt; wall 시간</td><td>병렬로 돌았다는 증거입니다(2분 15초어치 호출이 1분 21초에 끝남)</td></tr>
+<tr><td><code>Prompt cache … 5m TTL</code></td><td>Bedrock 프롬프트 캐시는 5분 유지됩니다. Ch4 선택 TASK와 Ch5에서 이 숫자가 다시 나옵니다</td></tr>
 </tbody>
 </table>
-<p>에이전트별 수치가 필요하면 TASK 05의 헤드리스 JSON에 있는 <code>subagent_stats</code>를 씁니다. <code>/usage</code>는 <code>Esc</code>로 닫습니다.</p>
+<p>에이전트별 수치가 필요하면 선택 TASK 05의 헤드리스 JSON에 있는 <code>subagent_stats</code>를 씁니다. <code>/usage</code>는 <code>Esc</code>로 닫습니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>병렬화의 트레이드오프</strong></p>
 <p>병렬 호출은 <strong>시간은 max로 단축</strong>되지만 <strong>비용은 합산</strong>됩니다.
 강의 예시 기준 단일 $0.23 대비 3개 병렬 약 7배까지 증가할 수 있습니다.
-반복적인 단순 작업은 <code>model: haiku</code>로 지정해 비용을 조절하고, Opus는 심층 분석에만 사용하세요.</p></div></div>
-
+반복적인 단순 작업은 <code>model: haiku</code>로 지정해 비용을 조절하고, Opus는 심층 분석에만 사용하세요.</p>
+</div></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span>자동 / 명시 / 병렬 3가지 패턴의 호출 차이를 관찰했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>segments.md에 세그먼트 (a)~(c)와 맞춤 서비스 제안이 담겼다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>/usage에서 모델별 비용과 API·wall 시간 차이로 병렬 실행을 확인했다</span></label></li>
 </ul></div></div>
-
-<h2 id="task-05-선택-headless-통합과-ci-맛보기-7분">TASK 05 · (선택) Headless 통합과 CI 맛보기 (7분)</h2>
-<p>서브에이전트를 <strong>대화 없이 스크립트에서</strong> 호출하고 JSON으로 후처리합니다. 마지막으로 같은 패턴이 GitHub Actions에서 어떻게 동작하는지 확인합니다. 세션 밖 터미널에서 실행하세요.</p>
+<h2 id="선택-task-05-headless-통합과-ci-맛보기-7분">선택 TASK 05 · Headless 통합과 CI 맛보기 (7분)</h2>
+<p>세그먼트 리포트를 매일 밤 자동으로 갱신한다면 어떨까요? 서브에이전트를 <strong>대화 없이 스크립트에서</strong> 호출해 <code>segments.json</code>을 만들고 JSON으로 후처리합니다. 마지막으로 같은 패턴이 GitHub Actions에서 어떻게 동작하는지 확인합니다. 세션 밖 터미널에서 실행하세요.</p>
 <h3 id="step-1-헤드리스로-에이전트-호출">Step 1 · 헤드리스로 에이전트 호출</h3>
+<p>TASK 04 Step 3을 건너뛰어 <code>segments.md</code>가 없다면 먼저 <code>cp ~/claude-lab/mydata/checkpoints/ch3/segments.md .</code>로 참고본을 가져오세요.</p>
 <p><strong>Terminal</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>git diff HEAD~1 | claude -p \
-  &quot;code-reviewer 에이전트로 이 diff를 검토해 주세요&quot; \
-  --output-format json &gt; review-result.json
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude -p \
+  &quot;portfolio-analyst 에이전트로 segments.md의 세그먼트 (a)~(c)를 pseudo/ 데이터로 다시 계산하고, segment, size, service 세 키를 가진 JSON 배열로만 답해 주세요&quot; \
+  --allowedTools &quot;Read,Grep,Glob,Bash(python3:*)&quot; \
+  --output-format json &gt; segments.json
 
-head -c 400 review-result.json</code></pre></div>
-
+head -c 400 segments.json</code></pre></div>
 <h3 id="step-2-json-후처리">Step 2 · JSON 후처리</h3>
 <p><strong>Terminal</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq -r &#x27;.result&#x27; review-result.json | head -20                 # 리뷰 본문(텍스트)
-jq &#x27;{num_turns, total_cost_usd, is_error}&#x27; review-result.json  # 실행 메타데이터
-jq &#x27;.modelUsage | map_values(.costUSD)&#x27; review-result.json      # 모델별 비용
-jq &#x27;.subagent_stats | {spawned, by_type}&#x27; review-result.json    # 어떤 에이전트가 몇 번 떴나
-jq &#x27;[.permission_denials[] | .tool_input.command]&#x27; review-result.json  # 거부된 명령</code></pre></div>
-
-<p><code>--output-format json</code>의 결과는 <strong>고정된 메타데이터 + 텍스트 <code>result</code></strong> 입니다. 리뷰 내용이 <code>summary</code>·<code>issues</code> 같은 필드로 나뉘어 오지는 않습니다. 구조화된 결과가 필요하면 프롬프트에서 JSON 형식을 지정하고 <code>result</code>를 다시 파싱하거나, <code>--json-schema</code>를 씁니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq -r &#x27;.result&#x27; segments.json | head -20                 # 세그먼트 JSON(텍스트)
+jq -r &#x27;.result&#x27; segments.json | sed &#x27;/^```/d&#x27; | jq -r &#x27;.[] | &quot;\(.segment)\t\(.size)\t\(.service)&quot;&#x27;   # 코드 펜스가 붙어 오면 제거 후 표로
+jq &#x27;{num_turns, total_cost_usd, is_error}&#x27; segments.json  # 실행 메타데이터
+jq &#x27;.modelUsage | map_values(.costUSD)&#x27; segments.json      # 모델별 비용
+jq &#x27;.subagent_stats | {spawned, by_type}&#x27; segments.json    # 어떤 에이전트가 몇 번 떴나
+jq &#x27;[.permission_denials[] | .tool_input.command]&#x27; segments.json  # 거부된 명령</code></pre></div>
+<p><code>--output-format json</code>의 결과는 <strong>고정된 메타데이터 + 텍스트 <code>result</code></strong> 입니다. 세그먼트 내용이 별도 필드로 나뉘어 오지는 않으므로, 프롬프트에서 JSON 형식을 지정하고 <code>result</code>를 다시 파싱하거나 <code>--json-schema</code>를 씁니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>헤드리스는 Manual로 시작합니다</strong></p>
-<p><code>claude -p</code>는 auto mode가 아니므로, 허용 규칙에 없는 명령(여기서는 테스트 실행용 <code>cat … &amp;&amp; node test.js</code>)은 묻지 못하고 <strong>거부</strong>되어 <code>permission_denials</code>에 남습니다. 결과 본문에도 "테스트는 실행 승인이 없어 돌리지 못했습니다"라고 나옵니다. CI에서는 필요한 명령을 <code>--allowedTools</code>로 명시해 줍니다.</p></div></div>
-
+<p><code>claude -p</code>는 auto mode가 아니므로, 허용 규칙에 없는 명령은 묻지 못하고 <strong>거부</strong>되어 <code>permission_denials</code>에 남습니다. 위 Step 1에서 <code>--allowedTools</code>로 <code>python3</code> 집계를 미리 허용한 이유입니다. 이 옵션을 빼고 다시 실행하면 거부 목록에 <code>python3</code> 명령이 쌓이는 것을 볼 수 있습니다. CI에서는 필요한 명령을 이렇게 명시해 줍니다.</p>
+</div></div>
 <h3 id="step-3-ci-통합-패턴-확인-참고">Step 3 · CI 통합 패턴 확인 (참고)</h3>
-<p>같은 명령을 GitHub Actions에 넣으면 <strong>PR마다 자동 리뷰</strong>가 됩니다. 아래는 강의에서 다룬 직렬(리뷰) + 병렬(테스트와 보안) 복합 패턴의 워크플로입니다. GitHub 저장소가 있다면 push해서 실험해 보세요. 선택 과제입니다.</p>
-<p><strong>.github/workflows/pr-check.yml, 참고용</strong></p>
-<div class="code copyable"><div class="code-head"><span>yaml</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>name: PR Check with Subagents
-on: pull_request
+<p>같은 명령을 GitHub Actions에 넣으면 <strong>매일 밤 세그먼트 리포트</strong>가 만들어집니다. 아래는 강의에서 다룬 직렬(세그먼트 리포트) + 병렬(근거와 PII 점검) 복합 패턴의 워크플로입니다. GitHub 저장소가 있다면 push해서 실험해 보세요. 선택 과제입니다.</p>
+<p><strong>.github/workflows/nightly-segments.yml, 참고용</strong></p>
+<div class="code copyable"><div class="code-head"><span>yaml</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>name: Nightly Segment Report
+on:
+  schedule:
+    - cron: &quot;0 17 * * *&quot;   # 매일 02:00 KST
+  workflow_dispatch:
 
 jobs:
-  comprehensive-check:
+  segment-report:
     runs-on: ubuntu-latest
-    permissions: { id-token: write, contents: read, pull-requests: write }
+    permissions: { id-token: write, contents: read }
     env:
       CLAUDE_CODE_USE_BEDROCK: &quot;1&quot;
       AWS_REGION: us-east-1
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
       - run: npm install -g @anthropic-ai/claude-code
+      - run: aws s3 sync s3://YOUR_ANALYSIS_BUCKET/pseudo ./pseudo --only-show-errors
 
-      # 직렬: code-reviewer 먼저 실행 후 결과 보고
-      - name: Code Review
+      # 직렬: portfolio-analyst로 세그먼트 먼저 계산
+      - name: Segments
         run: |
-          claude -p &quot;code-reviewer 에이전트로 git diff origin/main..HEAD를 검토해 주세요&quot; \
-            --output-format text &gt; review.md
+          claude -p &quot;portfolio-analyst 에이전트로 세그먼트 (a)~(c)의 고객 수와 서비스 제안을 JSON 배열로만 답해 주세요&quot; \
+            --allowedTools &quot;Read,Grep,Glob,Bash(python3:*)&quot; \
+            --output-format json &gt; segments.json
 
-      # 병렬 요청: 테스트와 보안을 한 번에
-      - name: Tests + Security
+      # 병렬 요청: 근거 검증과 PII 점검을 한 번에
+      - name: Evidence + PII check
         run: |
-          claude -p &quot;다음을 모두 점검해 주세요: 1) 테스트 커버리지 부족 2) 보안 이슈&quot; \
-            --output-format json &gt; result.json
+          claude -p &quot;risk-reviewer 에이전트로 segments.json의 근거와 식별자 노출 여부를 점검해 주세요&quot; \
+            --allowedTools &quot;Read,Grep,Glob&quot; \
+            --output-format json &gt; risk.json
 
-      # 결과를 PR 코멘트로 게시
-      - uses: peter-evans/create-pr-comment@v1
-        with: { body-path: review.md }</code></pre></div>
-
+      - uses: actions/upload-artifact@v4
+        with: { name: segment-report, path: &quot;segments.json\nrisk.json&quot; }</code></pre></div>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>CI에서의 안전장치</strong></p>
 <p>무인 실행에서는 키를 저장하지 말고 <strong>GitHub OIDC로 AWS 역할을 받아</strong> Bedrock을 호출하세요(역할에는 Ch2의 최소 IAM만 부여).
-읽기 전용 검사라면 <code>--allowed-tools "Read,Grep,Glob"</code>으로 도구를 제한하세요.</p></div></div>
-
+읽기 전용 검사라면 <code>--allowed-tools "Read,Grep,Glob"</code>으로 도구를 제한하세요. 입력은 항상 <code>pseudo/</code> 가명 데이터만 두고, 원본(raw)은 CI에 올리지 않습니다.</p>
+</div></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>review-result.json이 생성되었다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>segments.json이 생성되었다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>jq 또는 python3로 JSON 필드를 추출했다</span></label></li>
 </ul></div></div>
-
 <h2 id="마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</h2>
 <p>Chapter 3의 학습 목표를 스스로 점검하세요. 미달성 항목은 강의 자료의 해당 Part를 다시 확인하거나 Slack 채널에 질문을 남기세요.</p>
 <table>
 <thead>
-<tr>
-<th>목표</th>
-<th>확인 질문</th>
-<th>관련</th>
-</tr>
+<tr><th>목표</th><th>확인 질문</th><th>관련</th></tr>
 </thead>
 <tbody>
-<tr>
-<td>Concept</td>
-<td>Context Isolation과 위임의 가치를 설명할 수 있는가</td>
-<td>강의 Part 1</td>
-</tr>
-<tr>
-<td>Define</td>
-<td>YAML frontmatter 4필드로 에이전트를 정의했는가</td>
-<td>Task 1</td>
-</tr>
-<tr>
-<td>Least Privilege</td>
-<td>tools 화이트리스트로 권한 거부와 부여를 체험했는가</td>
-<td>Task 2</td>
-</tr>
-<tr>
-<td>Description</td>
-<td>자동 디스패치가 description 기반임을 확인했는가</td>
-<td>Task 3, 4</td>
-</tr>
-<tr>
-<td>Dispatch</td>
-<td>자동 / 명시 / 병렬 3패턴을 모두 실행했는가</td>
-<td>Task 4</td>
-</tr>
-<tr>
-<td>Cost</td>
-<td>/usage로 에이전트별 비용과 병렬 트레이드오프를 확인했는가</td>
-<td>Task 4</td>
-</tr>
-<tr>
-<td>Automation</td>
-<td>헤드리스 + JSON으로 CI 통합 패턴을 실행했는가</td>
-<td>Task 5</td>
-</tr>
+<tr><td>Concept</td><td>Context Isolation과 위임의 가치를 설명할 수 있는가</td><td>강의 Part 1</td></tr>
+<tr><td>Define</td><td>YAML frontmatter 4필드로 에이전트를 정의했는가</td><td>Task 1</td></tr>
+<tr><td>Least Privilege</td><td>tools 화이트리스트로 권한 거부와 부여를 체험했는가</td><td>Task 2</td></tr>
+<tr><td>Description</td><td>자동 디스패치가 description 기반임을 확인했는가</td><td>Task 3, 4</td></tr>
+<tr><td>Dispatch</td><td>자동 / 명시 / 병렬 3패턴을 모두 실행하고 segments.md를 만들었는가</td><td>Task 4</td></tr>
+<tr><td>Cost</td><td>/usage로 에이전트별 비용과 병렬 트레이드오프를 확인했는가</td><td>Task 4</td></tr>
+<tr><td>Automation</td><td>헤드리스 + JSON으로 세그먼트 리포트 CI 패턴을 실행했는가</td><td>선택 Task 5</td></tr>
 </tbody>
 </table>
 <p>NEXT CHAPTER</p>
@@ -674,7 +557,7 @@ jobs:
 <li>다음: <a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Claude Code 확장하기</a></li>
 </ul>
 <hr />
-<p>원문: <a href="https://whchoi98.github.io/ccw-hands-on-lab/ClaudeCode_Ch2_HandsOnLab.html" target="_blank" rel="noopener">Claude Code Deep Dive Workshop · Ch2. Subagents</a> · 기준: 2026.07</p><div class="pager"><a class="prev" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html"><small>이전</small>Ch2 Lab 2. 가드레일과 DLP</a><a class="next" href="ClaudeCode_Ch4_HandsOnLab.html"><small>다음</small>Ch4. Claude Code 확장하기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-첫-subagent-code-reviewer-만들기-8분">TASK 01 · 첫 Subagent, code-reviewer 만들기 (8분)</a></li><li><a href="#task-02-도구-권한-격리-체험-6분">TASK 02 · 도구 권한 격리 체험 (6분)</a></li><li><a href="#task-03-에이전트-3종-완성-test-writer와-docs-writer-추가-7분">TASK 03 · 에이전트 3종 완성, test-writer와 docs-writer 추가 (7분)</a></li><li><a href="#task-04-task-디스패치-3패턴-10분">TASK 04 · Task 디스패치 3패턴 (10분)</a></li><li><a href="#task-05-선택-headless-통합과-ci-맛보기-7분">TASK 05 · (선택) Headless 통합과 CI 맛보기 (7분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+<p>원문: <a href="https://whchoi98.github.io/ccw-hands-on-lab/ClaudeCode_Ch2_HandsOnLab.html" target="_blank" rel="noopener">Claude Code Deep Dive Workshop · Ch2. Subagents</a> · 기준: 2026.07</p><div class="pager"><a class="prev" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html"><small>이전</small>Ch2 Lab 2. 가드레일과 DLP</a><a class="next" href="ClaudeCode_Ch4_HandsOnLab.html"><small>다음</small>Ch4. Claude Code 확장하기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</a></li><li><a href="#task-01-첫-subagent-spending-analyst-만들기-10분">TASK 01 · 첫 Subagent, spending-analyst 만들기 (10분)</a></li><li><a href="#task-02-도구-권한-격리-체험-7분">TASK 02 · 도구 권한 격리 체험 (7분)</a></li><li><a href="#task-03-에이전트-3종-완성-portfolio-analyst-추가-8분">TASK 03 · 에이전트 3종 완성, portfolio-analyst 추가 (8분)</a></li><li><a href="#task-04-task-디스패치-3패턴-12분">TASK 04 · Task 디스패치 3패턴 (12분)</a></li><li><a href="#선택-task-05-headless-통합과-ci-맛보기-7분">선택 TASK 05 · Headless 통합과 CI 맛보기 (7분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;
