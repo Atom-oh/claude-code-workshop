@@ -30,7 +30,8 @@ site. Its seven numbered capstones and the general site's three numbered
 capstones are different curricula; both also retain lettered capstone files.
 Do not infer a missing file from differences between editions.
 
-PDF deck sources are maintained outside this checkout. A directory's date names
+PDF deck sources are maintained outside this checkout, except
+`20261116/slides/`, which is exported from the `20261116/reactive/` decks. A directory's date names
 its edition or event; it does not establish an application version or prove
 that the event has already happened.
 

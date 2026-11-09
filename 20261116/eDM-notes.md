@@ -70,13 +70,18 @@ cost). Lab files after the renumbering:
 | --- | --- | --- |
 | Ch1 | `ClaudeCode_Ch1_HandsOnLab.html` | Ch1 |
 | Ch2 Lab 1 (policy) | `ClaudeCode_Ch2_HandsOnLab.html` | Ch2 |
-| Ch2 Lab 2 (guardrails and DLP, old Ch3 lab) | `ClaudeCode_Ch2_Guardrails_HandsOnLab.html` | Ch3 |
-| Ch3 (subagents, old Ch4) | `ClaudeCode_Ch3_HandsOnLab.html` | Ch4 |
-| Ch4 (extending, old Ch5) | `ClaudeCode_Ch4_HandsOnLab.html` | Ch5 |
-| Ch5 (old Ch6 TASK 00–04) | `ClaudeCode_Ch5_HandsOnLab.html` | Ch6 |
+| Ch2 Lab 2 (guardrails and DLP, old Ch3 lab) | `ClaudeCode_Ch2_Guardrails_HandsOnLab.html` | Ch2 |
+| Ch3 (subagents, old Ch4) | `ClaudeCode_Ch3_HandsOnLab.html` | Ch3 |
+| Ch4 (extending, old Ch5) | `ClaudeCode_Ch4_HandsOnLab.html` | Ch4 |
+| Ch5 (old Ch6 TASK 00–04) | `ClaudeCode_Ch5_HandsOnLab.html` | Ch5 |
 | Ch6 (old Ch6 TASK 05–08, renumbered 01–04) | `ClaudeCode_Ch6_HandsOnLab.html` | Ch6 |
 
-The slide PDF filenames keep the previous chapter numbers.
+Since 2026-11-09 the slide PDFs follow the six-chapter numbering. Each is an
+image-only export of its reactive deck (`reactive/0N-*.html`): one 1920×1080
+screenshot per slide, taken with the reactive-presentation `export_pptx.py`
+and assembled into a PDF, so the text is not selectable. Re-export after a
+deck change. The earlier PDFs came from separate PowerPoint decks under the
+old numbering.
 Session mapping:
 
 - Day 1 (retimed 2026-11-09): Ch1 lecture 10:10–10:40, break 10:40–10:50,
