@@ -1022,6 +1022,194 @@
 
   /* ==== end Ch4 ===================================================== */
 
+  /* ==== Ch5 ======================================================== */
+
+  /* ---- Ch5 TASK 01-02: the same head -n 400 request, before and after the filter hook ---- */
+  LabViz.register("context-budget", {
+    title: "head -n 400 결과 약 20,000자가 컨텍스트 창에 그대로 들어가는 경우와, PreToolUse 필터 훅이 명령을 머리글과 50행으로 바꿔 약 2,600자만 들어가는 경우의 비교",
+    viewBox: "0 0 1000 540",
+    nodes: [
+      { id: "cc", shape: "note", label: "Claude Code\n(ccb-endpoint에서 실행)", x: 105, y: 55, w: 190, h: 56 },
+      { id: "cmd1", shape: "note", label: "Bash(head -n 400 pseudo/card_transactions.csv)\n원래 명령 · 도구 호출 화면에도 이 명령이 보입니다", x: 465, y: 55, w: 400, h: 56, appear: 1 },
+      { id: "hook", shape: "note", tone: "info", label: "PreToolUse 훅\nfilter-tx-output.sh", x: 890, y: 100, w: 200, h: 60, appear: 2 },
+      { id: "cmd2", shape: "note", tone: "ok", label: "실제로 실행되는 명령\nhead -n 51 pseudo/card_transactions.csv; echo \"[필터] 전체 …행 중 …\"", x: 430, y: 135, w: 470, h: 56, appear: 2 },
+      { id: "wa", shape: "group", label: "컨텍스트 창 · TASK 01 (훅 없음)", x: 430, y: 255, w: 820, h: 120, appear: 1 },
+      { id: "fa", shape: "note", label: "고정 부분\nCLAUDE.md 등", x: 100, y: 284, w: 140, h: 46, appear: 1 },
+      { id: "ba", shape: "note", tone: "err", label: "head -n 400 결과\n약 20,000자", x: 380, y: 284, w: 400, h: 46, appear: 1 },
+      { id: "marker", shape: "note", tone: "info", label: "약 30,000자부터는\n파일로 저장하고\n미리보기만 표시", x: 720, y: 284, w: 160, h: 58, appear: 4, until: 4 },
+      { id: "wb", shape: "group", label: "컨텍스트 창 · TASK 02 (필터 훅 후)", x: 430, y: 405, w: 820, h: 120, appear: 3 },
+      { id: "fb", shape: "note", label: "고정 부분\nCLAUDE.md 등", x: 100, y: 434, w: 140, h: 46, appear: 3 },
+      { id: "sb", shape: "note", tone: "ok", label: "약\n2,600자", x: 215, y: 434, w: 70, h: 46, appear: 3 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델)", x: 925, y: 300 }
+    ],
+    edges: [
+      { id: "e-run", from: "cc", to: "cmd1", label: "Bash 호출", appear: 1 },
+      { id: "e-in", from: "cmd1", to: "hook", label: "검사", appear: 2 },
+      { id: "e-out", from: "hook", to: "cmd2", label: "바꿔 줌", appear: 2 },
+      { id: "e-ma", from: "wa", to: "bedrock", label: "입력", appear: 1, until: 1 },
+      { id: "e-mb", from: "wb", to: "bedrock", label: "입력", appear: 3, until: 3 }
+    ],
+    steps: [
+      { cmd: "TASK 01 · 기준선",
+        caption: "훅이 없을 때 Claude Code가 head -n 400을 그대로 실행하면, 거래 400행(약 20,000자)이 도구 결과로 컨텍스트 창에 들어갑니다. 이 대화 전체가 모델(Amazon Bedrock)에 입력으로 가서 세 줄 요약이 만들어집니다. 그림의 막대 길이는 대략적인 비교용입니다.",
+        on: ["cc", "e-run", "cmd1", "wa", "fa", "ba", "e-ma", "bedrock"], flow: { edge: "e-run", token: "Bash 호출" } },
+      { cmd: "TASK 02 · 훅이 명령을 바꿈",
+        caption: "PreToolUse 훅이 실행 직전의 Bash 명령을 읽습니다. 거래 CSV를 그대로 여는 명령이면 머리글 1줄과 50행, 전체 행 수를 알리는 echo로 바꿉니다. 화면에는 원래 명령이 표시되지만, 실제로 실행되는 것은 바뀐 명령입니다.",
+        on: ["cmd1", "e-in", "hook", "e-out", "cmd2"], flow: { edge: "e-out", token: "updatedInput" } },
+      { cmd: "TASK 02 · 같은 요청, 작은 결과",
+        caption: "같은 요청이지만 컨텍스트에는 머리글, 거래 50행, 요약 1줄만 들어갑니다. 약 20,000자가 약 2,600자로 줄어듭니다. 모델은 이것만 읽고 요약하므로 /context의 Messages 토큰이 TASK 01보다 줄어듭니다.",
+        on: ["cc", "cmd2", "wb", "fb", "sb", "e-mb", "bedrock"], flow: { edge: "e-mb", token: "머리글 + 50행" } },
+      { cmd: "왜 400행인가",
+        caption: "cat으로 파일 전체를 열면 훅이 없어도 Claude Code가 약 30,000자를 넘는 Bash 출력을 파일에 저장하고 미리보기만 보여 줍니다. 그러면 훅 전후 차이가 흐려지므로, 이 랩은 한도 안에 들어오는 앞 400행(약 20,000자)으로 비교합니다.",
+        on: ["wa", "ba", "marker"] },
+      { cmd: "비교",
+        caption: "요약 내용은 거의 같고 컨텍스트에 들어간 양은 약 20,000자와 약 2,600자로 다릅니다. 고정 부분은 두 경우 모두 그대로입니다. 훅은 앞 50행만 보여 주는 정책이므로, 합계처럼 전체가 필요한 질문은 python3 집계 스크립트로 풉니다.",
+        on: ["wa", "fa", "ba", "wb", "fb", "sb"] }
+    ]
+  });
+
+  /* ---- Ch5 TASK 04: /compact, SessionStart(compact) hook and the auto-compact window ---- */
+  LabViz.register("compaction", {
+    title: "긴 대화가 /compact로 요약 블록 하나로 접히고, SessionStart(compact) 훅이 사내 규정 한 줄을 다시 붙이며, auto-compact window가 자동 압축 시점을 정하는 과정",
+    viewBox: "0 0 1000 540",
+    nodes: [
+      { id: "cc", shape: "note", label: "Claude Code\n(ccb-endpoint에서 실행)", x: 105, y: 55, w: 190, h: 56 },
+      { id: "hook", shape: "note", tone: "info", label: "SessionStart 훅 (compact matcher)\n압축 직후 다시 실행", x: 560, y: 55, w: 300, h: 56, appear: 4 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델)", x: 930, y: 60 },
+      { id: "w", shape: "group", label: "컨텍스트 창 (Messages)", x: 440, y: 215, w: 880, h: 150 },
+      { id: "fixed", shape: "note", label: "고정 부분\nCLAUDE.md 등", x: 100, y: 245, w: 150, h: 56 },
+      { id: "old", shape: "note", tone: "err", label: "오래된 대화 · 도구 결과\n(길게 쌓인 기록)", x: 395, y: 245, w: 440, h: 56, appear: 1, until: 2 },
+      { id: "sum", shape: "note", tone: "ok", label: "요약\n(/compact 지시대로 남긴 내용)", x: 290, y: 245, w: 220, h: 56, appear: 3 },
+      { id: "rule", shape: "note", tone: "info", label: "[사내 규정] 고객 주민등록번호·카드번호·\n계좌번호·휴대폰 번호는 출력하거나 파일에 쓰지 않는다", x: 665, y: 245, w: 390, h: 56, appear: 4 },
+      { id: "ar", shape: "group", label: "자동 압축 시점 · 1M 컨텍스트 모델", x: 440, y: 420, w: 880, h: 140, appear: 5 },
+      { id: "ruler", shape: "note", label: "컨텍스트 창 1M 토큰", x: 440, y: 440, w: 800, h: 26, appear: 5 },
+      { id: "t400", shape: "note", tone: "ok", label: "", x: 360, y: 440, w: 5, h: 44, appear: 5 },
+      { id: "t967", shape: "note", tone: "err", label: "", x: 814, y: 440, w: 5, h: 44, appear: 5 },
+      { id: "l400", shape: "note", tone: "ok", label: "400K\n/autocompact 400k", x: 360, y: 497, w: 170, h: 44, appear: 5 },
+      { id: "l967", shape: "note", tone: "err", label: "약 967K (기본)\n창 1M − 버퍼 33K", x: 740, y: 497, w: 170, h: 44, appear: 5 }
+    ],
+    edges: [
+      { id: "e-sum", from: "cc", to: "bedrock", label: "요약 요청", via: [[105, 20], [930, 20]], appear: 2, until: 2 },
+      { id: "e-hook", from: "hook", to: "rule", label: "echo", appear: 4 }
+    ],
+    steps: [
+      { cmd: "긴 대화",
+        caption: "대화와 도구 결과가 길게 쌓여 컨텍스트 창이 오래된 기록으로 차 있습니다. CLAUDE.md처럼 매 요청에 실리는 고정 부분은 따로 있습니다.",
+        on: ["w", "fixed", "old"] },
+      { cmd: "/compact 지시",
+        caption: "/compact 뒤에 \"확인한 파일 구조와 열 이름, 계산 결과, 남은 할 일만 남겨줘\"처럼 남길 것을 적습니다. 오래된 기록을 읽고 요약하는 일은 모델이 하므로 Amazon Bedrock이 켜집니다.",
+        on: ["cc", "e-sum", "bedrock", "old", "w"], flow: { edge: "e-sum", token: "오래된 기록" } },
+      { cmd: "압축 완료",
+        caption: "오래된 기록이 요약 블록 하나로 접히고 Messages가 줄어듭니다. 루트 CLAUDE.md는 디스크에서 다시 주입됩니다. 접두부가 바뀌므로 다음 요청에서 캐시를 새로 쌓아, 캐시 적중률이 낮아집니다(실습 환경에서 88%에서 64%).",
+        on: ["w", "fixed", "sum"] },
+      { cmd: "SessionStart(compact) 훅",
+        caption: "압축 직후 SessionStart 훅이 다시 실행되어 echo한 \"[사내 규정]\" 한 줄이 컨텍스트에 추가됩니다. 요약은 손실 압축이라 규정이 빠질 수 있으므로, 사라지면 안 되는 규칙은 이 훅으로 다시 넣습니다.",
+        on: ["hook", "e-hook", "rule", "w", "fixed", "sum"], flow: { edge: "e-hook", token: "[사내 규정]" } },
+      { cmd: "auto-compact window",
+        caption: "자동 압축은 auto-compact window에서 버퍼를 뺀 지점에 닿을 때 일어납니다. 1M 모델은 약 967K입니다. /autocompact 400k로 창을 400K로 낮추면 더 일찍 압축되어 요청당 입력이 작아지지만, 압축 횟수가 늘 수 있어 항상 싸지지는 않습니다.",
+        on: ["ar", "ruler", "t400", "t967", "l400", "l967"] }
+    ]
+  });
+
+  /* ==== end Ch5 ===================================================== */
+
+  /* ==== Ch6 ======================================================== */
+
+  /* ---- Ch6 TASK 01: OpenTelemetry from Claude Code to the local Collector, scrub_logs, exporters ---- */
+  LabViz.register("telemetry-path", {
+    title: "Claude Code가 OpenTelemetry로 같은 PC의 Collector에 사용량을 보내고, scrub_logs가 프롬프트 본문을 지운 뒤 내 계정 CloudWatch와 워크샵 중앙 대시보드로 내보내는 경로",
+    viewBox: "0 0 1000 440",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 385, y: 225, w: 750, h: 380 },
+      { id: "cc", shape: "note", label: "Claude Code\nenv의 OTEL_* 설정", x: 110, y: 150, w: 170, h: 60 },
+      { id: "attr", shape: "note", tone: "ok", label: "남는 것\nuser.email · team.id\n토큰 · 비용 지표", x: 110, y: 262, w: 170, h: 74, appear: 1 },
+      { id: "drop", shape: "note", tone: "err", label: "scrub_logs가 지우는 것\n프롬프트 본문", x: 110, y: 362, w: 170, h: 54, appear: 3 },
+      { id: "col", shape: "group", label: "otelcol (같은 PC의 Collector)", x: 505, y: 235, w: 440, h: 330, appear: 2 },
+      { id: "recv", shape: "note", label: "수신 127.0.0.1:4318", x: 505, y: 150, w: 380, h: 46, appear: 2 },
+      { id: "scrub", shape: "note", tone: "info", label: "scrub_logs\n이벤트 로그에서 프롬프트 본문 삭제", x: 505, y: 230, w: 380, h: 60, appear: 3 },
+      { id: "exp", shape: "note", label: "exporters\n내 계정 CloudWatch · 중앙 대시보드", x: 505, y: 320, w: 380, h: 56, appear: 4 },
+      { id: "cw", shape: "icon", icon: "CloudWatch", label: "Amazon CloudWatch\n(내 계정)", x: 885, y: 110, appear: 4 },
+      { id: "dash", shape: "note", label: "워크샵 중앙 대시보드\n(clickhouse로 이중 전송)", x: 885, y: 290, w: 200, h: 70, appear: 4 }
+    ],
+    edges: [
+      { id: "e-cc", from: "cc", to: "recv", label: "OTel", appear: 2 },
+      { id: "e-rs", from: "recv", to: "scrub", appear: 3 },
+      { id: "e-se", from: "scrub", to: "exp", appear: 4 },
+      { id: "e-cw", from: "exp", to: "cw", appear: 4 },
+      { id: "e-dash", from: "exp", to: "dash", appear: 4 }
+    ],
+    steps: [
+      { cmd: "OTel 설정",
+        caption: "이 PC의 Claude Code는 ~/.claude/settings.json의 env에 있는 TELEMETRY, OTEL_ 값으로 사용량을 OpenTelemetry(OTel)로 내보냅니다. OTEL_RESOURCE_ATTRIBUTES의 user.email, team.id가 대시보드에서 사람과 팀별로 묶는 키입니다.",
+        on: ["cc", "attr"] },
+      { cmd: "Collector가 받음",
+        caption: "사용량은 같은 PC에서 도는 Collector(otelcol, 127.0.0.1:4318)가 받습니다. systemctl is-active로 otelcol이 active인지 확인합니다.",
+        on: ["cc", "e-cc", "recv", "col", "ec2"], flow: { edge: "e-cc", token: "사용량 · 이벤트" } },
+      { cmd: "scrub_logs",
+        caption: "scrub_logs가 이벤트 로그에서 프롬프트 본문을 삭제한 뒤 다음으로 넘깁니다. 비용은 보되 내용은 남기지 않는 DLP 설정입니다.",
+        on: ["recv", "e-rs", "scrub", "drop", "col"], flow: { edge: "e-rs", token: "이벤트 로그" } },
+      { cmd: "exporters",
+        caption: "exporters가 내 계정의 CloudWatch와 워크샵 중앙 대시보드로 내보냅니다. exporters에 clickhouse가 보이면 중앙 대시보드로도 이중 전송 중입니다.",
+        on: ["scrub", "e-se", "exp", "e-cw", "cw", "e-dash", "dash", "col"], flow: { edge: "e-cw", token: "지표 · 로그" } },
+      { cmd: "대시보드에서 보기",
+        caption: "대시보드는 user.email, team.id로 사람과 팀별로 묶어 claude_code.token.usage, claude_code.cost.usage 같은 지표를 보여 줍니다. 프롬프트 본문은 이미 지워진 뒤라 대시보드에 남지 않습니다.",
+        on: ["attr", "cw", "dash", "drop"] }
+    ]
+  });
+
+  /* ---- Ch6 TASK 02-03: login, group policy (models + spend limit), Bedrock or blocked ---- */
+  LabViz.register("gateway-policy", {
+    title: "alice와 bob이 Claude Apps Gateway에 로그인하면 그룹 정책이 허용 모델과 지출 한도를 확인하고, 허용된 요청만 Amazon Bedrock으로 가며, bob에게 1센트 한도를 걸면 요청이 차단되는 과정",
+    viewBox: "0 0 1000 560",
+    nodes: [
+      { id: "alice", shape: "note", label: "alice@workshop.example\n자산분석팀 · power-users", x: 115, y: 95, w: 200, h: 56, appear: 1 },
+      { id: "bob", shape: "note", label: "bob@workshop.example\n타 부서 · standard-users", x: 115, y: 205, w: 200, h: 56, appear: 3 },
+      { id: "admin", shape: "note", tone: "info", label: "관리자 (Terminal 2)\nAdmin API로 한도 조작", x: 115, y: 470, w: 200, h: 62, appear: 4 },
+      { id: "gw", shape: "group", label: "Claude Apps Gateway", x: 520, y: 270, w: 400, h: 440 },
+      { id: "login", shape: "note", label: "로그인 · 사용자 식별\n사내 IdP (이 랩은 Cognito)", x: 520, y: 150, w: 340, h: 62 },
+      { id: "policy", shape: "note", label: "그룹 정책 확인\n허용 모델 · 일일 지출 한도", x: 520, y: 265, w: 340, h: 70 },
+      { id: "d-alice", shape: "note", tone: "ok", label: "power-users (alice)\n허용: Opus, Sonnet, Haiku 5.5\n일일 한도 $200", x: 520, y: 385, w: 340, h: 82, appear: 2, until: 2 },
+      { id: "d-bob", shape: "note", tone: "info", label: "standard-users (bob)\n허용: Sonnet, Haiku 5.5 (Opus 없음)\n일일 한도 $50", x: 520, y: 385, w: 340, h: 82, appear: 3, until: 3 },
+      { id: "d-bob1", shape: "note", tone: "info", label: "bob 사용자 한도 1센트\n(그룹 한도보다 우선)", x: 520, y: 385, w: 340, h: 82, appear: 4, until: 4 },
+      { id: "d-over", shape: "note", tone: "err", label: "오늘 쓴 금액이 한도보다 큼\n예: $0.08 / $0.01", x: 520, y: 385, w: 340, h: 82, appear: 5, until: 5 },
+      { id: "d-back", shape: "note", tone: "ok", label: "한도 삭제\n그룹 한도로 복귀", x: 520, y: 385, w: 340, h: 82, appear: 6 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델)", x: 880, y: 150 },
+      { id: "blocked", shape: "note", tone: "err", label: "차단 (bob)\nspend limit reached (daily)\n\"You have reached your\nspend limit. Contact your\nadministrator …\"", x: 870, y: 385, w: 220, h: 112, appear: 5, until: 5 }
+    ],
+    edges: [
+      { id: "e-alice", from: "alice", to: "login", label: "로그인", appear: 1, until: 2 },
+      { id: "e-bob", from: "bob", to: "login", appear: 3 },
+      { id: "e-lp", from: "login", to: "policy", appear: 1 },
+      { id: "e-ok", from: "policy", to: "bedrock", label: "허용", appear: 2, until: 3 },
+      { id: "e-ok2", from: "policy", to: "bedrock", label: "허용", appear: 6, until: 6 },
+      { id: "e-block", from: "policy", to: "blocked", label: "차단", appear: 5, until: 5 },
+      { id: "e-admin", from: "admin", to: "policy", label: "POST\nspend_limits", via: [[250, 265]], appear: 4, until: 4 },
+      { id: "e-admin2", from: "admin", to: "policy", label: "DELETE", via: [[250, 265]], appear: 6, until: 6 }
+    ],
+    steps: [
+      { cmd: "use_gateway · alice 로그인",
+        caption: "use_gateway가 managed settings에 forceLoginMethod를 넣어, 이 PC의 Claude Code는 게이트웨이 로그인 없이는 쓸 수 없습니다. alice가 브라우저에서 코드를 확인하고 로그인하면 게이트웨이가 사내 IdP(이 랩은 Cognito)로 사용자를 식별합니다.",
+        on: ["alice", "e-alice", "login", "gw"], flow: { edge: "e-alice", token: "로그인" } },
+      { cmd: "alice의 요청",
+        caption: "alice는 power-users 그룹이라 /model에 Opus, Sonnet, Haiku 5.5가 모두 보입니다. 이 목록은 내 settings.json이 아니라 게이트웨이가 그룹 정책으로 내려준 것입니다. 한도($200) 안의 요청은 게이트웨이가 Bedrock을 대신 호출합니다.",
+        on: ["alice", "e-alice", "login", "e-lp", "policy", "d-alice", "e-ok", "bedrock", "gw"], flow: { edge: "e-ok", token: "질문" } },
+      { cmd: "bob 로그인과 요청",
+        caption: "bob은 standard-users 그룹이라 Opus가 없고 Sonnet과 Haiku 5.5만 쓸 수 있으며 일일 한도는 $50입니다. 질문 하나를 보내 지출 기록을 만듭니다. 이 요청은 정책을 통과해 Bedrock까지 갑니다.",
+        on: ["bob", "e-bob", "login", "e-lp", "policy", "d-bob", "e-ok", "bedrock", "gw"], flow: { edge: "e-ok", token: "질문" } },
+      { cmd: "관리자가 1센트 한도를 걺",
+        caption: "두 번째 터미널의 관리자가 Admin API로 bob에게만 하루 1센트(amount \"1\") 사용자 한도를 만듭니다. 사용자 한도는 그룹 한도보다 우선합니다. 이 단계에서는 모델 호출이 없습니다.",
+        on: ["admin", "e-admin", "policy", "d-bob1", "gw"], flow: { edge: "e-admin", token: "한도 1센트" } },
+      { cmd: "bob의 요청이 차단됨",
+        caption: "bob이 질문을 보내면 정책 확인에서 오늘 쓴 금액이 새 한도보다 커서 거절됩니다. 요청은 Bedrock에 닿지 않고 \"You have reached your spend limit\" 메시지가 돌아옵니다.",
+        on: ["bob", "e-bob", "login", "e-lp", "policy", "d-over", "e-block", "blocked", "gw"], flow: { edge: "e-block", token: "거절" } },
+      { cmd: "한도 삭제 · 원복",
+        caption: "관리자가 DELETE로 한도를 지우면 bob은 원래 그룹 한도로 돌아가고 질문이 다시 통과해 Bedrock이 응답합니다. 마지막으로 use_bedrock_direct로 기본 모드에 돌아옵니다.",
+        on: ["admin", "e-admin2", "policy", "d-back", "bob", "e-ok2", "bedrock", "gw"], flow: { edge: "e-admin2", token: "DELETE" } }
+    ]
+  });
+
+  /* ==== end Ch6 ===================================================== */
+
   /* ---- end of diagram definitions ---- */
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
