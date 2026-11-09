@@ -349,6 +349,7 @@
   --accent: #9a4300;
   --text-accent: #075aa8;
   --info: #075aa8;
+  --success: #026a0a;
 }
 /* The compiler writes cover text in literal white; follow the theme in light mode.
    Keyed on theme classes (not <html>) so the presenter view's copies match too. */
