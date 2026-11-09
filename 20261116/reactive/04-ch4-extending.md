@@ -118,8 +118,8 @@ AWS Korea
 :::html
 <div class="fsi fsi-statement">
   <span class="eyebrow">CHAPTER 04</span>
-  <div class="big">Plugins <em>&amp;</em> Mods</div>
-  <p class="lead">스킬, Subagent, 훅, <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 Claude가 쓰는 도구로 붙이는 표준">MCP</span>, mod를 한 번에 배포합니다.</p>
+  <div class="big">Claude Code 확장하기</div>
+  <p class="lead">Plugins &amp; Mods로 스킬, Subagent, 훅, <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 Claude가 쓰는 도구로 붙이는 표준">MCP</span>, mod를 한 번에 배포합니다.</p>
 </div>
 :::
 
