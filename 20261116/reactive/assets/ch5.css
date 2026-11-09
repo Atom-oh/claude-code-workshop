@@ -1,4 +1,4 @@
-/* Chapter 5 (Plugins & Mods): chapter-specific layouts. Theme tokens only. */
+/* Chapter 5 (Claude Code 확장하기: Plugins & Mods): chapter-specific layouts. Theme tokens only. */
 
 /* Survey: single share bar */
 .c5-survey .share { display: flex; flex-direction: column; gap: var(--space-4); }

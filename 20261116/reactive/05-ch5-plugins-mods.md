@@ -6,8 +6,8 @@ block: ch5-plugins-mods
 @type: cover
 @background: linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%)
 
-# Chapter 5. Plugins & Mods
-## 나의 Claude Code를 팀의 플랫폼으로 (2026.11, Claude Code v2.1.319, Bedrock 기준)
+# Chapter 5. Claude Code 확장하기
+## Plugins & Mods로 나의 Claude Code를 팀의 플랫폼으로 (2026.11, Claude Code v2.1.319, Bedrock 기준)
 Choi, WooHyung
 Prin. Solutions Architect
 AWS Korea

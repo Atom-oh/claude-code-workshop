@@ -948,7 +948,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
   <div class="panel" data-pick-panel="tracks">
     <p class="hint">갈래를 누르면 해당 챕터가 나옵니다.</p>
     <div data-for="admin"><div class="chs"><div class="ch"><b>Ch2</b>Bedrock 배포와 정책 전달</div><div class="ch"><b>Ch3</b>가드레일, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span></div></div></div>
-    <div data-for="prod"><div class="chs"><div class="ch"><b>Ch4</b>Subagents</div><div class="ch"><b>Ch5</b>Plugins &amp; Mods</div></div></div>
+    <div data-for="prod"><div class="chs"><div class="ch"><b>Ch4</b>Subagents</div><div class="ch"><b>Ch5</b>Claude Code 확장하기</div></div></div>
     <div data-for="common"><div class="chs"><div class="ch"><b>Ch6</b>토큰과 비용</div><div class="ch"><b>Capstone</b>사용량으로 마무리</div></div></div>
   </div>
 </div>
@@ -963,7 +963,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 {timing: 2min}
 [요약]
 • ADMIN: Ch2 Bedrock 배포와 정책 전달, Ch3 가드레일과 DLP
-• PRODUCTIVITY: Ch4 Subagents, Ch5 Plugins & Mods
+• PRODUCTIVITY: Ch4 Subagents, Ch5 Claude Code 확장하기
 • COMMON: Ch6 토큰과 비용, Capstone은 사용량으로 마무리
 
 마지막 Part, 이틀 동안 무엇을 배우는지입니다. 같은 기능을 관리자와 사용자 양쪽에서 보도록 두 갈래로 나눴습니다.
@@ -1047,7 +1047,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
   <div class="day">
     <div class="dl"><b>DAY 2</b>확장에서 측정으로</div>
     <div class="track">
-      <div class="ev"><span class="tm">10:10</span><span class="nm">Ch5 Plugins &amp; Mods</span></div>
+      <div class="ev"><span class="tm">10:10</span><span class="nm">Ch5 Claude Code 확장하기</span></div>
       <div class="ev"><span class="tm">12:40</span><span class="nm">Ch6 P1 토큰</span></div>
       <div class="ev"><span class="tm">16:50</span><span class="nm">Ch6 P2 비용</span></div>
     </div>

@@ -28,7 +28,7 @@ blocks:
     title: "Chapter 4. Subagents"
     duration: 17
   - name: ch5-plugins-mods
-    title: "Chapter 5. Plugins & Mods"
+    title: "Chapter 5. Claude Code 확장하기"
     duration: 35
   - name: ch6-tokens-cost
     title: "Chapter 6. 토큰과 비용"
