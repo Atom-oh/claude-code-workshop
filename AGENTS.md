@@ -45,7 +45,10 @@ change; old numbers in learner folders are legacy.
   `~/claude-lab/ch4` keep old names.
 - Reactive decks are Remarp sources in `20261116/reactive/*.md`; rebuild the
   HTML with the reactive-presentation compiler instead of editing it, then
-  strip trailing whitespace from the generated HTML before committing.
+  strip trailing whitespace from the generated HTML before committing. The
+  build also writes `reactive/toc.html`; that page is hand-maintained (Korean
+  chapter cards linking slides, previews, labs and PDFs), so restore it after a
+  build (`git checkout -- 20261116/reactive/toc.html`) and edit it directly.
 - The Agent SDK lab is a self-paced "SDK" track, not a chapter.
 - Every November page (eDM, portal, labs, capstones, references, reactive
   decks) opens dark. Light is the projector mode, for rooms where dark slides
