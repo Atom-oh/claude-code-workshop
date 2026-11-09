@@ -632,7 +632,7 @@
         caption: "프로파일이 고른 곳의 모델이 답을 만들어 같은 길로 돌려줍니다. 모델 ID를 고정하지 않으면 Bedrock의 기본 주 모델인 Opus 5.5가 쓰이고 Opus 단가로 청구됩니다.",
         on: ["bedrock", "model", "e-model"], flow: { edge: "e-model", token: "모델 호출" } },
       { cmd: "게이트웨이 모드",
-        caption: "use_gateway로 바꾸면 Claude Code는 Bedrock으로 바로 가지 않고 Claude Apps Gateway에 로그인해 요청을 보냅니다. 게이트웨이가 로그인한 사람의 그룹에 허용된 모델만 Bedrock으로 넘기므로, 실제 배포에서는 사용자에게 Bedrock IAM을 주지 않아도 됩니다.",
+        caption: "use_gateway로 바꾸면 Claude Code는 Bedrock으로 바로 가지 않고 Claude Apps Gateway에 로그인해 요청을 보냅니다. 게이트웨이가 로그인한 사람의 그룹에 허용된 모델만 Bedrock으로 넘기므로, 사용자에게 Bedrock IAM 권한과 로컬 관리자 권한을 주지 않아야 게이트웨이를 우회하지 못합니다.",
         on: ["claude", "gateway", "bedrock", "model", "e-gw1", "e-gw2", "e-model"], flow: { edge: "e-gw1", token: "로그인 · 요청" } }
     ]
   });
@@ -642,14 +642,14 @@
     title: "managed, user, project 세 설정 층에서 raw/ 읽기 요청은 거부되고 pseudo/ 읽기 요청은 허용되는 과정",
     viewBox: "0 0 800 450",
     nodes: [
-      { id: "managed", shape: "group", label: "managed · 보안 담당자가 배포 (가장 우선)", x: 485, y: 95, w: 590, h: 150 },
-      { id: "user", shape: "group", label: "user · 분석가가 직접 고치는 개인 설정", x: 485, y: 245, w: 590, h: 120 },
-      { id: "project", shape: "group", label: "project · 팀이 저장소에 담는 설정", x: 485, y: 375, w: 590, h: 110 },
+      { id: "managed", shape: "group", label: "managed · 보안 담당자 배포", x: 485, y: 95, w: 590, h: 150 },
+      { id: "project", shape: "group", label: "project · 팀 저장소", x: 485, y: 245, w: 590, h: 120 },
+      { id: "user", shape: "group", label: "user · 분석가 개인", x: 485, y: 375, w: 590, h: 110 },
       { id: "mfile", shape: "file", label: "/etc/claude-code/\nmanaged-settings.json", sub: "deny: raw/**", x: 335, y: 112, w: 200, h: 82 },
       { id: "dfile", shape: "file", label: "managed-settings.d/\n10-security.json", sub: "ask: git push", x: 585, y: 112, w: 200, h: 82 },
-      { id: "ufile", shape: "file", label: "~/.claude/\nsettings.json", x: 335, y: 258, w: 200, h: 60 },
-      { id: "unote", shape: "note", tone: "info", label: "분석가가 넣은 allow\nRead(…/raw/**)", x: 610, y: 258, w: 190, h: 54, appear: 4, until: 4 },
-      { id: "pfile", shape: "file", label: ".claude/\nsettings.json", x: 335, y: 386, w: 200, h: 60 },
+      { id: "ufile", shape: "file", label: "~/.claude/\nsettings.json", x: 335, y: 386, w: 200, h: 60 },
+      { id: "unote", shape: "note", tone: "info", label: "분석가가 넣은 allow\nRead(…/raw/**)", x: 610, y: 386, w: 190, h: 54, appear: 4, until: 4 },
+      { id: "pfile", shape: "file", label: ".claude/\nsettings.json", x: 335, y: 258, w: 200, h: 60 },
       { id: "req", shape: "note", tone: "info", label: "Read 요청\n(Claude 도구)", x: 75, y: 112, w: 118, h: 56 },
       { id: "deny1", shape: "note", tone: "err", label: "거부\n(deny raw/**)", x: 75, y: 245, w: 118, h: 56, appear: 2, until: 2 },
       { id: "ok1", shape: "note", tone: "ok", label: "허용\n(걸리는 deny 없음)", x: 75, y: 245, w: 118, h: 56, appear: 3, until: 3 },
@@ -661,7 +661,7 @@
     ],
     steps: [
       { cmd: "세 층",
-        caption: "Claude Code는 설정 파일을 세 층에서 읽습니다. 보안 담당자는 /etc/claude-code/ 아래 managed 파일을 배포하고, 분석가는 자기 홈의 ~/.claude/settings.json과 프로젝트의 .claude/settings.json을 고칩니다. 위쪽 층이 이깁니다.",
+        caption: "Claude Code는 설정 파일을 세 층에서 읽습니다. 보안 담당자는 /etc/claude-code/ 아래 managed 파일을 배포하고, 팀은 프로젝트 저장소의 .claude/settings.json에 설정을 담고, 분석가는 자기 홈의 ~/.claude/settings.json을 고칩니다. 그림의 위쪽 층일수록 우선합니다. 다만 deny는 어느 층에 있든 allow보다 먼저 평가됩니다.",
         on: ["managed", "user", "project", "mfile", "dfile", "ufile", "pfile", "req"] },
       { cmd: "raw/ 요청",
         caption: "분석가가 Read 도구로 raw/customers.csv를 읽으려 합니다. 세 층의 규칙을 합치면 managed의 deny Read(…/raw/**)에 걸려 거부됩니다.",
