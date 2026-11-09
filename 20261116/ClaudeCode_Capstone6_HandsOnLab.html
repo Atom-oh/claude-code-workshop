@@ -572,14 +572,16 @@ code.inline { white-space: normal; overflow-wrap: anywhere; }
 </style>
 <style id="hol-theme">
 html[data-theme="light"]{
-  --bg:#F3F4F7; --bg-card:#FFFFFF; --bg-code:#EEF1F5; --bg-inline:#E4E9EF; --line:#D7DDE5;
-  --orange:#B45309; --orange-dim:rgba(180,83,9,.12);
-  --green:#1F883D; --green-dim:rgba(31,136,61,.12);
-  --text:#1B2430; --muted:#5B6472; --dim:#75808F;
+  --bg:#F3F4F7; --bg-card:#FFFFFF; --bg-code:#EEF1F5; --bg-inline:#E4E9EF; --line:#8A95A3;
+  --orange:#9A4300; --orange-dim:rgba(180,83,9,.12);
+  --green:#17692F; --green-dim:rgba(31,136,61,.12);
+  --text:#1B2430; --muted:#3D4654; --dim:#4A5462;
   background:#F3F4F7;
 }
 html[data-theme="light"] [style*="#c9a2ff"]{color:#6b46c1 !important}
-html[data-theme="light"] [style*="#A6ABBE"]{color:#5B6472 !important}
+html[data-theme="light"] .timeline{background:rgba(255,255,255,.92)}
+html[data-theme="light"] .callout.warn .co-title{color:#B3264A}
+html[data-theme="light"] [style*="#A6ABBE"]{color:#3D4654 !important}
 #themeToggle{position:fixed;right:16px;bottom:16px;z-index:9999;
 background:var(--bg-card,var(--card,#1B242E));color:var(--orange,#FF9900);
 border:1px solid var(--line,#2A3542);border-radius:999px;padding:9px 16px;
@@ -587,12 +589,12 @@ font:600 13px/1 sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 #themeToggle:hover{border-color:var(--orange,#FF9900)}
 html[data-theme="light"] .code-wrap code{color:#2A3542}
 html[data-theme="light"] .code-wrap.output code{color:#57606E}
-html[data-theme="light"] code{color:#B45309;background:#E4E9EF}
+html[data-theme="light"] code{color:#9A4300;background:#E4E9EF}
 html[data-theme="light"] .code-wrap code, html[data-theme="light"] pre code{background:transparent}
 html[data-theme="light"] .k.s{background:#DCEEDC}
 html[data-theme="light"] .k.w{background:#E9E2F7}
-html[data-theme="light"] code.inline, html[data-theme="light"] .inline{color:#B45309;background:#E4E9EF;border-color:#D7DDE5}
-html[data-theme="light"] .code-wrap .hl{color:#B45309}
+html[data-theme="light"] code.inline, html[data-theme="light"] .inline{color:#9A4300;background:#E4E9EF;border-color:#D7DDE5}
+html[data-theme="light"] .code-wrap .hl{color:#9A4300}
 html[data-theme="light"] .code-wrap .cmt{color:#6E7B8C}
 html[data-theme="light"] .head{--text:#E8ECF1;--muted:#8B96A5;--charcoal:#C7CDD6;--orange:#FF9900;--lavender:#c9a2ff;--line:#262F3B}
 html[data-theme="light"] .head, html[data-theme="light"] .head h1{color:#F2F4F8}
@@ -602,7 +604,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
 html[data-theme="light"] .part-divider{background:linear-gradient(135deg,#EDE6FA 0%,#FFFFFF 65%);border-color:#B79CEF}
 html[data-theme="light"] .part-divider h2{color:#1B2430}
 html[data-theme="light"] .part-divider .rules span{background:#EDE6FA;border-color:#B79CEF;color:#5B21C7}
-html[data-theme="light"] .tbl code{color:#B45309}
+html[data-theme="light"] .tbl code{color:#9A4300}
 html[data-theme="light"] .task.mission .task-num{color:#6b46c1}
 html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
 @media print{#themeToggle{display:none}}
@@ -1145,21 +1147,21 @@ Slack에 붙여넣기 좋은 플레인 텍스트(토픽별 3줄 + 링크)로 만
   }
 })();
 </script>
-<button id="themeToggle" type="button" aria-label="테마 전환">라이트 모드</button>
+<button id="themeToggle" type="button" aria-label="프로젝터 모드(라이트)로 전환">프로젝터 모드</button>
 <script>
 (function(){
   var KEY='hol-theme', root=document.documentElement, btn=document.getElementById('themeToggle');
-  function label(){ btn.textContent = root.getAttribute('data-theme')==='light' ? '다크 모드' : '라이트 모드'; }
-  var saved=null; try{saved=localStorage.getItem(KEY);}catch(e){}
-  if(saved==='light'){ root.setAttribute('data-theme','light'); }
-  else if(saved==='dark'){ root.removeAttribute('data-theme'); }
-  label();
+  function label(){ var l=root.getAttribute('data-theme')==='light'; btn.textContent = l ? '다크 모드' : '프로젝터 모드'; btn.setAttribute('aria-label', l ? '다크 모드로 전환' : '프로젝터 모드(라이트)로 전환'); btn.setAttribute('aria-pressed', String(l)); }
+  // One switch for the whole event site: fsi-theme is shared by eDM, portal, labs and decks.
+  function fsiTheme(legacy){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}if(q==='light'||q==='dark'){try{localStorage.setItem('fsi-theme',q)}catch(e){}return q}var s=null;try{s=localStorage.getItem('fsi-theme')||localStorage.getItem(legacy)}catch(e){}return s==='light'?'light':'dark'}
+  function set(l){ if(l){ root.setAttribute('data-theme','light'); } else { root.removeAttribute('data-theme'); } label(); }
+  set(fsiTheme(KEY)==='light');
   btn.addEventListener('click',function(){
-    var light = root.getAttribute('data-theme')==='light';
-    if(light){ root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme','light'); }
-    try{ localStorage.setItem(KEY, light ? 'dark' : 'light'); }catch(e){}
-    label();
+    var light = root.getAttribute('data-theme')!=='light';
+    set(light);
+    try{ localStorage.setItem('fsi-theme', light ? 'light' : 'dark'); localStorage.setItem(KEY, light ? 'light' : 'dark'); }catch(e){}
   });
+  window.addEventListener('storage',function(e){ if(e.key==='fsi-theme'&&(e.newValue==='light'||e.newValue==='dark')) set(e.newValue==='light'); });
 })();
 </script>
 </body>

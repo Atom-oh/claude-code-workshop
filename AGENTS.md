@@ -24,7 +24,7 @@ site compilation step, or automated test suite.
 
 The November event uses six chapters (renumbered 2026-11-09, PR #20). Use
 these numbers and titles in every deck, lab, portal, invitation, and video
-change; old numbers in PDF filenames and learner folders are legacy.
+change; old numbers in learner folders are legacy.
 
 | Ch | Title | Former content | Lab page(s) | Reactive deck |
 | --- | --- | --- | --- | --- |
@@ -36,16 +36,27 @@ change; old numbers in PDF filenames and learner folders are legacy.
 | 6 | 조직의 비용 보고 통제하기 | Ch6 Part 2 | `ClaudeCode_Ch6_HandsOnLab.html` (TASK 00-04) | `06-ch6-org-cost` |
 
 - Session times live in `20261116/eDM.html`; change them together with
-  `eDM.txt`, `eDM-notes.md`, the intro video, and every deck slide that
+  `eDM.txt`, `eDM-notes.md`, the intro video, `reactive/toc.html` (card times,
+  plus its titles, taglines and slide counts after a deck change), and every deck slide that
   states a time (Ch1 timeline, opening and agenda slides, takeaways, and
   closing `@message`, `@next-label`, and notes). Grep
   `20261116/reactive/*.md` for `HH:MM` to find them.
-- `slides/ClaudeCode_FSI_Ch1..6_20261116.pdf` still use the old numbering
-  until re-exported; learner folders such as `~/claude-lab/ch4` keep old names.
+- `slides/ClaudeCode_FSI_Ch1..6_20261116.pdf` follow the six-chapter numbering.
+  They are image-only exports of the reactive decks (one screenshot per slide),
+  so re-export them after a deck change; learner folders such as
+  `~/claude-lab/ch4` keep old names.
 - Reactive decks are Remarp sources in `20261116/reactive/*.md`; rebuild the
   HTML with the reactive-presentation compiler instead of editing it, then
-  strip trailing whitespace from the generated HTML before committing.
+  strip trailing whitespace from the generated HTML before committing. The
+  build also writes `reactive/toc.html`; that page is hand-maintained (Korean
+  chapter cards linking slides, previews, labs and PDFs), so restore it after a
+  build (`git checkout -- 20261116/reactive/toc.html`) and edit it directly.
 - The Agent SDK lab is a self-paced "SDK" track, not a chapter.
+- Every November page (eDM, portal, labs, capstones, references, reactive
+  decks) opens dark. Light is the projector mode, for rooms where dark slides
+  wash out: one shared `localStorage` key, `fsi-theme`, or `?theme=light` on
+  any URL switches every page. Keep light text at 7:1 or more, accent text at
+  4.5:1 or more, and borders near 3:1; check new light colours against that.
 
 ## Documentation
 

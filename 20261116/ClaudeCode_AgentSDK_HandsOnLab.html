@@ -584,11 +584,15 @@ code.inline { white-space: normal; overflow-wrap: anywhere; }
 @media (max-width: 1300px) { .timeline-inner { padding-right: 88px; } }
 html.light {
   --bg: #F4F6F9; --bg-card: #FFFFFF; --bg-inline: #E8EDF3;
-  --line: #D7DEE7;
-  --orange: #A85500; --orange-dim: rgba(168, 85, 0, 0.10);
-  --green: #1F883D; --green-dim: rgba(31, 136, 61, 0.08);
-  --text: #1B2430; --muted: #4B5665; --dim: #66717F;
+  --line: #8A95A3;
+  --orange: #9A4300; --orange-dim: rgba(168, 85, 0, 0.10);
+  --green: #17692F; --green-dim: rgba(31, 136, 61, 0.08);
+  --text: #1B2430; --muted: #3D4654; --dim: #4A5462;
 }
+/* Light = projector mode: text >= 7:1, accent text >= 4.5:1, borders ~3:1. */
+html.light [style*="#c9a2ff"] { color: #6b46c1 !important; }
+html.light [style*="#A6ABBE"] { color: #3D4654 !important; }
+html.light .callout.warn .co-title { color: #B3264A; }
 html.light ::selection { background: rgba(255, 153, 0, 0.35); }
 html.light .hero::after { background: radial-gradient(closest-side, rgba(182, 0, 46, 0.10), rgba(255, 153, 0, 0.06) 55%, transparent 75%); }
 html.light .timeline { background: rgba(255, 255, 255, 0.92); }
@@ -1082,17 +1086,21 @@ connection refused는 프로세스 다운 또는 포트 미개방이 유력합�
   btn.className = "theme-toggle";
   function apply(light) {
     document.documentElement.classList.toggle("light", light);
-    btn.textContent = light ? "DARK" : "WHITE";
+    btn.textContent = light ? "다크" : "프로젝터";
+    btn.title = light ? "다크 모드로 전환" : "프로젝터 모드(라이트)로 전환";
     btn.setAttribute("aria-pressed", light ? "true" : "false");
-    btn.setAttribute("aria-label", light ? "다크 모드로 전환" : "화이트 모드로 전환");
+    btn.setAttribute("aria-label", btn.title);
   }
-  var saved = null;
-  try { saved = localStorage.getItem(KEY); } catch (e) { saved = null; }
-  apply(saved === "light");
+  // One switch for the whole event site: fsi-theme is shared by eDM, portal, labs and decks.
+  function fsiTheme(legacy){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}if(q==='light'||q==='dark'){try{localStorage.setItem('fsi-theme',q)}catch(e){}return q}var s=null;try{s=localStorage.getItem('fsi-theme')||localStorage.getItem(legacy)}catch(e){}return s==='light'?'light':'dark'}
+  apply(fsiTheme(KEY) === "light");
   btn.addEventListener("click", function () {
     var next = !document.documentElement.classList.contains("light");
     apply(next);
-    try { localStorage.setItem(KEY, next ? "light" : "dark"); } catch (e) {}
+    try { localStorage.setItem("fsi-theme", next ? "light" : "dark"); localStorage.setItem(KEY, next ? "light" : "dark"); } catch (e) {}
+  });
+  window.addEventListener("storage", function (e) {
+    if (e.key === "fsi-theme" && (e.newValue === "light" || e.newValue === "dark")) apply(e.newValue === "light");
   });
   document.body.appendChild(btn);
 })();

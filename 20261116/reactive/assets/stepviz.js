@@ -312,6 +312,20 @@
 
   const api = { stepviz, pick, countUp, quickCheck, cycle, bindKeys, onEnter, isActive, col };
   window.FSI = api;
+  // Dark/light theme switch for every FSI deck (loaded once, next to this file).
+  if (!window.__fsiTheme && !document.querySelector('script[src$="assets/theme-toggle.js"]')) {
+    const t = document.createElement('script');
+    t.src = 'assets/theme-toggle.js';
+    document.head.appendChild(t);
+  }
+
+  // Chapter cover preview video button (loaded once, next to this file).
+  if (!window.__fsiChapterVideo && !document.querySelector('script[src$="assets/chapter-video.js"]')) {
+    const v = document.createElement('script');
+    v.src = 'assets/chapter-video.js';
+    document.head.appendChild(v);
+  }
+
   const q = window.__fsiq || [];
   window.__fsiq = { push: fn => { try { fn(api); } catch (e) { console.error('[FSI]', e); } } };
   q.forEach(fn => window.__fsiq.push(fn));
