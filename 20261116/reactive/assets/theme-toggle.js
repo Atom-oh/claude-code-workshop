@@ -4,7 +4,8 @@
  * classes on the deck and on slides that carry one (the covers).
  * - Button (top right) or the T key toggles. Slide thumbnails follow too.
  * - ?theme=light|dark in the URL wins, then the last choice (localStorage), then dark.
- * - Other open windows of the deck (presenter view) follow through the storage event.
+ * - An open presenter view is repainted; other tabs of the deck follow through
+ *   the storage event.
  * Loaded once by assets/stepviz.js.
  */
 (function () {
@@ -48,8 +49,20 @@
       btn.setAttribute('aria-label', next + ' 테마로 바꾸기 (T)');
       btn.title = next + ' 테마로 바꾸기 (T)';
     }
-    // The framework re-picks the logo and overlay scope on its next layout pass.
-    window.dispatchEvent(new Event('resize'));
+    repaintPresenter();
+  }
+
+  // The presenter window copies <html> classes once and redraws its previews only on
+  // slide changes, so push the new theme to it now.
+  function repaintPresenter() {
+    var fw = (typeof deck !== 'undefined') ? deck : null; // the SlideFramework global
+    var pv = fw && fw.presenterView;
+    var w = pv && pv.presenterWindow;
+    if (!w || w.closed) return;
+    try {
+      w.document.documentElement.className = document.documentElement.className;
+      pv.updatePresenterView();
+    } catch (e) { /* window closed mid-update */ }
   }
 
   function toggle() {
@@ -62,13 +75,26 @@
     btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'fsi-theme-toggle';
-    btn.addEventListener('click', function (e) { e.stopPropagation(); toggle(); btn.blur(); });
+    btn.setAttribute('aria-keyshortcuts', 'T');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      toggle();
+      if (e.detail > 0) btn.blur(); // pointer click: give arrow keys back to the deck
+    });
+    // The deck maps Space to "next slide"; keep Space and Enter on the button.
+    btn.addEventListener('keydown', function (e) {
+      if (e.key !== ' ' && e.key !== 'Enter') return;
+      e.preventDefault();
+      e.stopPropagation();
+      toggle();
+    });
     document.body.appendChild(btn);
     apply(initial());
 
     document.addEventListener('keydown', function (e) {
-      if (e.key !== 't' && e.key !== 'T') return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      // e.code also matches with a Korean input method active (e.key is then 'ㅅ').
+      if (e.key !== 't' && e.key !== 'T' && e.code !== 'KeyT') return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
       var t = e.target;
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       toggle();
