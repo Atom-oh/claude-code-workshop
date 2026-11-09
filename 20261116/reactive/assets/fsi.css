@@ -339,6 +339,16 @@
 .fsi-theme-toggle:hover, .fsi-theme-toggle:focus-visible { opacity: 1; }
 .fsi-theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media print { .fsi-theme-toggle { display: none; } }
+/* Light = projector mode. Projectors wash out pale grey and thin lines, so the
+   light tokens are darkened: text >= 7:1, accent text >= 4.5:1, borders ~3:1. */
+.theme-light {
+  --text-secondary: #2b3440;
+  --text-muted: #3d4654;
+  --on-surface-muted: #3d4654;
+  --border: #8a95a3;
+  --accent: #b45309;
+  --text-accent: #075aa8;
+}
 /* The compiler writes cover text in literal white; follow the theme in light mode.
    Keyed on theme classes (not <html>) so the presenter view's copies match too. */
 .theme-light [style*="; color:#fff;"], .theme-light [style^="color:#fff;"],
