@@ -34,12 +34,14 @@ change; old numbers in PDF filenames and learner folders are legacy.
 | 5 | 비용 효율적으로 쓰기 | Ch6 Part 1 | `ClaudeCode_Ch5_HandsOnLab.html` (TASK 00-04) | `05-ch5-cost-efficient` |
 | 6 | 조직의 비용 보고 통제하기 | Ch6 Part 2 | `ClaudeCode_Ch6_HandsOnLab.html` (TASK 00-04) | `06-ch6-org-cost` |
 
-- Session times live in `20261116/eDM.html` (mirrored in `eDM.txt`, the Ch1
-  deck timeline, and the intro video); change them together.
+- Session times live in `20261116/eDM.html`; change them together with
+  `eDM.txt`, `eDM-notes.md`, the Ch1 deck timeline, the closing slides of the
+  other decks (`@message`, `@next-label`, notes), and the intro video.
 - `slides/ClaudeCode_FSI_Ch1..6_20261116.pdf` still use the old numbering
   until re-exported; learner folders such as `~/claude-lab/ch4` keep old names.
 - Reactive decks are Remarp sources in `20261116/reactive/*.md`; rebuild the
-  HTML with the reactive-presentation compiler instead of editing it.
+  HTML with the reactive-presentation compiler instead of editing it, then
+  strip trailing whitespace from the generated HTML before committing.
 - The Agent SDK lab is a self-paced "SDK" track, not a chapter.
 
 ## Documentation

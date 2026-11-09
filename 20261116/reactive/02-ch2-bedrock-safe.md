@@ -1144,7 +1144,7 @@ PC에는 세션 JSONL이 남고, AWS에는 CloudTrail의 Bedrock 호출 이력�
     <li><b>Lab 2 TASK 03</b><span>auto mode로 확인 창을 줄이고 경계 긋기</span><em>auto mode</em></li>
     <li><b>Lab 2 선택 TASK</b><span>샌드박스로 curl 빈틈 막기, Bedrock Guardrails, 확장 통제</span><em>DLP 층</em></li>
   </ol>
-  <p class="where">망분리 준비물, OS별 차이, 쿼터는 PDF 강의자료, Ch2 PDF(정책)와 Ch3 PDF(가드레일)의 더 알아보기에 있습니다.</p>
+  <p class="where">망분리 준비물, OS별 차이, 쿼터는 PDF 강의자료(Ch2 정책, Ch3 가드레일)의 더 알아보기에 있습니다.</p>
 </div>
 :::
 
@@ -1202,7 +1202,7 @@ Chapter 2 Key Takeaways
 @type: thankyou
 @toc: toc.html
 @next: 03-ch3-subagents.html
-@next-label: Chapter 3
+@next-label: Chapter 3 (14:50)
 @message: 다음은 11:30 Preflight와 Ch1 Lab입니다. 오늘 본 정책과 훅은 점심 뒤 13:00 Ch2 Lab 1, 13:50 Lab 2에서 직접 배포하고 뚫어 봅니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
 
 :::notes
