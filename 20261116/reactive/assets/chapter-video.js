@@ -3,8 +3,8 @@
  * the chapter's one-minute preview video (../media/chapters/chN-preview.mp4, the
  * landscape Short) in an in-deck player. While the player is open the deck gets no
  * keys (the video's own controls still do), Tab stays inside the player, and Esc,
- * the backdrop, ✕ or any slide change (e.g. from the presenter view) closes it and
- * returns focus to the cover button.
+ * the backdrop, ✕ or any slide change (e.g. from the presenter view) closes it; Esc,
+ * the backdrop and ✕ return focus to the cover button (a slide change leaves focus alone).
  * Loaded once by assets/stepviz.js.
  */
 (function () {
@@ -20,12 +20,14 @@
 
   function src(n) { return BASE + 'ch' + n + '-preview.mp4'; }
 
-  function close() {
+  // restoreFocus=false when the deck has already left the cover (slide change):
+  // focusing the fading-out button would leave a later Space/Enter aimed at it.
+  function close(restoreFocus) {
     if (!modal || modal.hidden) return;
     video.pause();
     modal.hidden = true;
     if (watch) { watch.disconnect(); watch = null; }
-    if (opener && document.contains(opener)) opener.focus();
+    if (restoreFocus !== false && opener && document.contains(opener)) opener.focus();
   }
 
   function open(n, btn) {
@@ -34,7 +36,7 @@
     // Close if the deck leaves this cover (keyboard elsewhere, presenter view, swipe).
     var slide = btn && btn.closest('.slide');
     if (slide && window.MutationObserver) {
-      watch = new MutationObserver(function () { if (!slide.classList.contains('active')) close(); });
+      watch = new MutationObserver(function () { if (!slide.classList.contains('active')) close(false); });
       watch.observe(slide, { attributes: true, attributeFilter: ['class'] });
     }
     video.src = src(n);
