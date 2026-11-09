@@ -46,6 +46,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Fixed
 
+- Title the Ch4 deck's chapter-statement slide (slide 4) "Claude Code 확장하기" instead of "Plugins & Mods", which now leads the subtitle; the renumbering in PR #20 missed it because an `<em>` tag splits the old title.
 - Correct statements the current documentation contradicts: `Write(**)` permission rules are never evaluated, `/review` is an alias of `/code-review` since v2.1.223, SDK `settingSources` defaults to all sources, `--bare` requires an API key, and subscription defaults to Opus 5.5.
 - Correct the November Capstone 5 and 6 superpowers commands to `/superpowers:writing-plans` and `/superpowers:executing-plans`, matching the other capstones and Reference 3.
 - Fix the Chapter 2 lab JSON post-processing to read `.result` from the `--output-format json` envelope, and the same fabricated structure in the snippet archive (slides 56, 79, 179, 195).
