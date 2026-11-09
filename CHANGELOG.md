@@ -46,6 +46,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Fixed
 
+- Re-record the eDM intro's Day 1 narration so "Subagents" is read as 써브에이전트 instead of the English word; caption cues 4 and 5 follow the new clip (and read "Subagent").
 - Title the Ch4 deck's chapter-statement slide (slide 4) "Claude Code 확장하기" instead of "Plugins & Mods", which now leads the subtitle; the renumbering in PR #20 missed it because an `<em>` tag splits the old title.
 - Correct statements the current documentation contradicts: `Write(**)` permission rules are never evaluated, `/review` is an alias of `/code-review` since v2.1.223, SDK `settingSources` defaults to all sources, `--bare` requires an API key, and subscription defaults to Opus 5.5.
 - Correct the November Capstone 5 and 6 superpowers commands to `/superpowers:writing-plans` and `/superpowers:executing-plans`, matching the other capstones and Reference 3.
