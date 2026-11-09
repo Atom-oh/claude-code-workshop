@@ -25,7 +25,7 @@
 - Agent, skill, kit names: `spending-analyst`, `portfolio-analyst`, `risk-reviewer`, `retirement-gap`, kit `asset-team-kit` (replaces `fsi-team-kit`).
 - Learner-facing text stays Korean; repo docs (README, CHANGELOG, architecture) stay English.
 - Nothing under `tools/` is published; `tools/mydata/dist/` is gitignored.
-- Learners download the kit with `aws s3 cp s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip` (Workshop Studio assets bucket, instance role); no curl, no signed URL.
+- Learners download the kit with `aws s3 cp --no-sign-request s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip` (public event assets bucket, no credentials needed; the only risk left is that the public object is reachable from ccb-endpoint); no curl, no signed URL.
 
 ## Review Focus
 
@@ -159,7 +159,7 @@ Seeded segments (each ≥ 8% of customers so Ch3 finds them): (a) age 40-55, inc
 
 > Tasks 5-11 each edit one or two lab pages. Shared rules for all of them:
 > - Edit HTML directly; keep the existing `code copyable` blocks, `alert` boxes, `check` checkpoints, TOC, and pager.
-> - Kit download uses `KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip` and `aws s3 cp`, never curl.
+> - Kit download uses `KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip` and `aws s3 cp --no-sign-request "$KIT"`, never curl.
 > - Every TASK 00 ends with this restore idiom (adapt the checkpoint list per page):
 >   `[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp "$KIT" /tmp/mydata-kit.zip --only-show-errors && mkdir -p ~/claude-lab/mydata && unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)`, then copy the needed `checkpoints/chN/` items only if the learner's own are missing.
 > - Each task ends by running `python3 -m unittest discover -s tools/mydata/tests` and `python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip`, filtering to errors for the page(s) it touched — Expected: none for those pages. Then `git diff --check`, preview the page in a browser at `20261116/<page>`, and commit `docs(20261116): <chapter> on the MyData storyline`.

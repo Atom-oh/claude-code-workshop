@@ -217,11 +217,12 @@ the breakdown below is a designer call)
   `mydata-kit.zip` in that workshop repo's `assets/` and syncing it to
   `s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/` with the AWS
   profile `workshop-2`. Learners run `aws s3 cp` on the single object
-  (`s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip`)
-  from ccb-endpoint using the instance role. No signed URL, so nothing expires
+  (`s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip`)
+  from ccb-endpoint with `--no-sign-request` against the replicated public event
+  assets bucket; the learner download needs no credentials. No signed URL, so nothing expires
   between Day 1 and Day 2.
-  - To verify in the Task 13 rehearsal: the learner shell can read the assets
-    bucket (the event region or instance-role permissions may differ).
+  - To verify in the Task 13 rehearsal: the public object is reachable from
+    ccb-endpoint.
 - **Checkpoints** (agreed): each chapter has a checkpoint bundling what must
   exist when the chapter starts: the DLP script (Ch2), agents and
   `segments.md` (Ch3), the kit (Ch4). This generalizes the existing "no Ch4

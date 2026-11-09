@@ -42,7 +42,7 @@ CURL_KIT_RE = re.compile(r"\bcurl\b.*mydata-kit\.zip")
 PRE_RE = re.compile(r"<pre\b[^>]*>(.*?)</pre>", re.S)
 KIT_VAR_RE = re.compile(r"^\s*KIT=[\"']?" + KIT_URI_RE.pattern, re.M)
 S3_CP_RE = re.compile(r"\baws s3 cp\b")
-S3_CP_VAR_RE = re.compile(r"\baws s3 cp\s+[\"']?\$\{?KIT\}?[\"']?(?:\s|$)")
+S3_CP_VAR_RE = re.compile(r"\baws s3 cp\s+(?:--?[\w-]+\s+)*[\"']?\$\{?KIT\}?[\"']?(?:\s|$)")
 # Rule 4: required TASK minutes may exceed the baseline by this much.
 TIME_TOLERANCE_MIN = 30
 PAT_RE = re.compile(r"PAT='([^']*)'")

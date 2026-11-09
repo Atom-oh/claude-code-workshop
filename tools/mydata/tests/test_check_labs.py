@@ -160,7 +160,7 @@ class CheckLabsTest(unittest.TestCase):
         pre = "ClaudeCode_Preflight_Check.html"
         errs = self.run_check(full_set(**{pre: "<html><p>aws s3 cp %s</p></html>" % URL}))
         self.assertEqual(errs, [pre + ": rule 3: no aws s3 cp of mydata-kit.zip"])
-        for cp in ('"$KIT"', "$KIT"):
+        for cp in ('"$KIT"', "$KIT", '--no-sign-request "$KIT"'):
             ok = "<pre>KIT=%s\n[ -d x ] || (aws s3 cp %s /tmp/k.zip)</pre>" % (URL, cp)
             self.assertEqual(self.run_check(full_set(**{name: page(task00=ok)})), [], cp)
         split = "<pre>KIT=%s</pre><pre>aws s3 cp \"$KIT\" /tmp/k.zip</pre>" % URL

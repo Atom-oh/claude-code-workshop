@@ -42,6 +42,15 @@ Optionally copy the zip to `assets/` of the apps-gateway workshop repo (zips are
 
 ## Learner download
 
-Learners fetch the kit on ccb-endpoint with `aws s3 cp` from the same S3 path
-(the Workshop Studio asset URL), then unzip into `~/claude-lab/mydata/`.
+Learners fetch the kit on ccb-endpoint without credentials from the public event
+assets bucket (the upload above replicates to it), then unzip into `~/claude-lab/mydata/`:
+
+    aws s3 cp --no-sign-request s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip /tmp/mydata-kit.zip
+
+Public https form: `https://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee.s3.us-east-1.amazonaws.com/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip`
+
+Verify that the replicated public object matches the local build:
+
+    aws s3 cp --no-sign-request s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip /tmp/check.zip
+    shasum -a 256 /tmp/check.zip tools/mydata/dist/mydata-kit.zip  # must match
 There is no signed URL, so no URL check script.

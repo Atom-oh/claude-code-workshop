@@ -107,8 +107,8 @@ TASK 00에서 준비하는 작업 폴더(<code>~/claude-lab/ch4</code>)에서 <c
 <p><code>use_bedrock_direct</code> 기본 모드인지 확인한 뒤 아래 블록을 통째로 실행합니다. 여러 번 실행해도 안전합니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
-KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
-[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
+KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 mkdir -p ~/claude-lab/ch4 &amp;&amp; cd ~/claude-lab/ch4
 ln -sfn ~/claude-lab/mydata/pseudo pseudo
 

@@ -100,8 +100,8 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <p>분석팀 PC에 있는 두 폴더를 작업 폴더에 연결해 둡니다. <code>raw/</code>는 막을 대상이고 <code>pseudo/</code>는 열어 줄 대상입니다. Preflight에서 데이터를 이미 받았다면 키트 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
-KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
-[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
+KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 mkdir -p ~/claude-lab/ch2 &amp;&amp; cd ~/claude-lab/ch2 &amp;&amp; git init -q
 ln -sfn ~/claude-lab/mydata/raw raw
 ln -sfn ~/claude-lab/mydata/pseudo pseudo
