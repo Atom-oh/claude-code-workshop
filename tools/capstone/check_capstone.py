@@ -67,6 +67,9 @@ class _Builder(HTMLParser):
     def handle_startendtag(self, tag, attrs):
         self.cur.children.append(Element(tag, attrs, self.cur))
 
+    def handle_data(self, data):
+        self.cur.children.append(Element("#text", [("#text", data)], self.cur))
+
     def handle_endtag(self, tag):
         node = self.cur
         while node is not self.root and node.tag != tag:
@@ -257,6 +260,29 @@ def check_guardrail_note(trees):
     return []
 
 
+def text_of(el):
+    return "".join(c.attrs.get("#text", "") for c in el.walk())
+
+
+def check_r1a_restore(root, trees):
+    """R1-A step 00 must let a learner without the MyData kit get it back."""
+    name = R1_PAGES[0]
+    tree = trees.get(name)
+    if tree is None:
+        return []
+    step = find_id(tree, "task-00")
+    pres = [e for e in step.walk() if e.tag == "pre"] if step is not None else []
+    blob = "".join(text_of(e) for e in pres)
+    msgs = []
+    if step is None:
+        msgs.append(f'r1a_restore: {name} has no id="task-00" step')
+    if "~/claude-lab/mydata/pseudo" not in blob:
+        msgs.append(f"r1a_restore: {name} step 00 <pre> does not check ~/claude-lab/mydata/pseudo")
+    if "mydata-kit.zip" not in blob:
+        msgs.append(f"r1a_restore: {name} step 00 <pre> does not download mydata-kit.zip")
+    return msgs
+
+
 def check(root):
     root = Path(root)
     trees = {n: parse(root / n) for n in NEW_PAGES + ARCHIVE_PAGES if (root / n).is_file()}
@@ -269,6 +295,7 @@ def check(root):
     msgs += check_portal(root)
     msgs += check_secrets(root)
     msgs += check_guardrail_note(trees)
+    msgs += check_r1a_restore(root, trees)
     return msgs
 
 

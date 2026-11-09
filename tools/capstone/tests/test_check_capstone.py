@@ -14,12 +14,18 @@ OVERVIEW = "ClaudeCode_Capstone_Overview.html"
 PACKAGE = "ClaudeCode_Capstone_R2_Package_HandsOnLab.html"
 
 
-def page(round_=None, minutes=(), body=""):
+RESTORE_PRE = ("<pre>[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp "
+               "s3://example/mydata-kit.zip /tmp/mydata-kit.zip)</pre>")
+
+
+def page(round_=None, minutes=(), body="", step00=None):
     parts = ["<html><body>"]
     if round_:
         parts.append(f'<p class="round" data-round="{round_}">{round_}</p>')
     for i, m in enumerate(minutes):
-        parts.append(f'<section class="task" id="t{i}" data-min="{m}">step</section>')
+        inner = step00 if (i == 0 and step00 is not None) else "step"
+        sid = "task-00" if (i == 0 and step00 is not None) else f"t{i}"
+        parts.append(f'<section class="task" id="{sid}" data-min="{m}">{inner}</section>')
     parts.append(body)
     parts.append("</body></html>")
     return "".join(parts)
@@ -39,7 +45,7 @@ def make_site(tmp, r1a_minutes=(50, 50), r2_minutes=None, extra=None, drop=(),
     for name in R1_PAGES:
         short = name.split("_")[2]
         mins = r1a_minutes if short == "R1A" else (40, 40)
-        files[name] = page("R1", mins)
+        files[name] = page("R1", mins, step00=RESTORE_PRE if short == "R1A" else None)
     for name in R2_PAGES:
         mins = r2_minutes.get(name, (30, 30))
         body = '<p data-note="managed-enforce">managed</p>' if (name == PACKAGE and with_note) else ""
@@ -76,6 +82,17 @@ class CheckCapstoneTest(unittest.TestCase):
 
     def test_clean_site_passes(self):
         self.assertEqual(check(make_site(self.tmp)), [])
+
+    def test_r1a_restore_requires_kit_download(self):
+        for i, pre in enumerate(("<pre>ls ~/claude-lab/mydata/pseudo</pre>",
+                                 "<pre>aws s3 cp s3://x/mydata-kit.zip /tmp/k.zip</pre>",
+                                 "<p>kit</p>")):
+            root = make_site(f"{self.tmp}/{i}",
+                             extra={R1_PAGES[0]: page("R1", (50, 50), step00=pre)})
+            self.assertTrue(rule(check(root), "r1a_restore"), pre)
+        root = make_site(f"{self.tmp}/none", extra={R1_PAGES[0]: page("R1", (50, 50))})
+        self.assertTrue(rule(check(root), "r1a_restore"))
+        self.assertFalse(rule(check(make_site(f"{self.tmp}/ok")), "r1a_restore"))
 
     def test_exists_fails_when_page_missing(self):
         root = make_site(self.tmp, drop=[R1_PAGES[1]])
