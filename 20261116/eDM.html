@@ -328,9 +328,9 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <div class="top"><span class="time">13:00–14:00</span><span class="badge lab">LAB</span><span class="dur">60분</span></div>
         <h3><span class="chip">PRE + CH 01 · 02 LAB</span>실습 환경 점검, 에이전트 루프, 정책 배포</h3>
         <p class="steps"><b>code-server 접속</b> → <b>Preflight CHECK 01~05</b> → <b>첫 claude 세션과 세션 파일</b> → <b>managed settings 배포</b> → <b>우회 시도와 Gateway 그룹 정책</b></p>
-        <p class="syn">오전 두 강의의 내용을 한 시간 동안 이어서 직접 해 봅니다. Preflight로 내 EC2 환경과 Bedrock 연결을 확인하고, Ch1 랩에서 에이전트가 파일을 읽고 실행하고 고치는 순서와 /context, 세션 파일을 봅니다. 이어서 Ch2 랩에서 차단 규칙과 허용 모델을 담은 managed-settings.json을 배포하고, 개인 설정으로 정책을 덮어쓰려다 실패하는 것과 Claude Apps Gateway의 그룹 정책을 확인합니다.</p>
+        <p class="syn">오전 두 강의의 내용을 한 시간 동안 이어서 직접 해 봅니다. Preflight로 내 EC2 환경과 Bedrock 연결을 확인하고, Preflight에서 버전과 모드를 확인했으므로 Ch1 랩은 실습 폴더 만들기부터 시작해, 에이전트가 파일을 읽고 실행하고 고치는 순서와 /context, 세션 파일을 봅니다. 이어서 Ch2 랩에서 차단 규칙과 허용 모델을 담은 managed-settings.json을 배포하고, 개인 설정으로 정책을 덮어쓰려다 실패하는 것과 Claude Apps Gateway의 그룹 정책을 확인합니다.</p>
         <p class="out"><b>산출물</b>점검을 마치고 정책이 적용된 Bedrock 기반 실습 환경</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Preflight_Check.html">Preflight</a><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Hands-on Lab</a></div>
+        <div class="links"><a class="lab" href="ClaudeCode_Preflight_Check.html">Preflight</a><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Ch1 Hands-on Lab</a><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Hands-on Lab</a></div>
       </article>
       <article class="session">
         <div class="top"><span class="time">14:00–14:40</span><span class="badge lec">강의</span><span class="dur">40분</span></div>
@@ -342,8 +342,8 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
       <article class="session">
         <div class="top"><span class="time">14:40–15:40</span><span class="badge lab">LAB</span><span class="dur">60분</span></div>
         <h3><span class="chip">CH 03 LAB</span>DLP 훅을 만들고 직접 뚫어 보기</h3>
-        <p class="steps"><b>권한 규칙과 잠금</b> → <b>DLP 훅 만들기</b> → <b>managed 정책으로 강제</b> → <b>fail-open 확인</b> → <b>원복</b></p>
-        <p class="syn">DLP 훅을 직접 만들어 managed 정책으로 강제하고, 고장 난 훅이 조용히 통과되는 fail-open 문제를 직접 확인한 뒤 오류 경로까지 막습니다. 마지막 TASK에서 바꾼 정책을 원복해 Capstone과 둘째 날 실습이 막히지 않게 합니다.</p>
+        <p class="steps"><b>DLP 훅 만들기</b> → <b>managed 정책으로 강제</b> → <b>fail-open 확인</b> → <b>auto mode 경계와 잠금</b> → <b>원복</b></p>
+        <p class="syn">DLP 훅을 직접 만들어 managed 정책으로 강제하고, 고장 난 훅이 조용히 통과되는 fail-open 문제를 직접 확인한 뒤 오류 경로까지 막습니다. auto mode가 어디에서 멈추는지 ask 규칙으로 확인하고, managed 설정으로 auto mode를 잠가 봅니다. 마지막 TASK에서 바꾼 정책을 원복해 Capstone과 둘째 날 실습이 막히지 않게 합니다.</p>
         <p class="out"><b>산출물</b>managed 정책으로 강제한 DLP 훅</p>
         <div class="links"><a class="lab" href="ClaudeCode_Ch3_HandsOnLab.html">Hands-on Lab</a></div>
       </article>
@@ -352,7 +352,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <div class="top"><span class="time">15:50–17:40</span><span class="badge lab">LAB</span><span class="dur">110분</span></div>
         <h3><span class="chip">CAPSTONE R1</span>오늘 배운 것으로 첫 완결</h3>
         <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> 빌드와 검증 → <b>③</b> CloudFront 배포와 Slack 출품</p>
-        <p class="syn">만들고 싶은 것을 직접 정해 완주합니다. 주제가 떠오르지 않으면 <b>Press Start · 게임</b>, <b>Frame It · 미술관</b>, <b>Quake Watch · 지진 워치</b> 예시 미션을 그대로 따라가도 됩니다. 오늘 만든 정책과 DLP 훅이 걸린 환경에서 결과물을 만들고, CloudFront URL로 배포해 Slack에 출품합니다. ③을 다 못 끝내면 쇼케이스 1 시작 전까지 마무리합니다.</p>
+        <p class="syn">만들고 싶은 것을 직접 정해 완주합니다. 주제가 떠오르지 않으면 <b>Press Start · 게임</b>, <b>Frame It · 미술관</b>, <b>Quake Watch · 지진 워치</b> 예시 미션을 그대로 따라가도 됩니다. 오늘 익힌 Bedrock 연결과 정책·가드레일 원리를 적용해 결과물을 만들고, CloudFront URL로 배포해 Slack에 출품합니다. ③을 다 못 끝내면 쇼케이스 1 시작 전까지 마무리합니다.</p>
         <p class="out"><b>산출물</b>CloudFront URL로 열리는 첫 번째 결과물</p>
         <div class="links"><a class="lab" href="ClaudeCode_Capstone_Setup.html#submit">출품 방법</a><a class="lab" href="ClaudeCode_Capstone1_HandsOnLab.html">예시 · 게임</a><a class="lab" href="ClaudeCode_Capstone3_HandsOnLab.html">예시 · 미술관</a><a class="lab" href="ClaudeCode_Capstone5_HandsOnLab.html">예시 · 지진 워치</a><a class="lab" href="https://capstone.atomai.click/">지난 출품작</a></div>
       </article>
