@@ -664,7 +664,7 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 
 <header class="hero">
   <span class="eyebrow">HANDS-ON LAB / CAPSTONE R1-A</span>
-  <p class="round" data-round="R1">R1 · Day 1 · 110분</p>
+  <p class="round" data-round="R1">R1 · Day 1 · 110분 (처음 15분은 SETUP, 이 페이지의 단계는 95분)</p>
   <h1>R1-A 고객 맞춤 서비스: 마이데이터로 에이전트와 가드레일 만들기</h1>
   <div class="subtitle">Ch3 체크포인트에서 출발해 내 Subagent와, 실제로 막는 가드레일을 만든다</div>
   <p class="lede">
@@ -705,10 +705,10 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
   <div class="nav-title">R1-A</div>
   <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 준비와 복구<span class="nav-time">10분</span></a>
   <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 업무 정하기<span class="nav-time">10분</span></a>
-  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 자기 agent 만들기<span class="nav-time">30분</span></a>
+  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 자기 agent 만들기<span class="nav-time">25분</span></a>
   <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 가드레일<span class="nav-time">25분</span></a>
   <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 막히는 것 확인<span class="nav-time">15분</span></a>
-  <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 R1 정리<span class="nav-time">15분</span></a>
+  <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 R1 정리<span class="nav-time">10분</span></a>
 </aside>
 
 <main>
@@ -721,8 +721,8 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>use_bedrock_direct &gt;/dev/null
-KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
-[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp "$KIT" /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
+KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 mkdir -p ~/claude-lab/capstone/.claude/agents ~/claude-lab/capstone/.claude/hooks
 cd ~/claude-lab/capstone
 ln -sfn ~/claude-lab/mydata/pseudo pseudo
@@ -741,10 +741,18 @@ chmod +x .claude/hooks/dlp-guard.sh
 cp ~/claude-lab/mydata/checkpoints/ch3/segments.md .
 find .claude -type f | sort</code></pre>
   </div>
+  <div class="step-title"><span class="step-no">3</span>Ch2 Lab 2의 managed 훅이 남아 있는지</div>
+  <p class="body">Ch2 Lab 2에서 managed 정책에 넣은 DLP 훅이 남아 있으면, 04에서 주민번호 요청이 막혀도 이 폴더의 훅이 아니라 managed 훅이 막은 것일 수 있습니다. Ch2 Lab 2의 managed 훅(<code class="inline">/opt/dlp/dlp-guard.sh</code>)도 같은 <code class="inline">DLP:</code> 메시지를 내므로 화면만으로는 가릴 수 없습니다. 아래 한 줄로 먼저 확인합니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>sudo jq '{allowManagedHooksOnly, hooks: ((.hooks // {}) | keys)}' /etc/claude-code/managed-settings.json 2&gt;/dev/null</code></pre>
+  </div>
+  <p class="body"><code class="inline">"hooks": []</code>이고 <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">null</code>이나 <code class="inline">false</code>면 깨끗합니다. 아무것도 나오지 않으면 managed 설정 파일이 없는 것이니 그대로 진행합니다. <code class="inline">hooks</code> 목록에 <code class="inline">UserPromptSubmit</code>, <code class="inline">PreToolUse</code> 같은 이름이 보이면 managed 훅이 아직 돌고 있는 것이고, <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">true</code>면 이 폴더의 훅은 아예 돌지 않습니다. 어느 쪽이든 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2</a> TASK 07(전체 원복)을 먼저 하고 이 줄을 다시 실행합니다.</p>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox"><span><code>~/claude-lab/capstone/</code>에 <code>pseudo</code> 링크가 있다</span></label>
     <label class="cp-item"><input type="checkbox"><span><code>.claude/agents/</code>에 에이전트 3개, <code>.claude/hooks/</code>에 <code>dlp-guard.sh</code>가 있다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>managed 설정에 Ch2 Lab 2의 훅이 남아 있지 않다</span></label>
   </div>
 </section>
 
@@ -779,8 +787,8 @@ find .claude -type f | sort</code></pre>
   </div>
 </section>
 
-<section class="task" id="task-02" data-min="30">
-  <div class="task-head"><span class="task-num">02</span><h2>자기 agent 만들기</h2><span class="time-badge">30분</span></div>
+<section class="task" id="task-02" data-min="25">
+  <div class="task-head"><span class="task-num">02</span><h2>자기 agent 만들기</h2><span class="time-badge">25분</span></div>
   <p class="task-goal">새 agent 1개 이상을 만들고 체크포인트 agent 하나를 내 업무에 맞게 고칩니다. 도구 권한은 역할에 맞게 좁힙니다.</p>
   <p class="body">체크리스트 1번의 "자기 Subagent 2개 이상"은 이 트랙에서 <strong>새로 만든 1개 이상 + 체크포인트에서 가져와 고친 것</strong>으로 셉니다. 체크포인트 agent를 쓰는 것만으로는 채워지지 않습니다. agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일이고, <code class="inline">tools</code>로 도구 권한을 좁힙니다.</p>
   <div class="step-title"><span class="step-no">1</span>새 agent 만들기: consult-prep</div>
@@ -827,11 +835,7 @@ EOF</code></pre>
 tools 줄과 나머지 내용은 바꾸지 말고, 수정한 뒤 diff를 보여 주세요.</code></pre>
   </div>
   <div class="step-title"><span class="step-no">3</span>등록 확인과 첫 호출</div>
-  <p class="body">세션을 다시 열어(<code class="inline">/exit</code> 후 <code class="inline">claude</code>) 입력창에 <code class="inline">@</code>를 입력하면 agent 이름이 typeahead에 나타납니다. 아니면 아래처럼 물어봅니다. v2.1.198 이후에는 <code class="inline">/agents</code> 위저드가 없고 안내 문구만 나옵니다.</p>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>현재 이 세션에서 사용할 수 있는 서브에이전트 목록을 알려주세요</code></pre>
-  </div>
+  <p class="body">세션을 다시 열어(<code class="inline">/exit</code> 후 <code class="inline">claude</code>) 입력창에 <code class="inline">@</code>를 입력해 <code class="inline">consult-prep</code>이 typeahead에 나타나는지 보고, 바로 첫 호출을 보냅니다. v2.1.198 이후에는 <code class="inline">/agents</code> 위저드가 없고 안내 문구만 나옵니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>consult-prep 에이전트로 40대, 소득 구간이 높은 고객 한 명의 상담 준비 노트를 만들어 주세요.
@@ -883,7 +887,7 @@ echo '{"prompt":"안녕하세요"}' | .claude/hooks/dlp-guard.sh; echo "exit=$?"
   </div>
   <p class="body">다섯 줄 중 raw 두 줄과 주민번호 줄은 <code class="inline">exit=2</code>, <code class="inline">pseudo/</code> 경로와 "안녕하세요"는 <code class="inline">exit=0</code>이 나와야 합니다. 이 훅은 도구 입력의 <strong>문자열 패턴</strong>만 봅니다. 경로를 돌려 쓰는 명령(예: 글로브)이나 실행 <strong>결과</strong>는 보지 못한다는 점은 Ch2 Lab 2에서 확인한 한계와 같습니다.</p>
   <div class="step-title"><span class="step-no">2</span>프로젝트 설정에 훅과 deny 규칙 등록</div>
-  <p class="body">작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 프롬프트는 <code class="inline">UserPromptSubmit</code>, 도구 호출은 <code class="inline">PreToolUse</code>가 검사합니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(v2.1.295+, 어느 설정 파일의 command 훅에서나 쓸 수 있음, <a href='https://code.claude.com/docs/en/hooks'>공식 훅 문서</a>, Ch2 Lab 2 TASK 02 Step 3). <code class="inline">permissions.deny</code>는 훅과 별개의 한 겹으로 <code class="inline">raw/</code> 읽기를 막습니다.</p>
+  <p class="body">작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 프롬프트는 <code class="inline">UserPromptSubmit</code>, 도구 호출은 <code class="inline">PreToolUse</code>가 검사합니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(v2.1.295+, 어느 설정 파일의 command 훅에서나 쓸 수 있음, <a href="https://code.claude.com/docs/en/hooks">공식 훅 문서</a>, Ch2 Lab 2 TASK 02 Step 3). <code class="inline">permissions.deny</code>는 훅과 별개의 한 겹으로 <code class="inline">raw/</code> 읽기를 막습니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -973,8 +977,8 @@ ls .claude/hooks</code></pre>
   </div>
 </section>
 
-<section class="task" id="task-05" data-min="15">
-  <div class="task-head"><span class="task-num">05</span><h2>R1 정리</h2><span class="time-badge">15분</span></div>
+<section class="task" id="task-05" data-min="10">
+  <div class="task-head"><span class="task-num">05</span><h2>R1 정리</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">CLAUDE.md를 짧게 정리하고 쇼케이스 1에서 공유할 문구를 준비합니다.</p>
   <p class="body">R2에서 plugin으로 묶을 재료를 정돈하고, 쇼케이스 1에서 공유할 문구를 만듭니다. 이 단계에서 새 기능을 더하지 않습니다.</p>
   <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게</div>

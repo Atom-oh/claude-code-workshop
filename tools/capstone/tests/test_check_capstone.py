@@ -17,8 +17,18 @@ PACKAGE = "ClaudeCode_Capstone_R2_Package_HandsOnLab.html"
 R2_3_BODY = ('<section id="cleanup"><pre>agentcore remove all --yes</pre></section>'
              '<pre>{ "permissions": { "ask": [ "Bash(agentcore deploy *)" ] } }</pre>')
 
-RESTORE_PRE = ("<pre>[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp "
-               "s3://example/mydata-kit.zip /tmp/mydata-kit.zip)</pre>")
+PUBLIC_KIT = "s3://public-bucket/abc/mydata-kit.zip"
+CH3 = "ClaudeCode_Ch3_HandsOnLab.html"
+CH3_PAGE = (f"<html><body><pre>KIT={PUBLIC_KIT}\n"
+            "aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip</pre></body></html>")
+
+
+def restore_pre(kit=PUBLIC_KIT, flag="--no-sign-request "):
+    return (f"<pre>KIT={kit}\n[ -d ~/claude-lab/mydata/pseudo ] || "
+            f'(aws s3 cp {flag}"$KIT" /tmp/mydata-kit.zip)</pre>')
+
+
+RESTORE_PRE = restore_pre()
 
 
 def page(round_=None, minutes=(), body="", step00=None):
@@ -34,7 +44,7 @@ def page(round_=None, minutes=(), body="", step00=None):
     return "".join(parts)
 
 
-def make_site(tmp, r1a_minutes=(50, 50), r2_minutes=None, extra=None, drop=(),
+def make_site(tmp, r1a_minutes=(50, 45), r2_minutes=None, extra=None, drop=(),
               overview_checks=7, with_submit=True, with_note=True,
               archive_note=True, portal_archive=True, portal_new=True):
     """Build a minimal site that passes every rule; overrides break one spot."""
@@ -61,6 +71,7 @@ def make_site(tmp, r1a_minutes=(50, 50), r2_minutes=None, extra=None, drop=(),
         f'<html><body><section id="capstones">{new_links}'
         f'<div id="capstone-archive">{arch_links}</div></section></body></html>'
     )
+    files[CH3] = CH3_PAGE
     files["ClaudeCode_Capstone_Setup.html"] = page(body=f'<a href="{OVERVIEW}">o</a>')
     note = f'<div class="archive-note"><a href="{OVERVIEW}">new</a></div>' if archive_note else ""
     for name in ARCHIVE_PAGES:
@@ -93,11 +104,25 @@ class CheckCapstoneTest(unittest.TestCase):
                                  "<pre>aws s3 cp s3://x/mydata-kit.zip /tmp/k.zip</pre>",
                                  "<p>kit</p>")):
             root = make_site(f"{self.tmp}/{i}",
-                             extra={R1_PAGES[0]: page("R1", (50, 50), step00=pre)})
+                             extra={R1_PAGES[0]: page("R1", (50, 45), step00=pre)})
             self.assertTrue(rule(check(root), "r1a_restore"), pre)
-        root = make_site(f"{self.tmp}/none", extra={R1_PAGES[0]: page("R1", (50, 50))})
+        root = make_site(f"{self.tmp}/none", extra={R1_PAGES[0]: page("R1", (50, 45))})
         self.assertTrue(rule(check(root), "r1a_restore"))
         self.assertFalse(rule(check(make_site(f"{self.tmp}/ok")), "r1a_restore"))
+
+    def test_r1a_restore_rejects_private_bucket_uri(self):
+        pre = restore_pre(kit="s3://ws-assets-us-east-1/abc/mydata-kit.zip")
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), step00=pre)})
+        self.assertTrue(any("KIT=" in m for m in rule(check(root), "r1a_restore")))
+
+    def test_r1a_restore_requires_no_sign_request(self):
+        pre = restore_pre(flag="")
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), step00=pre)})
+        self.assertTrue(any("--no-sign-request" in m for m in rule(check(root), "r1a_restore")))
+
+    def test_r1a_restore_fails_without_ch3_reference(self):
+        root = make_site(self.tmp, drop=[CH3])
+        self.assertTrue(any(CH3 in m for m in rule(check(root), "r1a_restore")))
 
     def test_r2_3_requires_cleanup_and_ask_rule(self):
         name = R2_PAGES[3]
@@ -126,21 +151,21 @@ class CheckCapstoneTest(unittest.TestCase):
         self.assertTrue(any(m.startswith("exists") and R1_PAGES[1] in m for m in check(root)))
 
     def test_links_fails_on_missing_file_and_anchor(self):
-        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), '<a href="nope.html">x</a>')})
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), '<a href="nope.html">x</a>')})
         self.assertTrue(rule(check(root), "links"))
         root2 = Path(self.tmp) / "site"
         (root2 / R1_PAGES[0]).write_text(
-            page("R1", (50, 50), f'<a href="{OVERVIEW}#nothing">x</a>'), encoding="utf-8")
+            page("R1", (50, 45), f'<a href="{OVERVIEW}#nothing">x</a>'), encoding="utf-8")
         self.assertTrue(rule(check(root2), "links"))
 
     def test_links_passes_for_external_inpage_and_valid_anchor(self):
         body = (f'<a href="https://example.com/x">e</a><a href="#t0">i</a>'
                 f'<a href="{OVERVIEW}#submit">o</a><a href="mailto:a@b.c">m</a>')
-        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), body)})
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), body)})
         self.assertFalse(rule(check(root), "links"))
 
     def test_links_fails_on_missing_inpage_anchor(self):
-        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), '<a href="#zzz">x</a>')})
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), '<a href="#zzz">x</a>')})
         self.assertTrue(rule(check(root), "links"))
 
     def test_overview_checklist_fails_with_six_items_or_no_submit(self):
@@ -148,13 +173,14 @@ class CheckCapstoneTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as t2:
             self.assertTrue(rule(check(make_site(t2, with_submit=False)), "overview_checklist"))
 
-    def test_time_budget_fails_when_r1_over_110(self):
-        root = make_site(self.tmp, r1a_minutes=[60, 55])
-        msgs = check(root)
-        self.assertTrue(any(m.startswith("time_budget") and "R1A" in m for m in msgs))
+    def test_time_budget_fails_when_r1_plus_setup_over_110(self):
+        # 50 + 46 = 96 page minutes, + 15 SETUP = 111 > 110
+        msgs = check(make_site(self.tmp, r1a_minutes=[50, 46]))
+        self.assertTrue(any(m.startswith("time_budget") and "R1A" in m and "SETUP" in m
+                            for m in msgs))
 
-    def test_time_budget_r1_exactly_110_passes(self):
-        self.assertFalse(rule(check(make_site(self.tmp, r1a_minutes=[60, 50])), "time_budget"))
+    def test_time_budget_r1_95_plus_setup_passes(self):
+        self.assertFalse(rule(check(make_site(self.tmp, r1a_minutes=[50, 45])), "time_budget"))
 
     def test_time_budget_r2_uses_package_plus_two_largest(self):
         # package 60, missions 70/60/20 -> 60+70+60 = 190 > 180
@@ -169,7 +195,7 @@ class CheckCapstoneTest(unittest.TestCase):
 
     def test_time_budget_flags_missing_or_wrong_round(self):
         root = make_site(self.tmp, extra={
-            R1_PAGES[0]: page(None, (50, 50)),
+            R1_PAGES[0]: page(None, (50, 45)),
             R2_PAGES[1]: page("R1", (30, 30))})
         msgs = rule(check(root), "time_budget")
         self.assertTrue(any(R1_PAGES[0] in m and "data-round" in m for m in msgs))
@@ -177,7 +203,7 @@ class CheckCapstoneTest(unittest.TestCase):
 
     def test_time_budget_still_budgets_page_without_round(self):
         root = make_site(self.tmp, extra={R1_PAGES[0]: page(None, (60, 55))})
-        self.assertTrue(any("R1A is 115" in m for m in check(root)))
+        self.assertTrue(any("R1A is 115" in m for m in check(root)))  # page minutes
 
     def test_time_budget_flags_bad_data_min(self):
         body = ('<section class="task" id="bad1">x</section>'
@@ -215,7 +241,7 @@ class CheckCapstoneTest(unittest.TestCase):
         self.assertTrue(rule(check(root), "secret_scan"))
 
     def test_secret_scan_flags_aws_key_in_page(self):
-        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), "<p>AKIAABCDEFGHIJKLMNOP</p>")})
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), "<p>AKIAABCDEFGHIJKLMNOP</p>")})
         self.assertTrue(rule(check(root), "secret_scan"))
 
     def test_secret_scan_allows_angle_and_sample(self):

@@ -28,6 +28,12 @@ R2_PACKAGE = NEW_PAGES[4]
 R2_PAGES = NEW_PAGES[4:]
 SETUP_PAGE = "ClaudeCode_Capstone_Setup.html"
 BUDGET = {"R1": 110, "R2": 180}
+# SETUP (Capstone Setup page) runs at the start of R1 and uses part of its 110 minutes.
+SETUP_MINUTES = 15
+# The R1-A kit restore must match the Ch3 lab (public bucket, unsigned download).
+KIT_REFERENCE = "ClaudeCode_Ch3_HandsOnLab.html"
+KIT_LINE_RE = re.compile(r"^\s*KIT=[\"']?(s3://[^\s\"'<>()]*mydata-kit\.zip)", re.M)
+S3_CP_KIT_RE = re.compile(r"\baws s3 cp\s+((?:--?[\w-]+\s+)*)[\"']?\$\{?KIT\}?[\"']?(?:\s|$)")
 
 SECRET_PATTERNS = [
     re.compile(r"[0-9a-f]{30,}"),
@@ -186,9 +192,11 @@ def check_time_budget(trees):
                         f"(found {found!r})")
         minutes[name] = task_minutes(trees[name], name, msgs)
     for name in R1_PAGES:
-        if name in minutes and minutes[name] > BUDGET["R1"]:
+        if name in minutes and minutes[name] + SETUP_MINUTES > BUDGET["R1"]:
             short = name.split("_")[2]
-            msgs.append(f"time_budget: {short} is {minutes[name]} min, over {BUDGET['R1']}")
+            msgs.append(f"time_budget: {short} is {minutes[name]} min + SETUP "
+                        f"{SETUP_MINUTES} = {minutes[name] + SETUP_MINUTES}, "
+                        f"over {BUDGET['R1']}")
     if R2_PACKAGE in minutes:
         missions = sorted((minutes[n] for n in R2_PAGES[1:] if n in minutes), reverse=True)
         total = minutes[R2_PACKAGE] + sum(missions[:2])
@@ -272,7 +280,7 @@ def check_r1a_restore(root, trees):
         return []
     step = find_id(tree, "task-00")
     pres = [e for e in step.walk() if e.tag == "pre"] if step is not None else []
-    blob = "".join(text_of(e) for e in pres)
+    blob = "\n".join(text_of(e) for e in pres)
     msgs = []
     if step is None:
         return [f'r1a_restore: {name} has no id="task-00" step']
@@ -280,6 +288,21 @@ def check_r1a_restore(root, trees):
         msgs.append(f"r1a_restore: {name} step 00 <pre> does not check ~/claude-lab/mydata/pseudo")
     if "mydata-kit.zip" not in blob:
         msgs.append(f"r1a_restore: {name} step 00 <pre> does not download mydata-kit.zip")
+    ref_path = root / KIT_REFERENCE
+    ref = None
+    if ref_path.is_file():
+        ref_pres = "\n".join(text_of(e) for e in elements(parse(ref_path)) if e.tag == "pre")
+        ref = KIT_LINE_RE.search(ref_pres)
+    if ref is None:
+        msgs.append(f"r1a_restore: cannot read the KIT= line from {KIT_REFERENCE}")
+    else:
+        kits = KIT_LINE_RE.findall(blob)
+        if kits != [ref.group(1)]:
+            msgs.append(f"r1a_restore: {name} step 00 KIT= {kits} does not match "
+                        f"{KIT_REFERENCE} ({ref.group(1)})")
+    cps = S3_CP_KIT_RE.findall(blob)
+    if not cps or any("--no-sign-request" not in flags.split() for flags in cps):
+        msgs.append(f'r1a_restore: {name} step 00 must run aws s3 cp --no-sign-request "$KIT"')
     return msgs
 
 

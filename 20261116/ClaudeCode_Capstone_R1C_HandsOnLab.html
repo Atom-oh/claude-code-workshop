@@ -664,7 +664,7 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 
 <header class="hero">
   <span class="eyebrow">HANDS-ON LAB / CAPSTONE R1-C</span>
-  <p class="round" data-round="R1">R1 · Day 1 · 110분</p>
+  <p class="round" data-round="R1">R1 · Day 1 · 110분 (처음 15분은 SETUP, 이 페이지의 단계는 95분)</p>
   <h1>R1-C 내가 고른 MCP: 이미 있는 MCP 서버 위에 에이전트와 가드레일 세우기</h1>
   <div class="subtitle">제공처가 공식으로 내놓은 MCP 서버를 하나 골라 연결하고, 그 데이터를 다루는 agent 2개와 MCP 허용 목록, 외부 호출 범위 가드레일을 만든다</div>
   <p class="lede">
@@ -704,10 +704,10 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 <aside class="sidenav" aria-label="목차">
   <div class="nav-title">R1-C</div>
   <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 고르기와 연결<span class="nav-time">20분</span></a>
-  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 자기 agent 2개<span class="nav-time">25분</span></a>
+  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 자기 agent 2개<span class="nav-time">20분</span></a>
   <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 가드레일<span class="nav-time">25분</span></a>
-  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 막히는 것 확인<span class="nav-time">25분</span></a>
-  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 R1 정리<span class="nav-time">15분</span></a>
+  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 막히는 것 확인<span class="nav-time">20분</span></a>
+  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 R1 정리<span class="nav-time">10분</span></a>
 </aside>
 
 <main>
@@ -891,8 +891,8 @@ claude mcp list</code></pre>
   </div>
 </section>
 
-<section class="task" id="task-01" data-min="25">
-  <div class="task-head"><span class="task-num">01</span><h2>자기 agent 2개</h2><span class="time-badge">25분</span></div>
+<section class="task" id="task-01" data-min="20">
+  <div class="task-head"><span class="task-num">01</span><h2>자기 agent 2개</h2><span class="time-badge">20분</span></div>
   <p class="task-goal">고른 서버의 자료를 찾아 정리하는 agent와, 그 결과의 근거를 다시 확인하는 읽기 전용 검토 agent를 만듭니다.</p>
   <p class="body">agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일입니다. <code class="inline">tools</code>에는 고른 서버의 도구를 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code>으로 적고, 적지 않은 도구(쓰기, Bash, 웹, 다른 MCP 서버)는 쓸 수 없습니다. 아래 블록은 <code class="inline">r1c-choice.env</code>의 <code class="inline">SRV</code>와 <code class="inline">TOOLS</code>를 채워 두 파일을 만듭니다. 이름과 기준은 예시이고, 같은 틀 안에서 고쳐도 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>조사 agent와 검토 agent</div>
@@ -1107,7 +1107,7 @@ jq -n --arg srv "$SRV" --arg net "$NET_ALLOW" --arg h "$H" --argjson entry "$ALL
   <p class="body">설정은 세션을 다시 열어야 적용됩니다. 이 폴더에서는 허용 목록에 없는 서버가 <strong>모두</strong> 목록에서 빠집니다. 사용자 범위로 등록해 둔 서버와 Setup에서 설치한 plugin이 내놓는 MCP 서버도 이 폴더에서는 보이지 않는데, 이것이 의도한 동작입니다. R2에서 plugin으로 묶을 때도 plugin 안의 MCP 서버 주소나 명령이 이 항목과 같아야 연결됩니다.</p>
   <div class="callout warn">
     <span class="co-title">훅이 보지 못하는 것</span>
-    훅은 Claude가 부르는 도구의 <strong>입력 문자열</strong>만 봅니다. MCP 서버 자신이 밖으로 보내는 요청(로컬 서버 프로세스의 호출, 원격 서버 뒤쪽의 호출)과 명령의 결과, 스킴 없이 쓴 호스트, 변수로 조립한 URL은 보지 못합니다. 그래서 어떤 서버에 붙을지를 허용 목록으로 묶고, agent의 <code class="inline">tools</code>에서 Bash와 웹 도구를 빼 둡니다. 명령 단위의 네트워크 차단이 필요하면 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2</a>의 선택 TASK 04(sandbox)를 겹칩니다.
+    훅은 Claude가 부르는 도구의 <strong>입력 문자열</strong>만 봅니다. MCP 서버 자신이 밖으로 보내는 요청(로컬 서버 프로세스의 호출, 원격 서버 뒤쪽의 호출)과 명령의 결과, 스킴 없이 쓴 호스트, 변수로 조립한 URL은 보지 못합니다. 그래서 어떤 서버에 붙을지를 허용 목록으로 묶고, agent의 <code class="inline">tools</code>에서 Bash와 웹 도구를 빼 둡니다. 명령 단위의 네트워크 차단이 필요하면 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2</a>의 선택 TASK 04(sandbox)를 겹칩니다. MCP 서버가 <strong>돌려준 응답</strong>도 이 훅들은 검사하지 않으므로, 응답에 섞인 개인정보나 민감한 내용은 agent 지시문(개인정보, 키, 토큰 값을 쓰지 않는다)과 <code class="inline">evidence-reviewer</code>의 검토로만 걸러집니다.
   </div>
   <div class="callout tip">
     <span class="co-title">조직이 강제하려면</span>
@@ -1120,8 +1120,8 @@ jq -n --arg srv "$SRV" --arg net "$NET_ALLOW" --arg h "$H" --argjson entry "$ALL
   </div>
 </section>
 
-<section class="task" id="task-03" data-min="25">
-  <div class="task-head"><span class="task-num">03</span><h2>막히는 것 확인</h2><span class="time-badge">25분</span></div>
+<section class="task" id="task-03" data-min="20">
+  <div class="task-head"><span class="task-num">03</span><h2>막히는 것 확인</h2><span class="time-badge">20분</span></div>
   <p class="task-goal">목록 밖 서버의 연결 시도, 다른 호스트 호출이 실제로 막히고, 고른 서버를 쓰는 정상 요청은 통과하는지 직접 봅니다.</p>
   <p class="body">가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>목록 밖 서버 연결 시도</div>
@@ -1150,15 +1150,10 @@ exit=1
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; claude</code></pre>
   </div>
   <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Claude 세션 입력 1/2, 다른 호스트 호출</span><button class="copy-btn" type="button">복사</button></div>
+    <div class="code-head"><span class="code-label">Claude 세션 입력, 다른 호스트 호출</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>curl로 https://example.com 의 첫 줄을 가져와 주세요</code></pre>
   </div>
-  <p class="body">도구 호출 단계에서 <code class="inline">NET: 허용되지 않은 호출 대상(example.com)</code>이 나와야 합니다.</p>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Claude 세션 입력 2/2, 웹 검색</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>웹 검색으로 오늘 원/달러 환율을 찾아 주세요</code></pre>
-  </div>
-  <p class="body">웹 검색 도구가 deny 규칙으로 없어져 있어서, Claude가 웹 검색을 쓸 수 없다고 답하거나 고른 MCP 서버로 대신 찾겠다고 해야 합니다. 어느 겹이 막았는지(<code class="inline">NET</code> 메시지, deny 규칙, 허용 목록) 적어 둡니다.</p>
+  <p class="body">도구 호출 단계에서 <code class="inline">NET: 허용되지 않은 호출 대상(example.com)</code>이 나와야 합니다. 웹 검색은 02의 deny 규칙으로 빠져 있고, R2 공통 단계에서 plugin을 설치한 뒤 한 번 더 확인합니다.</p>
   <div class="step-title"><span class="step-no">3</span>통과해야 하는 요청</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
@@ -1187,14 +1182,14 @@ ls .claude/hooks</code></pre>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox"><span>목록 밖 서버 두 개의 등록이 <code>not allowed by enterprise policy</code>로 막혔다</span></label>
-    <label class="cp-item"><input type="checkbox"><span>다른 호스트 호출이 막혔고, 웹 검색은 쓸 수 없었다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>다른 호스트 호출이 막혔다</span></label>
     <label class="cp-item"><input type="checkbox"><span>고른 서버와 agent를 거치는 정상 요청은 통과했다</span></label>
     <label class="cp-item"><input type="checkbox"><span>스크립트를 치웠을 때도 막혔고, 스크립트를 되돌렸다</span></label>
   </div>
 </section>
 
-<section class="task" id="task-04" data-min="15">
-  <div class="task-head"><span class="task-num">04</span><h2>R1 정리</h2><span class="time-badge">15분</span></div>
+<section class="task" id="task-04" data-min="10">
+  <div class="task-head"><span class="task-num">04</span><h2>R1 정리</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">CLAUDE.md를 짧게 정리하고, 작업 폴더에 키나 토큰이 없는지 확인한 뒤 쇼케이스 1 공유 문구를 준비합니다.</p>
   <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게, 그리고 키 검사</div>
   <div class="code-wrap">

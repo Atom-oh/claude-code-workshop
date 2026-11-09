@@ -664,7 +664,7 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 
 <header class="hero">
   <span class="eyebrow">HANDS-ON LAB / CAPSTONE R1-B</span>
-  <p class="round" data-round="R1">R1 · Day 1 · 110분</p>
+  <p class="round" data-round="R1">R1 · Day 1 · 110분 (처음 15분은 SETUP, 이 페이지의 단계는 95분)</p>
   <h1>R1-B 서울 부동산 시세: 공공데이터 MCP와 에이전트, 가드레일 만들기</h1>
   <div class="subtitle">서울 열린데이터광장의 실거래가 API를 내 MCP 서버로 감싸고, 그 위에 agent 2개와 키를 지키는 가드레일을 세운다</div>
   <p class="lede">
@@ -706,11 +706,11 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 <aside class="sidenav" aria-label="목차">
   <div class="nav-title">R1-B</div>
   <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 키 발급 신청<span class="nav-time">5분</span></a>
-  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 골격 받기와 mock 연결<span class="nav-time">20분</span></a>
-  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 자기 agent 2개<span class="nav-time">25분</span></a>
+  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 골격 받기와 mock 연결<span class="nav-time">15분</span></a>
+  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 자기 agent 2개<span class="nav-time">20분</span></a>
   <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 가드레일<span class="nav-time">25분</span></a>
   <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 막히는 것 확인<span class="nav-time">15분</span></a>
-  <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 실호출로 전환<span class="nav-time">10분</span></a>
+  <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 실호출로 전환<span class="nav-time">5분</span></a>
   <a href="#task-06" data-nav="task-06"><span class="dot"></span>06 R1 정리<span class="nav-time">10분</span></a>
 </aside>
 
@@ -736,8 +736,8 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
   </div>
 </section>
 
-<section class="task" id="task-01" data-min="20">
-  <div class="task-head"><span class="task-num">01</span><h2>골격 받기와 mock 연결</h2><span class="time-badge">20분</span></div>
+<section class="task" id="task-01" data-min="15">
+  <div class="task-head"><span class="task-num">01</span><h2>골격 받기와 mock 연결</h2><span class="time-badge">15분</span></div>
   <p class="task-goal">MCP 서버 골격 세 파일을 받고, 가상환경에 <code class="inline">mcp</code>를 설치한 뒤 mock 모드로 Claude Code에 연결합니다.</p>
   <p class="body">골격은 <code class="inline">server.py</code>(MCP 서버, 도구 <code class="inline">search_trades</code> 하나), <code class="inline">sample.json</code>(합성 데이터 90행, 자치구 5개, 2026년 9월과 10월), <code class="inline">README.md</code>(API 명세 요약과 출처)입니다. 샘플의 필드 이름은 실제 API 응답과 같으므로 mock에서 만든 agent가 실호출에서도 그대로 동작합니다. 금액은 지어낸 값이고 건물명은 모두 "샘플"로 시작합니다.</p>
   <div class="step-title"><span class="step-no">1</span>골격 받기</div>
@@ -783,7 +783,7 @@ claude mcp list</code></pre>
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>seoul-realestate MCP의 search_trades로 강남구 202609 거래 5건을 표로 보여 주세요. 금액은 만원, 면적은 ㎡입니다.</code></pre>
   </div>
-  <p class="body">처음 부를 때 도구 사용 허락을 묻습니다. <code class="inline">/mcp</code>로 서버 상태와 도구 목록도 볼 수 있습니다.</p>
+  <p class="body">처음 부를 때 도구 사용 허락을 묻습니다.</p>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox"><span><code>claude mcp list</code>에서 <code>seoul-realestate</code>가 연결됨으로 보인다</span></label>
@@ -791,8 +791,8 @@ claude mcp list</code></pre>
   </div>
 </section>
 
-<section class="task" id="task-02" data-min="25">
-  <div class="task-head"><span class="task-num">02</span><h2>자기 agent 2개</h2><span class="time-badge">25분</span></div>
+<section class="task" id="task-02" data-min="20">
+  <div class="task-head"><span class="task-num">02</span><h2>자기 agent 2개</h2><span class="time-badge">20분</span></div>
   <p class="task-goal">시세를 정리하는 agent와, 이상 거래 후보를 찾는 읽기 전용 검토 agent를 만듭니다. 두 agent 모두 도구를 MCP 도구와 읽기로 좁힙니다.</p>
   <p class="body">agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일입니다. MCP 도구는 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code> 형식으로 <code class="inline">tools</code>에 적습니다. 이 서버라면 <code class="inline">mcp__seoul-realestate__search_trades</code>입니다. <code class="inline">tools</code>를 적으면 그 밖의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다. 아래 이름과 기준은 예시이고, 같은 틀 안에서 주제를 바꿔도 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>시세 정리: price-summarizer</div>
@@ -866,7 +866,7 @@ EOF</code></pre>
     <pre><code>price-summarizer 에이전트로 마포구 202609 시세를 정리해 주세요.
 이어서 anomaly-checker 에이전트로 같은 조건의 이상 거래 후보를 찾아 주세요.</code></pre>
   </div>
-  <p class="body">샘플에는 이상 거래 실습용으로 눈에 띄는 행을 몇 개 일부러 넣어 두었습니다. 마포구 202609에서는 ㎡당 금액이 중앙값의 2배를 넘는 오피스텔 한 건이 후보로 나와야 합니다. 다른 조합(강남구 202609, 송파구 202610, 노원구 202610)도 시험해 봅니다.</p>
+  <p class="body">샘플에는 이상 거래 실습용으로 눈에 띄는 행을 몇 개 일부러 넣어 두었습니다. 마포구 202609에서는 ㎡당 금액이 중앙값의 2배를 넘는 오피스텔 한 건이 후보로 나와야 합니다.</p>
   <table class="tbl"><thead><tr><th>agent</th><th>tools</th><th>이유</th></tr></thead><tbody>
     <tr><td><code class="inline">price-summarizer</code></td><td><code class="inline">mcp__seoul-realestate__search_trades, Read</code></td><td>조회와 요약만 한다. 저장은 메인이 한다</td></tr>
     <tr><td><code class="inline">anomaly-checker</code></td><td><code class="inline">mcp__seoul-realestate__search_trades, Read, Grep</code></td><td>검토만 한다. 쓰기, Bash, 웹 도구가 없다</td></tr>
@@ -1051,8 +1051,8 @@ ls .claude/hooks</code></pre>
   </div>
 </section>
 
-<section class="task" id="task-05" data-min="10">
-  <div class="task-head"><span class="task-num">05</span><h2>실호출로 전환</h2><span class="time-badge">10분</span></div>
+<section class="task" id="task-05" data-min="5">
+  <div class="task-head"><span class="task-num">05</span><h2>실호출로 전환</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">키가 나오면 MCP 등록만 바꿔 실데이터로 전환합니다. agent와 훅은 그대로입니다.</p>
   <p class="body">키는 명령에 직접 쓰지 않고 <code class="inline">read -rs</code>로 받습니다(화면에 보이지 않고 셸 기록에 남지 않음). 붙여 넣고 Enter를 누릅니다. 등록이 끝나면 변수를 지우고, 키는 <code class="inline">~/.claude.json</code>에만 남습니다. Claude 세션 밖의 터미널에서 합니다.</p>
   <div class="code-wrap">
