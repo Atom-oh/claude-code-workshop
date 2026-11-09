@@ -150,6 +150,32 @@ class CheckLabsTest(unittest.TestCase):
         self.assertEqual(len(errs), 1)
         self.assertTrue(errs[0].startswith(name + ": rule 4"))
 
+    def test_rule3_requires_real_download_command(self):
+        name = "ClaudeCode_Ch1_HandsOnLab.html"
+        msg = name + ": rule 3: TASK 00 lacks aws s3 cp of mydata-kit.zip"
+        prose = "<p>aws s3 cp is used; kit at %s</p>" % URL
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=prose)})), [msg])
+        other = '<pre>aws s3 cp s3://other/x.zip /tmp/x.zip</pre><p>%s</p>' % URL
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=other)})), [msg])
+        pre = "ClaudeCode_Preflight_Check.html"
+        errs = self.run_check(full_set(**{pre: "<html><p>aws s3 cp %s</p></html>" % URL}))
+        self.assertEqual(errs, [pre + ": rule 3: no aws s3 cp of mydata-kit.zip"])
+        for cp in ('"$KIT"', "$KIT"):
+            ok = "<pre>KIT=%s\n[ -d x ] || (aws s3 cp %s /tmp/k.zip)</pre>" % (URL, cp)
+            self.assertEqual(self.run_check(full_set(**{name: page(task00=ok)})), [], cp)
+        split = "<pre>KIT=%s</pre><pre>aws s3 cp \"$KIT\" /tmp/k.zip</pre>" % URL
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=split)})), [msg])
+
+    def test_stale_curl_only_in_code(self):
+        name = "ClaudeCode_Ch1_HandsOnLab.html"
+        stale = name + ": rule 6: stale curl kit download"
+        prose = RESTORE + "<p>Do not use curl for mydata-kit.zip.</p>"
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=prose)})), [])
+        multi = RESTORE + '<pre>curl -fsSL "$URL" \\\n  -o /tmp/mydata-kit.zip</pre>'
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=multi)})), [stale])
+        single = RESTORE + '<pre>curl -fsSL &quot;$URL&quot; -o /tmp/mydata-kit.zip</pre>'
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=single)})), [stale])
+
     def test_time_budget_within_tolerance(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"
         rev = self.commit(full_set(**{name: page(minutes=5)}))

@@ -37,9 +37,12 @@ MYDATA = "~/claude-lab/mydata"
 MYDATA_RE = re.compile(re.escape(MYDATA) + r"(/[A-Za-z0-9_./*-]*)?")
 KIT_URI_RE = re.compile(r"s3://[^\s\"'<>()]*mydata-kit\.zip")
 # Rule 6: leftovers of the retired curl/signed-URL download.
-STALE_KIT_RE = re.compile(
-    r"https?://[^\s\"'<>()]*(?:MYDATA_KIT_URL|mydata-kit\.zip)|curl\b[^\n]*mydata-kit\.zip"
-)
+STALE_URL_RE = re.compile(r"https?://[^\s\"'<>()]*(?:MYDATA_KIT_URL|mydata-kit\.zip)")
+CURL_KIT_RE = re.compile(r"\bcurl\b.*mydata-kit\.zip")
+PRE_RE = re.compile(r"<pre\b[^>]*>(.*?)</pre>", re.S)
+KIT_VAR_RE = re.compile(r"^\s*KIT=[\"']?" + KIT_URI_RE.pattern, re.M)
+S3_CP_RE = re.compile(r"\baws s3 cp\b")
+S3_CP_VAR_RE = re.compile(r"\baws s3 cp\s+[\"']?\$\{?KIT\}?[\"']?(?:\s|$)")
 # Rule 4: required TASK minutes may exceed the baseline by this much.
 TIME_TOLERANCE_MIN = 30
 PAT_RE = re.compile(r"PAT='([^']*)'")
@@ -50,6 +53,32 @@ GUARDRAILS = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"
 
 def _text(fragment):
     return html.unescape(re.sub(r"<[^>]+>", "", fragment)).strip()
+
+
+def code_blocks(fragment):
+    """Unescaped <pre> contents with backslash line continuations joined."""
+    blocks = []
+    for m in PRE_RE.finditer(fragment):
+        block = html.unescape(re.sub(r"<[^>]+>", "", m.group(1)))
+        blocks.append(re.sub(r"\\[ \t]*\n\s*", " ", block))
+    return blocks
+
+
+def downloads_kit(fragment):
+    """True if a code block runs aws s3 cp on the kit object itself."""
+    for block in code_blocks(fragment):
+        for line in block.splitlines():
+            if S3_CP_RE.search(line) and KIT_URI_RE.search(line):
+                return True
+        if KIT_VAR_RE.search(block) and S3_CP_VAR_RE.search(block):
+            return True
+    return False
+
+
+def has_stale_download(fragment):
+    if STALE_URL_RE.search(html.unescape(fragment)):
+        return True
+    return any(CURL_KIT_RE.search(line) for b in code_blocks(fragment) for line in b.splitlines())
 
 
 def _sections(raw):
@@ -131,10 +160,10 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
 
         found = set(KIT_URI_RE.findall(text))
         urls[name] = found
-        if STALE_KIT_RE.search(text):  # rule 6
+        if has_stale_download(raw):  # rule 6
             err(6, "stale curl kit download")
         if name == PREFLIGHT:  # rule 3 (fallback only)
-            if not ("aws s3 cp" in text and found):
+            if not downloads_kit(raw):
                 err(3, "no aws s3 cp of mydata-kit.zip")
         else:
             task00 = next((body for h, body in _sections(raw) if h.startswith("TASK 00")), None)
@@ -145,7 +174,7 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
                 for ck in RESTORE.get(name, []):
                     if "%s/checkpoints/%s" % (MYDATA, ck) not in t00:
                         err(3, "TASK 00 lacks restore of %s/checkpoints/%s" % (MYDATA, ck))
-                if not ("aws s3 cp" in t00 and KIT_URI_RE.search(t00)):
+                if not downloads_kit(task00):
                     err(3, "TASK 00 lacks aws s3 cp of mydata-kit.zip")
 
         if name != PREFLIGHT:  # rule 4
