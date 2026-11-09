@@ -703,12 +703,12 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
 
   <div class="step-title"><span class="step-no">R</span>챕터 연결 지도, 배운 내용이 재등장하는 곳</div>
   <table class="tbl">
-    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 설치부터 Headless까지</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
-    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Subagents</a></td><td>M2~M3: 수집기 리뷰를 code-reviewer에게, 그리드와 상태 바 병행</td></tr>
-    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Admin Setup</a></td><td>M4: Bearer 자격과 Secrets 주입이 도는 통제선의 배경</td></tr>
-    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Settings, 훅과 스킬</a></td><td>OPT: 하네스 성숙화, 훅과 스킬의 프로젝트 자산화</td></tr>
-    <tr><td><a href="ClaudeCode_Ch5_HandsOnLab.html" style="color:#c9a2ff">Ch5 CLI Reference</a></td><td>확장 방향: 아침 렌즈를 헤드리스로 뽑아 Slack에 배달하는 파이프라인</td></tr>
-    <tr><td><a href="ClaudeCode_Ch6_HandsOnLab.html" style="color:#c9a2ff">Ch6 Agent SDK</a></td><td>확장 방향: 렌즈 생성을 코드에서 부르는 상주 미디어 데스크</td></tr>
+    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 Claude Code는 어떻게 동작하는가</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
+    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: Bearer 자격과 Secrets 주입이 도는 통제선의 배경</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Subagent로 일 나눠 맡기기</a></td><td>M2~M3: 수집기 리뷰를 code-reviewer에게, 그리드와 상태 바 병행</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Headless 통합과 CI</a></td><td>확장 방향: 아침 렌즈를 헤드리스로 뽑아 Slack에 배달하는 파이프라인</td></tr>
+    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Claude Code 확장하기</a></td><td>OPT: 하네스 성숙화, 훅과 스킬의 프로젝트 자산화</td></tr>
+    <tr><td><a href="ClaudeCode_AgentSDK_HandsOnLab.html" style="color:#c9a2ff">SDK Agent SDK 자율 실습</a></td><td>확장 방향: 렌즈 생성을 코드에서 부르는 상주 미디어 데스크</td></tr>
   </table>
   <div class="callout tip">
     <span class="co-title">규칙, 캡스톤 공통</span>
@@ -856,7 +856,7 @@ aws sts get-caller-identity --query Account --output text</code></pre>
 <section class="task" id="m2">
   <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 수집기와 스토어</h2><span class="time-badge">30분</span></div>
   <p class="task-goal">4개 피드가 <strong>같은 모양으로 정규화되어</strong> 쌓이고, 한 피드가 죽어도 나머지가 살면 끝입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 code-reviewer에게 정규화 로직 리뷰를 맡겨 보세요.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 code-reviewer에게 정규화 로직 리뷰를 맡겨 보세요.</p>
 
   <div class="callout tip">
     <span class="co-title">2시간의 열쇠, 인프라 선배포</span>
@@ -894,7 +894,7 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
 <section class="task" id="m3">
   <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2, 뉴스룸 그리드</h2><span class="time-badge">30분</span></div>
   <p class="task-goal">4열 그리드에 <strong>세계의 지금이 나란히</strong> 뜨면, 비교의 무대가 완성됩니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 병렬 감각. 그리드를 만드는 동안 소스 상태 바를 서브에이전트로 병행할 수 있습니다.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 병렬 감각. 그리드를 만드는 동안 소스 상태 바를 서브에이전트로 병행할 수 있습니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 2를 구현해줘. frontend/index.html 정적 SPA 한 장: 요구 7의 기본 뷰(듀얼 테마, 소스 상태 바, 4열 카드 그리드 - 매체명 헤더, 헤드라인, 상대 시각, 원문 새 탭 링크). 모바일에서는 2열로 접히게. FastAPI 정적 서빙 mount까지.</code></pre>
@@ -919,7 +919,7 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 3 + 4, 렌즈와 개장</h2><span class="time-badge">40분</span></div>
   <p class="task-goal"><strong>LLM의 JSON이 그대로 화면이 되고</strong>, 내 CloudFront URL이 열리면 미션 완료입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 본 Bedrock 자격과 Secrets 주입의 배경, 그 위에서 도는 REST 계약.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 자격과 Secrets 주입의 배경, 그 위에서 도는 REST 계약.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 렌즈</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 3(렌즈)을 구현해줘. llm 모듈: httpx POST converse(Bearer, maxTokens 1500, 타임아웃 504/파싱 502), 시스템 프롬프트에 요구 6의 JSON 스키마와 "JSON 외 출력 금지, 코드펜스 금지"를 명시, 응답은 json.loads 전에 백틱/여백 방어적 제거. POST /api/lens(10분 버킷 캐시). 화면 렌즈 뷰: 토픽 카드에 공통 요약 + 4개 프레임 나란히, 미보도 회색, sources 인덱스로 근거 기사 링크 칩, 뷰 전환 토글.</code></pre>

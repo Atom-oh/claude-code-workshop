@@ -1,12 +1,12 @@
 ---
 remarp: true
-block: ch5-plugins-mods
+block: ch4-extending
 ---
 <!-- Slide 1: Cover (PDF p1) -->
 @type: cover
 @background: linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%)
 
-# Chapter 5. Plugins & Mods
+# Chapter 4. Claude Code 확장하기
 ## 나의 Claude Code를 팀의 플랫폼으로 (2026.11, Claude Code v2.1.319, Bedrock 기준)
 Choi, WooHyung
 Prin. Solutions Architect
@@ -19,12 +19,12 @@ AWS Korea
 :::notes
 {timing: 0.5min}
 [요약]
-• Chapter 5, Plugins와 Mods
+• Chapter 4, Claude Code 확장하기 (Plugins와 Mods)
 • 개인이 쌓은 설정을 팀의 플랫폼으로 묶어 배포하는 챕터
 • 2026년 11월, Claude Code v2.1.319 (2026-11-08 리허설 검증), Amazon Bedrock 기준
 
-둘째 날 첫 챕터, Plugins와 Mods를 시작하겠습니다.
-어제 Ch3에서 만든 DLP 훅과 Ch4에서 만든 Subagent를 오늘은 플러그인 하나로 묶어서 팀 전체에 배포합니다.
+둘째 날 첫 챕터, Claude Code 확장하기를 시작하겠습니다. 도구는 Plugins와 Mods입니다.
+어제 Ch2에서 만든 DLP 훅과 Ch3에서 만든 Subagent를 오늘은 플러그인 하나로 묶어서 팀 전체에 배포합니다.
 그리고 Claude Code 안에서 직접 도는 코드인 mod까지 다룹니다.
 
 {cue: transition}
@@ -117,7 +117,7 @@ AWS Korea
 
 :::html
 <div class="fsi fsi-statement">
-  <span class="eyebrow">CHAPTER 05</span>
+  <span class="eyebrow">CHAPTER 04</span>
   <div class="big">Plugins <em>&amp;</em> Mods</div>
   <p class="lead">스킬, Subagent, 훅, <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 Claude가 쓰는 도구로 붙이는 표준">MCP</span>, mod를 한 번에 배포합니다.</p>
 </div>
@@ -142,7 +142,7 @@ AWS Korea
 
 :::html
 <div class="fsi fsi-section">
-  <span class="num">CHAPTER 05 / PART 01</span>
+  <span class="num">CHAPTER 04 / PART 01</span>
   <div class="name">Plugins</div>
   <p class="what">팀의 작업 방식을 묶어 배포하는 단위</p>
   <ol>
@@ -188,10 +188,10 @@ AWS Korea
   </div>
   <div class="panel" data-pick-panel="c5-ext">
     <p class="hint">CLAUDE.md는 managed CLAUDE.md나 저장소로,<br>나머지 5종은 한 디렉터리에 담아 플러그인으로 배포합니다.<br>하나를 누르면 언제 쓰는지 나옵니다.</p>
-    <div data-for="md"><h4>CLAUDE.md</h4><p><b>항상 알아야 할 짧은 지침</b>을 둘 때 씁니다.</p><p>플러그인이 아니라 <b>managed CLAUDE.md나 저장소</b>로 배포합니다. 매 요청에 실리기 때문에 짧게 유지합니다 (Ch1, Ch6).</p></div>
+    <div data-for="md"><h4>CLAUDE.md</h4><p><b>항상 알아야 할 짧은 지침</b>을 둘 때 씁니다.</p><p>플러그인이 아니라 <b>managed CLAUDE.md나 저장소</b>로 배포합니다. 매 요청에 실리기 때문에 짧게 유지합니다 (Ch1, Ch5).</p></div>
     <div data-for="skill"><h4>스킬</h4><p><b>같은 지시를 반복할 때</b> 씁니다. 필요할 때만 로드됩니다.</p><p>예: 팀의 PR 리뷰 절차</p></div>
-    <div data-for="sub"><h4>Subagent</h4><p><b>역할과 도구를 나눠 맡길 때</b> 씁니다.</p><p>예: Ch4에서 만든 code-reviewer</p></div>
-    <div data-for="hook"><h4>훅</h4><p><b>이벤트에 스크립트로 막거나 기록할 때</b> 씁니다.</p><p>예: Ch3의 DLP 훅</p></div>
+    <div data-for="sub"><h4>Subagent</h4><p><b>역할과 도구를 나눠 맡길 때</b> 씁니다.</p><p>예: Ch3에서 만든 code-reviewer</p></div>
+    <div data-for="hook"><h4>훅</h4><p><b>이벤트에 스크립트로 막거나 기록할 때</b> 씁니다.</p><p>예: Ch2의 DLP 훅</p></div>
     <div data-for="mcp"><h4>MCP</h4><p><b>외부 시스템에 닿아야 할 때</b> 씁니다.</p><p>외부로 나가는 채널이라 반출 채널 검토 대상입니다.</p></div>
     <div data-for="mod"><h4>mod</h4><p><b>화면, 커맨드, 이벤트 자체를 바꿀 때</b> 씁니다.</p><p>Part 3에서 자세히 다룹니다.</p></div>
   </div>
@@ -233,23 +233,23 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 �
     <div class="root">fsi-team-kit/</div>
     <button class="pick" data-key="manifest"><span class="p">.claude-plugin/plugin.json</span><span class="cm">이름, 버전, 설명</span></button>
     <button class="pick" data-key="skills"><span class="p">skills/pr-review/SKILL.md</span><span class="cm">팀 리뷰 절차</span></button>
-    <button class="pick" data-key="agents"><span class="p">agents/code-reviewer.md</span><span class="cm">Ch4에서 만든 것</span></button>
-    <div class="leaf"><span class="p">agents/test-writer.md, docs-writer.md</span><span class="cm">Ch4 건너뛰면 code-reviewer만</span></div>
-    <button class="pick" data-key="hooks"><span class="p">hooks/hooks.json</span><span class="cm">DLP 훅 등록 (Ch3)</span></button>
+    <button class="pick" data-key="agents"><span class="p">agents/code-reviewer.md</span><span class="cm">Ch3에서 만든 것</span></button>
+    <div class="leaf"><span class="p">agents/test-writer.md, docs-writer.md</span><span class="cm">Ch3 건너뛰면 code-reviewer만</span></div>
+    <button class="pick" data-key="hooks"><span class="p">hooks/hooks.json</span><span class="cm">DLP 훅 등록 (Ch2)</span></button>
     <button class="pick" data-key="scripts"><span class="p">scripts/dlp-guard.sh</span><span class="cm">검사 스크립트</span></button>
     <button class="pick extra" data-key="commands"><span class="p">commands/*.md</span><span class="cm">슬래시 커맨드</span></button>
     <button class="pick extra" data-key="mcp"><span class="p">.mcp.json</span><span class="cm">MCP 서버</span></button>
     <p class="cap">점선 두 줄은 이 예시에는 없지만 플러그인에 넣을 수 있는 파일입니다.</p>
   </div>
   <div class="panel" data-pick-panel="c5-tree">
-    <p class="hint">파일을 누르면 무엇이 들어가는지 보여 줍니다. Ch3과 Ch4의 결과물을 그대로 넣고, 설치 한 줄로 동료가 같은 환경을 갖습니다.</p>
+    <p class="hint">파일을 누르면 무엇이 들어가는지 보여 줍니다. Ch2와 Ch3의 결과물을 그대로 넣고, 설치 한 줄로 동료가 같은 환경을 갖습니다.</p>
     <div data-for="manifest"><h4>.claude-plugin/plugin.json</h4><p>플러그인의 이름, 버전, 설명. <b>유일한 필수 파일</b>입니다.</p><p>버전으로 변경 이력을 관리합니다.</p></div>
     <div data-for="skills"><h4>skills/&lt;name&gt;/SKILL.md</h4><p>스킬. <b>설명만 항상 실리고</b> 본문은 필요할 때 로드됩니다.</p><p>예시는 팀의 PR 리뷰 절차입니다.</p></div>
-    <div data-for="agents"><h4>agents/*.md</h4><p>Subagent. <b>Ch4에서 만든 정의를 그대로</b> 넣습니다. code-reviewer, test-writer, docs-writer 세 개입니다.</p><p>Ch4를 건너뛰었다면 code-reviewer만 넣습니다.</p></div>
-    <div data-for="hooks"><h4>hooks/hooks.json</h4><p>훅을 등록하는 곳. Ch3의 <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span> 훅을 여기에 등록합니다.</p><p><b>mod도 같은 hooks/ 아래</b>에 들어가고, 경로는 <code>${CLAUDE_PLUGIN_ROOT}</code>를 씁니다.</p></div>
+    <div data-for="agents"><h4>agents/*.md</h4><p>Subagent. <b>Ch3에서 만든 정의를 그대로</b> 넣습니다. code-reviewer, test-writer, docs-writer 세 개입니다.</p><p>Ch3을 건너뛰었다면 code-reviewer만 넣습니다.</p></div>
+    <div data-for="hooks"><h4>hooks/hooks.json</h4><p>훅을 등록하는 곳. Ch2의 <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span> 훅을 여기에 등록합니다.</p><p><b>mod도 같은 hooks/ 아래</b>에 들어가고, 경로는 <code>${CLAUDE_PLUGIN_ROOT}</code>를 씁니다.</p></div>
     <div data-for="scripts"><h4>scripts/dlp-guard.sh</h4><p>훅이 실행하는 검사 스크립트입니다.</p></div>
     <div data-for="commands"><h4>commands/*.md</h4><p>슬래시 커맨드. <b>스킬로 대체되는 추세</b>입니다.</p></div>
-    <div data-for="mcp"><h4>.mcp.json</h4><p>MCP 서버 정의. 외부로 나가는 길이라 <b>반출 채널 검토 대상</b>입니다 (Ch3).</p></div>
+    <div data-for="mcp"><h4>.mcp.json</h4><p>MCP 서버 정의. 외부로 나가는 길이라 <b>반출 채널 검토 대상</b>입니다 (Ch2).</p></div>
   </div>
 </div>
 :::
@@ -262,14 +262,14 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 �
 {timing: 2.5min}
 [요약]
 • 플러그인은 디렉터리 하나, 필수 파일은 .claude-plugin/plugin.json
-• skills, agents, hooks, scripts 폴더에 Ch3과 Ch4 결과물을 그대로 넣음 (Subagent 3종, Ch4 건너뛰면 code-reviewer만)
+• skills, agents, hooks, scripts 폴더에 Ch2와 Ch3 결과물을 그대로 넣음 (Subagent 3종, Ch3 건너뛰면 code-reviewer만)
 • mod도 같은 hooks/ 아래, 버전으로 변경 이력 관리
 • 설치 한 줄로 동료가 같은 환경
 
 플러그인은 디렉터리 하나입니다. 오늘 랩에서 만들 fsi-team-kit을 예로 보겠습니다.
 {cue: demo}
 맨 위 .claude-plugin 아래 plugin.json에는 이름, 버전, 설명이 들어가고, 이것만 필수입니다.
-skills에는 팀 리뷰 절차 같은 스킬을, agents에는 Ch4에서 만든 code-reviewer, test-writer, docs-writer를, Ch4를 건너뛰셨다면 code-reviewer만 넣습니다. hooks의 hooks.json에는 Ch3의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
+skills에는 팀 리뷰 절차 같은 스킬을, agents에는 Ch3에서 만든 code-reviewer, test-writer, docs-writer를, Ch3을 건너뛰셨다면 code-reviewer만 넣습니다. hooks의 hooks.json에는 Ch2의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
 점선으로 표시한 commands와 .mcp.json도 넣을 수 있습니다. 특히 .mcp.json은 외부로 나가는 길이라 반출 채널 검토 대상입니다.
 버전으로 변경 이력을 관리하고, 설치 한 줄이면 동료가 같은 환경을 갖게 됩니다.
 
@@ -357,7 +357,7 @@ skills에는 팀 리뷰 절차 같은 스킬을, agents에는 Ch4에서 만든 c
 
 :::html
 <div class="fsi fsi-section">
-  <span class="num">CHAPTER 05 / PART 02</span>
+  <span class="num">CHAPTER 04 / PART 02</span>
   <div class="name">사내 배포</div>
   <p class="what">설치를 강제하고 출처를 제한한다</p>
   <ol>
@@ -605,7 +605,7 @@ plugin_installed는 설치할 때마다, plugin_loaded는 세션이 시작될 �
 
 :::html
 <div class="fsi fsi-section">
-  <span class="num">CHAPTER 05 / PART 03</span>
+  <span class="num">CHAPTER 04 / PART 03</span>
   <div class="name">Mods</div>
   <p class="what">Claude Code 안에서 도는 코드</p>
   <ol>
@@ -852,7 +852,7 @@ token-weather는 컨텍스트 사용량을 날씨 예보처럼 보여 주고, bl
      facts:['managed deny 규칙','managed PreToolUse 차단','권한 프롬프트 화면은 고정'],
      zones:Z, nodes:ALL, hot:['md','b1','b2'],
      edges:[{f:'md',t:'b1',c:'success',dash:true},{f:'md',t:'b2',c:'success',dash:true}],
-     snip:{hd:'막히는 것',path:'조직 정책이 이기는 곳',lines:['managed deny 규칙','managed PreToolUse 차단','권한 프롬프트 화면'],hl:[1,2,3],note:'Ch3에서 건 managed 통제는 mod가 있어도 그대로입니다.'}},
+     snip:{hd:'막히는 것',path:'조직 정책이 이기는 곳',lines:['managed deny 규칙','managed PreToolUse 차단','권한 프롬프트 화면'],hl:[1,2,3],note:'Ch2에서 건 managed 통제는 mod가 있어도 그대로입니다.'}},
     {kicker:'STEP 3', title:'그래서 로드 자체를 통제합니다',
      body:'mod가 띄운 프로세스는 <b>샌드박스 밖</b>입니다. 그래서 정책으로 <b>로드 자체</b>를 통제하고, 설치 전 <b>claude plugin validate</b>로 hooks와 calls를 확인합니다.',
      facts:['mod가 띄운 프로세스는 샌드박스 밖','정책으로 로드 자체를 통제','설치 전 claude plugin validate'],
@@ -1031,13 +1031,13 @@ SUPER LAB, 팀 스타터 킷 플러그인 + mod
 :::html
 <div class="fsi fsi-lab">
   <ol class="steps">
-    <li><b>TASK 01</b><span>Ch4 Subagent 3종(Ch4 건너뛰면 code-reviewer 1종) + DLP 훅 + 리뷰 스킬 묶기</span><em>Part 1</em></li>
+    <li><b>TASK 01</b><span>Ch3 Subagent 3종(Ch3 건너뛰면 code-reviewer 1종) + DLP 훅 + 리뷰 스킬 묶기</span><em>Part 1</em></li>
     <li><b>TASK 02</b><span>로컬 디렉터리 마켓플레이스 fsi-local 등록, /plugin install fsi-team-kit@fsi-local</span><em>Part 1</em></li>
     <li><b>TASK 03</b><span>공식 first-mod 붙여 넣기, Claude에게 /tally-reset 추가 요청</span><em>Part 3</em></li>
     <li><b>TASK 05</b><span>allowManagedModsOnly로 사용자 mod 차단 확인, 원복</span><em>Part 3</em></li>
     <li><b>TASK 06</b><span>배포 전 체크리스트 (선택 TASK 04: Bedrock용 idle compaction mod, 12분)</span><em>Part 2</em></li>
   </ol>
-  <p class="where">골격은 복사해 붙이고, 나머지는 Claude에게 시킵니다. Hands-on Lab 포털에서 Chapter 5를 엽니다.</p>
+  <p class="where">골격은 복사해 붙이고, 나머지는 Claude에게 시킵니다. Hands-on Lab 포털에서 Chapter 4를 엽니다.</p>
 </div>
 :::
 
@@ -1050,13 +1050,13 @@ SUPER LAB, 팀 스타터 킷 플러그인 + mod
 
 {cue: demo}
 강의를 마치면 45분 Super Lab을 합니다.
-TASK 01에서 Ch4의 Subagent 세 개, Ch4를 건너뛰셨다면 code-reviewer 하나와 Ch3의 DLP 훅, 리뷰 스킬을 fsi-team-kit 하나로 묶고, TASK 02에서 로컬 디렉터리 마켓플레이스 fsi-local을 등록해 /plugin install fsi-team-kit@fsi-local로 설치합니다.
+TASK 01에서 Ch3의 Subagent 세 개, Ch3을 건너뛰셨다면 code-reviewer 하나와 Ch2의 DLP 훅, 리뷰 스킬을 fsi-team-kit 하나로 묶고, TASK 02에서 로컬 디렉터리 마켓플레이스 fsi-local을 등록해 /plugin install fsi-team-kit@fsi-local로 설치합니다.
 TASK 03은 공식 first-mod를 붙여 넣고 Claude에게 /tally-reset 커맨드를 추가하게 시킵니다. TASK 05는 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복합니다. 마지막 TASK 06은 배포 전 체크리스트입니다.
 시간이 남으면 12분짜리 선택 TASK 04, Bedrock용 idle compaction mod를 해 보세요.
 골격은 복사해 붙이고, 나머지는 Claude에게 시키시면 됩니다.
 
 [출처]
-• 원본 Ch5 강의자료 p23
+• 원본 강의자료(Ch5 PDF) p23
 :::
 
 ---
@@ -1117,7 +1117,7 @@ TASK 03은 공식 first-mod를 붙여 넣고 Claude에게 /tally-reset 커맨드
 
 :::html
 <div class="fsi fsi-section c5-dd">
-  <span class="num">CHAPTER 05 / DEEP DIVE</span>
+  <span class="num">CHAPTER 04 / DEEP DIVE</span>
   <div class="name">더 알아보기</div>
   <p class="what">자주 받는 질문과 세부 설정</p>
   <ol>
@@ -1318,7 +1318,7 @@ plugin_installed로 누가 설치했는지, plugin_loaded로 실제로 쓰이는
 @fit: off
 
 ## 팀의 플랫폼을 만드는 여섯 줄
-Chapter 5 Key Takeaways
+Chapter 4 Key Takeaways
 
 :::html
 <div class="fsi fsi-recap">
@@ -1341,7 +1341,7 @@ Chapter 5 Key Takeaways
 • mod는 JS 핸들러, 샌드박스가 없으니 validate와 allowManagedModsOnly
 • Bedrock 사용자는 managed settings가 있어야 guard 로드
 
-Chapter 5를 여섯 줄로 정리하겠습니다.
+Chapter 4를 여섯 줄로 정리하겠습니다.
 {cue: pause}
 플러그인은 스킬, Subagent, 훅, MCP, mod를 묶은 배포 단위입니다. 조직 배포는 허용 목록, 등록, 강제 설치, 사이드로드 금지를 함께 걸고, 망분리는 seed 디렉터리로 합니다.
 mod는 Claude Code 안에서 도는 JS 핸들러라 화면까지 바꾸지만 샌드박스가 없으니 validate와 allowManagedModsOnly로 통제합니다.
@@ -1352,16 +1352,16 @@ mod는 Claude Code 안에서 도는 JS 핸들러라 화면까지 바꾸지만 �
 <!-- Slide 31: Thank you (PDF p33) -->
 @type: thankyou
 @toc: toc.html
-@next: 06-ch6-tokens-cost.html
-@next-label: Chapter 6
-@message: 다음은 점심, 그리고 Chapter 6. 토큰과 비용입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
+@next: 05-ch5-cost-efficient.html
+@next-label: Chapter 5
+@message: 다음은 점심, 그리고 Chapter 5. 비용 효율적으로 쓰기입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
 
 :::notes
 {timing: 0.5min}
 [요약]
-• 다음은 점심, 이어서 Chapter 6 토큰과 비용
+• 다음은 점심, 이어서 Chapter 5 비용 효율적으로 쓰기
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 이제 Super Lab을 진행하고, 점심 뒤에 Chapter 6 토큰과 비용으로 이어 가겠습니다.
+감사합니다. 이제 Super Lab을 진행하고, 점심 뒤에 Chapter 5 비용 효율적으로 쓰기로 이어 가겠습니다.
 질문은 Slack 워크숍 채널에 언제든 편하게 남겨 주세요.
 :::

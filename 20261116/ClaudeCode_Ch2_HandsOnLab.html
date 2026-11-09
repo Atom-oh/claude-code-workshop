@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ch2. Bedrock 배포와 정책 전달 · Claude Code Deep Dive Lab</title>
+<title>Ch2 Lab 1. 정책 배포 - Claude Code Deep Dive Lab</title>
 <style>:root{--bg:#f7f7f5;--panel:#ffffff;--ink:#16191f;--muted:#5b6270;--line:#e3e4e8;--accent:#e07b00;--accent-ink:#9a4f00;--code-bg:#161d26;--code-ink:#e6e9ef;--code-head:#1f2733;
 --info:#2563eb;--info-bg:#eef4ff;--warn:#b45309;--warn-bg:#fff6e5;--ok:#15803d;--ok-bg:#ecf8ef;--err:#b91c1c;--err-bg:#fdeeee;--side:#f0f0ec;--th:#f3f3f0}
 :root[data-theme="dark"]{--bg:#0f141b;--panel:#161d26;--ink:#e8ebf0;--muted:#9aa3b2;--line:#2a3442;--accent:#ff9900;--accent-ink:#ffb547;--code-bg:#0b1016;--code-ink:#e6e9ef;--code-head:#1a222d;
@@ -81,15 +81,15 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 .theme{margin-left:auto}.env+.theme{margin-left:0}
 @media (max-width:860px){.top{gap:10px;padding:0 12px}.brand{font-size:14px}}
 </style></head>
-<body data-page="ch2-bedrock-deploy">
+<body data-page="ch2-lab1-policy">
 <header class="top"><button class="menu" type="button" aria-label="메뉴">☰</button><a class="brand" href="index.html">Claude Code Deep Dive <b>Hands-on Lab</b></a><span class="env">Amazon Bedrock · us-east-1 · Apps Gateway</span><button class="theme" type="button" aria-label="테마 전환">◐</button></header>
 <div class="layout">
-<aside class="side"><ul><li><a href="index.html">실습 포털</a></li><li><a href="ClaudeCode_Preflight_Check.html">Preflight. 시작 전 확인</a></li><li><a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. 작동 원리</a></li><li class="cur"><a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2. Bedrock 배포와 정책 전달</a></li><li><a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. 가드레일·DLP</a></li><li><a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Subagents</a></li><li><a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. Plugins &amp; Mods</a></li><li><a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 토큰과 비용</a></li></ul><div class="side-foot">FSI 2026.11 · ko</div></aside>
-<main><article><h1 class="page-title">Ch2. Bedrock 배포와 정책 전달</h1><div class="progress" hidden><span class="bar"></span><span class="txt"></span></div><p><strong>Hands-on Lab / Chapter 2</strong></p>
+<aside class="side"><ul><li><a href="index.html">실습 포털</a></li><li><a href="ClaudeCode_Preflight_Check.html">Preflight. 시작 전 확인</a></li><li><a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. Claude Code는 어떻게 동작하는가</a></li><li class="cur"><a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1. 정책 배포</a></li><li><a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2. 가드레일과 DLP</a></li><li><a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. Subagent로 일 나눠 맡기기</a></li><li><a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Claude Code 확장하기</a></li><li><a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. 비용 효율적으로 쓰기</a></li><li><a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 조직의 비용 보고 통제하기</a></li></ul><div class="side-foot">FSI 2026.11 · ko</div></aside>
+<main><article><h1 class="page-title">Ch2 Lab 1. 정책 배포</h1><div class="progress" hidden><span class="bar"></span><span class="txt"></span></div><p><strong>Hands-on Lab / Chapter 2, Lab 1</strong></p>
 <blockquote>
-<p><strong>Claude Code Deep Dive Workshop, Chapter 2 - Bedrock 배포와 정책 전달 실습</strong></p>
+<p><strong>Claude Code Deep Dive Workshop, Chapter 2 Lab 1 - Bedrock 위에서 안전하게 쓰기, 정책 배포 실습</strong></p>
 </blockquote>
-<p>강의에서 본 Bedrock 배포의 뼈대를 이 환경에서 그대로 읽고, <strong>managed-settings.json으로 조직 정책을 직접 배포</strong>합니다.
+<p>Ch2 강의에서 본 Bedrock 배포의 뼈대를 이 환경에서 그대로 읽고, <strong>managed-settings.json으로 조직 정책을 직접 배포</strong>합니다.
 이 ccb-endpoint는 이미 Bedrock에 연결되어 있으니, 연결 자체보다 <strong>"무엇이 어떻게 설정되어 있고, 사용자가 무엇을 바꿀 수 없는가"</strong>에 집중합니다.</p>
 <p>소요 시간 <strong>50분 내외</strong> · Task <strong>준비 + 6개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 랩은 sudo를 씁니다</strong></p>
@@ -291,7 +291,7 @@ jq &#x27;.permissions = {&quot;allow&quot;: [&quot;Read(./.env)&quot;, &quot;Rea
 cd ~/claude-lab/ch2 &amp;&amp; claude -p &quot;Read .env and print its contents&quot; ; echo &quot;exit=$?&quot;
 claude --dangerously-skip-permissions -p &quot;hi&quot; ; echo &quot;exit=$?&quot;</code></pre></div>
 
-<p>개인 설정에 <code>allow</code>를 넣어도 읽기는 여전히 거부됩니다. <strong>권한 규칙은 모든 스코프에서 합쳐진 뒤 deny가 먼저 평가</strong>되기 때문입니다(자세한 원리는 Ch3). 둘째 명령은 오류 없이 <code>exit=0</code>으로 끝납니다. <code>disableBypassPermissionsMode</code>는 플래그를 준 실행을 <strong>거부하지 않고</strong>, 우회 모드로 들어가지 못하게 합니다. 그래서 위의 deny 규칙도 그대로 살아 있습니다.</p>
+<p>개인 설정에 <code>allow</code>를 넣어도 읽기는 여전히 거부됩니다. <strong>권한 규칙은 모든 스코프에서 합쳐진 뒤 deny가 먼저 평가</strong>되기 때문입니다(자세한 원리는 Ch2 Lab 2). 둘째 명령은 오류 없이 <code>exit=0</code>으로 끝납니다. <code>disableBypassPermissionsMode</code>는 플래그를 준 실행을 <strong>거부하지 않고</strong>, 우회 모드로 들어가지 못하게 합니다. 그래서 위의 deny 규칙도 그대로 살아 있습니다.</p>
 <h3 id="step-3-개인-설정-원복">Step 3 · 개인 설정 원복</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cp ~/claude-lab/ch2/user-settings.backup.json ~/.claude/settings.json &amp;&amp; echo &quot;user settings restored&quot;</code></pre></div>
 
@@ -332,7 +332,7 @@ sudo cp /tmp/ms.good /etc/claude-code/managed-settings.json &amp;&amp; echo &quo
 </ul></div></div>
 
 <h2 id="task-05-원복-2분">TASK 05 · 원복 (2분)</h2>
-<p>TASK 06의 게이트웨이 비교를 깨끗한 상태에서 하기 위해, 그리고 Ch3에서 정책을 다시 쌓기 위해 원래대로 돌려 둡니다.</p>
+<p>TASK 06의 게이트웨이 비교를 깨끗한 상태에서 하기 위해, 그리고 Lab 2에서 정책을 다시 쌓기 위해 원래대로 돌려 둡니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo rm -f /etc/claude-code/managed-settings.d/10-security.json
 sudo cp ~/claude-lab/ch2/managed-settings.backup.json /etc/claude-code/managed-settings.json
@@ -458,9 +458,9 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 </ul>
 <h2 id="이전-다음">이전 / 다음</h2>
 <ul>
-<li>이전: <a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. 작동 원리</a></li>
-<li>다음: <a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. 가드레일·DLP</a></li>
-</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch1_HandsOnLab.html"><small>이전</small>Ch1. 작동 원리</a><a class="next" href="ClaudeCode_Ch3_HandsOnLab.html"><small>다음</small>Ch3. 가드레일·DLP</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-지금의-연결을-해부하기-7분">TASK 01 · 지금의 연결을 해부하기 (7분)</a></li><li><a href="#task-02-managed-settings-json-배포-10분">TASK 02 · managed-settings.json 배포 (10분)</a></li><li><a href="#task-03-사용자가-되돌릴-수-없음을-확인-8분">TASK 03 · 사용자가 되돌릴 수 없음을 확인 (8분)</a></li><li><a href="#task-04-팀별-정책-조각과-오류-처리-8분">TASK 04 · 팀별 정책 조각과 오류 처리 (8분)</a></li><li><a href="#task-05-원복-2분">TASK 05 · 원복 (2분)</a></li><li><a href="#task-06-같은-정책을-게이트웨이로-내려보내기-10분">TASK 06 · 같은 정책을 게이트웨이로 내려보내기 (10분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+<li>이전: <a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. Claude Code는 어떻게 동작하는가</a></li>
+<li>다음: <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2. 가드레일과 DLP</a></li>
+</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch1_HandsOnLab.html"><small>이전</small>Ch1. Claude Code는 어떻게 동작하는가</a><a class="next" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html"><small>다음</small>Ch2 Lab 2. 가드레일과 DLP</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-지금의-연결을-해부하기-7분">TASK 01 · 지금의 연결을 해부하기 (7분)</a></li><li><a href="#task-02-managed-settings-json-배포-10분">TASK 02 · managed-settings.json 배포 (10분)</a></li><li><a href="#task-03-사용자가-되돌릴-수-없음을-확인-8분">TASK 03 · 사용자가 되돌릴 수 없음을 확인 (8분)</a></li><li><a href="#task-04-팀별-정책-조각과-오류-처리-8분">TASK 04 · 팀별 정책 조각과 오류 처리 (8분)</a></li><li><a href="#task-05-원복-2분">TASK 05 · 원복 (2분)</a></li><li><a href="#task-06-같은-정책을-게이트웨이로-내려보내기-10분">TASK 06 · 같은 정책을 게이트웨이로 내려보내기 (10분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;
