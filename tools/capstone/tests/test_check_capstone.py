@@ -14,6 +14,9 @@ OVERVIEW = "ClaudeCode_Capstone_Overview.html"
 PACKAGE = "ClaudeCode_Capstone_R2_Package_HandsOnLab.html"
 
 
+R2_3_BODY = ('<section id="cleanup"><pre>agentcore remove all --yes</pre></section>'
+             '<pre>{ "permissions": { "ask": [ "Bash(agentcore deploy *)" ] } }</pre>')
+
 RESTORE_PRE = ("<pre>[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp "
                "s3://example/mydata-kit.zip /tmp/mydata-kit.zip)</pre>")
 
@@ -49,6 +52,8 @@ def make_site(tmp, r1a_minutes=(50, 50), r2_minutes=None, extra=None, drop=(),
     for name in R2_PAGES:
         mins = r2_minutes.get(name, (30, 30))
         body = '<p data-note="managed-enforce">managed</p>' if (name == PACKAGE and with_note) else ""
+        if name == R2_PAGES[3]:
+            body += R2_3_BODY
         files[name] = page("R2", mins, body)
     new_links = "".join(f'<a href="{n}">x</a>' for n in NEW_PAGES) if portal_new else ""
     arch_links = "".join(f'<a href="{n}">x</a>' for n in ARCHIVE_PAGES) if portal_archive else ""
@@ -93,6 +98,16 @@ class CheckCapstoneTest(unittest.TestCase):
         root = make_site(f"{self.tmp}/none", extra={R1_PAGES[0]: page("R1", (50, 50))})
         self.assertTrue(rule(check(root), "r1a_restore"))
         self.assertFalse(rule(check(make_site(f"{self.tmp}/ok")), "r1a_restore"))
+
+    def test_r2_3_requires_cleanup_and_ask_rule(self):
+        name = R2_PAGES[3]
+        no_cleanup = '<pre>{ "permissions": { "ask": [ "Bash(agentcore deploy *)" ] } }</pre>'
+        no_ask = '<section id="cleanup"><pre>agentcore remove all --yes</pre></section>'
+        ask_in_prose = no_ask + '<p>"ask" 규칙 Bash(agentcore deploy *)</p>'
+        for i, body in enumerate((no_cleanup, no_ask, ask_in_prose, "")):
+            root = make_site(f"{self.tmp}/{i}", extra={name: page("R2", (30, 30), body)})
+            self.assertTrue(rule(check(root), "r2_3_cleanup"), body)
+        self.assertFalse(rule(check(make_site(f"{self.tmp}/ok")), "r2_3_cleanup"))
 
     def test_exists_fails_when_page_missing(self):
         root = make_site(self.tmp, drop=[R1_PAGES[1]])

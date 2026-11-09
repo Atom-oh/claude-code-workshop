@@ -283,6 +283,21 @@ def check_r1a_restore(root, trees):
     return msgs
 
 
+def check_r2_3_cleanup(trees):
+    """R2-3 must tear down what it deploys and show an ask rule for costly AWS commands."""
+    name = "ClaudeCode_Capstone_R2_3_HandsOnLab.html"
+    tree = trees.get(name)
+    if tree is None:
+        return []
+    msgs = []
+    if find_id(tree, "cleanup") is None:
+        msgs.append(f'r2_3_cleanup: {name} has no id="cleanup" step')
+    pres = [text_of(e) for e in elements(tree) if e.tag == "pre"]
+    if not any('"ask"' in t and "Bash(" in t for t in pres):
+        msgs.append(f'r2_3_cleanup: {name} has no <pre> with an "ask" permission rule example')
+    return msgs
+
+
 def check(root):
     root = Path(root)
     trees = {n: parse(root / n) for n in NEW_PAGES + ARCHIVE_PAGES if (root / n).is_file()}
@@ -296,6 +311,7 @@ def check(root):
     msgs += check_secrets(root)
     msgs += check_guardrail_note(trees)
     msgs += check_r1a_restore(root, trees)
+    msgs += check_r2_3_cleanup(trees)
     return msgs
 
 
