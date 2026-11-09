@@ -7,6 +7,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Added
 
+- Add one-minute chapter preview videos (`20261116/media/chapters/ch1..6-preview.mp4`, about 4.4–5.5 MB each, with posters) and a "▶ 1분 미리보기" button on every reactive deck cover that plays the chapter's video in an in-deck player (`reactive/assets/chapter-video.js`, loaded by `stepviz.js`; deck HTML unchanged).
 - Add a dark/light theme switch to the November reactive decks (`20261116/reactive/assets/theme-toggle.js`, loaded by `assets/stepviz.js`): a button at the top right or the T key swaps the framework's theme classes on the deck, covers and sidebar thumbnails; `?theme=light|dark` or the last choice (localStorage) sets the start theme, and open presenter windows follow. Light mode overrides the compiler's literal white cover text and inverts the white AWS logo. No deck HTML is rebuilt.
 - Add `20261116/reactive/`, interactive HTML slide decks for the six November chapters (Remarp sources `*.md` and built `*.html`, a table of contents and a combined `index.html`). The Pages workflow publishes them at `/20261116/reactive/` and `/reactive/`.
 - Add `workshop-v2/`, a draft redesigned two-day workshop for team review: shared core labs, role tracks (compliance, development, operations), Day 2 skills and governance labs, a pre-flight check, question clinic cards from the pre-survey, a facilitator guide, an invitation draft, and seed projects. Each lab page lists what was run and what was not. The Pages workflow publishes it at `/workshop-v2/` for team review.

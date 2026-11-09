@@ -1,0 +1,94 @@
+/* FSI decks: a "1분 미리보기" button on each chapter cover.
+ * The first slide of every block (data-block="0N-…") is its cover. The button opens
+ * the chapter's one-minute preview video (../media/chapters/chN-preview.mp4, the
+ * landscape Short) in an in-deck player. While the player is open, keys go to the
+ * player, not the deck; Esc or the backdrop closes it.
+ * Loaded once by assets/stepviz.js.
+ */
+(function () {
+  'use strict';
+  if (window.__fsiChapterVideo) return;
+  window.__fsiChapterVideo = true;
+
+  var BASE = '../media/chapters/';
+  var modal = null;
+  var video = null;
+
+  function src(n) { return BASE + 'ch' + n + '-preview.mp4'; }
+
+  function close() {
+    if (!modal) return;
+    video.pause();
+    modal.hidden = true;
+  }
+
+  function open(n) {
+    if (!modal) build();
+    video.src = src(n);
+    video.poster = BASE + 'ch' + n + '-preview.jpg';
+    modal.querySelector('.fsi-cv-title').textContent = 'Chapter ' + n + ' · 1분 미리보기';
+    modal.querySelector('.fsi-cv-open').href = src(n);
+    modal.hidden = false;
+    video.currentTime = 0;
+    var p = video.play();
+    if (p && p.catch) p.catch(function () { /* autoplay with sound may be blocked: controls stay */ });
+    modal.querySelector('.fsi-cv-close').focus();
+  }
+
+  function build() {
+    modal = document.createElement('div');
+    modal.className = 'fsi-cv';
+    modal.hidden = true;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', '챕터 미리보기 영상');
+    modal.innerHTML =
+      '<div class="fsi-cv-box">' +
+      '<div class="fsi-cv-bar"><span class="fsi-cv-title"></span>' +
+      '<a class="fsi-cv-open" target="_blank" rel="noopener">새 탭에서 열기</a>' +
+      '<button type="button" class="fsi-cv-close" aria-label="닫기 (Esc)">✕</button></div>' +
+      '<video class="fsi-cv-video" controls playsinline preload="none"></video>' +
+      '</div>';
+    document.body.appendChild(modal);
+    video = modal.querySelector('video');
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    modal.querySelector('.fsi-cv-close').addEventListener('click', close);
+    // Keep deck shortcuts (arrows, Space, F, P, T …) away while the player is open.
+    window.addEventListener('keydown', function (e) {
+      if (modal.hidden) return;
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      e.stopPropagation();
+    }, true);
+  }
+
+  function init() {
+    if (!document.querySelector('link[href$="assets/chapter-video.css"]')) {
+      var l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = 'assets/chapter-video.css';
+      document.head.appendChild(l);
+    }
+    var seen = {};
+    document.querySelectorAll('.slide-deck .slide[data-block]').forEach(function (slide) {
+      var block = slide.getAttribute('data-block');
+      if (seen[block]) return;
+      seen[block] = true;
+      var m = /^0?(\d)-/.exec(block);
+      if (!m) return;
+      var n = m[1];
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'fsi-cv-btn';
+      btn.textContent = '▶ 1분 미리보기';
+      btn.setAttribute('aria-label', 'Chapter ' + n + ' 1분 미리보기 영상 재생');
+      btn.addEventListener('click', function (e) { e.stopPropagation(); open(n); });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); open(n); }
+      });
+      slide.appendChild(btn);
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
