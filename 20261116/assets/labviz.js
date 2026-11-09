@@ -910,6 +910,118 @@
 
   /* ==== end Ch3 ===================================================== */
 
+  /* ==== Ch4 ======================================================== */
+
+  /* ---- Ch4 TASK 02: four ingredients become the asset-team-kit folder ---- */
+  LabViz.register("plugin-bundle", {
+    title: "Ch3의 에이전트 3종, retirement-gap 스킬, Ch2의 DLP 스크립트를 복사하고 Claude가 plugin.json과 hooks.json을 써서 asset-team-kit 플러그인 폴더를 만드는 과정",
+    viewBox: "0 0 1000 590",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 500, y: 250, w: 980, h: 440 },
+      { id: "ing-agents", shape: "folder", label: "에이전트 3종 (Ch3)", sub: "ch4/.claude/agents/*.md", x: 150, y: 135, w: 230, h: 66 },
+      { id: "ing-skill", shape: "file", label: "retirement-gap 스킬", sub: "SKILL.md (TASK 01)", x: 150, y: 205, w: 230, h: 56 },
+      { id: "ing-dlp", shape: "file", label: "DLP 스크립트 (Ch2)", sub: "/opt/dlp/dlp-guard.sh", x: 150, y: 275, w: 230, h: 56 },
+      { id: "ing-claude", shape: "note", label: "Claude Code\n(플러그인 폴더에서 실행)", x: 150, y: 385, w: 230, h: 58, appear: 4 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델)", x: 150, y: 520, appear: 4 },
+      { id: "kit", shape: "group", label: "asset-team-kit/  (플러그인 폴더)", x: 710, y: 265, w: 520, h: 390 },
+      { id: "k-agents", shape: "folder", label: "agents/", sub: "에이전트 3개 .md", x: 710, y: 135, w: 440, h: 56, appear: 1 },
+      { id: "k-skill", shape: "file", label: "skills/retirement-gap/SKILL.md", x: 710, y: 205, w: 440, h: 50, appear: 2 },
+      { id: "k-script", shape: "file", label: "scripts/dlp-guard.sh", sub: "실행 권한 755", x: 710, y: 275, w: 440, h: 56, appear: 3 },
+      { id: "k-plugin", shape: "file", label: ".claude-plugin/plugin.json", sub: "이름 · 버전 · 설명", x: 710, y: 345, w: 440, h: 56, appear: 4 },
+      { id: "k-hooks", shape: "file", label: "hooks/hooks.json", sub: "이벤트 → dlp-guard.sh", x: 710, y: 415, w: 440, h: 56, appear: 4 }
+    ],
+    edges: [
+      { id: "e-agents", from: "ing-agents", to: "k-agents", label: "cp" },
+      { id: "e-skill", from: "ing-skill", to: "k-skill", label: "cp" },
+      { id: "e-dlp", from: "ing-dlp", to: "k-script", label: "cp + chmod 755" },
+      { id: "e-ask", from: "ing-claude", to: "bedrock", label: "생성 요청", appear: 4 },
+      { id: "e-plugin", from: "ing-claude", to: "k-plugin", appear: 4 },
+      { id: "e-hooks", from: "ing-claude", to: "k-hooks", appear: 4 },
+      { id: "e-ref", from: "k-hooks", to: "k-script", via: [[950, 415], [950, 275]], appear: 6, until: 6 }
+    ],
+    steps: [
+      { cmd: "cp 에이전트 3개",
+        caption: "Ch3에서 만든 에이전트 정의 파일 세 개(spending-analyst, portfolio-analyst, risk-reviewer)를 플러그인의 agents/ 폴더로 복사합니다.",
+        on: ["ing-agents", "e-agents", "k-agents", "kit"], flow: { edge: "e-agents", token: "agents/*.md" } },
+      { cmd: "cp SKILL.md",
+        caption: "TASK 01의 retirement-gap 스킬을 skills/retirement-gap/ 폴더로 복사합니다. 폴더 이름이 스킬 이름과 같아야 합니다.",
+        on: ["ing-skill", "e-skill", "k-skill", "kit"], flow: { edge: "e-skill", token: "SKILL.md" } },
+      { cmd: "cp + chmod 755",
+        caption: "Ch2 Lab 2의 DLP 스크립트를 scripts/로 복사하고 실행 권한(755)을 줍니다. 훅이 이 스크립트를 실행하므로 실행 권한이 있어야 합니다.",
+        on: ["ing-dlp", "e-dlp", "k-script", "kit"], flow: { edge: "e-dlp", token: "dlp-guard.sh" } },
+      { cmd: "Claude에게 나머지를 시키기",
+        caption: "플러그인 폴더에서 Claude를 열어 plugin.json과 hooks.json을 만들게 합니다. 파일 내용을 생각해 쓰는 것은 모델이므로 Amazon Bedrock이 켜집니다. 막히면 정답지 블록으로 같은 파일을 직접 씁니다.",
+        on: ["ing-claude", "bedrock", "e-ask", "e-plugin", "e-hooks", "k-plugin", "k-hooks", "kit"], flow: { edge: "e-ask", token: "파일 내용 생성" } },
+      { cmd: "plugin.json",
+        caption: "plugin.json은 플러그인의 신분증입니다. name은 asset-team-kit이고, 이 이름이 스킬 이름 앞에 붙어 /asset-team-kit:retirement-gap이 됩니다. version은 0.1.0, description은 한국어 설명입니다.",
+        on: ["k-plugin", "kit"] },
+      { cmd: "hooks.json",
+        caption: "hooks.json은 UserPromptSubmit(프롬프트를 보낼 때)과 PreToolUse(도구를 쓰기 전, Bash|Write|Edit|WebFetch)에서 ${CLAUDE_PLUGIN_ROOT}/scripts/dlp-guard.sh를 실행하라고 적습니다. 변수는 플러그인이 설치된 폴더로 바뀝니다.",
+        on: ["k-hooks", "e-ref", "k-script", "kit"], flow: { edge: "e-ref", token: "${CLAUDE_PLUGIN_ROOT}" } },
+      { cmd: "claude plugin validate",
+        caption: "validate가 폴더 구조와 두 JSON 파일을 검사합니다. 경고가 남아도 마지막 줄이 Validation passed with warnings면 통과이고, 이 폴더가 TASK 03에서 마켓플레이스에 올라가는 플러그인입니다.",
+        on: ["k-agents", "k-skill", "k-script", "k-plugin", "k-hooks", "kit"], marks: { kit: "check" } }
+    ]
+  });
+
+  /* ---- Ch4 TASK 03-04: marketplace catalog -> install -> pension-product.md -> plugin hook vs managed hook ---- */
+  LabViz.register("marketplace-install", {
+    title: "fsi-local 마켓플레이스 카탈로그를 동료 폴더에서 등록하고 asset-team-kit을 설치해 기획서를 만들고, 플러그인 훅이 주민번호 프롬프트를 막지만 사용자가 끌 수 있어 managed 훅이 따로 필요한 이유",
+    viewBox: "0 0 1100 610",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 450, y: 305, w: 880, h: 560 },
+      { id: "mk", shape: "group", label: "marketplace/ (카탈로그 폴더)", x: 150, y: 190, w: 250, h: 230 },
+      { id: "mk-json", shape: "file", label: "marketplace.json", sub: ".claude-plugin/ · fsi-local", x: 150, y: 170, w: 220, h: 60 },
+      { id: "mk-plug", shape: "folder", label: "plugins/asset-team-kit/", sub: "TASK 02의 플러그인", x: 150, y: 260, w: 220, h: 66 },
+      { id: "col", shape: "group", label: "colleague/ (동료 폴더)", x: 600, y: 315, w: 540, h: 500 },
+      { id: "c-claude", shape: "note", label: "동료의 Claude Code\n(새 세션)", x: 440, y: 300, w: 190, h: 58 },
+      { id: "c-inst", shape: "note", tone: "ok", label: "asset-team-kit\n설치됨 (user 범위)", x: 440, y: 150, w: 190, h: 58, appear: 3 },
+      { id: "c-skill", shape: "note", label: "/asset-team-kit:\nretirement-gap", x: 730, y: 130, w: 200, h: 56, appear: 4 },
+      { id: "c-agents", shape: "note", label: "@asset-team-kit:\n에이전트 3개", x: 730, y: 205, w: 200, h: 56, appear: 4 },
+      { id: "c-md", shape: "file", label: "pension-product.md", sub: "집계만 · 식별자 없음", x: 730, y: 345, w: 200, h: 60, appear: 5 },
+      { id: "c-hook", shape: "note", label: "플러그인 훅\ndlp-guard.sh", x: 730, y: 450, w: 200, h: 56, appear: 6 },
+      { id: "c-block", shape: "note", tone: "err", label: "차단: This hook comes from the\nasset-team-kit@fsi-local plugin", x: 440, y: 450, w: 290, h: 56, appear: 6, until: 6 },
+      { id: "c-off", shape: "note", tone: "err", label: "/plugin에서 끄면\n이 훅도 사라짐", x: 730, y: 520, w: 200, h: 50, appear: 7 },
+      { id: "mg", shape: "note", tone: "ok", label: "managed 훅 (Ch2 Lab 2)\nmanaged-settings.json\n사용자가 끌 수 없음", x: 150, y: 480, w: 220, h: 76, appear: 7 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델)", x: 1010, y: 300 }
+    ],
+    edges: [
+      { id: "e-add", from: "c-claude", to: "mk-json", label: "marketplace add", appear: 2, until: 2 },
+      { id: "e-inst", from: "mk-plug", to: "c-inst", label: "install", appear: 3, until: 3 },
+      { id: "e-skill", from: "c-inst", to: "c-skill", appear: 4, until: 4 },
+      { id: "e-agents", from: "c-inst", to: "c-agents", appear: 4, until: 4 },
+      { id: "e-model", from: "c-claude", to: "bedrock", label: "모델 호출", appear: 5, until: 5 },
+      { id: "e-write", from: "c-claude", to: "c-md", label: "Write", appear: 5, until: 5 },
+      { id: "e-hook", from: "c-claude", to: "c-hook", label: "프롬프트 검사", via: [[440, 380], [630, 450]], appear: 6, until: 6 },
+      { id: "e-mg", from: "mg", to: "c-claude", label: "항상 적용", appear: 7 }
+    ],
+    steps: [
+      { cmd: "marketplace.json",
+        caption: "마켓플레이스는 플러그인 목록을 적은 카탈로그 파일입니다. TASK 03에서 이름을 fsi-local로 하고, plugins 목록에 asset-team-kit과 그 위치(./plugins/asset-team-kit)를 적습니다.",
+        on: ["mk", "mk-json", "mk-plug"] },
+      { cmd: "/plugin marketplace add",
+        caption: "동료 폴더에서 새 Claude 세션을 열고 카탈로그 폴더를 등록합니다. 아직 플러그인은 설치되지 않았고, \"Successfully added marketplace: fsi-local\"이 나옵니다.",
+        on: ["c-claude", "e-add", "mk-json", "col"], flow: { edge: "e-add", token: "카탈로그 등록" } },
+      { cmd: "/plugin install asset-team-kit@fsi-local",
+        caption: "설치 범위를 묻고, 기본값 user 범위로 Enter를 누르면 플러그인이 설치되어 바로 켜집니다(\"Plugin is now active\"). 설치 한 줄에 에이전트, 스킬, 훅이 함께 따라옵니다.",
+        on: ["mk-plug", "e-inst", "c-inst", "col"], flow: { edge: "e-inst", token: "asset-team-kit" } },
+      { cmd: "@asset · /retire",
+        caption: "입력창에 @asset을 치면 플러그인 이름이 붙은 에이전트 세 개가, /retire를 치면 /asset-team-kit:retirement-gap 스킬이 보입니다. 동료 폴더에는 이 파일들이 없었는데 설치로 따라온 것입니다.",
+        on: ["c-inst", "e-skill", "e-agents", "c-skill", "c-agents", "col"], flow: { edge: "e-skill", token: "스킬 · 에이전트" } },
+      { cmd: "pension-product.md",
+        caption: "요청 한 번으로 메인이 retirement-gap 스킬로 격차 표를 만들고, portfolio-analyst와 risk-reviewer에게 분석과 점검을 맡긴 뒤 pension-product.md를 씁니다. 메인과 서브에이전트가 모두 Bedrock 모델로 생각하고, 파일은 메인이 씁니다.",
+        on: ["c-claude", "e-model", "bedrock", "e-write", "c-md", "c-agents", "c-skill", "col"], flow: { edge: "e-write", token: "Write" } },
+      { cmd: "고객 900101-1234567 조회해줘",
+        caption: "주민번호 형식의 프롬프트를 보냅니다. 플러그인의 UserPromptSubmit 훅이 모델에 가기 전에 검사해 차단하고, \"This hook comes from the asset-team-kit@fsi-local plugin.\"을 표시합니다. 모델 호출은 일어나지 않습니다.",
+        on: ["c-claude", "e-hook", "c-hook", "c-block", "col"], flow: { edge: "e-hook", token: "프롬프트" }, marks: { "c-block": "x" } },
+      { cmd: "플러그인 훅 vs managed 훅",
+        caption: "플러그인 훅은 팀의 안전망입니다. 사용자가 /plugin에서 플러그인을 끄거나 지우면 훅도 함께 사라집니다. 조직이 반드시 지켜야 하는 DLP는 Ch2 Lab 2처럼 managed 정책의 훅으로 강제합니다.",
+        on: ["c-hook", "c-off", "mg", "e-mg", "c-claude"], marks: { mg: "lock" } }
+    ]
+  });
+
+  /* ==== end Ch4 ===================================================== */
+
   /* ---- end of diagram definitions ---- */
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
