@@ -586,10 +586,13 @@ html.light {
   --bg: #F4F6F9; --bg-card: #FFFFFF; --bg-inline: #E8EDF3;
   --line: #8A95A3;
   --orange: #9A4300; --orange-dim: rgba(168, 85, 0, 0.10);
-  --green: #1F883D; --green-dim: rgba(31, 136, 61, 0.08);
+  --green: #17692F; --green-dim: rgba(31, 136, 61, 0.08);
   --text: #1B2430; --muted: #3D4654; --dim: #4A5462;
 }
 /* Light = projector mode: text >= 7:1, accent text >= 4.5:1, borders ~3:1. */
+html.light [style*="#c9a2ff"] { color: #6b46c1 !important; }
+html.light [style*="#A6ABBE"] { color: #3D4654 !important; }
+html.light .callout.warn .co-title { color: #B3264A; }
 html.light ::selection { background: rgba(255, 153, 0, 0.35); }
 html.light .hero::after { background: radial-gradient(closest-side, rgba(182, 0, 46, 0.10), rgba(255, 153, 0, 0.06) 55%, transparent 75%); }
 html.light .timeline { background: rgba(255, 255, 255, 0.92); }

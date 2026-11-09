@@ -346,8 +346,9 @@
   --text-muted: #3d4654;
   --on-surface-muted: #3d4654;
   --border: #8a95a3;
-  --accent: #b45309;
+  --accent: #9a4300;
   --text-accent: #075aa8;
+  --info: #075aa8;
 }
 /* The compiler writes cover text in literal white; follow the theme in light mode.
    Keyed on theme classes (not <html>) so the presenter view's copies match too. */
