@@ -35,7 +35,8 @@ change; old numbers in learner folders are legacy.
 | 6 | 조직의 비용 보고 통제하기 | Ch6 Part 2 | `ClaudeCode_Ch6_HandsOnLab.html` (TASK 00-04) | `06-ch6-org-cost` |
 
 - Session times live in `20261116/eDM.html`; change them together with
-  `eDM.txt`, `eDM-notes.md`, the intro video, and every deck slide that
+  `eDM.txt`, `eDM-notes.md`, the intro video, `reactive/toc.html` (card times,
+  plus its titles, taglines and slide counts after a deck change), and every deck slide that
   states a time (Ch1 timeline, opening and agenda slides, takeaways, and
   closing `@message`, `@next-label`, and notes). Grep
   `20261116/reactive/*.md` for `HH:MM` to find them.
