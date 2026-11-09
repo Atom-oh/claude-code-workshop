@@ -16,7 +16,8 @@
  * Node: { id, shape: "icon"|"group"|"folder"|"file"|"note", icon, label, sub,
  *         x, y (centre), w, h, appear (first step, 1-based), until (last step),
  *         tone: "ok"|"err"|"info" }   label/sub may contain "\n".
- * Edge: { id, from, to, label, via: [[x, y], ...] }
+ * Edge: { id, from, to, label, via: [[x, y], ...], appear, until }
+ *       appear/until (optional, 1-based steps) hide the edge outside that range.
  * Step: { cmd, caption, on: [node or edge ids], flow: { edge, token },
  *         marks: { nodeId: "check"|"lock"|"x"|null } }  marks accumulate.
  */
@@ -287,7 +288,7 @@
         var lines = String(e.label).split("\n").length;
         texts(g, mx, my - 10 - (lines - 1) * 16, e.label, "lv-edge-label lv-mono", 16);
       }
-      self.edgeEls[e.id] = { g: g, pts: pts };
+      self.edgeEls[e.id] = { g: g, pts: pts, def: e };
     });
     this.token = el("g", { "class": "lv-token", visibility: "hidden" }, svg);
     el("rect", { x: -64, y: -13, width: 128, height: 26, rx: 13 }, this.token);
@@ -367,7 +368,8 @@
     });
     Object.keys(this.edgeEls).forEach(function (id) {
       var active = on.indexOf(id) >= 0 || !!(step.flow && step.flow.edge === id);
-      var g = self.edgeEls[id].g;
+      var g = self.edgeEls[id].g, ed = self.edgeEls[id].def;
+      g.classList.toggle("lv-hidden", !((ed.appear || 0) <= n1 && (ed.until == null || n1 <= ed.until)));
       g.classList.toggle("lv-on", active);
       g.querySelector(".lv-edge").setAttribute("marker-end", "url(#" + self.id + "-arr" + (active ? "-on" : "") + ")");
     });
@@ -784,6 +786,128 @@
   });
 
   /* ==== end Ch2 Lab 2 =============================================== */
+
+  /* ==== Ch3 ======================================================== */
+
+  /* ---- Ch3 TASK 04: three dispatch patterns ---- */
+  LabViz.register("subagent-dispatch", {
+    title: "메인 Claude가 서브에이전트 3종에게 자동, 명시, 병렬로 일을 나눠 맡기고 요약만 돌려받아 segments.md를 쓰는 과정",
+    viewBox: "0 0 980 535",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 490, y: 275, w: 680, h: 490 },
+      { id: "user", shape: "note", tone: "info", label: "사용자\n(터미널)", x: 70, y: 120, w: 100, h: 54 },
+      { id: "main", shape: "note", label: "메인 Claude\n(Claude Code · Opus 5.5)", x: 490, y: 120, w: 230, h: 58 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델)", x: 920, y: 120 },
+      { id: "sa", shape: "group", label: "spending-analyst\n별도 컨텍스트 창", x: 270, y: 400, w: 210, h: 210 },
+      { id: "sa-f1", shape: "file", label: "카드 소비", sub: "card_spend_monthly.csv", x: 270, y: 383, w: 190, h: 56 },
+      { id: "sa-f2", shape: "file", label: "계좌 잔액", sub: "bank_accounts.csv", x: 270, y: 449, w: 190, h: 56 },
+      { id: "pa", shape: "group", label: "portfolio-analyst\n별도 컨텍스트 창", x: 490, y: 400, w: 210, h: 210 },
+      { id: "pa-f1", shape: "file", label: "증권 · 보험", sub: "securities.csv\ninsurance.csv", x: 490, y: 386, w: 190, h: 62 },
+      { id: "pa-f2", shape: "file", label: "연금 · 계좌", sub: "pensions.csv\nbank_accounts.csv", x: 490, y: 456, w: 190, h: 62 },
+      { id: "rr", shape: "group", label: "risk-reviewer\n별도 컨텍스트 창", x: 710, y: 400, w: 210, h: 210 },
+      { id: "rr-f1", shape: "file", label: "점검 대상", sub: "분석 결과 · 제안서", x: 710, y: 383, w: 190, h: 56 },
+      { id: "rr-f2", shape: "file", label: "근거 확인", sub: "pseudo/ 파일", x: 710, y: 449, w: 190, h: 56 },
+      { id: "seg", shape: "file", label: "segments.md", sub: "149 · 121 · 120명", x: 420, y: 235, w: 110, h: 50, appear: 9 }
+    ],
+    edges: [
+      { id: "e-req", from: "user", to: "main", label: "요청" },
+      { id: "e-ask", from: "main", to: "bedrock", via: [[700, 106], [860, 106]] },
+      { id: "e-resp", from: "bedrock", to: "main", via: [[860, 134], [700, 134]] },
+      { id: "e-sa", from: "main", to: "sa", via: [[270, 150], [270, 290]] },
+      { id: "r-sa", from: "sa", to: "main", via: [[300, 290], [300, 170]] },
+      { id: "e-pa", from: "main", to: "pa", via: [[500, 150], [500, 290]] },
+      { id: "r-pa", from: "pa", to: "main", via: [[530, 290], [530, 150]] },
+      { id: "e-rr", from: "main", to: "rr", via: [[710, 150], [710, 290]] },
+      { id: "r-rr", from: "rr", to: "main", via: [[680, 290], [680, 170]] },
+      { id: "e-write", from: "main", to: "seg", via: [[420, 150], [420, 195]], appear: 9 }
+    ],
+    steps: [
+      { cmd: "준비",
+        caption: "에이전트 정의 파일 3개가 .claude/agents/에 있습니다. 서브에이전트마다 자기 컨텍스트 창(대화 기억 공간), 도구, 모델(sonnet)을 따로 갖고, 읽는 데이터도 다릅니다.",
+        on: ["main", "sa", "pa", "rr"] },
+      { cmd: "A 자동 · 요청",
+        caption: "패턴 A입니다. 사용자가 에이전트 이름 없이 \"40~55세 고소득 고객이 IRP를 얼마나 갖고 있는지 분석해 주세요\"라고 요청합니다. 요청은 메인 Claude가 받습니다.",
+        on: ["user", "e-req", "main"], flow: { edge: "e-req", token: "분석 요청" } },
+      { cmd: "A 자동 · 모델이 고름",
+        caption: "Claude Code가 요청과 각 에이전트의 description을 모델에 보내고, 모델이 가장 맞는 portfolio-analyst를 고릅니다. 집계 한 번이면 위임하지 않고 메인이 직접 처리하기도 하므로 자동 위임은 보장되지 않습니다.",
+        on: ["main", "bedrock", "e-ask", "e-resp"], flow: { edge: "e-resp", token: "portfolio-analyst" } },
+      { cmd: "A 자동 · 위임",
+        caption: "메인이 portfolio-analyst에게 일을 맡깁니다. 이 에이전트는 자기 컨텍스트 창에서 securities, insurance, pensions, bank_accounts 파일을 읽고 집계합니다.",
+        on: ["main", "e-pa", "pa", "pa-f1", "pa-f2"], flow: { edge: "e-pa", token: "위임" } },
+      { cmd: "A 자동 · 요약 반환",
+        caption: "긴 읽기와 집계는 에이전트의 컨텍스트 창에서 끝나고, 메인에는 요약만 돌아옵니다. 메인 컨텍스트가 무거워지지 않습니다.",
+        on: ["pa", "r-pa", "main"], flow: { edge: "r-pa", token: "요약만" } },
+      { cmd: "B 명시",
+        caption: "패턴 B입니다. 사용자가 \"risk-reviewer 에이전트를 사용해서\"처럼 이름을 직접 지정합니다. 메인은 다른 에이전트를 따져 보지 않고 risk-reviewer에게 맡기고, 이 에이전트는 읽기 도구만 있어 점검 결과만 돌려줍니다.",
+        on: ["user", "e-req", "main", "e-rr", "rr", "rr-f1", "rr-f2"], flow: { edge: "e-rr", token: "risk-reviewer" }, marks: { rr: "lock" } },
+      { cmd: "C 병렬 · 동시 위임",
+        caption: "패턴 C입니다. 세 작업이 서로 독립이라 모델이 Agent 호출 3개를 한 번에 내고, 메인이 세 에이전트를 동시에 띄웁니다. 총 시간은 가장 오래 걸린 쪽 기준이고, 비용은 합산됩니다.",
+        on: ["main", "bedrock", "e-ask", "e-resp", "e-sa", "e-pa", "e-rr", "sa", "pa", "rr", "sa-f1", "sa-f2", "pa-f1", "pa-f2", "rr-f1", "rr-f2"],
+        flow: { edge: "e-pa", token: "동시에 3개" } },
+      { cmd: "C 병렬 · 요약 반환",
+        caption: "세 에이전트는 각자 컨텍스트 창에서 일하고 요약만 돌려줍니다. 메인 컨텍스트에는 요약 세 개만 쌓입니다.",
+        on: ["sa", "pa", "rr", "r-sa", "r-pa", "r-rr", "main"], flow: { edge: "r-pa", token: "요약만" } },
+      { cmd: "segments.md 저장",
+        caption: "세 에이전트에는 Write 도구가 없어서 메인이 요약을 모아 segments.md를 씁니다. 참고 결과는 (a) 149명, (b) 121명, (c) 120명이고, 숫자는 실행마다 다를 수 있습니다.",
+        on: ["main", "e-write", "seg"], flow: { edge: "e-write", token: "Write" } }
+    ]
+  });
+
+  /* ---- Ch3 TASK 02: tool isolation ---- */
+  LabViz.register("tool-isolation", {
+    title: "tools에 Write가 없는 risk-reviewer가 저장 요청을 거부하고, sed로 Write를 추가한 뒤 새 세션에서 허용되고, mv로 읽기 전용으로 되돌리는 과정",
+    viewBox: "0 0 900 500",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 515, y: 270, w: 730, h: 440 },
+      { id: "user", shape: "note", tone: "info", label: "사용자\n(Claude 입력창)", x: 70, y: 225, w: 110, h: 54 },
+      { id: "main", shape: "note", label: "메인 Claude\n(Claude Code)", x: 255, y: 225, w: 140, h: 58 },
+      { id: "term", shape: "note", tone: "info", label: "터미널\n(~/claude-lab/ch4)", x: 255, y: 385, w: 150, h: 58 },
+      { id: "rr", shape: "group", label: "risk-reviewer (서브에이전트)", x: 590, y: 225, w: 440, h: 200 },
+      { id: "rr-a", shape: "note", label: "tools: Read, Grep, Glob", x: 590, y: 200, w: 400, h: 44, appear: 1, until: 3 },
+      { id: "rr-b", shape: "note", tone: "info", label: "tools: Read, Grep, Glob, Write", x: 590, y: 200, w: 400, h: 44, appear: 4, until: 6 },
+      { id: "rr-c", shape: "note", label: "tools: Read, Grep, Glob", x: 590, y: 200, w: 400, h: 44, appear: 7 },
+      { id: "t-read", shape: "note", label: "Read", x: 455, y: 275, w: 76, h: 44 },
+      { id: "t-grep", shape: "note", label: "Grep", x: 540, y: 275, w: 76, h: 44 },
+      { id: "t-glob", shape: "note", label: "Glob", x: 625, y: 275, w: 76, h: 44 },
+      { id: "w-no", shape: "note", tone: "err", label: "Write\n(목록 밖)", x: 735, y: 275, w: 84, h: 44, appear: 3, until: 3 },
+      { id: "w-yes", shape: "note", tone: "ok", label: "Write\n(추가)", x: 735, y: 275, w: 84, h: 44, appear: 4, until: 6 },
+      { id: "disk", shape: "group", label: "작업 폴더", x: 590, y: 410, w: 440, h: 80 },
+      { id: "n-no", shape: "note", tone: "err", label: "review-notes.md\n만들어지지 않음", x: 730, y: 418, w: 150, h: 48, appear: 3, until: 5 },
+      { id: "n-yes", shape: "note", tone: "ok", label: "review-notes.md\n저장됨", x: 730, y: 418, w: 150, h: 48, appear: 6, until: 6 }
+    ],
+    edges: [
+      { id: "e-req", from: "user", to: "main", label: "요청" },
+      { id: "e-del", from: "main", to: "rr", label: "위임" },
+      { id: "e-write", from: "rr", to: "disk", label: "Write" },
+      { id: "e-term", from: "term", to: "rr" }
+    ],
+    steps: [
+      { cmd: "tools: Read, Grep, Glob",
+        caption: "risk-reviewer 정의 파일의 tools에는 읽기 도구 셋만 적혀 있습니다. 목록에 없는 도구는 시도 자체가 차단되므로 읽기 전용 에이전트입니다.",
+        on: ["rr", "rr-a", "t-read", "t-grep", "t-glob"], marks: { "rr-a": "lock" } },
+      { cmd: "일부러 권한 밖 요청",
+        caption: "사용자가 \"점검하고 결과를 review-notes.md로 저장해 주세요\"라고 요청합니다. 점검은 읽기라 가능하지만 저장은 Write가 필요합니다.",
+        on: ["user", "e-req", "main", "e-del", "rr", "rr-a"], flow: { edge: "e-del", token: "점검 + 저장" } },
+      { cmd: "Write 거부",
+        caption: "risk-reviewer가 Write를 불러 보지만 도구 목록에 없어서 \"No such tool available\" 오류가 납니다. 다른 쓰기 수단도 없어 review-notes.md는 만들어지지 않습니다.",
+        on: ["rr", "rr-a", "w-no", "n-no", "disk"], marks: { "w-no": "x" } },
+      { cmd: "sed로 Write 추가",
+        caption: "터미널에서 sed -i.bak가 tools 줄에 Write를 붙이고 원본을 risk-reviewer.md.bak에 남깁니다. 그러나 이미 뜬 인스턴스는 처음 받은 도구 권한을 유지하고 메인도 \"저장 불가\"를 기억하므로, 같은 요청을 반복하면 여전히 거부됩니다.",
+        on: ["term", "e-term", "rr", "rr-b", "w-yes"], flow: { edge: "e-term", token: "sed -i.bak" } },
+      { cmd: "/exit 후 재진입",
+        caption: "/exit로 세션을 나갔다가 claude로 다시 들어옵니다. 새 세션은 정의 파일을 다시 읽어서 새 인스턴스가 Write 권한을 받습니다. /clear로 맥락만 비워도 같은 효과입니다.",
+        on: ["term", "e-term", "main", "rr", "rr-b", "w-yes"], flow: { edge: "e-term", token: "/exit → claude" } },
+      { cmd: "재시도: 허용",
+        caption: "같은 요청을 새 위임으로 다시 보내면 Write가 통과해 review-notes.md가 저장됩니다. 의도적으로 권한을 준 결과입니다.",
+        on: ["user", "main", "e-del", "rr", "rr-b", "w-yes", "e-write", "disk", "n-yes"],
+        flow: { edge: "e-write", token: "Write 호출" }, marks: { "w-yes": "check", "n-yes": "check" } },
+      { cmd: "mv로 원상 복구",
+        caption: "mv가 .bak을 원래 이름으로 되돌려 tools가 다시 Read, Grep, Glob이 되고, rm -f가 review-notes.md를 지웁니다. 이 읽기 전용 정의가 이후 TASK에서 쓰는 최종 버전입니다.",
+        on: ["term", "e-term", "rr", "rr-c"], flow: { edge: "e-term", token: "mv .bak 복원" }, marks: { "rr-c": "lock" } }
+    ]
+  });
+
+  /* ==== end Ch3 ===================================================== */
 
   /* ---- end of diagram definitions ---- */
 

@@ -54,6 +54,7 @@ figure.viz>figcaption{color:var(--muted);font-size:14px}
 .lv-node.lv-dim{opacity:.6}
 .lv-node.lv-hidden,.lv-node.lv-pending{opacity:0;pointer-events:none}
 .lv-node.lv-hidden{visibility:hidden}
+.lv-edge-g.lv-hidden{visibility:hidden}
 .lv-edge{fill:none;stroke:var(--muted);stroke-width:2}
 .lv-edge-g.lv-on .lv-edge{stroke:var(--accent);stroke-width:2.5}
 .lv-arrow path{fill:var(--muted)}
