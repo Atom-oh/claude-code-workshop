@@ -150,14 +150,16 @@ def check_overview(root, trees):
     return msgs
 
 
-def task_minutes(tree):
+def task_minutes(tree, name, msgs):
     total = 0
     for e in elements(tree):
-        if e.tag == "section" and "task" in e.classes() and e.attrs.get("data-min"):
-            try:
-                total += int(e.attrs["data-min"])
-            except ValueError:
-                pass
+        if e.tag == "section" and "task" in e.classes():
+            raw = (e.attrs.get("data-min") or "").strip()
+            if re.fullmatch(r"\d+", raw):
+                total += int(raw)
+            else:
+                msgs.append(f"time_budget: {name}: task {e.attrs.get('id', '(no id)')} "
+                            "has missing or non-integer data-min")
     return total
 
 
@@ -170,17 +172,23 @@ def page_round(tree):
 
 def check_time_budget(trees):
     msgs = []
+    minutes = {}
+    for name in R1_PAGES + R2_PAGES:
+        if name not in trees:
+            continue
+        expected = "R1" if name in R1_PAGES else "R2"
+        found = page_round(trees[name])
+        if found != expected:
+            msgs.append(f'time_budget: {name} has no data-round="{expected}" '
+                        f"(found {found!r})")
+        minutes[name] = task_minutes(trees[name], name, msgs)
     for name in R1_PAGES:
-        if name in trees and page_round(trees[name]) == "R1":
-            m = task_minutes(trees[name])
-            if m > BUDGET["R1"]:
-                short = name.split("_")[2]
-                msgs.append(f"time_budget: {short} is {m} min, over {BUDGET['R1']}")
-    if R2_PACKAGE in trees and page_round(trees[R2_PACKAGE]) == "R2":
-        pkg = task_minutes(trees[R2_PACKAGE])
-        missions = sorted((task_minutes(trees[n]) for n in R2_PAGES[1:]
-                           if n in trees and page_round(trees[n]) == "R2"), reverse=True)
-        total = pkg + sum(missions[:2])
+        if name in minutes and minutes[name] > BUDGET["R1"]:
+            short = name.split("_")[2]
+            msgs.append(f"time_budget: {short} is {minutes[name]} min, over {BUDGET['R1']}")
+    if R2_PACKAGE in minutes:
+        missions = sorted((minutes[n] for n in R2_PAGES[1:] if n in minutes), reverse=True)
+        total = minutes[R2_PACKAGE] + sum(missions[:2])
         if total > BUDGET["R2"]:
             msgs.append(f"time_budget: R2 is {total} min (Package + two largest missions), "
                         f"over {BUDGET['R2']}")

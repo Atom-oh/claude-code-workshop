@@ -123,6 +123,36 @@ class CheckCapstoneTest(unittest.TestCase):
         mins = {PACKAGE: (60,), R2_PAGES[1]: (60,), R2_PAGES[2]: (60,), R2_PAGES[3]: (60,)}
         self.assertFalse(rule(check(make_site(self.tmp, r2_minutes=mins)), "time_budget"))
 
+    def test_time_budget_flags_missing_or_wrong_round(self):
+        root = make_site(self.tmp, extra={
+            R1_PAGES[0]: page(None, (50, 50)),
+            R2_PAGES[1]: page("R1", (30, 30))})
+        msgs = rule(check(root), "time_budget")
+        self.assertTrue(any(R1_PAGES[0] in m and "data-round" in m for m in msgs))
+        self.assertTrue(any(R2_PAGES[1] in m and "data-round" in m for m in msgs))
+
+    def test_time_budget_still_budgets_page_without_round(self):
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page(None, (60, 55))})
+        self.assertTrue(any("R1A is 115" in m for m in check(root)))
+
+    def test_time_budget_flags_bad_data_min(self):
+        body = ('<section class="task" id="bad1">x</section>'
+                '<section class="task" id="bad2" data-min="abc">x</section>')
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50,), body)})
+        msgs = rule(check(root), "time_budget")
+        self.assertTrue(any("task bad1" in m and "data-min" in m for m in msgs))
+        self.assertTrue(any("task bad2" in m for m in msgs))
+
+    def test_archive_fails_when_note_lacks_overview_link(self):
+        root = make_site(self.tmp)
+        (root / ARCHIVE_PAGES[0]).write_text(
+            page(body='<div class="archive-note">no link</div>'), encoding="utf-8")
+        self.assertTrue(any(ARCHIVE_PAGES[0] in m for m in rule(check(root), "archive")))
+
+    def test_archive_fails_when_page_missing(self):
+        root = make_site(self.tmp, drop=[ARCHIVE_PAGES[3]])
+        self.assertTrue(any(ARCHIVE_PAGES[3] in m for m in rule(check(root), "archive")))
+
     def test_archive_fails_without_note(self):
         self.assertTrue(rule(check(make_site(self.tmp, archive_note=False)), "archive"))
 
