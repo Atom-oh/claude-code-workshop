@@ -1,0 +1,88 @@
+/* LabViz styles. Colours come only from the page theme variables
+   (--ink, --muted, --line, --panel, --bg, --accent, --ok, --err, --info,
+   --code-ink), so light, dark and the projector mode all follow the page. */
+
+/* ---------- paste-target badge (inside the dark code header) ---------- */
+.lv-paste{margin:0 auto 0 10px;padding:3px 9px;border-radius:999px;border:1px solid color-mix(in srgb,var(--code-ink) 40%,transparent);color:var(--code-ink);font:600 11.5px/1.2 Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;text-transform:none;white-space:nowrap}
+.lv-paste::before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:var(--code-ink);vertical-align:1px}
+.lv-paste-terminal::before{background:var(--ok)}
+.lv-paste-claude::before{background:var(--accent)}
+.lv-paste-browser::before{background:var(--info)}
+.lv-paste-file::before{background:transparent;border:1px solid var(--code-ink)}
+
+/* ---------- line numbers and highlight for explained blocks ---------- */
+.lv-explained .lv-ln{display:inline-block;min-width:100%;vertical-align:top;border-radius:3px;transition:background-color .15s,opacity .15s}
+.lv-explained .lv-ln::before{content:attr(data-ln);display:inline-block;width:1.6em;margin-right:.9em;text-align:right;color:color-mix(in srgb,var(--code-ink) 45%,transparent);user-select:none;-webkit-user-select:none}
+.lv-explained.lv-hl-on .lv-ln{opacity:.45}
+.lv-explained.lv-hl-on .lv-ln.lv-hl{opacity:1;background:color-mix(in srgb,var(--accent) 32%,transparent);box-shadow:inset 3px 0 0 var(--accent)}
+
+/* ---------- explainer ---------- */
+details.cmd-explain{margin:-4px 0 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:14.5px}
+details.cmd-explain>summary{cursor:pointer;padding:9px 14px;font-weight:600;color:var(--ink);list-style-position:inside}
+details.cmd-explain>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:10px}
+details.cmd-explain[open]>summary{border-bottom:1px solid var(--line)}
+details.cmd-explain ol{margin:8px 0;padding:0 10px;list-style:none}
+details.cmd-explain li{margin:2px 0;padding:6px 8px;border-radius:8px;line-height:1.6}
+details.cmd-explain li[data-lines]{cursor:default}
+details.cmd-explain li[data-lines]:hover,details.cmd-explain li.lv-active{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+details.cmd-explain li[data-lines]:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.lv-ref{display:inline-block;min-width:3.6em;margin-right:8px;padding:0 6px;border:1px solid var(--line);border-radius:6px;color:var(--muted);font:600 12px/1.7 D2Coding,"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;text-align:center}
+details.cmd-explain li.lv-active .lv-ref{border-color:var(--accent);color:var(--ink)}
+
+/* ---------- diagram ---------- */
+figure.viz{margin:18px 0;padding:14px 14px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+figure.viz>figcaption{color:var(--muted);font-size:14px}
+.lv-sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.lv-stage{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.lv-svg{display:block;width:100%;min-width:560px;height:auto}
+.lv-svg text{font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;fill:var(--ink)}
+.lv-svg .lv-mono{font-family:D2Coding,"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.lv-label{font-size:15px;font-weight:600}
+.lv-svg .lv-sub{font-size:12.5px;fill:var(--muted)}
+.lv-note{font-size:13px}
+.lv-box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
+.lv-group>.lv-box{fill:transparent;stroke-width:1.5}
+.lv-fold{fill:none;stroke:var(--line);stroke-width:1.5}
+.lv-notebox{stroke-dasharray:5 4}
+.lv-tone-err .lv-notebox{stroke:var(--err);fill:color-mix(in srgb,var(--err) 10%,var(--panel))}
+.lv-tone-ok .lv-notebox{stroke:var(--ok);fill:color-mix(in srgb,var(--ok) 10%,var(--panel))}
+.lv-tone-info .lv-notebox{stroke:var(--info);fill:color-mix(in srgb,var(--info) 10%,var(--panel))}
+.lv-node{transition:opacity .3s}
+.lv-node.lv-on>.lv-box,.lv-node.lv-on>.lv-fold{stroke:var(--accent);stroke-width:2.5}
+.lv-tone-err.lv-on>.lv-notebox{stroke:var(--err)}
+.lv-tone-ok.lv-on>.lv-notebox{stroke:var(--ok)}
+.lv-node.lv-dim{opacity:.6}
+.lv-node.lv-hidden,.lv-node.lv-pending{opacity:0;pointer-events:none}
+.lv-node.lv-hidden{visibility:hidden}
+.lv-edge{fill:none;stroke:var(--muted);stroke-width:2}
+.lv-edge-g.lv-on .lv-edge{stroke:var(--accent);stroke-width:2.5}
+.lv-arrow path{fill:var(--muted)}
+.lv-arrow-on path{fill:var(--accent)}
+.lv-svg .lv-edge-label{font-size:12.5px;fill:var(--muted)}
+.lv-edge-g.lv-on .lv-edge-label{fill:var(--ink);font-weight:600}
+.lv-token rect{fill:var(--accent)}
+.lv-svg .lv-token text{fill:var(--panel);font-size:12.5px;font-weight:700}
+.lv-mark-fill{fill:var(--ok)}
+.lv-mark-ink{fill:none;stroke:var(--panel);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.lv-mark-x .lv-mark-fill{fill:var(--err)}
+.lv-mark-lock .lv-mark-bg{fill:var(--panel);stroke:var(--accent);stroke-width:2}
+.lv-mark-lock .lv-mark-fill{fill:var(--accent)}
+.lv-mark-lock .lv-mark-line{fill:none;stroke:var(--accent);stroke-width:2.2}
+
+.lv-cap{margin:10px 2px 8px;min-height:3.4em;font-size:16px;line-height:1.6;color:var(--ink)}
+.lv-num{display:inline-block;margin-right:8px;padding:0 8px;border-radius:999px;background:var(--accent);color:var(--panel);font-size:13px;font-weight:700}
+.lv-cap code{margin-right:8px}
+.lv-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.lv-btn{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 12px;font:600 14px/1.2 inherit;cursor:pointer}
+.lv-btn:hover:not(:disabled){border-color:var(--accent)}
+.lv-btn:focus-visible,.lv-dot:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lv-btn:disabled{opacity:.45;cursor:default}
+.lv-play{border-color:var(--accent)}
+.lv-dots{display:flex;gap:6px;margin-left:auto;padding:4px 0}
+.lv-dot{width:14px;height:14px;padding:0;border:2px solid var(--line);border-radius:50%;background:transparent;cursor:pointer}
+.lv-dot.lv-done{background:var(--line)}
+.lv-dot[aria-current="step"]{background:var(--accent);border-color:var(--accent)}
+
+@media (max-width:860px){.lv-cap{font-size:15px}.lv-dots{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){.lv-node,.lv-explained .lv-ln{transition:none}}
+@media print{.lv-controls{display:none}}
