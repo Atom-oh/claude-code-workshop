@@ -994,9 +994,10 @@ cat &gt; $K/.mcp.json &lt;&lt; 'EOF'
   }
 }
 EOF
+TMP=$(mktemp)
 jq '.userConfig = { seoul_api_key: { type: "string", title: "서울 열린데이터광장 인증키",
   description: "비워 두면 sample.json으로 동작합니다(mock). 키는 plugin 파일에 저장되지 않습니다.", sensitive: true } }' \
-  $K/.claude-plugin/plugin.json &gt; /tmp/pj &amp;&amp; mv /tmp/pj $K/.claude-plugin/plugin.json
+  $K/.claude-plugin/plugin.json &gt; "$TMP" &amp;&amp; mv "$TMP" $K/.claude-plugin/plugin.json &amp;&amp; chmod 644 $K/.claude-plugin/plugin.json
 cat &gt; $K/hooks/hooks.json &lt;&lt; 'EOF'
 {
   "hooks": {
@@ -1026,7 +1027,10 @@ claude plugin validate $K | tail -1</code></pre>
     <div class="code-head"><span class="code-label">Terminal, 트랙 C일 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
 K=~/claude-lab/capstone/$KIT
-SECRET=""; case "$SRV" in alphavantage) SECRET=alpha_vantage_api_key ;; github) SECRET=github_pat ;; esac
+SECRET=""; case "$SRV" in
+  alphavantage) SECRET=alpha_vantage_api_key; TITLE="Alpha Vantage API 키" ;;
+  github) SECRET=github_pat; TITLE="GitHub 개인 액세스 토큰(PAT)" ;;
+esac
 jq -n --arg srv "$SRV" --argjson e "$ALLOW_ENTRY" '
   (if $e.serverUrl then { type: "http", url: $e.serverUrl }
    else { command: $e.serverCommand[0], args: $e.serverCommand[1:] } end)
@@ -1035,9 +1039,10 @@ jq -n --arg srv "$SRV" --argjson e "$ALLOW_ENTRY" '
     else . end
   | { mcpServers: { ($srv): . } }' &gt; $K/.mcp.json
 if [ -n "$SECRET" ]; then
-  jq --arg k "$SECRET" '.userConfig = { ($k): { type: "string", title: "\($k)",
+  TMP=$(mktemp)
+  jq --arg k "$SECRET" --arg t "$TITLE" '.userConfig = { ($k): { type: "string", title: $t,
     description: "MCP 서버에 넘길 키나 토큰. plugin 파일에 저장되지 않습니다.", sensitive: true } }' \
-    $K/.claude-plugin/plugin.json &gt; /tmp/pj &amp;&amp; mv /tmp/pj $K/.claude-plugin/plugin.json
+    $K/.claude-plugin/plugin.json &gt; "$TMP" &amp;&amp; mv "$TMP" $K/.claude-plugin/plugin.json &amp;&amp; chmod 644 $K/.claude-plugin/plugin.json
 fi
 G='"${CLAUDE_PLUGIN_ROOT}/scripts'
 jq -n --arg mg "$G/mcp-guard.sh\" plugin_${KIT}_${SRV}" --arg ng "$G/net-guard.sh\" $NET_ALLOW" '{ hooks: { PreToolUse: [
@@ -1063,7 +1068,7 @@ claude plugin validate $K | tail -1</code></pre>
 <section class="task" id="task-03" data-min="10">
   <div class="task-head"><span class="task-num">03</span><h2>로컬 마켓플레이스에 올리기</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">마켓플레이스 폴더에 <code class="inline">my-kit</code>를 복사해 올리고, 카탈로그 <code class="inline">marketplace.json</code>을 만듭니다.</p>
-  <p class="body">마켓플레이스는 plugin 목록(카탈로그)과 plugin 파일을 담은 폴더입니다. 카탈로그의 상대 경로 <code class="inline">./plugins/my-kit</code>은 마켓플레이스 폴더 <strong>안</strong>을 가리켜야 하고, <code class="inline">..</code>으로 밖을 가리키거나 심볼릭 링크로 잇는 것은 허용되지 않습니다 (<a href="https://code.claude.com/docs/en/plugins/marketplace-reference">마켓플레이스 공식 문서</a>). 그래서 원본 <code class="inline">my-kit/</code>을 복사해 올립니다. 복사가 곧 배포입니다.</p>
+  <p class="body">마켓플레이스는 plugin 목록(카탈로그)과 plugin 파일을 담은 폴더입니다. 카탈로그의 상대 경로 <code class="inline">./plugins/my-kit</code>은 마켓플레이스 폴더 <strong>안</strong>을 가리켜야 하고, <code class="inline">..</code>으로 밖을 가리키면 검증에서 실패하고, 심볼릭 링크로 이은 경로는 읽히지 않습니다 (<a href="https://code.claude.com/docs/en/plugins/marketplace-reference">마켓플레이스 공식 문서</a>). 그래서 원본 <code class="inline">my-kit/</code>을 복사해 올립니다. 복사가 곧 배포입니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
@@ -1129,7 +1134,17 @@ ls -A</code></pre>
     <span class="co-title">슬래시 명령은 붙여 넣으세요</span>
     <code class="inline">/plugin marketplace add …</code>를 빠르게 타이핑하면 자동완성이 앞 글자로 다른 명령(<code class="inline">/add-dir</code> 등)을 골라 실행하기도 합니다. 복사 버튼으로 복사해 붙여 넣고 Enter를 누르세요. 엉뚱한 창이 뜨면 Esc로 닫습니다.
   </div>
-  <div class="step-title"><span class="step-no">3</span>무엇이 설치됐는지 기록하기</div>
+  <div class="step-title"><span class="step-no">3</span>이 폴더에서는 my-kit만 켜기</div>
+  <p class="body">사용자 범위로 설치해 둔 plugin은 이 폴더에서도 켜져 있습니다. Ch4 랩에서 설치한 팀 킷(<code class="inline">fsi-team-kit@fsi-local</code>이나 <code class="inline">asset-team-kit@fsi-local</code>)은 DLP 훅과 agent, skill을 함께 싣고 있어서, 켜진 채로 두면 막힌 장면이나 agent 호출이 my-kit에서 온 것인지 가릴 수 없습니다. 두 번째 터미널에서 아래 블록을 실행하면 my-kit 말고 켜져 있는 plugin을 <strong>이 폴더에서만</strong> 끕니다. <code class="inline">--scope local</code>은 이 폴더의 <code class="inline">.claude/settings.local.json</code>에 끈다는 기록을 남기고, 사용자 설정은 그대로 둡니다. 그래서 다른 폴더(Ch6 랩 등)에서는 그대로 켜져 있습니다 (<a href="https://code.claude.com/docs/en/plugins/cli-reference">plugin 명령 공식 문서</a>).</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; . ~/claude-lab/capstone/r2.env
+claude plugin list --json | jq -r --arg k "$KIT@" '.[] | select(.enabled and (.id | startswith($k) | not)) | .id' \
+  | while IFS= read -r P; do claude plugin disable "$P" --scope local; done
+claude plugin list --json | jq -r '.[] | select(.enabled) | .id'</code></pre>
+  </div>
+  <p class="body">마지막 줄에 <code class="inline">my-kit@capstone-local</code> 한 줄만 나와야 합니다. Setup에서 설치한 plugin(superpowers 등)도 이 폴더에서는 꺼집니다. 다시 켜려면 <code class="inline">claude plugin enable 이름@마켓플레이스 --scope local</code>을 씁니다. 열려 있는 세션에는 <code class="inline">/reload-plugins</code>로 반영합니다.</p>
+  <div class="step-title"><span class="step-no">4</span>무엇이 설치됐는지 기록하기</div>
   <p class="body">두 번째 터미널에서 실행합니다. 마지막 두 줄은 설치된 plugin의 agent와 skill 파일 지문(sha256)을 <code class="inline">kit.sha</code>에 남깁니다. R2 미션 페이지에서 "agent와 skill을 다시 짜지 않았다"를 이 파일로 확인합니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1158,7 +1173,7 @@ Projected token cost
 …</code></pre>
   </div>
   <p class="body"><code class="inline">Scope: local</code>, <code class="inline">Status: ✔ enabled</code>와 함께 agent, skill, 훅, MCP 서버의 수가 보입니다. 아래쪽의 <code class="inline">Projected token cost</code>는 이 plugin이 세션마다 늘 차지하는 토큰 추정치로, Ch5에서 본 컨텍스트 비용과 같은 이야기입니다.</p>
-  <div class="step-title"><span class="step-no">4</span>가드레일이 따라왔는지</div>
+  <div class="step-title"><span class="step-no">5</span>가드레일이 따라왔는지</div>
   <p class="body">같은 세션에서 트랙에 맞는 요청을 보냅니다. 앞의 두 요청은 막혀야 하고, 세 번째는 통과해야 합니다. 막힌 화면 하나를 캡처해 두면 출품 양식 4번이 됩니다.</p>
   <table class="tbl"><thead><tr><th>트랙</th><th>막혀야 하는 요청</th><th>보이는 메시지</th><th>통과해야 하는 요청</th></tr></thead><tbody>
     <tr><td>A</td><td><code class="inline">고객 900101-1234567 의 가입 이력을 알려 주세요</code><br><code class="inline">~/claude-lab/mydata/raw/customers.csv 의 첫 줄을 보여 주세요</code></td><td><code class="inline">DLP:</code>, <code class="inline">RAW:</code> (또는 권한 거부)</td><td><code class="inline">@my-kit:consult-prep 로 40대 고객 한 명의 상담 준비 노트를 만들어 주세요</code></td></tr>
@@ -1199,6 +1214,7 @@ mv $P/scripts.off $P/scripts &amp;&amp; ls $P/scripts</code></pre>
     <label class="cp-item"><input type="checkbox"><span>새 폴더에서 설치 한 줄로 <code>my-kit:</code> agent와 skill이 보인다 (local 범위)</span></label>
     <label class="cp-item"><input type="checkbox"><span>막혀야 하는 요청 두 개가 막혔고, agent 요청은 통과했다</span></label>
     <label class="cp-item"><input type="checkbox"><span>스크립트를 치웠을 때도 막혔고, 스크립트를 되돌렸다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>이 폴더에서 켜진 plugin이 my-kit 하나뿐이다</span></label>
     <label class="cp-item"><input type="checkbox"><span><code>capstone-try/kit.sha</code>를 만들었다</span></label>
   </div>
   <p class="body">여기까지 되면 <a href="ClaudeCode_Capstone_Overview.html#checklist">완주 체크리스트</a> 2번, 5번, 7번이 채워집니다. 이제 <a href="ClaudeCode_Capstone_R2_1_HandsOnLab.html">R2-1 정기 분석 리포트</a>나 <a href="ClaudeCode_Capstone_R2_2_HandsOnLab.html">R2-2 기획안 작성</a>으로 갑니다. 미션은 <a href="ClaudeCode_Capstone_Overview.html#missions-r2">개요의 R2 미션</a>에서 두 개 이상 고릅니다.</p>
@@ -1218,7 +1234,7 @@ jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?
 echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"
 git commit -qm "my-kit 0.1.0" &amp;&amp; git log --oneline</code></pre>
   </div>
-  <p class="body">키 검사에서 파일 이름이 나오면 커밋하지 말고 그 파일부터 고칩니다. 키는 plugin이 아니라 설치 창과 MCP 등록에만 있어야 합니다. GitHub 계정이 있으면 <strong>비공개</strong> 저장소를 만들고 올립니다(<code class="inline">내계정</code>을 바꿔 씁니다).</p>
+  <p class="body">키 검사에서 파일 이름이 나오면 커밋하지 말고 그 파일부터 고칩니다. 이 검사는 R1에서 <code class="inline">read -rs</code>로 받아 <code class="inline">~/.claude.json</code>에 등록한 값을 찾습니다. 설치 창(<code class="inline">userConfig</code>)에만 넣은 키는 비밀 저장소에 있어 여기서 찾지 못하므로, 그 키를 직접 붙여 넣은 파일이 없는지는 눈으로도 봅니다. 키는 plugin이 아니라 설치 창과 MCP 등록에만 있어야 합니다. GitHub 계정이 있으면 <strong>비공개</strong> 저장소를 만들고 올립니다(<code class="inline">내계정</code>을 바꿔 씁니다).</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, GitHub 계정이 있을 때</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone/marketplace

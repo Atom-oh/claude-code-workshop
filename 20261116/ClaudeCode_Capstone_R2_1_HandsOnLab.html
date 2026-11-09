@@ -712,14 +712,14 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; . ~/claude-lab/capstone/r2.env
-claude plugin list
+claude plugin list --json | jq -r '.[] | select(.enabled) | "\(.id) \(.scope)"'
 (cd ~/claude-lab/capstone/marketplace/plugins/$KIT &amp;&amp; sha256sum -c ~/claude-lab/capstone-try/kit.sha)
 ls -A .claude</code></pre>
   </div>
-  <p class="body"><code class="inline">my-kit@capstone-local</code>이 <code class="inline">Scope: local</code>, <code class="inline">✔ enabled</code>로 보이고, <code class="inline">sha256sum -c</code>의 줄이 모두 <code class="inline">OK</code>, <code class="inline">.claude/</code>에는 <code class="inline">settings.json</code>과 <code class="inline">settings.local.json</code>만 있으면 됩니다. <code class="inline">kit.sha</code>가 없으면 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-04">R2 공통 04</a>의 3번 블록을 먼저 실행합니다.</p>
+  <p class="body">켜진 plugin 목록에 <code class="inline">my-kit@capstone-local local</code> 한 줄만 보이고, <code class="inline">sha256sum -c</code>의 줄이 모두 <code class="inline">OK</code>, <code class="inline">.claude/</code>에는 <code class="inline">settings.json</code>과 <code class="inline">settings.local.json</code>만 있으면 됩니다. 다른 plugin이 함께 보이면 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-04">R2 공통 04</a>의 3번 블록으로 이 폴더에서 끕니다. <code class="inline">kit.sha</code>가 없으면 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-04">R2 공통 04</a>의 4번 블록을 먼저 실행합니다.</p>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>plugin이 local 범위로 켜져 있고 지문이 모두 <code>OK</code>다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>이 폴더에서 켜진 plugin이 my-kit 하나(local 범위)이고 지문이 모두 <code>OK</code>다</span></label>
   </div>
 </section>
 
@@ -788,9 +788,10 @@ for f in reports/*.md; do echo "== $f"; grep -E '^#' "$f" | head -8; done</code>
     <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; . ~/claude-lab/capstone/r2.env
 (cd ~/claude-lab/capstone/marketplace/plugins/$KIT &amp;&amp; sha256sum -c ~/claude-lab/capstone-try/kit.sha)
 find . -path ./.git -prune -o \( -path '*/agents/*' -o -name SKILL.md \) -print
+ls -lt ~/.claude/agents ~/.claude/skills 2&gt;/dev/null
 claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP servers'</code></pre>
   </div>
-  <p class="body">세 가지를 봅니다. <code class="inline">sha256sum -c</code>가 모두 <code class="inline">OK</code>면 설치 뒤에 plugin의 agent와 skill이 바뀌지 않았습니다. <code class="inline">find</code>가 아무것도 출력하지 않으면 이 폴더에 따로 만든 agent나 skill이 없습니다. <code class="inline">claude plugin details</code>의 수는 R2 공통 04에서 본 것과 같아야 합니다.</p>
+  <p class="body">네 가지를 봅니다. <code class="inline">sha256sum -c</code>가 모두 <code class="inline">OK</code>면 설치 뒤에 plugin의 agent와 skill이 바뀌지 않았습니다. <code class="inline">find</code>가 아무것도 출력하지 않으면 이 폴더에 따로 만든 agent나 skill이 없습니다. <code class="inline">ls -lt ~/.claude/agents ~/.claude/skills</code>는 사용자 수준의 agent와 skill입니다. 앞선 실습에서 만든 것이 보여도 이 미션의 "새로 짠 것"으로 세지 않습니다. 이름에 <code class="inline">my-kit:</code>이 붙지 않아 세션 답에서도 구분됩니다. 다만 날짜가 오늘 R2 시간대인 파일이 있으면 그것은 이번 업무를 위해 새로 짠 것이니 지우거나 plugin으로 옮깁니다. <code class="inline">claude plugin details</code>의 수는 R2 공통 04에서 본 것과 같아야 합니다.</p>
   <p class="body">세션에서도 물어봅니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
@@ -799,11 +800,11 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
   <p class="body">답에 <code class="inline">my-kit:periodic-report</code>와 <code class="inline">my-kit:</code>이 붙은 agent만 나오면 됩니다. 이 답은 모델의 설명이라 보조 증거이고, 지문 검사가 기준입니다.</p>
   <div class="callout warn">
     <span class="co-title">skill을 고치고 싶어졌다면</span>
-    두 번 돌려 보니 형식을 바꾸고 싶을 수 있습니다. 그때는 이 폴더에 새 skill을 만들지 말고, <code class="inline">~/claude-lab/capstone/my-kit/</code> 원본을 고친 뒤 버전을 올리고 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-03">R2 공통 03</a>으로 다시 배포합니다. 그다음 R2 공통 04의 3번 블록으로 <code class="inline">kit.sha</code>를 다시 만들고, 바꾼 내용을 출품에 적습니다. 업무마다 agent와 skill을 새로 짜는 것이 아니라, 하나의 plugin을 고쳐 가며 쓰는 것이 재사용입니다.
+    두 번 돌려 보니 형식을 바꾸고 싶을 수 있습니다. 그때는 이 폴더에 새 skill을 만들지 말고, <code class="inline">~/claude-lab/capstone/my-kit/</code> 원본을 고친 뒤 버전을 올리고 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-03">R2 공통 03</a>으로 다시 배포합니다. 그다음 R2 공통 04의 4번 블록으로 <code class="inline">kit.sha</code>를 다시 만들고, 바꾼 내용을 출품에 적습니다. 업무마다 agent와 skill을 새로 짜는 것이 아니라, 하나의 plugin을 고쳐 가며 쓰는 것이 재사용입니다.
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>지문 검사가 모두 <code>OK</code>고, 이 폴더에 따로 만든 agent와 skill이 없다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>지문 검사가 모두 <code>OK</code>고, 이 폴더와 사용자 수준에 이번 R2 동안 새로 만든 agent와 skill이 없다</span></label>
     <label class="cp-item"><input type="checkbox"><span>세션의 답에 <code>my-kit:</code>이 붙은 skill과 agent만 나왔다</span></label>
   </div>
 </section>
@@ -819,7 +820,7 @@ jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?
   | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -rlF -- "$V" reports/ ; done
 echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"</code></pre>
   </div>
-  <p class="body"><code class="inline">개인정보 패턴 없음</code>과 <code class="inline">키 검사 끝</code> 사이에 파일 이름이 없으면 됩니다. 아래는 트랙 B의 메모 예입니다. 내 트랙에 맞게 바꿔 둡니다.</p>
+  <p class="body"><code class="inline">개인정보 패턴 없음</code>과 <code class="inline">키 검사 끝</code> 사이에 파일 이름이 없으면 됩니다. 키 검사는 R1에서 <code class="inline">read -rs</code>로 받아 <code class="inline">~/.claude.json</code>에 등록한 값만 찾습니다. 설치 창(<code class="inline">userConfig</code>)에만 넣은 키는 비밀 저장소에 있어 찾지 못하니, 그 키를 붙여 넣은 적이 없는지 스스로도 확인합니다. 아래는 트랙 B의 메모 예입니다. 내 트랙에 맞게 바꿔 둡니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">출품 메모, 예시</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>[R2-1 정기 분석 리포트]
