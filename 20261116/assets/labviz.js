@@ -46,6 +46,9 @@
   // innerText do not change; the page's copy button reads data-raw.
   function wrapLines(code) {
     if (code.dataset.raw != null) return;
+    // Only plain-text blocks are wrapped: rebuilding from textContent would
+    // drop any child markup (e.g. a <span> from a syntax highlighter).
+    if (code.children.length) return;
     var raw = code.textContent;
     code.dataset.raw = raw;
     var trailing = /\n$/.test(raw);
@@ -82,7 +85,8 @@
     var block = det.previousElementSibling;
     if (!block || !block.classList.contains("code")) return;
     var code = block.querySelector("pre code") || block.querySelector("pre");
-    if (!code) return;
+    if (!code || det.classList.contains("lv-ready")) return;
+    det.classList.add("lv-ready");
     wrapLines(code);
     block.classList.add("lv-explained");
     var spans = code.querySelectorAll(".lv-ln");
@@ -483,8 +487,8 @@
       { id: "raw", shape: "folder", label: "raw/", x: 384, y: 248, w: 120, h: 64, appear: 2 },
       { id: "pseudo", shape: "folder", label: "pseudo/", x: 527, y: 248, w: 120, h: 64, appear: 2 },
       { id: "checkpoints", shape: "folder", label: "checkpoints/", x: 670, y: 248, w: 120, h: 64, appear: 2 },
-      { id: "sumnote", shape: "note", tone: "err", label: "모두 맞으면 → 체크섬 OK\n하나라도 다르면 → FAILED, 여기서 멈춤",
-        x: 527, y: 338, w: 400, h: 50, appear: 3, until: 3 },
+      { id: "oknote", shape: "note", tone: "ok", label: "모두 맞으면\n→ 체크섬 OK", x: 425, y: 338, w: 150, h: 50, appear: 3, until: 3 },
+      { id: "errnote", shape: "note", tone: "err", label: "하나라도 다르면 → FAILED\n여기서 멈춤", x: 630, y: 338, w: 220, h: 50, appear: 3, until: 3 },
       { id: "rawnote", shape: "note", tone: "err", label: "DLP 시연용\n가짜 원본(주민번호 등)", x: 384, y: 336, w: 170, h: 50, appear: 5 },
       { id: "pseudonote", shape: "note", tone: "ok", label: "분석용\n가명처리 데이터", x: 527, y: 336, w: 120, h: 50, appear: 5 }
     ],
@@ -501,7 +505,7 @@
         on: ["tmp", "e-unzip", "raw", "pseudo", "checkpoints"], flow: { edge: "e-unzip", token: "mydata-kit.zip" } },
       { cmd: "sha256sum -c",
         caption: "파일마다 지문(SHA-256 값)을 목록과 비교합니다. 하나라도 다르면 빨간 FAILED가 나오고 거기서 멈춥니다.",
-        on: ["raw", "pseudo", "checkpoints", "sumnote"], marks: { raw: "check", pseudo: "check", checkpoints: "check" } },
+        on: ["raw", "pseudo", "checkpoints", "oknote", "errnote"], marks: { raw: "check", pseudo: "check", checkpoints: "check" } },
       { cmd: "chmod -R a-w",
         caption: "raw/와 pseudo/에 자물쇠를 겁니다. 읽기 전용이라 실수로 원본을 고칠 수 없습니다.",
         on: ["raw", "pseudo"], marks: { raw: "lock", pseudo: "lock" } },
