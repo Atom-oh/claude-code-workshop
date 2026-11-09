@@ -89,6 +89,8 @@ change; old numbers in learner folders are legacy.
   wording for new project descriptions; official names in teaching material
   and existing event assets are not prohibited. Do not add internal-only
   organizational or confidentiality labels to public documents.
+- Lab code blocks keep their copied text. Add explanations in a `cmd-explain`
+  `<details>` after the block, never inside the `<pre>`.
 - Use Conventional Commits. Leave unrelated local files, including imported
   archives, untouched.
 
@@ -99,7 +101,7 @@ change; old numbers in learner folders are legacy.
 - For site changes, check local links/assets and preview the affected pages at
   the published paths. Test changed browser behavior; use
   `node --check ccw-hands-on-lab/assets/theme.js` when changing that script.
-- When changing November lab pages or `tools/mydata/`, run `python3 -m unittest discover -s tools/mydata/tests -t .` and `python3 tools/mydata/build.py --version <v> && python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip`.
+- When changing November lab pages or `tools/mydata/`, run `python3 -m unittest discover -s tools/mydata/tests -t .` and `python3 tools/mydata/build.py --version <v> && python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip`, plus `python3 tools/mydata/check_viz.py 20261116` and `node --check 20261116/assets/labviz.js`.
 - No `npm test` or application build exists here; deployment is limited to
   Pages. Workshop commands may require separate learner environments; do not
   run them as repository checks.
