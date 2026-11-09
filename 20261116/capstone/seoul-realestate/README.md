@@ -43,15 +43,15 @@
 cd ~/claude-lab/capstone/seoul-realestate
 python3 -m venv .venv && .venv/bin/python -c 'import sys; sys.exit(sys.version_info < (3, 10))' \
   || { rm -rf .venv; curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="$HOME/.local/bin" sh; "$HOME/.local/bin/uv" venv --seed -q -p 3.12 .venv; }
-.venv/bin/pip install -q mcp
+.venv/bin/pip install -q "mcp>=1.2,<2.4"
 SEOUL_MOCK=1 .venv/bin/python -c 'import server; print(len(server.search_trades("강남구", "202609", 5)))'
 ```
 
-등록은 Claude 세션 밖의 터미널에서, 작업 폴더 `~/claude-lab/capstone`에서 합니다. 범위는 기본값 local(이 폴더에서만, 저장 위치 `~/.claude.json`)입니다.
+등록은 Claude 세션 밖의 터미널에서, 작업 폴더 `~/claude-lab/capstone`에서 합니다. 범위는 기본값 local(이 폴더에서만, 저장 위치 `~/.claude.json`)입니다. `--env` 바로 뒤에 서버 이름을 두면 이름이 또 하나의 환경 변수로 읽힐 수 있어, 공식 문서대로 `--env`와 이름 사이에 `--transport stdio`를 둡니다.
 
 ```bash
 cd ~/claude-lab/capstone
-claude mcp add --transport stdio --env SEOUL_MOCK=1 seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
+claude mcp add --env SEOUL_MOCK=1 --transport stdio seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
 claude mcp list
 ```
 
@@ -62,7 +62,7 @@ claude mcp list
 cd ~/claude-lab/capstone
 read -rs SEOUL_API_KEY
 claude mcp remove seoul-realestate
-claude mcp add --transport stdio --env SEOUL_API_KEY="$SEOUL_API_KEY" seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
+claude mcp add --env SEOUL_API_KEY="$SEOUL_API_KEY" --transport stdio seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
 unset SEOUL_API_KEY
 claude mcp list
 ```
@@ -74,6 +74,6 @@ claude mcp list
 | `SEOUL_API_KEY=sample` | 실호출, 최근 5건만 |
 | 그 밖의 키 | 실호출, 1000건씩 최대 5번 |
 
-`mcp` 1.x와 2.x 둘 다에서 동작합니다 (2.x에서는 `FastMCP`가 `MCPServer`로 이름이 바뀌었고, `server.py`가 둘 다 시도합니다).
+`mcp` 1.x와 2.x 둘 다에서 동작합니다(시험한 버전 1.30.0, 2.3.0, 설치 범위 `>=1.2,<2.4`) (2.x에서는 `FastMCP`가 `MCPServer`로 이름이 바뀌었고, `server.py`가 둘 다 시도합니다).
 - python-sdk: https://github.com/modelcontextprotocol/python-sdk (v2 이름 변경은 `docs/migration.md`)
 - `claude mcp add`: https://code.claude.com/docs/en/mcp

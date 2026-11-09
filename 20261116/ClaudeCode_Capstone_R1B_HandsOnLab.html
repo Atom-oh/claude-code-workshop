@@ -750,22 +750,22 @@ ls -l</code></pre>
     <pre><code>cd ~/claude-lab/capstone/seoul-realestate
 python3 -m venv .venv &amp;&amp; .venv/bin/python -c 'import sys; sys.exit(sys.version_info &lt; (3, 10))' \
   || { rm -rf .venv; curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="$HOME/.local/bin" sh; "$HOME/.local/bin/uv" venv --seed -q -p 3.12 .venv; }
-.venv/bin/pip install -q mcp
+.venv/bin/pip install -q "mcp>=1.2,<2.4"
 .venv/bin/python -c 'import importlib.metadata as m; print("mcp", m.version("mcp"))'
 SEOUL_MOCK=1 .venv/bin/python -c 'import server, json; print(json.dumps(server.search_trades("강남구", "202609", 2), ensure_ascii=False, indent=1))'</code></pre>
   </div>
-  <p class="body"><code class="inline">mcp 2.x</code>(또는 1.x) 버전 한 줄과, <code class="inline">"CGG_NM": "강남구"</code>, <code class="inline">"BLDG_NM": "샘플..."</code>이 든 거래 2건이 보이면 됩니다. mcp 2.x에서는 예전의 <code class="inline">FastMCP</code>가 <code class="inline">MCPServer</code>로 이름이 바뀌었고, <code class="inline">server.py</code>는 두 이름을 모두 시도합니다.</p>
+  <p class="body"><code class="inline">mcp 2.x</code>(또는 1.x) 버전 한 줄과, <code class="inline">"CGG_NM": "강남구"</code>, <code class="inline">"BLDG_NM": "샘플..."</code>이 든 거래 2건이 보이면 됩니다. 시험한 버전은 1.30.0과 2.3.0이고, 설치 범위를 <code class="inline">&gt;=1.2,&lt;2.4</code>로 묶었습니다. mcp 2.x에서는 예전의 <code class="inline">FastMCP</code>가 <code class="inline">MCPServer</code>로 이름이 바뀌었고, <code class="inline">server.py</code>는 두 이름을 모두 시도합니다.</p>
   <table class="tbl"><thead><tr><th>환경 변수</th><th>server.py 동작</th></tr></thead><tbody>
     <tr><td><code class="inline">SEOUL_API_KEY</code> 없음</td><td><code class="inline">sample.json</code>에서 찾는다 (mock)</td></tr>
     <tr><td><code class="inline">SEOUL_MOCK=1</code></td><td>키가 있어도 mock</td></tr>
     <tr><td>키 있음</td><td><code class="inline">openapi.seoul.go.kr</code> 실호출. 1000건씩 최대 5번(호출 횟수 상한), 키는 반환값과 오류 메시지에 넣지 않는다</td></tr>
   </tbody></table>
   <div class="step-title"><span class="step-no">3</span>MCP 서버 등록 (mock)</div>
-  <p class="body">등록은 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더에서 합니다. 범위를 주지 않으면 local(이 폴더에서만 쓰고 <code class="inline">~/.claude.json</code>에 저장)입니다. stdio 서버는 <code class="inline">--</code> 뒤에 실행 명령을 씁니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
+  <p class="body">등록은 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더에서 합니다. 범위를 주지 않으면 local(이 폴더에서만 쓰고 <code class="inline">~/.claude.json</code>에 저장)입니다. stdio 서버는 <code class="inline">--</code> 뒤에 실행 명령을 씁니다. <code class="inline">--env</code> 바로 뒤에 서버 이름을 두면 이름이 또 하나의 환경 변수로 읽힐 수 있어서 <code class="inline">--env</code>와 이름 사이에 <code class="inline">--transport stdio</code>를 둡니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
-claude mcp add --transport stdio --env SEOUL_MOCK=1 seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
+claude mcp add --env SEOUL_MOCK=1 --transport stdio seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
 claude mcp list</code></pre>
   </div>
   <p class="body"><code class="inline">seoul-realestate</code> 줄에 연결됨 표시(<code class="inline">✔ Connected</code>)가 나와야 합니다. 이어서 세션에서 도구를 불러 봅니다.</p>
@@ -903,8 +903,8 @@ if [ ${#KEYVAL} -ge 8 ]; then
   [ "$RC" -eq 1 ] || { echo "KEY: 검사기 오류(grep $RC) - 차단" &gt;&amp;2; exit 2; }
 fi
 
-# 2) 키를 값으로 적는 모양, URL 경로에 든 키, 키가 저장된 사용자 설정 파일
-PAT="SEOUL_API_KEY[\"' ]*[=:][\"' ]*[A-Za-z0-9]{8,}|openapi\.seoul\.go\.kr:8088/[A-Za-z0-9]{8,}/|\.claude\.json"
+# 2) 키를 값으로 적는 모양, URL 경로에 든 키, 키가 저장된 사용자 설정 파일, 프로세스 환경 변수 엿보기
+PAT="SEOUL_API_KEY[\"' ]*[=:][\"' ]*[A-Za-z0-9]{8,}|openapi\.seoul\.go\.kr:8088/[A-Za-z0-9]{8,}/|\.claude\.json|/proc/[^[:space:]]*/environ|(^|[^A-Za-z0-9_])ps[[:space:]]+[A-Za-z]*e"
 printf '%s' "$TEXT" | grep -Eq -- "$PAT"; RC=$?
 [ "$RC" -eq 1 ] &amp;&amp; exit 0      # 1 = 패턴 없음 → 통과
 if [ "$RC" -eq 0 ]; then
@@ -916,7 +916,7 @@ exit 2
 EOF
 chmod +x .claude/hooks/key-guard.sh</code></pre>
   </div>
-  <p class="body">시험 키 <code class="inline">sample</code>(열린데이터광장의 공개 시험 키, 한 번에 5건)은 여덟 글자보다 짧아 이 패턴에 걸리지 않습니다.</p>
+  <p class="body">시험 키 <code class="inline">sample</code>(열린데이터광장의 공개 시험 키, 한 번에 5건)은 여덟 글자보다 짧아 이 패턴에 걸리지 않습니다. <code class="inline">/proc/…/environ</code>과 <code class="inline">ps e</code>, <code class="inline">ps eww</code>처럼 프로세스의 환경 변수(MCP 서버에 넘긴 키 포함)를 엿보는 명령도 막습니다.</p>
   <div class="step-title"><span class="step-no">2</span>호출 대상 훅: net-guard.sh</div>
   <p class="body">Bash 명령과 WebFetch의 URL에서 호스트를 뽑아 <code class="inline">openapi.seoul.go.kr</code>이 아니면 막습니다. MCP 서버 자신은 <code class="inline">server.py</code>의 <code class="inline">BASE_URL</code> 한 곳만 부르도록 코드로 묶여 있습니다.</p>
   <div class="code-wrap">
@@ -965,7 +965,7 @@ cat &gt; .claude/settings.json &lt;&lt; 'EOF'
       { "hooks": [{ "type": "command", "command": "$HOME/claude-lab/capstone/.claude/hooks/key-guard.sh", "onFailure": "block" }] }
     ],
     "PreToolUse": [
-      { "matcher": "Read|Bash|Write|Edit",
+      { "matcher": "Read|Bash|Write|Edit|WebFetch",
         "hooks": [{ "type": "command", "command": "$HOME/claude-lab/capstone/.claude/hooks/key-guard.sh", "onFailure": "block" }] },
       { "matcher": "Bash|WebFetch",
         "hooks": [{ "type": "command", "command": "$HOME/claude-lab/capstone/.claude/hooks/net-guard.sh", "onFailure": "block" }] }
@@ -975,7 +975,11 @@ cat &gt; .claude/settings.json &lt;&lt; 'EOF'
 EOF
 jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></pre>
   </div>
-  <p class="body">이 훅은 도구 입력의 <strong>문자열</strong>만 봅니다. 스킴 없이 쓴 호스트(<code class="inline">curl example.com</code>), 변수로 조립한 URL, 명령의 <strong>결과</strong>는 보지 못한다는 점은 Ch2 Lab 2에서 확인한 한계와 같습니다. 그래서 agent의 <code class="inline">tools</code>에서 Bash와 웹 도구를 빼 둔 것이 또 한 겹이 됩니다.</p>
+  <p class="body">이 훅은 도구 입력의 <strong>문자열</strong>만 봅니다. 스킴 없이 쓴 호스트(<code class="inline">curl example.com</code>), 변수로 조립한 URL, 명령의 <strong>결과</strong>는 보지 못한다는 점은 Ch2 Lab 2에서 확인한 한계와 같습니다. 그래서 agent의 <code class="inline">tools</code>에서 Bash와 웹 도구를 빼 둔 것이 또 한 겹이 됩니다. MCP 서버가 실행 중에 보내는 요청도 훅이 보지 않으므로, 서버 쪽 호출 대상은 <code class="inline">server.py</code>의 <code class="inline">BASE_URL</code>로 묶어 둡니다.</p>
+  <div class="callout warn">
+    <span class="co-title">평문 HTTP</span>
+    서울 열린데이터광장 Open API는 <code class="inline">http://openapi.seoul.go.kr:8088</code> 평문 HTTP로만 제공되고, 키가 URL 경로에 들어갑니다. 즉 키는 암호화되지 않은 채 오갑니다. 공용 와이파이 같은 믿을 수 없는 네트워크에서는 실호출하지 않고, 노출이 의심되면 인증키 관리에서 키를 새로 받습니다.
+  </div>
   <div class="callout tip">
     <span class="co-title">R2에서 쓰입니다</span>
     이 폴더의 <code class="inline">.claude/agents/</code>, <code class="inline">.claude/hooks/</code>, <code class="inline">.claude/settings.json</code>, <code class="inline">seoul-realestate/</code>가 R2에서 plugin으로 묶을 재료입니다. 키는 plugin 저장소에 들어가지 않고 각 사용자의 MCP 등록에만 있습니다.
@@ -1050,7 +1054,7 @@ ls .claude/hooks</code></pre>
     <pre><code>cd ~/claude-lab/capstone
 read -rs SEOUL_API_KEY
 claude mcp remove seoul-realestate
-claude mcp add --transport stdio --env SEOUL_API_KEY="$SEOUL_API_KEY" seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
+claude mcp add --env SEOUL_API_KEY="$SEOUL_API_KEY" --transport stdio seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
 unset SEOUL_API_KEY
 claude mcp list</code></pre>
   </div>

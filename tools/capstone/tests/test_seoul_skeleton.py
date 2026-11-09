@@ -144,6 +144,14 @@ class RealModeTest(unittest.TestCase):
         self.assertIn("INFO-100", str(ctx.exception))
         self.assertNotIn("TESTKEY123", str(ctx.exception))
 
+    def test_non_object_body_gives_friendly_error(self):
+        for body in (b"[]", b'"oops"', json.dumps({server.SERVICE: [1, 2]}).encode()):
+            with mock.patch("urllib.request.urlopen", return_value=io.BytesIO(body)):
+                with self.assertRaises(RuntimeError) as ctx:
+                    run_search(self.ENV, gu="강남구", year_month=FIRST_MONTH)
+            self.assertIn("응답 형식", str(ctx.exception))
+            self.assertNotIn("TESTKEY123", str(ctx.exception))
+
     def test_network_error_message_hides_key(self):
         err = OSError("connect failed for http://openapi.seoul.go.kr:8088/TESTKEY123/json")
         with mock.patch("urllib.request.urlopen", side_effect=err):

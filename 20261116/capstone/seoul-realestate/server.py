@@ -54,7 +54,9 @@ def _fetch_page(key: str, start: int, end: int, year: str, gu: str) -> list[dict
     except (OSError, ValueError):
         # 예외 메시지에 URL(=키)이 섞일 수 있으므로 원인을 붙이지 않는다.
         raise RuntimeError("서울 열린데이터광장 호출 실패 (네트워크 또는 응답 형식)") from None
-    body = data.get(SERVICE) or data          # 오류 응답은 {"RESULT": ...} 만 오기도 한다
+    body = (data.get(SERVICE) or data) if isinstance(data, dict) else None
+    if not isinstance(body, dict):            # 오류 응답은 {"RESULT": ...} 만 오기도 한다
+        raise RuntimeError("서울 열린데이터광장 응답 형식이 예상과 다릅니다")
     result = body.get("RESULT") or {}
     code = result.get("CODE", "UNKNOWN")
     if code == "INFO-200":                     # 해당하는 데이터가 없습니다
