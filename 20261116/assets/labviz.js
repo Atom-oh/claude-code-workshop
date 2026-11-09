@@ -514,6 +514,89 @@
     ]
   });
 
+  /* ==== Ch1 ======================================================== */
+
+  /* ---- Ch1 TASK 01: the agent loop ---- */
+  LabViz.register("agent-loop", {
+    title: "Claude Code가 모델과 도구를 오가며 수집, 수행, 검증을 반복하는 에이전트 루프",
+    viewBox: "0 0 800 440",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 360, y: 232, w: 390, h: 384 },
+      { id: "tools", shape: "group", label: "도구: Read · Bash", x: 360, y: 305, w: 350, h: 134 },
+      { id: "user", shape: "note", tone: "info", label: "사용자\n(터미널)", x: 80, y: 120, w: 110, h: 60 },
+      { id: "claude", shape: "icon", icon: "EC2", label: "Claude Code", x: 360, y: 125 },
+      { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델 Opus 5.5)", x: 700, y: 125 },
+      { id: "customers", shape: "file", label: "customers.csv", x: 285, y: 330, w: 130, h: 50 },
+      { id: "pensions", shape: "file", label: "pensions.csv", x: 435, y: 330, w: 130, h: 50 },
+      { id: "pycalc", shape: "note", tone: "info", label: "python3 집계 코드 (Bash로 실행)", x: 360, y: 405, w: 330, h: 32, appear: 5 }
+    ],
+    edges: [
+      { id: "e-prompt", from: "user", to: "claude", label: "프롬프트" },
+      { id: "e-ask", from: "claude", to: "bedrock", label: "요청", via: [[470, 98], [610, 98]] },
+      { id: "e-resp", from: "bedrock", to: "claude", label: "응답", via: [[610, 150], [470, 150]] },
+      { id: "e-exec", from: "claude", to: "tools", via: [[320, 195], [320, 238]] },
+      { id: "e-result", from: "tools", to: "claude", via: [[400, 238], [400, 195]] },
+      { id: "e-answer", from: "claude", to: "user", via: [[300, 175], [105, 175]] }
+    ],
+    steps: [
+      { cmd: "프롬프트 전송",
+        caption: "사용자가 터미널에서 프롬프트를 입력합니다. Claude Code가 이 글을 받아 작업을 시작합니다.",
+        on: ["user", "claude", "e-prompt"], flow: { edge: "e-prompt", token: "프롬프트" } },
+      { cmd: "모델이 결정",
+        caption: "Claude Code가 프롬프트를 Bedrock의 모델에 보냅니다. 모델은 \"파일 앞부분부터 보자\"고 정하고, 읽기 도구를 쓰라는 답을 돌려줍니다.",
+        on: ["claude", "bedrock", "e-ask", "e-resp"], flow: { edge: "e-resp", token: "Read로 읽기" } },
+      { cmd: "수집",
+        caption: "Claude Code가 Read와 Bash 도구로 customers.csv와 pensions.csv의 맨 앞 5행을 읽습니다. 도구는 이 PC 안에서 실행됩니다.",
+        on: ["claude", "tools", "customers", "pensions", "e-exec"], flow: { edge: "e-exec", token: "Read · Bash" } },
+      { cmd: "결과를 모델에 다시",
+        caption: "도구가 읽은 결과가 Claude Code로 돌아오고, 다시 모델에 전달됩니다. 모델은 이 결과를 보고 다음 행동을 정합니다.",
+        on: ["tools", "claude", "bedrock", "e-result", "e-ask"], flow: { edge: "e-result", token: "앞 5행" } },
+      { cmd: "수행",
+        caption: "1,000행이 넘는 파일을 눈으로 읽을 수는 없습니다. 모델이 Python 집계 코드를 짜고, Claude Code가 Bash로 실행해 연령대별 수치를 계산합니다.",
+        on: ["claude", "tools", "pycalc", "e-exec"], flow: { edge: "e-exec", token: "python3" } },
+      { cmd: "검증",
+        caption: "프롬프트가 요청한 대로 다른 방법으로 다시 계산해 합계와 중복 고객을 확인합니다. 숫자가 어긋나면 수행 단계로 돌아가 고칩니다.",
+        on: ["claude", "tools", "pycalc", "e-result"], flow: { edge: "e-result", token: "검산 결과" } },
+      { cmd: "답 표시",
+        caption: "검증을 통과한 숫자로 표를 만들어 터미널에 보여줍니다. 한 번의 프롬프트 안에서 수집, 수행, 검증이 이렇게 돌았습니다.",
+        on: ["claude", "user", "e-answer"], flow: { edge: "e-answer", token: "연령대별 표" } }
+    ]
+  });
+
+  /* ---- Ch1 TASK 02 Step 3: the session file ---- */
+  LabViz.register("session-file", {
+    title: "Claude Code가 대화와 도구 결과를 PC의 JSONL 파일에 평문으로 남기는 과정",
+    viewBox: "0 0 800 360",
+    nodes: [
+      { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 400, y: 190, w: 760, h: 320 },
+      { id: "claude", shape: "icon", icon: "EC2", label: "Claude Code", x: 105, y: 190 },
+      { id: "dir", shape: "group", label: "~/.claude/projects/*ch1-loop*/", x: 410, y: 215, w: 330, h: 150 },
+      { id: "jsonl", shape: "file", label: "<session>.jsonl", sub: "한 줄에 JSON 하나", x: 410, y: 238, w: 220, h: 60 },
+      { id: "grepnote", shape: "note", tone: "info", label: "터미널\ngrep -o '고객0'", x: 670, y: 150, w: 170, h: 54, appear: 3 },
+      { id: "nextnote", shape: "note", tone: "ok", label: "2장에서 다룹니다\n보존 기간 · DLP", x: 670, y: 270, w: 170, h: 54, appear: 4 }
+    ],
+    edges: [
+      { id: "e-write", from: "claude", to: "jsonl", label: "메시지 · 도구 결과\n기록", via: [[260, 238]] },
+      { id: "e-grep", from: "grepnote", to: "jsonl", label: "찾기", via: [[540, 238]] }
+    ],
+    steps: [
+      { cmd: "기록",
+        caption: "Claude Code는 대화를 하는 동안 내가 보낸 글, 모델의 답, 도구가 읽은 결과를 이 PC의 세션 파일에 한 줄씩 덧붙입니다.",
+        on: ["claude", "jsonl", "e-write"], flow: { edge: "e-write", token: "메시지" } },
+      { cmd: "평문",
+        caption: "세션 파일은 암호화하거나 가리지 않은 평문 텍스트입니다. 도구가 읽은 고객 행도 그대로 들어갑니다.",
+        on: ["dir", "jsonl"] },
+      { cmd: "grep",
+        caption: "grep -o '고객0'은 파일에서 \"고객0\"이 나오는 곳을 모두 찾습니다. wc -l로 세면 고객 행이 몇 번 저장됐는지 알 수 있습니다.",
+        on: ["jsonl", "grepnote", "e-grep"], flow: { edge: "e-grep", token: "고객0" } },
+      { cmd: "그래서",
+        caption: "숫자가 0이 아니면 고객 데이터가 PC에 원문으로 남은 것입니다. 얼마나 오래 둘지(cleanupPeriodDays)와 막는 방법(DLP)은 2장에서 다룹니다.",
+        on: ["jsonl", "nextnote"] }
+    ]
+  });
+
+  /* ==== end Ch1 ===================================================== */
+
   /* ---- end of diagram definitions ---- */
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
