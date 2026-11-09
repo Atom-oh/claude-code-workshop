@@ -109,6 +109,18 @@ class CheckCapstoneTest(unittest.TestCase):
             self.assertTrue(rule(check(root), "r2_3_cleanup"), body)
         self.assertFalse(rule(check(make_site(f"{self.tmp}/ok")), "r2_3_cleanup"))
 
+    def test_r2_3_cleanup_needs_remove_or_delete_command(self):
+        ask = '<pre>{ "permissions": { "ask": [ "Bash(agentcore deploy *)" ] } }</pre>'
+        bodies = ('<section id="cleanup"><p>agentcore remove all</p></section>' + ask,
+                  '<section id="cleanup"><pre>agentcore status</pre></section>' + ask,
+                  '<section id="cleanup"></section><pre>agentcore remove all</pre>' + ask)
+        for i, body in enumerate(bodies):
+            root = make_site(f"{self.tmp}/{i}", extra={R2_PAGES[3]: page("R2", (30, 30), body)})
+            self.assertTrue(rule(check(root), "r2_3_cleanup"), body)
+        ok = '<section id="cleanup"><pre>aws cloudformation delete-stack</pre></section>' + ask
+        root = make_site(f"{self.tmp}/ok", extra={R2_PAGES[3]: page("R2", (30, 30), ok)})
+        self.assertFalse(rule(check(root), "r2_3_cleanup"))
+
     def test_exists_fails_when_page_missing(self):
         root = make_site(self.tmp, drop=[R1_PAGES[1]])
         self.assertTrue(any(m.startswith("exists") and R1_PAGES[1] in m for m in check(root)))

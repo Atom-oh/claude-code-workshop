@@ -290,8 +290,12 @@ def check_r2_3_cleanup(trees):
     if tree is None:
         return []
     msgs = []
-    if find_id(tree, "cleanup") is None:
+    cleanup = find_id(tree, "cleanup")
+    if cleanup is None:
         msgs.append(f'r2_3_cleanup: {name} has no id="cleanup" step')
+    elif not any(re.search(r"\b(remove|delete)", text_of(e))
+                 for e in cleanup.walk() if e.tag == "pre"):
+        msgs.append(f'r2_3_cleanup: {name} cleanup step has no <pre> with a remove or delete command')
     pres = [text_of(e) for e in elements(tree) if e.tag == "pre"]
     if not any('"ask"' in t and "Bash(" in t for t in pres):
         msgs.append(f'r2_3_cleanup: {name} has no <pre> with an "ask" permission rule example')
