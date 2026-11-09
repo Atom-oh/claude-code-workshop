@@ -184,10 +184,10 @@ https://d3f4g87xxxxx.cloudfront.net</code></pre></div>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>테스트 데이터만 사용하세요</strong></p>
 <p>키트의 모든 식별자는 형식만 흉내 낸 가짜 값입니다. 실제 고객 데이터는 이 환경에 올리지 마세요.</p></div></div>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>URL=https://MYDATA_KIT_URL/mydata-kit.zip
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
 mkdir -p ~/claude-lab/mydata
 chmod -R u+w ~/claude-lab/mydata
-curl -fsSL &quot;$URL&quot; -o /tmp/mydata-kit.zip \
+aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors \
   &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata \
   &amp;&amp; cd ~/claude-lab/mydata \
   &amp;&amp; sha256sum -c --quiet SHA256SUMS &amp;&amp; echo &quot;체크섬 OK&quot; \
@@ -239,8 +239,8 @@ checkpoints  pseudo  raw  SHA256SUMS  VERSION</code></pre></div>
 </tr>
 <tr>
 <td>마이데이터 내려받기가 실패하거나 <code>FAILED</code> 줄과 &quot;did NOT match&quot; 경고가 보임</td>
-<td>네트워크 지연 또는 불완전한 다운로드</td>
-<td>같은 블록을 한 번 더 실행하고, 그래도 실패하면 손을 들어 진행자에게 알림</td>
+<td>AWS 자격 증명 문제, 네트워크 지연 또는 불완전한 다운로드</td>
+<td><code>aws sts get-caller-identity</code>가 정상 출력되는지 확인하고 같은 블록을 한 번 더 실행합니다. 그래도 실패하면 손을 들어 진행자에게 알림</td>
 </tr>
 </tbody>
 </table>

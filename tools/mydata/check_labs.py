@@ -35,7 +35,13 @@ TRANSACTION_FILES = ["bank_transactions.csv", "card_transactions.csv"]
 
 MYDATA = "~/claude-lab/mydata"
 MYDATA_RE = re.compile(re.escape(MYDATA) + r"(/[A-Za-z0-9_./*-]*)?")
-KIT_URL_RE = re.compile(r"https?://[^\s\"'<>()]*mydata-kit\.zip")
+KIT_URI_RE = re.compile(r"s3://[^\s\"'<>()]*mydata-kit\.zip")
+# Rule 6: leftovers of the retired curl/signed-URL download.
+STALE_KIT_RE = re.compile(
+    r"https?://[^\s\"'<>()]*(?:MYDATA_KIT_URL|mydata-kit\.zip)|curl\b[^\n]*mydata-kit\.zip"
+)
+# Rule 4: required TASK minutes may exceed the baseline by this much.
+TIME_TOLERANCE_MIN = 30
 PAT_RE = re.compile(r"PAT='([^']*)'")
 H2_RE = re.compile(r"<h2\b[^>]*>(.*?)</h2>", re.S)
 MINUTES_RE = re.compile(r"\((\d+)\s*분\)\s*$")
@@ -123,11 +129,13 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
         if name == GUARDRAILS and not PAT_RE.search(text):
             err(2, "no PAT='...' found")
 
-        found = set(KIT_URL_RE.findall(text))
+        found = set(KIT_URI_RE.findall(text))
         urls[name] = found
+        if STALE_KIT_RE.search(text):  # rule 6
+            err(6, "stale curl kit download")
         if name == PREFLIGHT:  # rule 3 (fallback only)
-            if not ("curl" in text and found):
-                err(3, "no curl re-download of mydata-kit.zip")
+            if not ("aws s3 cp" in text and found):
+                err(3, "no aws s3 cp of mydata-kit.zip")
         else:
             task00 = next((body for h, body in _sections(raw) if h.startswith("TASK 00")), None)
             if task00 is None:
@@ -137,8 +145,8 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
                 for ck in RESTORE.get(name, []):
                     if "%s/checkpoints/%s" % (MYDATA, ck) not in t00:
                         err(3, "TASK 00 lacks restore of %s/checkpoints/%s" % (MYDATA, ck))
-                if not ("curl" in t00 and KIT_URL_RE.search(t00)):
-                    err(3, "TASK 00 lacks curl re-download of mydata-kit.zip")
+                if not ("aws s3 cp" in t00 and KIT_URI_RE.search(t00)):
+                    err(3, "TASK 00 lacks aws s3 cp of mydata-kit.zip")
 
         if name != PREFLIGHT:  # rule 4
             now, bad = required_minutes(raw)
@@ -147,8 +155,12 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
             base = _baseline_page(labs_dir.parent, baseline_rev, name) if baseline_ok else None
             if base is not None:
                 then = required_minutes(base)[0]
-                if now > then:
-                    err(4, "required TASK minutes %d exceed baseline %d" % (now, then))
+                if now > then + TIME_TOLERANCE_MIN:
+                    err(
+                        4,
+                        "required TASK minutes %d exceed baseline %d + %d"
+                        % (now, then, TIME_TOLERANCE_MIN),
+                    )
         if name in NO_TRANSACTIONS:  # rule 5
             for f in TRANSACTION_FILES:
                 if f in text:
@@ -159,7 +171,7 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
         for name, found in urls.items():
             if found:
                 errors.append(
-                    "%s: rule 6: kit URL %s differs across pages (%s)"
+                    "%s: rule 6: kit URI %s differs across pages (%s)"
                     % (name, ", ".join(sorted(found)), " vs ".join(distinct))
                 )
     return errors

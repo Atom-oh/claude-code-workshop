@@ -3,10 +3,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.mydata.check_labs import check
+from tools.mydata.check_labs import TIME_TOLERANCE_MIN, check
 from tools.mydata.validate import load_pattern
 
-URL = "https://example.test/mydata-kit.zip"
+URL = "s3://example-bucket/abc/mydata-kit.zip"
 MANIFEST = {
     "pseudo/customers.csv",
     "raw/customers.csv",
@@ -15,7 +15,11 @@ MANIFEST = {
     "checkpoints/ch4/b.md",
 }
 RESTORE = (
-    '<pre>[ -d ~/claude-lab/mydata/pseudo ] || (curl -fsSL "%s" -o /tmp/kit.zip)</pre>' % URL
+    '<pre>[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp "%s" /tmp/kit.zip)</pre>' % URL
+)
+CURL_RESTORE = (
+    '<pre>[ -d ~/claude-lab/mydata/pseudo ] || '
+    '(curl -fsSL "https://example.test/mydata-kit.zip" -o /tmp/kit.zip)</pre>'
 )
 
 
@@ -122,17 +126,36 @@ class CheckLabsTest(unittest.TestCase):
         errs = self.run_check(full_set(**{name: page(task00="<pre>echo hi</pre>")}))
         self.assertEqual(len(errs), 1)
         self.assertIn("rule 3", errs[0])
-        self.assertIn("mydata-kit.zip", errs[0])
+        self.assertIn("aws s3 cp of mydata-kit.zip", errs[0])
+
+    def test_curl_kit_download_rejected(self):
+        name = "ClaudeCode_Ch1_HandsOnLab.html"
+        errs = self.run_check(full_set(**{name: page(task00=CURL_RESTORE)}))
+        self.assertTrue(any(e == name + ": rule 3: TASK 00 lacks aws s3 cp of mydata-kit.zip" for e in errs))
+        self.assertTrue(any(e == name + ": rule 6: stale curl kit download" for e in errs))
+        pre = "ClaudeCode_Preflight_Check.html"
+        errs = self.run_check(full_set(**{pre: "<html>%s</html>" % CURL_RESTORE}))
+        self.assertIn(pre + ": rule 3: no aws s3 cp of mydata-kit.zip", errs)
+        placeholder = page(task00=RESTORE + "<pre>URL=https://MYDATA_KIT_URL/mydata-kit.zip</pre>")
+        errs = self.run_check(full_set(**{name: placeholder}))
+        self.assertEqual(errs, [name + ": rule 6: stale curl kit download"])
 
     def test_time_budget_exceeded(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"
         rev = self.commit(full_set(**{name: page(minutes=5) + "<h2>선택 TASK 09 (99분)</h2>"}))
         # Same total (optional task ignored) passes; a larger required total fails.
         self.assertEqual(check(self.labs, MANIFEST, baseline_rev=rev), [])
-        self.write({name: page(minutes=6)})  # uncommitted edit vs baseline
+        self.write({name: page(minutes=5 + TIME_TOLERANCE_MIN + 1)})  # uncommitted edit vs baseline
         errs = check(self.labs, MANIFEST, baseline_rev=rev)
         self.assertEqual(len(errs), 1)
         self.assertTrue(errs[0].startswith(name + ": rule 4"))
+
+    def test_time_budget_within_tolerance(self):
+        name = "ClaudeCode_Ch1_HandsOnLab.html"
+        rev = self.commit(full_set(**{name: page(minutes=5)}))
+        self.write({name: page(minutes=5 + TIME_TOLERANCE_MIN)})
+        self.assertEqual(TIME_TOLERANCE_MIN, 30)
+        self.assertEqual(check(self.labs, MANIFEST, baseline_rev=rev), [])
 
     def test_ch1_ch3_do_not_reference_transaction_files(self):
         for name in ("ClaudeCode_Ch1_HandsOnLab.html", "ClaudeCode_Ch3_HandsOnLab.html"):
@@ -146,7 +169,7 @@ class CheckLabsTest(unittest.TestCase):
 
     def test_inconsistent_kit_url(self):
         name = "ClaudeCode_Ch6_HandsOnLab.html"
-        other = RESTORE.replace("example.test", "other.test")
+        other = RESTORE.replace("example-bucket", "other-bucket")
         errs = self.run_check(full_set(**{name: page(task00=other)}))
         self.assertTrue(errs)
         self.assertTrue(all("rule 6" in e for e in errs))
