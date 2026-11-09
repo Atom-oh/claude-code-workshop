@@ -79,11 +79,15 @@ cost). Lab files after the renumbering:
 The slide PDF filenames keep the previous chapter numbers.
 Session mapping:
 
-- Day 1: Ch1 lecture 10:10–10:40, Ch2 lecture 10:40–11:30 (covers the old Ch2
-  and Ch3 decks), Preflight + Ch1 lab 11:30–12:00, lunch 12:00–13:00, Ch2 Lab 1
-  13:00–13:50 (TASK 00–06, ending with the Apps Gateway group-policy check),
-  Ch2 Lab 2 13:50–14:40 (DLP hook, fail-open, and auto mode tasks; sandbox,
-  Bedrock Guardrails, and extension control are optional), Ch3 14:50–15:40.
+- Day 1 (retimed 2026-11-09): Ch1 lecture 10:10–10:40, break 10:40–10:50,
+  Ch2 lecture 10:50–11:40 (covers the old Ch2 and Ch3 decks), lunch
+  11:40–13:00, one combined lab 13:00–14:00 (Preflight, Ch1 lab, Ch2 Lab 1 and
+  Lab 2), Ch3 lecture 14:00–14:40, Ch3 lab 14:40–15:40, Capstone Round 1
+  15:50–17:40. The combined lab's required TASKs add up to about 100 minutes
+  by the lab pages' own estimates (Preflight 5, Ch1 20, Lab 1 47, Lab 2 32),
+  so facilitators choose which TASKs run in the session; the Ch2 Lab 1 and Lab 2
+  restore TASKs must still run. The Ch3 deck is still paced for a 17-minute lecture
+  and a 33-minute lab.
 - Day 2 times are unchanged: Ch4 10:10–11:30, Ch5 12:40–13:40 (lab TASK
   01–04), Ch6 16:50–17:40 (lab TASK 01–03 as a participant lab: telemetry,
   gateway login and group policy, spend limit; TASK 04 is optional).

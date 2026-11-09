@@ -40,7 +40,7 @@ if (!window.__fsiLoaded) {
 @type: content
 @fit: off
 
-## 강의 30분, 실습 30분
+## 강의 30분, 실습은 13:00 통합 랩
 네 개의 Part와 Lab, 작동 원리에서 이틀간의 학습 지도까지
 
 :::html
@@ -52,7 +52,7 @@ if (!window.__fsiLoaded) {
     <div class="pick"><span class="k">PART 04 / 6분</span><span class="t">이틀 동안 배울 것</span><span class="d">관리와 활용, 두 갈래</span></div>
   </div>
   <div class="fsi-grid-2">
-    <div class="pick lab"><span class="k">LAB / 30분, Ch2 강의 뒤 11:30</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
+    <div class="pick lab"><span class="k">LAB / 점심 뒤 13:00 통합 랩</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
     <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">CLAUDE.md 계층, 추론 리전과 데이터 위치</span></div>
   </div>
 </div>
@@ -63,13 +63,13 @@ if (!window.__fsiLoaded) {
 {timing: 0.5min}
 [요약]
 • 강의는 네 Part, 7분 8분 9분 6분으로 총 30분
-• 실습 30분은 Ch2 강의 뒤 11:30에 시작 (Preflight + 에이전트 루프 관찰)
+• 실습은 점심 뒤 13:00 통합 랩에서 Ch2 Lab과 함께 진행 (Preflight + 에이전트 루프 관찰)
 • 더 알아보기는 시간이 남거나 질문이 나올 때 사용
 
 오늘은 네 Part로 진행합니다.
 첫째, 한 번의 요청이 처리되는 에이전트 루프를 보고, 둘째, 그 루프에 무엇이 실리고 어디에 남는지 봅니다.
 셋째, 금융권에서 가장 많이 묻는 권한과 Bedrock 데이터 경로를 정리하고, 마지막으로 이틀 동안 어떤 순서로 배우는지 지도를 드리겠습니다.
-Ch1 실습 30분은 바로 이어지지 않고, Ch2 강의가 끝난 뒤 11시 30분에 시작합니다. 뒤쪽의 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
+Ch1 실습은 바로 이어지지 않고, 점심 뒤 13시 통합 랩에서 Ch2 랩과 함께 진행합니다. 뒤쪽의 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
 :::
 
 ---
@@ -1038,10 +1038,10 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
   <div class="day">
     <div class="dl"><b>DAY 1</b>개인에서 조직으로</div>
     <div class="track">
-      <div class="ev now"><span class="tm">10:10</span><span class="nm">Ch1 동작 원리, Lab</span><span class="me">지금 여기, Lab은 11:30</span></div>
-      <div class="ev"><span class="tm">10:40</span><span class="nm">Ch2 Bedrock 위에서 안전하게</span></div>
-      <div class="ev"><span class="tm">13:00</span><span class="nm">Ch2 Lab 1, Lab 2 (정책, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>)</span></div>
-      <div class="ev"><span class="tm">14:50</span><span class="nm">Ch3 Subagent</span></div>
+      <div class="ev now"><span class="tm">10:10</span><span class="nm">Ch1 동작 원리, Lab</span><span class="me">지금 여기, Lab은 13:00</span></div>
+      <div class="ev"><span class="tm">10:50</span><span class="nm">Ch2 Bedrock 위에서 안전하게</span></div>
+      <div class="ev"><span class="tm">13:00</span><span class="nm">통합 랩: Preflight, Ch1, Ch2 Lab 1·2 (정책, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>)</span></div>
+      <div class="ev"><span class="tm">14:00</span><span class="nm">Ch3 Subagent, Lab 14:40</span></div>
     </div>
   </div>
   <div class="day">
@@ -1060,7 +1060,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 :::notes
 {timing: 1min}
 [요약]
-• Day 1: 10:10 Ch1 (Lab 11:30), 10:40 Ch2 Bedrock 위에서 안전하게 쓰기, 13:00 Ch2 Lab 1과 Lab 2, 14:50 Ch3 Subagent
+• Day 1: 10:10 Ch1, 10:50 Ch2 Bedrock 위에서 안전하게 쓰기, 13:00 통합 랩(Preflight, Ch1 Lab, Ch2 Lab 1과 Lab 2), 14:00 Ch3 Subagent (Lab 14:40)
 • Day 2: 10:10 Ch4 Claude Code 확장하기, 12:40 Ch5 비용 효율적으로 쓰기, 16:50 Ch6 조직의 비용 보고 통제하기
 • 매일 오후 Capstone 라운드
 
@@ -1078,8 +1078,8 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 @type: content
 @fit: off
 
-## 30분 동안 직접 확인할 다섯 가지
-LAB, Preflight + 에이전트 루프 관찰 (11:30 시작)
+## 통합 랩에서 직접 확인할 다섯 가지
+LAB, Preflight + 에이전트 루프 관찰 (13:00 통합 랩 시작)
 
 :::html
 <div class="fsi fsi-lab">
@@ -1097,12 +1097,12 @@ LAB, Preflight + 에이전트 루프 관찰 (11:30 시작)
 :::notes
 {timing: 0.5min}
 [요약]
-• Ch1 실습 30분은 Ch2 강의 뒤 11:30에 시작
+• Ch1 실습은 점심 뒤 13:00 통합 랩에서 시작, 이어서 Ch2 Lab 1과 Lab 2
 • Preflight와 TASK 01부터 04까지, 오늘 본 Part 1에서 3을 직접 확인
 • Hands-on Lab 포털, Preflight, Chapter 1 순서
 
 {cue: demo}
-실습은 Ch2 강의가 끝난 뒤 11시 30분에 30분 동안 진행합니다. 오늘 그림으로 본 것을 직접 확인하는 시간입니다.
+실습은 점심 뒤 13시 통합 랩에서 Preflight부터 시작해 Ch2 랩까지 이어서 진행합니다. 오늘 그림으로 본 것을 직접 확인하는 시간입니다.
 먼저 Preflight로 Workshop Studio에 접속해 code-server를 열고 게이트웨이 응답을 확인합니다.
 TASK 01은 /status로 Bedrock과 us-east-1을 확인하고 루프를 지켜보는 것, TASK 02는 /context와 CLAUDE.md, 세션 파일, TASK 03은 /rewind와 plan 모드, TASK 04는 CloudTrail에서 호출 기록을 확인하는 것입니다.
 명령은 랩 문서에서 그대로 복사해 따라 하시면 됩니다.
