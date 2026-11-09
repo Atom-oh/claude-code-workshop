@@ -709,12 +709,13 @@ html.light {
 
 .gl { border-bottom: 1px dotted var(--orange); cursor: help; position: relative; }
 .gl:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
-.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: 300px;
+.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: min(300px, calc(100vw - 32px));
   background: var(--bg-card); color: var(--text); border: 1px solid var(--orange); border-radius: 8px; padding: 8px 12px;
   font-size: 13px; font-weight: 400; line-height: 1.6; white-space: normal; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+.gl-tip.flip { left: auto; right: 0; }
 .gl:hover .gl-tip, .gl:focus .gl-tip, .gl:focus-within .gl-tip { display: block; }
 @media (max-width: 900px) {
-  .gl-tip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
+  .gl-tip, .gl-tip.flip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
 }
 details.gl-more { margin: 0 0 40px; color: var(--muted); font-size: 14px; }
 details.gl-more summary { cursor: pointer; color: var(--orange); font-weight: 700; }
@@ -737,7 +738,7 @@ details.gl-more dd { margin: 0; }
 .viz-node.ok { border-color: var(--green); color: var(--green); }
 .viz-node.bad { border-color: var(--viz-bad); color: var(--viz-bad); }
 .viz-node.ok .sb, .viz-node.bad .sb { color: inherit; }
-.viz-arrow { flex: 0 1 72px; min-width: 44px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
+.viz-arrow { flex: 0 1 72px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
 .viz-arrow .el { font-size: 11px; line-height: 1.3; text-align: center; color: var(--dim); font-family: var(--font-code); overflow-wrap: anywhere; min-height: 1.3em; }
 .viz-arrow .ln { position: relative; height: 24px; }
 .viz-arrow .ln::before { content: ""; position: absolute; left: 0; right: 7px; top: 11px; border-top: 2px dashed var(--line); }
@@ -851,6 +852,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   <div class="task-head"><span class="task-num">00</span><h2>키 발급 신청</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">서울 열린데이터광장에서 일반 인증키를 신청합니다. 기다리는 동안 01로 넘어갑니다.</p>
   <p class="body">키는 각자 직접 받습니다. 신청만 해 두고 바로 다음 단계로 갑니다. 이 페이지의 01부터 04까지는 키 없이 합성 샘플 데이터로 진행되고, 키가 나오면 05에서 실호출로 바꿉니다. 먼저 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 키가 나오기를 기다리는 동안 01부터 04까지를 mock으로 진행하려고, 가장 먼저 신청만 해 둡니다.</p>
   <div class="step-title"><span class="step-no">1</span>일반 인증키 신청</div>
   <table class="tbl"><thead><tr><th>순서</th><th>할 일</th></tr></thead><tbody>
     <tr><td>1</td><td><a href="https://data.seoul.go.kr">data.seoul.go.kr</a>에 로그인합니다 (계정이 없으면 회원가입)</td></tr>
@@ -929,6 +931,7 @@ claude mcp list</code></pre>
   <div class="task-head"><span class="task-num">02</span><h2>자기 agent 2개</h2><span class="time-badge">20분</span></div>
   <p class="task-goal">시세를 정리하는 agent와, 이상 거래 후보를 찾는 읽기 전용 검토 agent를 만듭니다. 두 agent 모두 도구를 MCP 도구와 읽기로 좁힙니다.</p>
   <p class="body">agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일입니다. MCP 도구는 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code> 형식으로 <code class="inline">tools</code>에 적습니다. 이 서버라면 <code class="inline">mcp__seoul-realestate__search_trades</code>입니다. <code class="inline">tools</code>를 적으면 그 밖의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다. 아래 이름과 기준은 예시이고, 같은 틀 안에서 주제를 바꿔도 됩니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 시세 정리와 이상 거래 검토를 나누면 두 agent의 역할이 겹치지 않고, <code class="inline">tools</code>를 MCP 도구와 읽기로 좁히면 그 밖의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다.</p>
   <div class="step-title"><span class="step-no">1</span>시세 정리: price-summarizer</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1017,6 +1020,7 @@ EOF</code></pre>
   <div class="task-head"><span class="task-num">03</span><h2>가드레일</h2><span class="time-badge">25분</span></div>
   <p class="task-goal">API 키가 파일, 명령, 커밋, 프롬프트에 들어가는 것을 막는 <span class="gl" data-gl="hook">훅</span>과, Claude의 호출 대상을 <code class="inline">openapi.seoul.go.kr</code>로 묶는 훅을 <span class="gl" data-gl="failclosed">fail-closed</span>로 등록합니다.</p>
   <p class="body">원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일과 DLP</a>와 같습니다. 훅에서 <strong>exit 2가 차단</strong>이고, 오류 경로(jq 없음, 입력 해석 실패, grep 오류)에서도 exit 2를 내야 fail-closed입니다. 키는 05 단계에서 <code class="inline">claude mcp add --env</code>로 사용자 설정(<code class="inline">~/.claude.json</code>, 작업 폴더 밖)에만 넣습니다. 그래서 키 훅은 그 파일에서 등록된 키 값을 읽어 와 같은 값이 보이면 막고, 그 파일 자체를 열려는 요청도 막습니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 이 폴더는 R2에서 plugin으로 묶여 새 폴더에 설치됩니다. 키가 파일이나 커밋에 남으면 그대로 따라가므로 지금 훅으로 막아 둡니다.</p>
   <p class="body">아래 그림은 01에서 연결한 MCP 서버, 05에서 넣을 키, 이 단계에서 만드는 두 훅이 어디에 있고 무엇을 막는지 한 장으로 보여 줍니다.</p>
   <div class="viz" data-viz="mcp-flow"></div>
   <div class="step-title"><span class="step-no">1</span>키 차단 훅: key-guard.sh</div>
@@ -1136,7 +1140,7 @@ jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></p
 <section class="task" id="task-04" data-min="15">
   <div class="task-head"><span class="task-num">04</span><h2>막히는 것 확인</h2><span class="time-badge">15분</span></div>
   <p class="task-goal">키를 파일에 쓰게 시키는 요청과 다른 호스트를 부르는 요청이 실제로 막히는지 직접 봅니다.</p>
-  <p class="body">가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다. 시험에는 가짜 값만 씁니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다. 시험에는 가짜 값만 씁니다.</p>
   <div class="step-title"><span class="step-no">1</span>막혀야 하는 요청 두 가지</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
@@ -1191,6 +1195,7 @@ ls .claude/hooks</code></pre>
   <div class="task-head"><span class="task-num">05</span><h2>실호출로 전환</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">키가 나오면 MCP 등록만 바꿔 실데이터로 전환합니다. agent와 훅은 그대로입니다.</p>
   <p class="body">키는 명령에 직접 쓰지 않고 <code class="inline">read -rs</code>로 받습니다(화면에 보이지 않고 셸 기록에 남지 않음). 붙여 넣고 Enter를 누릅니다. 등록이 끝나면 변수를 지우고, 키는 <code class="inline">~/.claude.json</code>에만 남습니다. Claude 세션 밖의 터미널에서 합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 01부터 04까지는 합성 샘플이었으니, 같은 agent가 실제 서울시 실거래 데이터에서도 그대로 동작하는지 확인합니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -1219,6 +1224,7 @@ claude mcp list</code></pre>
 <section class="task" id="task-06" data-min="10">
   <div class="task-head"><span class="task-num">06</span><h2>R1 정리</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">CLAUDE.md를 짧게 정리하고, 작업 폴더에 키가 없는지 확인한 뒤 쇼케이스 1 공유 문구를 준비합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> R2에서 이 폴더를 plugin으로 묶기 전에 키가 어떤 파일에도 남아 있지 않은지 확인해야, 키가 plugin에 따라 들어가지 않습니다.</p>
   <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게, 그리고 키 검사</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1455,7 +1461,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "id": "pypi",
     "ic": "globe",
     "lb": "Python 패키지 저장소",
-    "sb": "PyPI (pip 기본 저장소)"
+    "sb": "pip install이 내려받는 곳"
    },
    {
     "id": "venv",
@@ -1683,7 +1689,9 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
         "steps": [{"t": "short title", "cap": "caption, `code` allowed", "on": [ids], "ok": [ids], "bad": [ids],
                    "edge": 0 | [0, 1], "chip": "file moving along that edge (copy mode)", "set": {"id": {"lb","sb"}}}] }
       Shapes: browser server folder doc terminal chat plug globe shield key lock user bot result.
-      Buttons: 이전, 재생 (one pass, no loop), 다음, numbered steps. prefers-reduced-motion: opens on the last step, no 재생. */
+      A step's "set" may change lb, sb, ic or img; a set.ic replaces the node's img with that shape for the step.
+      Buttons: 이전, 재생 (one pass, no loop; hidden with fewer than 2 steps), 다음, numbered steps.
+      A .viz whose data is missing, or has no nodes or steps, is hidden. prefers-reduced-motion: opens on the last step, no 재생. */
 (function () {
   "use strict";
   var TYPES = {
@@ -1740,7 +1748,15 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     if (label && label.nextSibling) head.insertBefore(b, label.nextSibling); else head.insertBefore(b, head.firstChild);
     var pre = w.querySelector("pre"), paths = [];
     if (w.getAttribute("data-paste-path")) paths.push(w.getAttribute("data-paste-path"));
-    else if (t === "term" && pre) pre.textContent.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) { paths.push(p); });
+    else if (t === "term" && pre) {
+      var dir = "";
+      pre.textContent.split("\n").forEach(function (line) {
+        var cd = line.match(/^\s*cd\s+([^\s;&|]+)/); if (cd) dir = cd[1];
+        line.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) {
+          paths.push(/^[\/~$]/.test(p) || !dir ? p : dir.replace(/\/$/, "") + "/" + p.replace(/^\.\//, ""));
+        });
+      });
+    }
     if (paths.length) {
       var strip = el("div", "pb-strip", (t === "file" ? "저장할 파일: " : "붙여 넣으면 이 파일이 만들어집니다: ") + paths.map(function (p) { return "<code>" + esc(p) + "</code>"; }).join(", "));
       head.parentNode.insertBefore(strip, head.nextSibling);
@@ -1752,7 +1768,8 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     var list = (host.getAttribute("data-types") || Object.keys(found).join(" ") || "term claude").split(/\s+/).filter(function (k) { return TYPES[k]; });
     var d = el("details", "pg");
     var seen = false;
-    try { seen = localStorage.getItem("fsi-paste-guide") === "seen"; localStorage.setItem("fsi-paste-guide", "seen"); } catch (e) {}
+    var seenKey = "fsi-paste-guide:" + location.pathname;
+    try { seen = localStorage.getItem(seenKey) === "seen"; localStorage.setItem(seenKey, "seen"); } catch (e) {}
     d.open = !seen;
     d.innerHTML = '<summary>어디에 붙여 넣나요?<span>코드 블록 위의 색 배지가 붙여 넣을 곳입니다. 배지를 눌러 보세요.</span></summary>' +
       '<div class="pg-body"><div class="pg-legend" role="group" aria-label="붙여 넣을 곳 종류"></div>' +
@@ -1788,6 +1805,8 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     tip.id = "gl-tip-" + i; tip.setAttribute("role", "tooltip");
     g.setAttribute("aria-describedby", tip.id);
     g.appendChild(tip);
+    function place() { var r = g.getClientRects()[0] || g.getBoundingClientRect(); tip.classList.toggle("flip", r.left + Math.min(300, window.innerWidth - 32) > window.innerWidth - 16); }
+    g.addEventListener("mouseenter", place); g.addEventListener("focus", place);
   });
   document.querySelectorAll(".gl-list").forEach(function (host) {
     if (!used.length) return;
@@ -1807,7 +1826,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
   }
   document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
     var v = data[host.getAttribute("data-viz")];
-    if (!v || !v.steps || !v.steps.length) return;
+    if (!v || !v.nodes || !v.nodes.length || !v.steps || !v.steps.length) { host.hidden = true; return; }
     var cur = 0, timer = null, all = (v.nodes || []).concat(v.side || []);
     host.classList.add("n" + v.nodes.length);
     host.setAttribute("role", "group");
@@ -1831,7 +1850,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
       b.addEventListener("click", function () { stop(); show(i); });
       dots.appendChild(b);
     });
-    ctl.appendChild(prev); if (!reduce) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
+    ctl.appendChild(prev); if (!reduce && v.steps.length > 1) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
     var allTxt = el("details", "viz-all", "<summary>모든 단계 글로 보기</summary><ol>" +
       v.steps.map(function (s) { return "<li>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap) + "</li>"; }).join("") + "</ol>");
     host.appendChild(el("div", "viz-title", esc(v.title || "무슨 일이 일어나나요?")));
@@ -1842,7 +1861,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
       cur = k; var s = v.steps[k], set = s.set || {};
       all.forEach(function (n) {
         var e = nodeEls[n.id], o = set[n.id] || {};
-        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: n.img, tile: n.tile, links: n.links });
+        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: o.img || (o.ic ? null : n.img), tile: n.tile, links: n.links });
         e.className = "viz-node" + ((s.bad || []).indexOf(n.id) >= 0 ? " bad" : (s.ok || []).indexOf(n.id) >= 0 ? " ok" : (s.on || []).indexOf(n.id) >= 0 ? " on" : "");
       });
       var done = [];

@@ -702,12 +702,13 @@ html.light {
 
 .gl { border-bottom: 1px dotted var(--orange); cursor: help; position: relative; }
 .gl:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
-.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: 300px;
+.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: min(300px, calc(100vw - 32px));
   background: var(--bg-card); color: var(--text); border: 1px solid var(--orange); border-radius: 8px; padding: 8px 12px;
   font-size: 13px; font-weight: 400; line-height: 1.6; white-space: normal; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+.gl-tip.flip { left: auto; right: 0; }
 .gl:hover .gl-tip, .gl:focus .gl-tip, .gl:focus-within .gl-tip { display: block; }
 @media (max-width: 900px) {
-  .gl-tip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
+  .gl-tip, .gl-tip.flip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
 }
 details.gl-more { margin: 0 0 40px; color: var(--muted); font-size: 14px; }
 details.gl-more summary { cursor: pointer; color: var(--orange); font-weight: 700; }
@@ -730,7 +731,7 @@ details.gl-more dd { margin: 0; }
 .viz-node.ok { border-color: var(--green); color: var(--green); }
 .viz-node.bad { border-color: var(--viz-bad); color: var(--viz-bad); }
 .viz-node.ok .sb, .viz-node.bad .sb { color: inherit; }
-.viz-arrow { flex: 0 1 72px; min-width: 44px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
+.viz-arrow { flex: 0 1 72px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
 .viz-arrow .el { font-size: 11px; line-height: 1.3; text-align: center; color: var(--dim); font-family: var(--font-code); overflow-wrap: anywhere; min-height: 1.3em; }
 .viz-arrow .ln { position: relative; height: 24px; }
 .viz-arrow .ln::before { content: ""; position: absolute; left: 0; right: 7px; top: 11px; border-top: 2px dashed var(--line); }
@@ -1196,7 +1197,9 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
         "steps": [{"t": "short title", "cap": "caption, `code` allowed", "on": [ids], "ok": [ids], "bad": [ids],
                    "edge": 0 | [0, 1], "chip": "file moving along that edge (copy mode)", "set": {"id": {"lb","sb"}}}] }
       Shapes: browser server folder doc terminal chat plug globe shield key lock user bot result.
-      Buttons: 이전, 재생 (one pass, no loop), 다음, numbered steps. prefers-reduced-motion: opens on the last step, no 재생. */
+      A step's "set" may change lb, sb, ic or img; a set.ic replaces the node's img with that shape for the step.
+      Buttons: 이전, 재생 (one pass, no loop; hidden with fewer than 2 steps), 다음, numbered steps.
+      A .viz whose data is missing, or has no nodes or steps, is hidden. prefers-reduced-motion: opens on the last step, no 재생. */
 (function () {
   "use strict";
   var TYPES = {
@@ -1253,7 +1256,15 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
     if (label && label.nextSibling) head.insertBefore(b, label.nextSibling); else head.insertBefore(b, head.firstChild);
     var pre = w.querySelector("pre"), paths = [];
     if (w.getAttribute("data-paste-path")) paths.push(w.getAttribute("data-paste-path"));
-    else if (t === "term" && pre) pre.textContent.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) { paths.push(p); });
+    else if (t === "term" && pre) {
+      var dir = "";
+      pre.textContent.split("\n").forEach(function (line) {
+        var cd = line.match(/^\s*cd\s+([^\s;&|]+)/); if (cd) dir = cd[1];
+        line.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) {
+          paths.push(/^[\/~$]/.test(p) || !dir ? p : dir.replace(/\/$/, "") + "/" + p.replace(/^\.\//, ""));
+        });
+      });
+    }
     if (paths.length) {
       var strip = el("div", "pb-strip", (t === "file" ? "저장할 파일: " : "붙여 넣으면 이 파일이 만들어집니다: ") + paths.map(function (p) { return "<code>" + esc(p) + "</code>"; }).join(", "));
       head.parentNode.insertBefore(strip, head.nextSibling);
@@ -1265,7 +1276,8 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
     var list = (host.getAttribute("data-types") || Object.keys(found).join(" ") || "term claude").split(/\s+/).filter(function (k) { return TYPES[k]; });
     var d = el("details", "pg");
     var seen = false;
-    try { seen = localStorage.getItem("fsi-paste-guide") === "seen"; localStorage.setItem("fsi-paste-guide", "seen"); } catch (e) {}
+    var seenKey = "fsi-paste-guide:" + location.pathname;
+    try { seen = localStorage.getItem(seenKey) === "seen"; localStorage.setItem(seenKey, "seen"); } catch (e) {}
     d.open = !seen;
     d.innerHTML = '<summary>어디에 붙여 넣나요?<span>코드 블록 위의 색 배지가 붙여 넣을 곳입니다. 배지를 눌러 보세요.</span></summary>' +
       '<div class="pg-body"><div class="pg-legend" role="group" aria-label="붙여 넣을 곳 종류"></div>' +
@@ -1301,6 +1313,8 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
     tip.id = "gl-tip-" + i; tip.setAttribute("role", "tooltip");
     g.setAttribute("aria-describedby", tip.id);
     g.appendChild(tip);
+    function place() { var r = g.getClientRects()[0] || g.getBoundingClientRect(); tip.classList.toggle("flip", r.left + Math.min(300, window.innerWidth - 32) > window.innerWidth - 16); }
+    g.addEventListener("mouseenter", place); g.addEventListener("focus", place);
   });
   document.querySelectorAll(".gl-list").forEach(function (host) {
     if (!used.length) return;
@@ -1320,7 +1334,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   }
   document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
     var v = data[host.getAttribute("data-viz")];
-    if (!v || !v.steps || !v.steps.length) return;
+    if (!v || !v.nodes || !v.nodes.length || !v.steps || !v.steps.length) { host.hidden = true; return; }
     var cur = 0, timer = null, all = (v.nodes || []).concat(v.side || []);
     host.classList.add("n" + v.nodes.length);
     host.setAttribute("role", "group");
@@ -1344,7 +1358,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
       b.addEventListener("click", function () { stop(); show(i); });
       dots.appendChild(b);
     });
-    ctl.appendChild(prev); if (!reduce) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
+    ctl.appendChild(prev); if (!reduce && v.steps.length > 1) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
     var allTxt = el("details", "viz-all", "<summary>모든 단계 글로 보기</summary><ol>" +
       v.steps.map(function (s) { return "<li>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap) + "</li>"; }).join("") + "</ol>");
     host.appendChild(el("div", "viz-title", esc(v.title || "무슨 일이 일어나나요?")));
@@ -1355,7 +1369,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
       cur = k; var s = v.steps[k], set = s.set || {};
       all.forEach(function (n) {
         var e = nodeEls[n.id], o = set[n.id] || {};
-        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: n.img, tile: n.tile, links: n.links });
+        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: o.img || (o.ic ? null : n.img), tile: n.tile, links: n.links });
         e.className = "viz-node" + ((s.bad || []).indexOf(n.id) >= 0 ? " bad" : (s.ok || []).indexOf(n.id) >= 0 ? " ok" : (s.on || []).indexOf(n.id) >= 0 ? " on" : "");
       });
       var done = [];
