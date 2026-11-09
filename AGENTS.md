@@ -23,7 +23,7 @@ site compilation step, or automated test suite.
 
 The November event uses six chapters (renumbered 2026-11-09, PR #20). Use
 these numbers and titles in every deck, lab, portal, invitation, and video
-change; old numbers in PDF filenames and learner folders are legacy.
+change; old numbers in learner folders are legacy.
 
 | Ch | Title | Former content | Lab page(s) | Reactive deck |
 | --- | --- | --- | --- | --- |
@@ -39,8 +39,10 @@ change; old numbers in PDF filenames and learner folders are legacy.
   states a time (Ch1 timeline, opening and agenda slides, takeaways, and
   closing `@message`, `@next-label`, and notes). Grep
   `20261116/reactive/*.md` for `HH:MM` to find them.
-- `slides/ClaudeCode_FSI_Ch1..6_20261116.pdf` still use the old numbering
-  until re-exported; learner folders such as `~/claude-lab/ch4` keep old names.
+- `slides/ClaudeCode_FSI_Ch1..6_20261116.pdf` follow the six-chapter numbering.
+  They are image-only exports of the reactive decks (one screenshot per slide),
+  so re-export them after a deck change; learner folders such as
+  `~/claude-lab/ch4` keep old names.
 - Reactive decks are Remarp sources in `20261116/reactive/*.md`; rebuild the
   HTML with the reactive-presentation compiler instead of editing it, then
   strip trailing whitespace from the generated HTML before committing.
