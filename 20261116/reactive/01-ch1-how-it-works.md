@@ -969,7 +969,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 마지막 Part, 이틀 동안 무엇을 배우는지입니다. 같은 기능을 관리자와 사용자 양쪽에서 보도록 두 갈래로 나눴습니다.
 {cue: demo}
 첫째, ADMIN 갈래는 정책으로 정하고 막는 쪽입니다. Ch2에서 Bedrock 배포와 정책 전달을, Ch3에서 가드레일과 DLP를 다룹니다.
-둘째, PRODUCTIVITY 갈래는 기능을 더해 잘 쓰는 쪽입니다. Ch4 Subagents와 Ch5 Plugins와 Mods입니다.
+둘째, PRODUCTIVITY 갈래는 기능을 더해 잘 쓰는 쪽입니다. Ch4 Subagents와 Ch5 Claude Code 확장하기입니다.
 셋째, COMMON은 양쪽 모두에게 필요한, 쓴 만큼 보고 줄이는 이야기입니다. Ch6 토큰과 비용, 그리고 Capstone은 사용량으로 마무리합니다.
 :::
 
@@ -1061,13 +1061,13 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 {timing: 1min}
 [요약]
 • Day 1: 10:10 Ch1 작동 원리와 Lab, 10:40 Ch2 Bedrock 배포와 Lab, 13:50 Ch3 가드레일과 DLP, 14:50 Ch4 Subagents
-• Day 2: 10:10 Ch5 Plugins와 Mods, 12:40 Ch6 P1 토큰, 16:50 Ch6 P2 비용
+• Day 2: 10:10 Ch5 Claude Code 확장하기, 12:40 Ch6 P1 토큰, 16:50 Ch6 P2 비용
 • 매일 오후 Capstone 라운드
 
 이틀의 흐름입니다. Day 1은 개인의 도구를 조직이 통제하는 단계까지, Day 2는 팀의 플랫폼으로 확장하고 비용을 측정하는 단계까지 갑니다.
 {cue: demo}
 왼쪽부터 보면, 오늘 지금 Ch1에 이어 Ch2 Bedrock 배포와 Lab, 오후에 Ch3 가드레일과 DLP, Ch4 Subagents가 이어집니다.
-내일은 Ch5 Plugins와 Mods로 시작해 Ch6 토큰과 비용을 두 번에 나눠 진행합니다. 매일 오후에는 Capstone 라운드가 있습니다.
+내일은 Ch5 Claude Code 확장하기로 시작해 Ch6 토큰과 비용을 두 번에 나눠 진행합니다. 매일 오후에는 Capstone 라운드가 있습니다.
 
 [출처]
 • 원본 Ch1 강의자료 p25 일정 (eDM.html과 일치). 세부 시간은 현장 운영에 따라 변동 가능

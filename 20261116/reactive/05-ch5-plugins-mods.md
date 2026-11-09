@@ -19,11 +19,11 @@ AWS Korea
 :::notes
 {timing: 0.5min}
 [요약]
-• Chapter 5, Plugins와 Mods
+• Chapter 5, Claude Code 확장하기
 • 개인이 쌓은 설정을 팀의 플랫폼으로 묶어 배포하는 챕터
 • 2026년 11월, Claude Code v2.1.319 (2026-11-08 리허설 검증), Amazon Bedrock 기준
 
-둘째 날 첫 챕터, Plugins와 Mods를 시작하겠습니다.
+둘째 날 첫 챕터, Claude Code 확장하기를 시작하겠습니다.
 어제 Ch3에서 만든 DLP 훅과 Ch4에서 만든 Subagent를 오늘은 플러그인 하나로 묶어서 팀 전체에 배포합니다.
 그리고 Claude Code 안에서 직접 도는 코드인 mod까지 다룹니다.
 
@@ -118,8 +118,8 @@ AWS Korea
 :::html
 <div class="fsi fsi-statement">
   <span class="eyebrow">CHAPTER 05</span>
-  <div class="big">Plugins <em>&amp;</em> Mods</div>
-  <p class="lead">스킬, Subagent, 훅, <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 Claude가 쓰는 도구로 붙이는 표준">MCP</span>, mod를 한 번에 배포합니다.</p>
+  <div class="big">Claude Code 확장하기</div>
+  <p class="lead">Plugins &amp; Mods로 스킬, Subagent, 훅, <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 Claude가 쓰는 도구로 붙이는 표준">MCP</span>, mod를 한 번에 배포합니다.</p>
 </div>
 :::
 
