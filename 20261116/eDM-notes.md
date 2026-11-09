@@ -79,9 +79,20 @@ cost). Lab files after the renumbering:
 Since 2026-11-09 the slide PDFs follow the six-chapter numbering. Each is an
 image-only export of its reactive deck (`reactive/0N-*.html`): one 1920×1080
 screenshot per slide, taken with the reactive-presentation `export_pptx.py`
-and assembled into a PDF, so the text is not selectable. Re-export after a
-deck change. The earlier PDFs came from separate PowerPoint decks under the
-old numbering.
+and assembled into a PDF, so the text is not selectable. Interactive slides
+(pickers, steppers) show one state only. Re-export after a deck change:
+
+1. Build the decks, then serve `20261116/reactive/` and hide the theme
+   button (add `.fsi-theme-toggle{display:none}` to `assets/fsi.css` in the
+   scratch copy only).
+2. Run `export_pptx.py <dir> --blocks 0N-*.html -o 0N.pptx --scale 2` from
+   the reactive-presentation skill for each deck.
+3. Take each slide's image from the PPTX, downscale it to 1920×1080 and save
+   the pages as one PDF (Pillow: `Image.save(..., save_all=True,
+   resolution=144, quality=90)`), named `slides/ClaudeCode_FSI_ChN_20261116.pdf`.
+
+The earlier PDFs came from separate PowerPoint decks under the old numbering.
+
 Session mapping:
 
 - Day 1 (retimed 2026-11-09): Ch1 lecture 10:10–10:40, break 10:40–10:50,
