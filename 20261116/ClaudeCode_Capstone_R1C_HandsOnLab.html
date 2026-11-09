@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css">
+<title>R1-C 내가 고른 MCP - Claude Code Deep Dive Workshop</title>
+<style>
+:root {
+  --bg: #12181F;
+  --bg-card: #1B242E;
+  --bg-code: #0C1117;
+  --bg-inline: #232E3A;
+  --line: #2A3542;
+  --orange: #FF9900;
+  --orange-dim: rgba(255, 153, 0, 0.14);
+  --crimson: #B6002E;
+  --green: #3FB950;
+  --green-dim: rgba(63, 185, 80, 0.12);
+  --text: #E2E4EC;
+  --muted: #A6ABBE;
+  --dim: #7B8198;
+  --font-body: "NanumSquareOTF", "나눔스퀘어OTF", "NanumSquare", "나눔스퀘어", "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-code: "D2Coding", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(255, 153, 0, 0.3); }
+a { color: var(--orange); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* ============ Hero ============ */
+.hero {
+  position: relative;
+  padding: 64px 32px 44px;
+  max-width: 1160px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -140px; right: -180px;
+  width: 460px; height: 460px;
+  background: radial-gradient(closest-side, rgba(182, 0, 46, 0.28), rgba(255, 153, 0, 0.10) 55%, transparent 75%);
+  pointer-events: none;
+}
+.eyebrow {
+  display: inline-block;
+  background: var(--crimson);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 5px 12px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: clamp(28px, 4.4vw, 42px);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+  max-width: 780px;
+}
+.hero .subtitle {
+  margin-top: 14px;
+  color: var(--orange);
+  font-size: clamp(16px, 2.2vw, 19px);
+  font-weight: 700;
+}
+.hero .lede {
+  margin-top: 18px;
+  color: var(--muted);
+  max-width: 720px;
+  font-size: 15.5px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin-top: 26px;
+  color: var(--dim);
+  font-size: 13px;
+}
+.hero-meta strong { color: var(--text); font-weight: 700; }
+
+/* ============ Sticky timeline ============ */
+.timeline {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(12, 17, 23, 0.92);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.timeline-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.timeline-label {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.timeline-label strong { color: var(--orange); font-size: 13px; }
+.segments {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  height: 26px;
+}
+.seg {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-card);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  padding: 0;
+  font-family: var(--font-body);
+}
+.seg:hover { border-color: var(--orange); }
+.seg .fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 153, 0, 0.85), rgba(255, 153, 0, 0.65));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.seg.done .fill { transform: scaleX(1); }
+.seg .seg-txt {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.seg.done .seg-txt { color: #12181F; }
+.seg.active { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange) inset; }
+
+/* ============ Layout ============ */
+.layout {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 44px 32px 80px;
+  display: grid;
+  grid-template-columns: 216px minmax(0, 1fr);
+  gap: 52px;
+  align-items: start;
+}
+.sidenav {
+  position: sticky;
+  top: 66px;
+  font-size: 13.5px;
+}
+.sidenav .nav-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.14em;
+  margin-bottom: 14px;
+}
+.sidenav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  padding: 7px 10px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+}
+.sidenav a:hover { color: var(--text); background: var(--bg-card); text-decoration: none; }
+.sidenav a.active { color: var(--orange); border-left-color: var(--orange); background: var(--bg-card); }
+.sidenav .dot {
+  flex: none;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dim);
+}
+.sidenav a.done .dot { background: var(--green); border-color: var(--green); }
+.sidenav .nav-time { margin-left: auto; font-size: 11px; color: var(--dim); }
+
+/* ============ Task sections ============ */
+.task { margin-bottom: 72px; }
+.task-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 26px;
+}
+.task-num {
+  font-family: var(--font-code);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 0.1em;
+}
+.task-head h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.time-badge {
+  margin-left: auto;
+  flex: none;
+  background: var(--orange-dim);
+  color: var(--orange);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.task-goal {
+  color: var(--muted);
+  margin-bottom: 24px;
+  max-width: 760px;
+}
+.task-goal strong { color: var(--text); }
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16.5px;
+  font-weight: 800;
+  margin: 34px 0 12px;
+}
+.step-title .step-no {
+  flex: none;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #12181F;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+p.body { color: var(--muted); margin: 10px 0 14px; max-width: 760px; }
+p.body strong, li strong { color: var(--text); }
+code.inline {
+  font-family: var(--font-code);
+  font-size: 0.88em;
+  background: var(--bg-inline);
+  color: #FFC466;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+kbd {
+  font-family: var(--font-code);
+  font-size: 0.82em;
+  background: var(--bg-inline);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 2px 8px;
+  color: var(--text);
+}
+
+/* ============ Code blocks ============ */
+.code-wrap {
+  background: var(--bg-code);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 14px 0 20px;
+  overflow: hidden;
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+}
+.code-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.copy-btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg-inline);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.copy-btn:hover { color: var(--orange); border-color: var(--orange); }
+.copy-btn.copied { color: var(--green); border-color: var(--green); }
+.code-wrap pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.code-wrap code { font-family: inherit; color: #D8DEE9; }
+.code-wrap.output pre { color: var(--dim); }
+.code-wrap .cmt { color: #5E6B7E; }
+.code-wrap .hl { color: #FFC466; }
+.code-wrap .ok { color: var(--green); }
+
+/* ============ Callouts ============ */
+.callout {
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 14px 18px;
+  margin: 18px 0;
+  font-size: 14.5px;
+  color: var(--muted);
+  max-width: 760px;
+}
+.callout strong { color: var(--text); }
+.callout.tip .co-title { color: var(--orange); }
+
+.callout .co-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 5px;
+}
+
+.callout.warn .co-title { color: #FF5C85; }
+
+/* ============ Checkpoint ============ */
+.checkpoint {
+  background: var(--green-dim);
+  border: 1px solid rgba(63, 185, 80, 0.35);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 28px;
+}
+.checkpoint .cp-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.cp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+.cp-item input {
+  flex: none;
+  margin-top: 5px;
+  width: 15px; height: 15px;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+.cp-item input:checked + span { color: var(--text); }
+
+/* ============ Tabs ============ */
+.tabs { margin: 18px 0 6px; }
+.tab-btns {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.tab-btn {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dim);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 9px 16px;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+.tab-pane { display: none; padding-top: 16px; }
+.tab-pane.active { display: block; }
+
+/* ============ Tables ============ */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 22px;
+  font-size: 14px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.tbl th, .tbl td {
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid #FFFFFF14;
+}
+.tbl th {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--orange);
+  background: rgba(255, 255, 255, 0.03);
+}
+.tbl td { color: var(--muted); vertical-align: middle; }
+.tbl td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl code { font-family: var(--font-code); font-size: 0.9em; color: #FFC466; }
+
+/* ============ Wrap-up ============ */
+.wrapup {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 32px 34px;
+  margin-bottom: 56px;
+}
+.wrapup h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.wrapup .sub { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
+.next-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: linear-gradient(90deg, rgba(182, 0, 46, 0.16), rgba(255, 153, 0, 0.08));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 26px;
+}
+.next-box .nx-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--orange);
+}
+.next-box h3 { font-size: 19px; font-weight: 800; }
+.next-box p { color: var(--muted); font-size: 14px; }
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 30px 32px 46px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.9;
+}
+footer .who { color: var(--muted); font-weight: 700; }
+footer .mail { color: var(--orange); }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 64px; }
+  .sidenav { display: none; }
+  .hero { padding: 44px 20px 32px; }
+  .timeline-inner { padding: 10px 20px; }
+  .seg .seg-txt { font-size: 9px; }
+  .task-head h2 { font-size: 20px; }
+}
+
+/* ===== Chapter 4 additions: Super Lab ===== */
+.part-divider { margin: 72px 0 12px; padding: 30px 34px; border-radius: 14px;
+  background: linear-gradient(135deg, #1d1433 0%, #12181F 65%); border: 1px solid #45306b; }
+.part-divider .pd-eyebrow { display: inline-block; background: #7a3ff2; color: #fff;
+  font-size: 11px; font-weight: 800; letter-spacing: .14em; padding: 4px 12px; border-radius: 4px; }
+.part-divider h2 { margin: 14px 0 8px; font-size: 26px; color: var(--text); }
+.part-divider p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.75; max-width: 860px; }
+.part-divider .rules { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px; }
+.part-divider .rules span { background: #241a3d; border: 1px solid #45306b; color: #d9c9ff;
+  font-size: 12.5px; padding: 6px 12px; border-radius: 999px; }
+.task.mission .task-num { color: #c9a2ff; }
+.task.mission { border-color: #3a2a57; }
+.checkpoint.dod { border-color: #7a3ff2; background: rgba(122, 63, 242, .06); }
+.checkpoint.dod .cp-title { color: #c9a2ff; }
+details.solution { margin: 18px 0; border: 1px dashed #FF9900; border-radius: 10px; background: rgba(255,153,0,.04); }
+details.solution summary { cursor: pointer; padding: 12px 16px; color: var(--accent); font-weight: 700; font-size: 13.5px; list-style: none; }
+details.solution summary::before { content: "▸ "; }
+details.solution[open] summary::before { content: "▾ "; }
+details.solution .sol-body { padding: 0 16px 14px; }
+
+/* ── Korean typography fix: 단어 단위 줄바꿈, 히어로 정돈 ── */
+body { word-break: keep-all; overflow-wrap: break-word; }
+.hero h1 { max-width: 980px; font-size: clamp(26px, 4vw, 38px); text-wrap: balance; }
+.hero .subtitle, .hero .lede, .task-goal, .wrapup .sub { text-wrap: pretty; }
+
+/* ── 잘림 방지 v2: 히어로 압축 + 좁은 화면 대응 ── */
+.hero { padding: 44px 28px 34px; }
+.eyebrow { margin-bottom: 14px; }
+.hero h1 { line-height: 1.3; }
+.hero .subtitle { margin-top: 10px; }
+.hero .lede { margin-top: 12px; }
+.seg-txt { text-overflow: ellipsis; }
+@media (max-width: 620px) {
+  .hero { padding: 26px 16px 24px; }
+  .hero h1 { font-size: 23px; }
+  .hero .subtitle { font-size: 15px; }
+  .hero .lede { font-size: 14px; }
+  .hero-meta { gap: 6px 14px; font-size: 12px; }
+  .seg .seg-txt { display: none; }
+  .timeline-inner { padding: 0 10px; }
+}
+
+/* ── 잘림 방지 v3: 좁은 화면 가로 넘침 제거 ── */
+.tbl { display: block; overflow-x: auto; max-width: 100%; }
+.hero, .layout, .timeline-inner, main, section { min-width: 0; }
+@media (max-width: 620px) {
+  .timeline-label:last-child { display: none; }
+}
+
+/* ── 잘림 방지 v4: 인라인 코드 칩의 최소폭 강제 해제 ── */
+code.inline { white-space: normal; overflow-wrap: anywhere; }
+
+/* ── v5: 소개문/본문 전체 폭 사용 (가독성 캡 해제) ── */
+.hero .lede, .task-goal, p.body, .callout, .part-divider p, .wrapup .sub { max-width: none; }
+.hero .lede { text-wrap: wrap; }
+
+/* ── macOS 터미널 스타일: 신호등 3버튼 ── */
+.code-head { position: relative; padding-left: 76px; }
+.code-head::before {
+  content: ""; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 11px; height: 11px; border-radius: 50%; background: #FF5F57;
+  box-shadow: 18px 0 0 #FEBC2E, 36px 0 0 #28C840;
+}
+
+/* ── v6: 화이트 모드 (우측 상단 고정 토글, 라이트 팔레트는 대비 4.5:1 이상) ── */
+.theme-toggle {
+  position: fixed; top: 9px; right: 14px; z-index: 60;
+  font-family: var(--font-body); font-size: 11.5px; font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--muted); background: var(--bg-card);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 5px 14px; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.theme-toggle:hover { color: var(--orange); border-color: var(--orange); }
+@media (max-width: 1300px) { .timeline-inner { padding-right: 88px; } }
+html.light {
+  --bg: #F4F6F9; --bg-card: #FFFFFF; --bg-inline: #E8EDF3;
+  --line: #8A95A3;
+  --orange: #9A4300; --orange-dim: rgba(168, 85, 0, 0.10);
+  --green: #17692F; --green-dim: rgba(31, 136, 61, 0.08);
+  --text: #1B2430; --muted: #3D4654; --dim: #4A5462;
+}
+/* Light = projector mode: text >= 7:1, accent text >= 4.5:1, borders ~3:1. */
+html.light [style*="#c9a2ff"] { color: #6b46c1 !important; }
+html.light [style*="#A6ABBE"] { color: #3D4654 !important; }
+html.light .callout.warn .co-title { color: #B3264A; }
+html.light ::selection { background: rgba(255, 153, 0, 0.35); }
+html.light .hero::after { background: radial-gradient(closest-side, rgba(182, 0, 46, 0.10), rgba(255, 153, 0, 0.06) 55%, transparent 75%); }
+html.light .timeline { background: rgba(255, 255, 255, 0.92); }
+html.light .step-title .step-no { color: #FFFFFF; }
+html.light code.inline, html.light .tbl code { color: #9A4E00; }
+html.light .tbl th { background: rgba(0, 0, 0, 0.035); }
+html.light .tbl th, html.light .tbl td { border-bottom-color: rgba(0, 0, 0, 0.08); }
+html.light .code-wrap { border-color: #303C4B; }
+html.light .code-head { border-bottom-color: #2A3542; }
+html.light .code-wrap .code-label { color: #7B8198; }
+html.light .code-wrap .copy-btn { color: #A6ABBE; background: #232E3A; border-color: #2A3542; }
+html.light .code-wrap .copy-btn:hover { color: #FF9900; border-color: #FF9900; }
+html.light .code-wrap .copy-btn.copied { color: #3FB950; border-color: #3FB950; }
+html.light .code-wrap.output pre { color: #8B96A5; }
+html.light .callout.warn .co-title { color: #C7325C; }
+html.light .checkpoint { border-color: rgba(31, 136, 61, 0.4); }
+html.light .next-box { background: linear-gradient(90deg, rgba(182, 0, 46, 0.06), rgba(255, 153, 0, 0.05)); }
+html.light .part-divider { background: linear-gradient(135deg, #F0EAFB 0%, #F7F5FC 65%); border-color: #CDBDF0; }
+html.light .part-divider .rules span { background: #EDE6FB; border-color: #CDBDF0; color: #4A2D8A; }
+html.light .task.mission .task-num, html.light .checkpoint.dod .cp-title { color: #6B3FD4; }
+html.light .checkpoint.dod { background: rgba(122, 63, 242, 0.05); }
+html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0, 0.04); }
+html.light .mcard .mc-tag { color: #6B3FC4; }
+html.light .anti .an-title { color: #B3264A; }
+/* ===== Overview additions ===== */
+.mcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 18px 0 22px; }
+.mcard { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.mcard .mc-tag { font-family: var(--font-code); font-size: 12px; font-weight: 700; color: #c9a2ff; letter-spacing: 0.08em; }
+.mcard h3 { font-size: 17px; font-weight: 800; line-height: 1.4; }
+.mcard .mc-data { font-size: 13px; color: var(--dim); }
+.mcard dl { font-size: 13.5px; color: var(--muted); }
+.mcard dt { color: var(--orange); font-weight: 800; font-size: 11.5px; letter-spacing: 0.08em; margin-top: 6px; }
+.mcard dd { margin: 0; }
+.mcard .mc-go { margin-top: auto; padding-top: 8px; font-weight: 700; font-size: 14px; }
+.mcard.common { border-color: #7a3ff2; background: rgba(122, 63, 242, .07); }
+.mcard.optional { border-style: dashed; }
+.rule-box { max-width: 760px; margin: 14px 0; padding: 12px 18px; border-left: 3px solid var(--orange); background: var(--orange-dim); border-radius: 0 8px 8px 0; color: var(--text); font-size: 14.5px; }
+.flow { list-style: none; max-width: 760px; margin: 8px 0 20px; }
+.flow li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.flow .fl-when { font-family: var(--font-code); font-size: 13px; color: var(--orange); font-weight: 700; }
+.flow .fl-what strong { color: var(--text); }
+.flow .fl-what { color: var(--muted); font-size: 14.5px; }
+.checkpoint ol { list-style: none; }
+.checkpoint li[data-check] { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; color: var(--muted); font-size: 14.5px; }
+.checkpoint li[data-check] .cn { flex: none; font-family: var(--font-code); font-weight: 800; color: var(--green); min-width: 18px; }
+.checkpoint li[data-check] label { display: flex; gap: 10px; cursor: pointer; }
+.checkpoint li[data-check] input { flex: none; margin-top: 5px; width: 15px; height: 15px; accent-color: var(--green); }
+.anti { border: 1px solid rgba(255, 92, 133, 0.45); background: rgba(255, 92, 133, 0.07); border-radius: 10px; padding: 16px 20px; max-width: 760px; }
+.anti .an-title { font-size: 12.5px; font-weight: 800; letter-spacing: 0.1em; color: #FF5C85; margin-bottom: 8px; }
+.anti ul { padding-left: 18px; color: var(--muted); font-size: 14.5px; }
+.anti li { margin: 4px 0; }
+.form-list { max-width: 760px; padding-left: 22px; color: var(--muted); font-size: 14.5px; }
+.form-list li { margin: 6px 0; }
+.form-list strong { color: var(--text); }
+@media (max-width: 900px) {
+  .mcards { grid-template-columns: 1fr; }
+  .flow li { grid-template-columns: 1fr; }
+}
+
+/* ── R1-A: 라운드 표시 ── */
+p.round { display: inline-block; margin-bottom: 14px; font-family: var(--font-code); font-size: 12px; font-weight: 800; letter-spacing: 0.1em; color: #c9a2ff; border: 1px solid #3a2a57; border-radius: 20px; padding: 3px 12px; }
+html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
+.backlinks { margin-top: 14px; font-size: 14px; color: var(--muted); }
+.backlinks a { margin-right: 14px; }
+.cp-item-wrap { margin-top: 6px; }
+/* ==== VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim) ==== */
+/* Paste badges, "어디에 붙여 넣나요?" guide, glossary tips and step-through flow visuals.
+   Markup and data contract: see the comment at the top of the VIZ COMPONENT script. */
+:root {
+  --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF;
+  --viz-bad: #FF6B8B; --viz-chip-bg: #FF9900; --viz-chip-fg: #12181F;
+}
+html.light {
+  --pt-term: #08615A; --pt-claude: #8C3A12; --pt-file: #1A549C; --pt-slack: #5F37B0; --pt-web: #5F37B0;
+  --viz-bad: #B3264A; --viz-chip-bg: #9A4300; --viz-chip-fg: #FFFFFF;
+}
+/* Code blocks stay dark in both themes, so their badges keep the dark palette. */
+.code-wrap { --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF; }
+.code-head { flex-wrap: wrap; gap: 6px 10px; }
+.pbadge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; line-height: 1.3;
+  padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pbadge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.code-head .pbadge { margin-right: auto; }
+.code-head .copy-btn { margin-left: auto; }
+.pbadge.t-term { color: var(--pt-term); } .pbadge.t-claude { color: var(--pt-claude); }
+.pbadge.t-file { color: var(--pt-file); } .pbadge.t-slack { color: var(--pt-slack); } .pbadge.t-web { color: var(--pt-web); }
+.pb-strip { padding: 6px 14px; font-size: 12.5px; color: #A6ABBE; border-bottom: 1px solid #2A3542; background: rgba(125, 183, 255, 0.06); }
+.pb-strip code { font-family: var(--font-code); color: #7DB7FF; overflow-wrap: anywhere; }
+
+.pg { margin: 0 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); }
+.pg > summary { cursor: pointer; padding: 14px 18px; font-weight: 800; font-size: 15px; color: var(--text); list-style: none; }
+.pg > summary::-webkit-details-marker { display: none; }
+.pg > summary::before { content: "▸ "; color: var(--orange); }
+.pg[open] > summary::before { content: "▾ "; }
+.pg > summary span { font-weight: 400; font-size: 13.5px; color: var(--muted); margin-left: 6px; }
+.pg-body { padding: 0 18px 18px; }
+.pg-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.pg-legend button { font-family: var(--font-body); background: transparent; cursor: pointer; }
+.pg-legend button[aria-pressed="true"] { background: var(--bg-inline); box-shadow: 0 0 0 2px currentColor inset; }
+.pg-map { display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 3fr); gap: 10px; align-items: start; font-size: 13px; }
+.pg-box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--muted); min-width: 0; }
+.pg-box b { display: block; color: var(--text); font-size: 13.5px; }
+.pg-arrow { align-self: center; text-align: center; color: var(--dim); font-weight: 800; }
+.pg-ide { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px; margin-top: 8px; }
+.pg-term .pg-box { margin-top: 8px; }
+.pg-zone.on { border-color: var(--hl, var(--orange)); box-shadow: 0 0 0 3px var(--orange-dim); }
+.pg-zone.on > b { color: var(--hl, var(--orange)); }
+.pg-cap { margin-top: 12px; color: var(--text); font-size: 14px; min-height: 1.75em; }
+@media (max-width: 620px) {
+  .pg-map { grid-template-columns: minmax(0, 1fr); }
+  .pg-arrow { transform: rotate(90deg); }
+  .pg-ide { grid-template-columns: minmax(0, 1fr); }
+}
+
+.gl { border-bottom: 1px dotted var(--orange); cursor: help; position: relative; }
+.gl:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
+.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: min(300px, calc(100vw - 32px));
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--orange); border-radius: 8px; padding: 8px 12px;
+  font-size: 13px; font-weight: 400; line-height: 1.6; white-space: normal; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+.gl-tip.flip { left: auto; right: 0; }
+.gl:hover .gl-tip, .gl:focus .gl-tip, .gl:focus-within .gl-tip { display: block; }
+@media (max-width: 900px) {
+  .gl-tip, .gl-tip.flip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
+}
+details.gl-more { margin: 0 0 40px; color: var(--muted); font-size: 14px; }
+details.gl-more summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+details.gl-more dl { margin-top: 8px; }
+details.gl-more dt { color: var(--text); font-weight: 800; margin-top: 8px; }
+details.gl-more dd { margin: 0; }
+
+.viz { margin: 18px 0 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); padding: 16px 18px; }
+.viz-title { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; color: var(--orange); }
+.viz-row { display: flex; align-items: stretch; margin: 14px 0 10px; }
+.viz-node { flex: 1 1 0; min-width: 0; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 8px;
+  text-align: center; background: var(--bg); color: var(--muted); transition: border-color 0.2s, box-shadow 0.2s; }
+.viz-node .ic { display: block; width: 40px; height: 40px; margin: 0 auto 6px; }
+.viz-node img.ic { border-radius: 6px; }
+.viz-node img.ic.tile { background: #FFFFFF; padding: 4px; }
+.viz-node .lb { display: block; font-weight: 800; font-size: 13.5px; color: var(--text); line-height: 1.35; }
+.viz-node .sb { display: block; font-size: 12px; color: var(--muted); font-family: var(--font-code); overflow-wrap: anywhere; line-height: 1.45; margin-top: 3px; }
+.viz-node .lk { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 10px; margin-top: 6px; font-size: 12.5px; font-weight: 700; }
+.viz-node.on { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); color: var(--orange); }
+.viz-node.ok { border-color: var(--green); color: var(--green); }
+.viz-node.bad { border-color: var(--viz-bad); color: var(--viz-bad); }
+.viz-node.ok .sb, .viz-node.bad .sb { color: inherit; }
+.viz-arrow { flex: 0 1 72px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
+.viz-arrow .el { font-size: 11px; line-height: 1.3; text-align: center; color: var(--dim); font-family: var(--font-code); overflow-wrap: anywhere; min-height: 1.3em; }
+.viz-arrow .ln { position: relative; height: 24px; }
+.viz-arrow .ln::before { content: ""; position: absolute; left: 0; right: 7px; top: 11px; border-top: 2px dashed var(--line); }
+.viz-arrow .ln::after { content: ""; position: absolute; right: 0; top: 6px; border: 6px solid transparent; border-left: 8px solid var(--line); border-right: 0; }
+.viz-arrow.done .ln::before { border-top-style: solid; }
+.viz-arrow.on .ln::before { border-top: 2px solid var(--orange); }
+.viz-arrow.on .ln::after { border-left-color: var(--orange); }
+.viz-arrow.on .el { color: var(--orange); font-weight: 700; }
+.viz-chip { position: absolute; top: 1px; left: 100%; transform: translateX(-100%); z-index: 2; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; font-family: var(--font-code); font-size: 11px; font-weight: 800; line-height: 20px; padding: 0 7px;
+  border-radius: 5px; background: var(--viz-chip-bg); color: var(--viz-chip-fg); animation: viz-mx 1.4s ease-in-out both; }
+@keyframes viz-mx { from { left: 0; transform: translateX(0); opacity: 0.3; } to { left: 100%; transform: translateX(-100%); opacity: 1; } }
+@keyframes viz-my { from { top: 0; transform: translateY(0); opacity: 0.3; } to { top: 100%; transform: translateY(-100%); opacity: 1; } }
+.viz-side { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.viz-side .viz-node { flex: 1 1 160px; display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 10px; }
+.viz-side .viz-node .ic { width: 28px; height: 28px; margin: 0; flex: none; }
+.viz-cap { border-left: 3px solid var(--orange); background: var(--orange-dim); border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 4px 0 12px; font-size: 14.5px; color: var(--text); }
+.viz-cap .q { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; color: var(--orange); margin-bottom: 2px; }
+.viz-cap code, .viz-all code { font-family: var(--font-code); font-size: 0.88em; background: var(--bg-inline); color: var(--orange); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+.viz-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.viz-ctl button { font-family: var(--font-body); font-size: 13px; font-weight: 700; color: var(--text); background: var(--bg-inline);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; min-height: 32px; }
+.viz-ctl button:hover { border-color: var(--orange); color: var(--orange); }
+.viz-ctl button:disabled { opacity: 0.45; cursor: default; }
+.viz-ctl .dots { display: flex; flex-wrap: wrap; gap: 6px; }
+.viz-ctl .dots button { min-width: 32px; padding: 5px 0; }
+.viz-ctl .dots button[aria-current="step"] { background: var(--orange); border-color: var(--orange); color: var(--viz-chip-fg); }
+html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
+.viz-all { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+.viz-all summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+.viz-all ol { padding-left: 20px; margin-top: 6px; }
+.viz-all li { margin: 4px 0; }
+/* Narrow diagrams: the script adds .vert when the box is too narrow for one row. */
+.viz.vert .viz-row { flex-direction: column; }
+.viz.vert .viz-arrow { flex: 0 0 auto; max-width: none; height: 48px; padding: 0; }
+.viz.vert .viz-arrow .ln { position: absolute; left: 50%; top: 0; bottom: 0; width: 24px; height: auto; margin-left: -12px; }
+.viz.vert .viz-arrow .ln::before { left: 11px; right: auto; top: 0; bottom: 7px; border-top: 0; border-left: 2px dashed var(--line); }
+.viz.vert .viz-arrow .ln::after { right: auto; left: 6px; top: auto; bottom: 0; border: 6px solid transparent; border-top: 8px solid var(--line); border-bottom: 0; }
+.viz.vert .viz-arrow.done .ln::before { border-left-style: solid; }
+.viz.vert .viz-arrow.on .ln::before { border-left: 2px solid var(--orange); }
+.viz.vert .viz-arrow.on .ln::after { border-top-color: var(--orange); }
+.viz.vert .viz-arrow .el { position: absolute; left: calc(50% + 18px); right: 0; top: 50%; transform: translateY(-50%); text-align: left; }
+.viz.vert .viz-chip { top: 100%; left: auto; right: calc(50% + 10px); transform: translateY(-100%); max-width: calc(50% - 14px); animation-name: viz-my; }
+@media (prefers-reduced-motion: reduce) {
+  .viz-chip { animation: none !important; }
+  .viz-node, .pg-zone { transition: none !important; }
+}
+/* ==== VIZ COMPONENT v1 END ==== */
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">HANDS-ON LAB / CAPSTONE R1-C</span>
+  <p class="round" data-round="R1">R1 · Day 1 · 110분 (처음 15분은 SETUP, 이 페이지의 단계는 95분)</p>
+  <h1>R1-C 내가 고른 MCP: 이미 있는 MCP 서버 위에 에이전트와 가드레일 세우기</h1>
+  <div class="subtitle">제공처가 공식으로 내놓은 MCP 서버를 하나 골라 연결하고, 그 데이터를 다루는 agent 2개와 MCP 허용 목록, 외부 호출 범위 가드레일을 만든다</div>
+  <p class="lede">
+    <span class="gl" data-gl="mcp">MCP</span> 서버를 직접 만들지 않고 <strong>이미 있는 MCP 서버</strong>에 연결합니다. 그 위에 자료를 찾아 정리하는 <strong>자기 Subagent 2개</strong>를 만들고,
+    이 폴더에서 붙을 수 있는 MCP 서버와 Claude가 직접 부르는 외부 호스트를 묶는 <strong>가드레일</strong>을 <code class="inline">~/claude-lab/capstone/</code>에 세웁니다.
+    서버는 아래 추천 목록에서 골라도 되고, 직접 찾아도 됩니다.
+  </p>
+  <div class="backlinks">
+    <a href="ClaudeCode_Capstone_Overview.html">캡스톤 개요</a>
+    <a href="ClaudeCode_Capstone_Overview.html#checklist">완주 체크리스트</a>
+    <a href="ClaudeCode_Capstone_Overview.html#submit">출품 양식</a>
+    <a href="ClaudeCode_Capstone_Setup.html#required">시작 전 필수 설치</a>
+  </div>
+  <div class="hero-meta">
+    <span>Lab <strong><a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일</a></strong></span>
+    <span>Lab <strong><a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3 Subagent</a></strong></span>
+    <span>Docs <strong><a href="https://code.claude.com/docs/en/managed-mcp">MCP 허용 목록 공식 문서</a></strong></span>
+    <span>Update <strong>2026.11</strong></span>
+  </div>
+</header>
+
+<nav class="timeline" aria-label="R1-C 목차">
+  <div class="timeline-inner">
+    <span class="timeline-label">R1-C</span>
+    <div class="segments" id="segments">
+      <button class="seg" data-task="task-00" style="flex:20" title="고르기와 연결"><span class="fill"></span><span class="seg-txt">00 고르기와 연결</span></button>
+      <button class="seg" data-task="task-01" style="flex:20" title="자기 agent 2개"><span class="fill"></span><span class="seg-txt">01 자기 agent 2개</span></button>
+      <button class="seg" data-task="task-02" style="flex:25" title="가드레일"><span class="fill"></span><span class="seg-txt">02 가드레일</span></button>
+      <button class="seg" data-task="task-03" style="flex:20" title="막히는 것 확인"><span class="fill"></span><span class="seg-txt">03 막히는 것 확인</span></button>
+      <button class="seg" data-task="task-04" style="flex:10" title="R1 정리"><span class="fill"></span><span class="seg-txt">04 R1 정리</span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+
+<aside class="sidenav" aria-label="목차">
+  <div class="nav-title">R1-C</div>
+  <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 고르기와 연결<span class="nav-time">20분</span></a>
+  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 자기 agent 2개<span class="nav-time">20분</span></a>
+  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 가드레일<span class="nav-time">25분</span></a>
+  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 막히는 것 확인<span class="nav-time">20분</span></a>
+  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 R1 정리<span class="nav-time">10분</span></a>
+</aside>
+
+<main>
+
+<div class="paste-guide"></div>
+<div class="gl-list"></div>
+
+<section class="task" id="task-00" data-min="20">
+  <div class="task-head"><span class="task-num">00</span><h2>고르기와 연결</h2><span class="time-badge">20분</span></div>
+  <p class="task-goal">MCP 서버 하나를 고르고, 작업 폴더에서 Claude Code에 연결해 도구가 불리는 것까지 확인합니다.</p>
+  <p class="body">먼저 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다. 등록은 모두 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더 <code class="inline">~/claude-lab/capstone</code>에서 합니다. 범위를 주지 않으면 <span class="gl" data-gl="local">local 범위</span>(이 폴더에서만 보이고 <code class="inline">~/.claude.json</code>에 저장)로 등록됩니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 01의 agent와 02의 가드레일이 모두 여기서 고른 서버 하나와 <code class="inline">r1c-choice.env</code>의 값을 기준으로 만들어집니다. 그래서 연결과 도구 호출이 되는 것을 먼저 확인합니다.</p>
+  <div class="step-title"><span class="step-no">1</span>작업 폴더와 도구 점검</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>mkdir -p ~/claude-lab/capstone/.claude/agents ~/claude-lab/capstone/.claude/hooks
+cd ~/claude-lab/capstone
+claude --version
+for c in jq npx uvx; do command -v "$c" &gt;/dev/null &amp;&amp; echo "OK   $c" || echo "없음 $c"; done</code></pre>
+  </div>
+  <p class="body"><code class="inline">jq</code>는 02의 가드레일에 꼭 필요합니다. <code class="inline">npx</code>(Node.js)는 docs 서버에, <code class="inline">uvx</code>는 alphavantage 서버에만 필요합니다. alphavantage를 고르는데 <code class="inline">uvx</code>가 없으면 아래 한 블록으로 설치합니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, uvx가 없을 때만</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="$HOME/.local/bin" sh
+"$HOME/.local/bin/uvx" --version</code></pre>
+  </div>
+  <p class="body">로컬 서버(alphavantage, docs)는 처음 띄울 때 패키지를 인터넷에서 내 EC2로 내려받고, 원격 서버는 받는 것 없이 주소로만 연결합니다. 아래 그림의 단계를 넘기며 무엇이 어디서 오는지 봅니다.</p>
+  <div class="viz" data-viz="r1c-fetch"></div>
+  <div class="step-title"><span class="step-no">2</span>서버 고르기</div>
+  <div class="callout warn">
+    <span class="co-title">추천일 뿐, 허용 목록이 아닙니다</span>
+    아래 표는 운영 측이 미리 확인해 둔 <strong>추천</strong>입니다. 목록 밖의 서버를 골라도 됩니다. 어떤 서버를 고르든, 고른 서버는 02 단계에서 <strong>자기 <span class="gl" data-gl="plugin">plugin</span>의 MCP 허용 목록 가드레일</strong>에 직접 적습니다. 이 폴더에서 무엇이 허용되는지는 이 표가 아니라 여러분이 만드는 설정이 정합니다.
+  </div>
+  <table class="tbl"><thead><tr><th>등록 이름</th><th>서버 (제공처)</th><th>데이터</th><th>금융 업무에서 쓰는 예</th><th>연결</th><th>인증</th><th>운영 측 사전 확인 (2026-11-09)</th></tr></thead><tbody>
+    <tr><td><code class="inline">alphavantage</code></td><td><a href="https://mcp.alphavantage.co/">Alpha Vantage MCP</a> (Alpha Vantage 공식, <a href="https://github.com/alphavantage/alpha_vantage_mcp">GitHub</a>)</td><td>주가, 환율, 미국 경제지표(GDP, CPI, 기준금리, 국채금리), 뉴스 감성</td><td>USD/KRW 환율과 미국 금리 추이 브리핑</td><td>로컬 stdio (<code class="inline">uvx</code>)</td><td><a href="https://www.alphavantage.co/support/#api-key">무료 API 키</a>, 하루 25회</td><td>도구 목록 확인 (<code class="inline">TOOL_LIST</code>, <code class="inline">TOOL_GET</code>, <code class="inline">TOOL_CALL</code>)</td></tr>
+    <tr><td><code class="inline">aws-knowledge</code></td><td><a href="https://github.com/awslabs/mcp/tree/main/src/aws-knowledge-mcp-server">AWS Knowledge MCP</a> (AWS 공식)</td><td>AWS 공식 문서, 리전별 서비스 가용성</td><td>서울 리전에서 쓸 수 있는 서비스와 보안, 규제 대응 문서 찾기</td><td>원격 HTTP</td><td>없음 (호출 한도 있음)</td><td>도구 목록과 검색 호출 확인</td></tr>
+    <tr><td><code class="inline">microsoft-learn</code></td><td><a href="https://github.com/MicrosoftDocs/mcp">Microsoft Learn MCP</a> (Microsoft 공식)</td><td>Microsoft, Azure 공식 문서와 코드 예제</td><td>Microsoft 365, Entra ID 연동 문서 조사</td><td>원격 HTTP</td><td>없음</td><td>도구 목록과 검색 호출 확인</td></tr>
+    <tr><td><code class="inline">deepwiki</code></td><td><a href="https://docs.devin.ai/work-with-devin/deepwiki-mcp">DeepWiki MCP</a> (Cognition 공식)</td><td>공개 GitHub 저장소의 위키와 질의응답</td><td>도입을 검토하는 오픈소스의 구조와 사용법 파악</td><td>원격 HTTP</td><td>없음 (공개 저장소만)</td><td>도구 목록과 위키 조회 확인</td></tr>
+    <tr><td><code class="inline">docs</code></td><td><a href="https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem">Filesystem MCP</a> (MCP 공식 레퍼런스 서버), 읽기 전용</td><td>내 폴더의 문서</td><td>공개된 약관, 상품설명서, 업무 매뉴얼 비교</td><td>로컬 stdio (<code class="inline">npx</code>)</td><td>없음</td><td>읽기 전용 모드의 도구 10개 확인</td></tr>
+    <tr><td><code class="inline">github</code></td><td><a href="https://github.com/github/github-mcp-server">GitHub MCP</a> (GitHub 공식), 읽기 전용 주소</td><td>저장소, 이슈, PR</td><td>팀 저장소의 이슈와 변경 이력 정리</td><td>원격 HTTP</td><td>개인 액세스 토큰(PAT)</td><td>연결 명령만 확인. 토큰이 있어야 해서 도구 목록은 미확인</td></tr>
+  </tbody></table>
+  <p class="body">사전 확인은 운영 측이 같은 Claude Code 2.1.x로 연결 명령을 시험하고, 서버에 직접 붙어 도구 목록을 받아 본 결과입니다. 수업 당일 제공처 사정으로 연결이 안 될 수 있으니, 안 되면 다른 줄로 바꿉니다.</p>
+  <details class="solution">
+    <summary>목록 밖의 서버를 직접 고를 때 확인할 것</summary>
+    <div class="sol-body">
+      <p class="body"><a href="https://registry.modelcontextprotocol.io/">공식 MCP 레지스트리</a>는 누구나 올릴 수 있는 목록이라, 레지스트리에 있다고 제공처가 직접 운영하는 서버라는 뜻은 아닙니다. 같은 서비스 이름으로 다른 사람이 올린 항목도 있습니다. 고르기 전에 세 가지를 봅니다.</p>
+      <table class="tbl"><thead><tr><th>확인</th><th>보는 곳</th></tr></thead><tbody>
+        <tr><td>제공처가 직접 운영하는가</td><td>제공처 문서의 도메인, GitHub 조직 이름. 서버 주소가 제공처 도메인인지</td></tr>
+        <tr><td>인증이 무엇인가</td><td>없음, API 키, 토큰, OAuth. 키와 토큰은 명령에 직접 쓰지 않고 <code class="inline">read -rs</code>로 받는다</td></tr>
+        <tr><td>데이터가 어디로 가는가</td><td>질의 내용이 그 서버로 나갑니다. 고객 정보나 사내 자료를 질의에 넣지 않는다</td></tr>
+      </tbody></table>
+      <p class="body">공시(DART), 한국은행 경제통계(ECOS), 공공데이터포털 같은 국내 금융 데이터는 2026-11-09 기준으로 제공처가 직접 낸 MCP 서버를 찾지 못했습니다. 커뮤니티가 만든 서버는 소스를 먼저 읽고 고르고, 직접 감싸고 싶다면 <a href="ClaudeCode_Capstone_R1B_HandsOnLab.html">R1-B</a>처럼 MCP 서버를 만드는 길도 있습니다.</p>
+      <p class="body">직접 고른 서버도 아래 블록과 같은 모양으로 <code class="inline">r1c-choice.env</code> 네 줄을 손으로 씁니다. <code class="inline">ALLOW_ENTRY</code>는 원격 서버면 등록한 주소 그대로의 <code class="inline">serverUrl</code>, 로컬 서버면 등록한 명령과 인자를 순서까지 그대로 적은 <code class="inline">serverCommand</code>입니다. <code class="inline">TOOLS</code>는 세션의 <code class="inline">/mcp</code>에서 본 읽기 도구 이름입니다.</p>
+    </div>
+  </details>
+  <div class="step-title"><span class="step-no">3</span>고른 서버 하나를 연결</div>
+  <p class="body">고른 서버의 블록 <strong>하나만</strong> 실행합니다. 각 블록은 먼저 <code class="inline">r1c-choice.env</code>(고른 서버 이름, 허용 목록 항목, 허용 호스트, agent에 줄 도구 이름)를 만들고 서버를 등록합니다. 이 파일에는 키를 넣지 않습니다. 01과 02의 블록이 이 파일을 읽어서 같은 값을 씁니다.</p>
+  <details class="solution">
+    <summary>alphavantage: 시세, 환율, 경제지표 (무료 키)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 이 서버를 골랐을 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+UVX=$(command -v uvx || echo "$HOME/.local/bin/uvx")
+cat &gt; r1c-choice.env &lt;&lt; EOF
+SRV=alphavantage
+ALLOW_ENTRY='{"serverCommand": ["$UVX", "--from", "marketdata-mcp-server", "--with", "mcp&lt;2", "marketdata-mcp"]}'
+NET_ALLOW="www.alphavantage.co"
+TOOLS="mcp__alphavantage__TOOL_LIST, mcp__alphavantage__TOOL_GET, mcp__alphavantage__TOOL_CALL"
+EOF
+read -rs AV_KEY
+claude mcp add --env ALPHA_VANTAGE_API_KEY="$AV_KEY" --transport stdio alphavantage -- "$UVX" --from marketdata-mcp-server --with "mcp&lt;2" marketdata-mcp
+unset AV_KEY
+claude mcp list</code></pre>
+  </div>
+      <p class="body">키는 <a href="https://www.alphavantage.co/support/#api-key">Alpha Vantage 무료 키 신청</a>에서 받고, <code class="inline">read -rs</code> 줄에서 붙여 넣고 Enter를 누릅니다(화면과 셸 기록에 남지 않음). 키는 <code class="inline">--env</code>로 <code class="inline">~/.claude.json</code>에만 들어갑니다. 제공처 안내의 <code class="inline">uvx marketdata-mcp-server 키</code> 한 줄은 2026-11-09 확인 때 실행 파일 이름이 <code class="inline">marketdata-mcp</code>로 바뀌어 실패했고, 최신 <code class="inline">mcp</code> 2.x와도 맞지 않아서 <code class="inline">--from</code>과 <code class="inline">--with "mcp&lt;2"</code>로 고정했습니다. 서버는 키를 인자 대신 환경 변수 <code class="inline">ALPHA_VANTAGE_API_KEY</code>로도 읽습니다(공식 저장소 소스 확인). 무료 키는 하루 25회라 시험 호출을 아껴 씁니다.</p>
+    </div>
+  </details>
+  <details class="solution">
+    <summary>aws-knowledge: AWS 공식 문서 (인증 없음)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 이 서버를 골랐을 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+cat &gt; r1c-choice.env &lt;&lt; 'EOF'
+SRV=aws-knowledge
+ALLOW_ENTRY='{"serverUrl": "https://knowledge-mcp.global.api.aws"}'
+NET_ALLOW="knowledge-mcp.global.api.aws"
+TOOLS="mcp__aws-knowledge__aws___search_documentation, mcp__aws-knowledge__aws___read_documentation, mcp__aws-knowledge__aws___get_regional_availability"
+EOF
+claude mcp add --transport http aws-knowledge https://knowledge-mcp.global.api.aws
+claude mcp list</code></pre>
+  </div>
+      <p class="body">인증이 없습니다. 제공처 문서에 따르면 호출 한도가 있습니다.</p>
+    </div>
+  </details>
+  <details class="solution">
+    <summary>microsoft-learn: Microsoft 공식 문서 (인증 없음)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 이 서버를 골랐을 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+cat &gt; r1c-choice.env &lt;&lt; 'EOF'
+SRV=microsoft-learn
+ALLOW_ENTRY='{"serverUrl": "https://learn.microsoft.com/api/mcp"}'
+NET_ALLOW="learn.microsoft.com"
+TOOLS="mcp__microsoft-learn__microsoft_docs_search, mcp__microsoft-learn__microsoft_docs_fetch, mcp__microsoft-learn__microsoft_code_sample_search"
+EOF
+claude mcp add --transport http microsoft-learn https://learn.microsoft.com/api/mcp
+claude mcp list</code></pre>
+  </div>
+      <p class="body">인증이 없습니다.</p>
+    </div>
+  </details>
+  <details class="solution">
+    <summary>deepwiki: 공개 GitHub 저장소 위키 (인증 없음)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 이 서버를 골랐을 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+cat &gt; r1c-choice.env &lt;&lt; 'EOF'
+SRV=deepwiki
+ALLOW_ENTRY='{"serverUrl": "https://mcp.deepwiki.com/mcp"}'
+NET_ALLOW="mcp.deepwiki.com"
+TOOLS="mcp__deepwiki__read_wiki_structure, mcp__deepwiki__read_wiki_contents, mcp__deepwiki__ask_wiki_question"
+EOF
+claude mcp add --transport http deepwiki https://mcp.deepwiki.com/mcp
+claude mcp list</code></pre>
+  </div>
+      <p class="body">인증이 없고 공개 저장소만 다룹니다.</p>
+    </div>
+  </details>
+  <details class="solution">
+    <summary>docs: 내 폴더의 문서, 읽기 전용 (인증 없음)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 이 서버를 골랐을 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+mkdir -p docs
+cat &gt; r1c-choice.env &lt;&lt; 'EOF'
+SRV=docs
+ALLOW_ENTRY='{"serverCommand": ["npx", "-y", "@modelcontextprotocol/server-filesystem@2.2.0", "--read-only", "${HOME}/claude-lab/capstone/docs"]}'
+NET_ALLOW=""
+TOOLS="mcp__docs__list_directory, mcp__docs__directory_tree, mcp__docs__search_files, mcp__docs__read_text_file"
+EOF
+claude mcp add --transport stdio docs -- npx -y @modelcontextprotocol/server-filesystem@2.2.0 --read-only "$HOME/claude-lab/capstone/docs"
+claude mcp list</code></pre>
+  </div>
+      <p class="body">질의에 쓸 문서를 <code class="inline">~/claude-lab/capstone/docs/</code>에 넣습니다. 인터넷에 공개된 약관이나 상품설명서처럼 <strong>개인정보와 사내 기밀이 없는 문서</strong>만 넣습니다. <code class="inline">--read-only</code>를 주면 서버가 쓰기 도구를 아예 내놓지 않습니다(2.x의 기능, 2.2.0으로 고정). 경로에 <code class="inline">$HOME</code>을 그대로 쓰는 것은 02의 허용 목록 항목과 맞추기 위해서입니다.</p>
+    </div>
+  </details>
+  <details class="solution">
+    <summary>github: 저장소와 이슈, 읽기 전용 (토큰)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 이 서버를 골랐을 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+cat &gt; r1c-choice.env &lt;&lt; 'EOF'
+SRV=github
+ALLOW_ENTRY='{"serverUrl": "https://api.githubcopilot.com/mcp/readonly"}'
+NET_ALLOW="api.githubcopilot.com"
+TOOLS="mcp__github__get_me, mcp__github__search_repositories, mcp__github__get_file_contents, mcp__github__list_issues, mcp__github__issue_read"
+EOF
+read -rs GH_PAT
+claude mcp add --transport http github https://api.githubcopilot.com/mcp/readonly -H "Authorization: Bearer $GH_PAT"
+unset GH_PAT
+claude mcp list</code></pre>
+  </div>
+      <p class="body">토큰은 GitHub의 fine-grained personal access token으로, 필요한 저장소에 읽기 권한만, 짧은 만료로 만듭니다. 주소 끝의 <code class="inline">/readonly</code>는 읽기 도구만 내놓는 공식 주소입니다. 토큰은 <code class="inline">-H</code> 헤더로 <code class="inline">~/.claude.json</code>에만 들어갑니다. 도구 이름은 공식 README에서 옮긴 것이니 <code class="inline">/mcp</code>에서 실제 이름을 확인합니다.</p>
+    </div>
+  </details>
+  <p class="body"><code class="inline">claude mcp list</code>에서 고른 서버 줄에 <code class="inline">✔ Connected</code>가 나와야 합니다. 이어서 세션에서 도구를 불러 봅니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone &amp;&amp; claude</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>고른 MCP 서버의 도구 목록을 보여 주고, 그중 읽기 도구 하나를 골라 간단한 질문으로 한 번 불러 주세요.</code></pre>
+  </div>
+  <p class="body">처음 부를 때 도구 사용 허락을 묻습니다. <code class="inline">/mcp</code>에서 서버 상태와 도구 이름(<code class="inline">mcp__&lt;서버&gt;__&lt;도구&gt;</code>)을 볼 수 있습니다. 도구 이름이 <code class="inline">r1c-choice.env</code>의 <code class="inline">TOOLS</code>와 다르면 파일을 고칩니다.</p>
+  <div class="checkpoint">
+    <div class="cp-title">CHECKPOINT</div>
+    <label class="cp-item"><input type="checkbox"><span>고른 서버가 <code>claude mcp list</code>에서 연결됨으로 보인다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>세션에서 고른 서버의 도구가 한 번 불렸다</span></label>
+    <label class="cp-item"><input type="checkbox"><span><code>r1c-choice.env</code>에 서버 이름, 허용 목록 항목, 허용 호스트, 도구 이름이 있고 키는 없다</span></label>
+  </div>
+</section>
+
+<section class="task" id="task-01" data-min="20">
+  <div class="task-head"><span class="task-num">01</span><h2>자기 agent 2개</h2><span class="time-badge">20분</span></div>
+  <p class="task-goal">고른 서버의 자료를 찾아 정리하는 agent와, 그 결과의 근거를 다시 확인하는 읽기 전용 검토 agent를 만듭니다.</p>
+  <p class="body">agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일입니다. <code class="inline">tools</code>에는 고른 서버의 도구를 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code>으로 적고, 적지 않은 도구(쓰기, Bash, 웹, 다른 MCP 서버)는 쓸 수 없습니다. 아래 블록은 <code class="inline">r1c-choice.env</code>의 <code class="inline">SRV</code>와 <code class="inline">TOOLS</code>를 채워 두 파일을 만듭니다. 이름과 기준은 예시이고, 같은 틀 안에서 고쳐도 됩니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 조사와 검토를 두 agent로 나누고 <code class="inline">tools</code>를 고른 서버의 읽기 도구로 좁히면, 각 agent는 그 밖의 도구를 쓸 수 없습니다. 이 두 agent가 R2에서 plugin에 그대로 들어갑니다.</p>
+  <div class="step-title"><span class="step-no">1</span>조사 agent와 검토 agent</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env &amp;&amp; echo "SRV=$SRV"
+cat &gt; .claude/agents/mcp-researcher.md &lt;&lt; EOF
+---
+name: mcp-researcher
+description: |
+  ${SRV} MCP에서 자료를 찾아 업무 질문에 답하고, 답마다 출처를 붙여 정리하는 조사 담당.
+  사용 시점: 업무 질문 하나를 ${SRV} 자료로 조사해 짧은 보고가 필요할 때.
+tools: ${TOOLS}, Read
+model: sonnet
+---
+당신은 ${SRV} MCP의 자료로 업무 질문에 답하는 조사 담당자입니다.
+
+# 데이터
+- ${SRV} MCP의 도구만 씁니다. 웹 검색, 다른 MCP 서버, 셸 명령은 쓰지 않습니다.
+- 도구가 돌려준 내용에 없는 사실은 쓰지 않습니다. 모르면 모른다고 적습니다.
+
+# 순서
+1. 질문을 한 줄로 다시 적고, 찾을 것을 세 가지 이하로 나눕니다.
+2. 도구로 찾고, 찾은 내용마다 출처(문서 제목과 주소, 파일 경로, 데이터 이름과 기준일)를 남깁니다.
+3. 결론을 먼저 쓰고 근거를 붙입니다.
+
+# 출력 형식
+- 결론 세 줄 이내
+- 근거 표: 주장, 출처, 기준일
+- 확인하지 못한 것
+- 개인정보(이름, 연락처, 계좌번호 등)와 키, 토큰 값은 쓰지 않습니다.
+EOF
+
+cat &gt; .claude/agents/evidence-reviewer.md &lt;&lt; EOF
+---
+name: evidence-reviewer
+description: |
+  조사 결과의 주장마다 ${SRV} MCP로 근거를 다시 확인하는 읽기 전용 검토 담당.
+  사용 시점: mcp-researcher의 결과를 보고서에 쓰기 전에.
+tools: ${TOOLS}, Read, Grep
+model: sonnet
+---
+당신은 조사 결과를 검토하는 검토자입니다. 파일을 만들거나 고치지 않습니다.
+
+# 검토 방법
+- 결과의 주장마다 출처를 ${SRV} MCP 도구로 다시 찾아 봅니다. 새로운 조사는 하지 않습니다.
+- 주장마다 확인, 불일치, 출처 없음 중 하나로 판정합니다.
+- 기준일이 없거나 오래된 수치는 따로 적습니다.
+
+# 출력 형식
+- 표: 주장, 판정, 근거(출처와 확인한 내용 한 줄)
+- 결과에 개인정보나 키, 토큰 값이 보이면 그 줄을 적습니다.
+- 마지막 줄: PASS(모두 확인), WARN(출처 없음이나 오래된 수치), FAIL(불일치 또는 민감 정보)
+EOF
+ls .claude/agents</code></pre>
+  </div>
+  <table class="tbl"><thead><tr><th>agent</th><th>tools</th><th>역할</th></tr></thead><tbody>
+    <tr><td><code class="inline">mcp-researcher</code></td><td>고른 서버의 읽기 도구, <code class="inline">Read</code></td><td>찾고 정리한다. 답마다 출처를 붙인다. 저장은 메인이 한다</td></tr>
+    <tr><td><code class="inline">evidence-reviewer</code></td><td>고른 서버의 읽기 도구, <code class="inline">Read</code>, <code class="inline">Grep</code></td><td>주장마다 근거를 다시 확인한다. 쓰기, Bash, 웹 도구가 없다</td></tr>
+  </tbody></table>
+  <div class="step-title"><span class="step-no">2</span>첫 호출</div>
+  <p class="body"><code class="inline">.claude/agents/</code>를 이번에 처음 만들었다면 세션을 다시 열어야 agent를 읽습니다(<code class="inline">/exit</code> 후 <code class="inline">claude</code>). 고른 서버에 맞는 질문 하나를 보냅니다.</p>
+  <table class="tbl"><thead><tr><th>서버</th><th>질문 예</th></tr></thead><tbody>
+    <tr><td><code class="inline">alphavantage</code></td><td>최근 한 달 USD/KRW 환율 흐름과 미국 기준금리(FEDERAL_FUNDS_RATE) 최근 값을 정리해 주세요</td></tr>
+    <tr><td><code class="inline">aws-knowledge</code></td><td>서울 리전(ap-northeast-2)에서 Amazon Bedrock을 쓸 수 있는지와, 금융권 보안 요건에 참고할 AWS 공식 문서를 정리해 주세요</td></tr>
+    <tr><td><code class="inline">microsoft-learn</code></td><td>Microsoft Entra 조건부 액세스 배포를 계획할 때 확인할 항목을 공식 문서 기준으로 정리해 주세요</td></tr>
+    <tr><td><code class="inline">deepwiki</code></td><td>modelcontextprotocol/python-sdk 저장소의 구조와 도구를 만드는 방법을 정리해 주세요</td></tr>
+    <tr><td><code class="inline">docs</code></td><td>docs 폴더의 문서에서 중도해지와 수수료 조건을 찾아 문서별로 비교해 주세요</td></tr>
+    <tr><td><code class="inline">github</code></td><td>(내 저장소 이름) 저장소의 열린 이슈를 주제별로 묶어 정리해 주세요</td></tr>
+  </tbody></table>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>mcp-researcher 에이전트로 (위 표에서 고른 질문)
+이어서 evidence-reviewer 에이전트로 방금 결과의 근거를 확인해 주세요.</code></pre>
+  </div>
+  <p class="body">조사 결과에 근거 표가 있고, 검토 결과의 마지막 줄에 PASS, WARN, FAIL 중 하나가 나오면 됩니다. alphavantage는 질문 하나가 여러 번의 호출이 될 수 있으니 하루 25회 한도를 생각해 질문을 좁힙니다.</p>
+  <div class="checkpoint">
+    <div class="cp-title">CHECKPOINT</div>
+    <label class="cp-item"><input type="checkbox"><span><code>mcp-researcher</code>가 출처가 붙은 결과를 냈다</span></label>
+    <label class="cp-item"><input type="checkbox"><span><code>evidence-reviewer</code>가 주장마다 판정하고 마지막 줄을 냈다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>두 agent의 <code>tools</code>가 고른 서버의 읽기 도구로 좁혀져 있다</span></label>
+  </div>
+</section>
+
+<section class="task" id="task-02" data-min="25">
+  <div class="task-head"><span class="task-num">02</span><h2>가드레일</h2><span class="time-badge">25분</span></div>
+  <p class="task-goal">이 폴더에서 붙을 수 있는 MCP 서버를 고른 서버 하나로 묶고(허용 목록), 그 서버의 읽기 도구만 쓰게 하고, Claude가 직접 부르는 호스트를 그 서비스로 묶습니다. 모두 <span class="gl" data-gl="failclosed">fail-closed</span>입니다.</p>
+  <p class="body">세 겹으로 세웁니다. <strong>MCP 허용 목록</strong>(<code class="inline">allowedMcpServers</code>)은 어떤 서버가 연결될 수 있는지를, <strong>mcp-guard <span class="gl" data-gl="hook">훅</span></strong>은 연결된 서버의 어떤 도구를 부를 수 있는지를, <strong>net-guard 훅</strong>은 Claude의 Bash와 WebFetch가 어느 호스트를 부를 수 있는지를 정합니다. 훅의 원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일</a>과 같습니다. exit 2가 차단이고, 오류 경로(jq 없음, 입력 해석 실패)에서도 exit 2를 냅니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> agent 지시문은 Claude가 읽는 지침이라 어길 수도 있습니다. 붙을 수 있는 서버, 부를 수 있는 도구, 부를 수 있는 호스트는 설정과 훅이 실행 전에 실제로 막아야 합니다.</p>
+  <p class="body">아래 그림은 이 단계에서 만드는 세 겹과 deny 규칙이 각각 어느 순간에 걸리는지 보여 줍니다. 03에서 직접 확인할 장면과 같습니다.</p>
+  <div class="viz" data-viz="mcp-gate"></div>
+  <div class="step-title"><span class="step-no">1</span>어느 설정을 어디에 둘 수 있나</div>
+  <p class="body"><a href="https://code.claude.com/docs/en/managed-mcp">MCP 접근 통제 공식 문서</a>와 <a href="https://code.claude.com/docs/en/permissions">권한 공식 문서</a>에서 확인한 키입니다.</p>
+  <table class="tbl"><thead><tr><th>설정</th><th>둘 수 있는 곳과 동작</th><th>이 랩에서</th></tr></thead><tbody>
+    <tr><td><code class="inline">allowedMcpServers</code></td><td>모든 설정 범위(사용자, 프로젝트, local, managed). 범위마다의 목록이 합쳐집니다. managed의 잠금이 없으면 사용자 설정이 목록을 넓힐 수 있습니다. 설정이 없으면 모든 서버, 빈 배열이면 서버 없음</td><td>프로젝트 <code class="inline">.claude/settings.json</code>에 고른 서버 하나</td></tr>
+    <tr><td><code class="inline">deniedMcpServers</code></td><td>모든 설정 범위. 항상 합쳐지고, 허용 목록보다 먼저 적용됩니다</td><td>쓰지 않음 (허용 목록으로 충분)</td></tr>
+    <tr><td><code class="inline">allowManagedMcpServersOnly</code></td><td>managed 설정에서만 동작. 켜면 managed의 허용 목록만 남습니다</td><td>쓰지 않음 (조직 강제용)</td></tr>
+    <tr><td><code class="inline">managed-mcp.json</code>, <code class="inline">managedMcpServers</code></td><td>managed에서만. 서버를 고정 배포하거나 모두에게 내려줍니다</td><td>쓰지 않음</td></tr>
+    <tr><td>권한 규칙 <code class="inline">mcp__&lt;서버&gt;__&lt;도구&gt;</code></td><td>모든 설정 범위. deny는 어느 범위에 있든 allow보다 앞섭니다. 그래서 <code class="inline">mcp__*</code>를 deny하고 한 서버만 allow하는 식의 "하나만 빼고 막기"는 되지 않습니다</td><td>그 대신 mcp-guard 훅으로 고른 서버만 통과시킵니다</td></tr>
+    <tr><td><code class="inline">enableAllProjectMcpServers</code>, <code class="inline">enabledMcpjsonServers</code>, <code class="inline">disabledMcpjsonServers</code></td><td>프로젝트 <code class="inline">.mcp.json</code> 서버의 승인. 저장소가 스스로 승인한 것은 신뢰하지 않은 폴더에서 무시되고, <code class="inline">disabledMcpjsonServers</code>는 어디에 있든 거부합니다</td><td>이 랩은 local 범위로 등록해 <code class="inline">.mcp.json</code>을 쓰지 않습니다</td></tr>
+  </tbody></table>
+  <p class="body">허용 목록 항목은 원격 서버를 <code class="inline">serverUrl</code>(주소, <code class="inline">*</code> 가능)로, 로컬 서버를 <code class="inline">serverCommand</code>(명령과 인자 배열, 순서까지 정확히 같아야 함)로 맞춥니다. <code class="inline">serverName</code>(등록 이름)은 누구나 아무 이름이나 붙일 수 있어서 공식 문서도 보안 통제가 아니라고 적습니다. 그래서 이 랩은 주소와 명령으로 적습니다.</p>
+  <div class="step-title"><span class="step-no">2</span>도구 훅: mcp-guard.sh</div>
+  <p class="body">MCP 도구 호출(<code class="inline">mcp__</code>로 시작)마다 실행됩니다. 인자로 받은 서버의 도구만 통과시키고, 그 서버의 도구라도 이름에 create, update, delete, write, push, merge, add 같은 말이 든 쓰기 성격 도구는 막습니다. 이름 기준의 예시 패턴이니 고른 서버의 도구 이름을 보고 조정합니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+cat &gt; .claude/hooks/mcp-guard.sh &lt;&lt; 'EOF'
+#!/bin/bash
+# 사용: mcp-guard.sh &lt;허용할 MCP 서버 이름&gt;...
+INPUT=$(cat)
+command -v jq &gt;/dev/null || { echo "MCP: 검사기 오류(jq 없음) - 안전을 위해 차단" &gt;&amp;2; exit 2; }
+[ $# -ge 1 ] || { echo "MCP: 허용할 서버 이름이 설정에 없음 - 차단" &gt;&amp;2; exit 2; }
+TOOL=$(printf '%s' "$INPUT" | jq -er '.tool_name') || { echo "MCP: 입력 해석 실패 - 차단" &gt;&amp;2; exit 2; }
+
+case "$TOOL" in mcp__*) ;; *) exit 0 ;; esac   # MCP 도구가 아니면 관여하지 않는다
+
+for s in "$@"; do
+  REST=${TOOL#"mcp__${s}__"}
+  [ "$REST" != "$TOOL" ] || continue
+  # 허용한 서버라도 쓰기 성격의 도구는 막는다 (도구 이름 기준 예시 패턴)
+  if printf '%s' "$REST" | grep -Eiq '(^|_)(create|update|delete|remove|write|edit|move|push|merge|add)(_|$)'; then
+    echo "MCP: 쓰기 성격 도구($TOOL)는 차단됩니다" &gt;&amp;2; exit 2
+  fi
+  exit 0
+done
+echo "MCP: 허용 목록 밖의 MCP 도구($TOOL). 허용 서버: $*" &gt;&amp;2
+exit 2
+EOF
+chmod +x .claude/hooks/mcp-guard.sh</code></pre>
+  </div>
+  <div class="step-title"><span class="step-no">3</span>호출 대상 훅: net-guard.sh</div>
+  <p class="body">Bash 명령과 WebFetch의 입력에서 <code class="inline">http(s)://</code> 호스트를 뽑아, 인자로 받은 호스트가 아니면 막습니다. 인자는 <code class="inline">r1c-choice.env</code>의 <code class="inline">NET_ALLOW</code>(고른 서비스의 호스트, docs는 없음)입니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+cat &gt; .claude/hooks/net-guard.sh &lt;&lt; 'EOF'
+#!/bin/bash
+# 사용: net-guard.sh &lt;허용할 호스트&gt;...   (인자가 없으면 URL이 든 호출을 모두 막는다)
+INPUT=$(cat)
+command -v jq &gt;/dev/null || { echo "NET: 검사기 오류(jq 없음) - 안전을 위해 차단" &gt;&amp;2; exit 2; }
+TEXT=$(printf '%s' "$INPUT" | jq -r '.tool_input | [.. | strings] | join("\n")') \
+  || { echo "NET: 입력 해석 실패 - 차단" &gt;&amp;2; exit 2; }
+
+ALLOW=" $* "
+HOSTS=$(printf '%s\n' "$TEXT" | grep -oiE "https?://[^/[:space:]\"'&lt;&gt;]+" | sed -E 's#^[A-Za-z]+://##; s#^[^@]*@##; s#:[0-9]+$##' | tr 'A-Z' 'a-z' | sort -u)
+for h in $HOSTS; do
+  case "$ALLOW" in
+    *" $h "*) ;;
+    *) echo "NET: 허용되지 않은 호출 대상($h). 허용: ${*:-없음}" &gt;&amp;2; exit 2 ;;
+  esac
+done
+exit 0
+EOF
+chmod +x .claude/hooks/net-guard.sh</code></pre>
+  </div>
+  <div class="step-title"><span class="step-no">4</span>스크립트 직접 시험</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
+G=.claude/hooks
+echo '{"tool_name":"mcp__other-server__search","tool_input":{}}' | $G/mcp-guard.sh "$SRV"; echo "exit=$?"
+echo '{"tool_name":"mcp__'"$SRV"'__create_item","tool_input":{}}' | $G/mcp-guard.sh "$SRV"; echo "exit=$?"
+echo 'not json' | $G/mcp-guard.sh "$SRV"; echo "exit=$?"
+echo '{"tool_input":{"command":"curl -s https://example.com/"}}' | $G/net-guard.sh $NET_ALLOW; echo "exit=$?"
+echo '{"tool_name":"mcp__'"$SRV"'__search","tool_input":{}}' | $G/mcp-guard.sh "$SRV"; echo "exit=$?"
+echo '{"tool_input":{"command":"ls -l"}}' | $G/net-guard.sh $NET_ALLOW; echo "exit=$?"</code></pre>
+  </div>
+  <p class="body">앞의 네 줄(목록 밖 서버의 도구, 고른 서버의 쓰기 성격 도구, 해석할 수 없는 입력, 다른 호스트 호출)은 <code class="inline">exit=2</code>와 <code class="inline">MCP:</code>, <code class="inline">NET:</code>로 시작하는 메시지가, 뒤의 두 줄(고른 서버의 읽기 도구, URL 없는 명령)은 <code class="inline">exit=0</code>이 나와야 합니다. 세 번째 줄에는 jq의 해석 오류 메시지가 함께 보입니다.</p>
+  <div class="step-title"><span class="step-no">5</span>프로젝트 설정에 허용 목록, 훅, deny 규칙 등록</div>
+  <p class="body"><code class="inline">r1c-choice.env</code>의 값으로 <code class="inline">.claude/settings.json</code>을 만듭니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(v2.1.295+, <a href="https://code.claude.com/docs/en/hooks">공식 훅 문서</a>, Ch2 Lab 2 TASK 02). <code class="inline">permissions.deny</code>의 <code class="inline">WebSearch</code>는 웹 검색 도구를 없애고, <code class="inline">Read(~/.claude.json)</code>는 키나 토큰이 저장된 사용자 설정 파일 읽기를 막습니다. 다른 트랙에서 만든 <code class="inline">settings.json</code>이 있으면 덮어쓰게 되니, 한 트랙만 진행합니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
+H="$HOME/claude-lab/capstone/.claude/hooks"
+jq -n --arg srv "$SRV" --arg net "$NET_ALLOW" --arg h "$H" --argjson entry "$ALLOW_ENTRY" '{
+  allowedMcpServers: [$entry],
+  permissions: { deny: ["WebSearch", "Read(~/.claude.json)"] },
+  hooks: { PreToolUse: [
+    { matcher: "mcp__.*",
+      hooks: [{ type: "command", command: "\($h)/mcp-guard.sh \($srv)", onFailure: "block" }] },
+    { matcher: "Bash|WebFetch",
+      hooks: [{ type: "command", command: "\($h)/net-guard.sh \($net)", onFailure: "block" }] }
+  ] }
+}' &gt; .claude/settings.json &amp;&amp; cat .claude/settings.json &amp;&amp; echo "settings OK"</code></pre>
+  </div>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">출력 예 (aws-knowledge를 고른 경우, 일부)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>{
+  "allowedMcpServers": [
+    {
+      "serverUrl": "https://knowledge-mcp.global.api.aws"
+    }
+  ],
+  "permissions": {
+    "deny": [
+      "WebSearch",
+      "Read(~/.claude.json)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/…/claude-lab/capstone/.claude/hooks/mcp-guard.sh aws-knowledge",
+            "onFailure": "block"
+          }
+        ]
+      },
+      … net-guard.sh knowledge-mcp.global.api.aws …</code></pre>
+  </div>
+  <p class="body">설정은 세션을 다시 열어야 적용됩니다. 이 폴더에서는 허용 목록에 없는 서버가 <strong>모두</strong> 목록에서 빠집니다. 사용자 범위로 등록해 둔 서버와 Setup에서 설치한 plugin이 내놓는 MCP 서버도 이 폴더에서는 보이지 않는데, 이것이 의도한 동작입니다. R2에서 plugin으로 묶을 때도 plugin 안의 MCP 서버 주소나 명령이 이 항목과 같아야 연결됩니다.</p>
+  <div class="callout warn">
+    <span class="co-title">훅이 보지 못하는 것</span>
+    훅은 Claude가 부르는 도구의 <strong>입력 문자열</strong>만 봅니다. MCP 서버 자신이 밖으로 보내는 요청(로컬 서버 프로세스의 호출, 원격 서버 뒤쪽의 호출)과 명령의 결과, 스킴 없이 쓴 호스트, 변수로 조립한 URL은 보지 못합니다. 그래서 어떤 서버에 붙을지를 허용 목록으로 묶고, agent의 <code class="inline">tools</code>에서 Bash와 웹 도구를 빼 둡니다. 명령 단위의 네트워크 차단이 필요하면 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2</a>의 선택 TASK 04(sandbox)를 겹칩니다. MCP 서버가 <strong>돌려준 응답</strong>도 이 훅들은 검사하지 않으므로, 응답에 섞인 개인정보나 민감한 내용은 agent 지시문(개인정보, 키, 토큰 값을 쓰지 않는다)과 <code class="inline">evidence-reviewer</code>의 검토로만 걸러집니다.
+  </div>
+  <div class="callout tip">
+    <span class="co-title">조직이 강제하려면</span>
+    프로젝트 설정의 허용 목록과 훅은 사용자가 고치거나 끌 수 있습니다. 조직이 강제하려면 Ch2에서 쓴 managed 설정(<code class="inline">/etc/claude-code/managed-settings.json</code>)에 <code class="inline">allowedMcpServers</code>와 <code class="inline">allowManagedMcpServersOnly: true</code>를 함께 넣고, 훅은 <code class="inline">allowManagedHooksOnly</code>로 managed 훅만 돌게 합니다. 이 랩에서는 managed 설정을 바꾸지 않습니다.
+  </div>
+  <div class="checkpoint">
+    <div class="cp-title">CHECKPOINT</div>
+    <label class="cp-item"><input type="checkbox"><span>직접 시험에서 차단 네 줄은 <code>exit=2</code>, 통과 두 줄은 <code>exit=0</code>이 나왔다</span></label>
+    <label class="cp-item"><input type="checkbox"><span><code>settings OK</code>가 출력됐고 <code>allowedMcpServers</code>에 고른 서버 하나만 있다</span></label>
+  </div>
+</section>
+
+<section class="task" id="task-03" data-min="20">
+  <div class="task-head"><span class="task-num">03</span><h2>막히는 것 확인</h2><span class="time-badge">20분</span></div>
+  <p class="task-goal">목록 밖 서버의 연결 시도, 다른 호스트 호출이 실제로 막히고, 고른 서버를 쓰는 정상 요청은 통과하는지 직접 봅니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다.</p>
+  <div class="step-title"><span class="step-no">1</span>목록 밖 서버 연결 시도</div>
+  <p class="body">Claude 세션 밖의 터미널에서, 허용 목록에 없는 원격 서버 하나와, docs 서버와 같은 패키지지만 <code class="inline">--read-only</code> 없이 홈 폴더 전체를 여는 로컬 서버 하나를 등록해 봅니다. 혹시 등록되더라도 작업 폴더의 <code class="inline">.mcp.json</code>에만 들어가도록 project 범위로 시도합니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
+OTHER=https://mcp.deepwiki.com/mcp; [ "$SRV" = deepwiki ] &amp;&amp; OTHER=https://learn.microsoft.com/api/mcp
+claude mcp add --scope project --transport http not-listed "$OTHER"; echo "exit=$?"
+claude mcp add --scope project --transport stdio not-listed-2 -- npx -y @modelcontextprotocol/server-filesystem@2.2.0 "$HOME"; echo "exit=$?"
+ls .mcp.json 2&gt;/dev/null || echo ".mcp.json 없음 (등록되지 않음)"
+claude mcp list</code></pre>
+  </div>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">출력 예</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>Cannot add MCP server "not-listed": not allowed by enterprise policy
+exit=1
+Cannot add MCP server "not-listed-2": not allowed by enterprise policy
+exit=1
+.mcp.json 없음 (등록되지 않음)</code></pre>
+  </div>
+  <p class="body">메시지의 "enterprise policy"는 프로젝트 설정의 허용 목록에도 같은 문구가 쓰입니다. <code class="inline">claude mcp list</code>에는 고른 서버만 보여야 합니다. 두 번째 시도처럼 같은 패키지라도 인자가 하나 다르면 막히는 것이 <code class="inline">serverCommand</code>의 정확 일치입니다. <code class="inline">.mcp.json</code>이 생겼다면 허용 목록이 동작하지 않은 것이니 아래 점검표를 봅니다(파일은 지웁니다).</p>
+  <div class="step-title"><span class="step-no">2</span>세션에서 막혀야 하는 요청</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone &amp;&amp; claude</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Claude 세션 입력, 다른 호스트 호출</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>curl로 https://example.com 의 첫 줄을 가져와 주세요</code></pre>
+  </div>
+  <p class="body">도구 호출 단계에서 <code class="inline">NET: 허용되지 않은 호출 대상(example.com)</code>이 나와야 합니다. 웹 검색은 02의 deny 규칙으로 빠져 있고, R2 공통 단계에서 plugin을 설치한 뒤 한 번 더 확인합니다.</p>
+  <div class="step-title"><span class="step-no">3</span>통과해야 하는 요청</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>mcp-researcher 에이전트로 (01에서 보낸 질문을 한 번 더)</code></pre>
+  </div>
+  <p class="body">고른 서버의 읽기 도구와 agent 경로는 그대로 통과해야 합니다. 설정에 등록한 PreToolUse 훅은 subagent의 도구 호출에도 실행되므로(공식 훅 문서), agent가 부르는 MCP 도구도 mcp-guard의 검사를 받습니다.</p>
+  <div class="step-title"><span class="step-no">4</span>고장 난 훅도 막는지 (fail-closed)</div>
+  <p class="body">세션을 <code class="inline">/exit</code>로 나온 뒤, net-guard.sh를 잠깐 치우고 Bash 도구 호출이 필요한 무해한 요청을 보냅니다. <code class="inline">ls</code>는 원래 허락 없이 도는 읽기 전용 명령이라, 막힌다면 훅의 <code class="inline">onFailure</code> 때문입니다. 마지막 줄에서 반드시 되돌립니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone
+mv .claude/hooks/net-guard.sh .claude/hooks/net-guard.sh.off
+claude -p "Bash 도구로 ls -l .claude/hooks 를 실행하고 결과를 그대로 보여 주세요"; echo "claude exit=$?"
+mv .claude/hooks/net-guard.sh.off .claude/hooks/net-guard.sh
+ls .claude/hooks</code></pre>
+  </div>
+  <p class="body"><code class="inline">.claude/hooks</code>의 파일 목록이 나오지 않고 훅 오류와 차단을 알리는 메시지가 보이면 됩니다. 메시지 문구는 버전에 따라 다를 수 있으니 실제로 나온 문구를 기록해 둡니다. 목록이 그대로 나왔다면 <code class="inline">onFailure</code> 줄과 Claude Code 버전(<code class="inline">claude --version</code>)을 확인합니다.</p>
+  <table class="tbl"><thead><tr><th>증상</th><th>점검</th></tr></thead><tbody>
+    <tr><td>고른 서버까지 목록에서 사라졌다</td><td>허용 목록 항목이 등록한 값과 다릅니다. <code class="inline">claude mcp list</code>가 보여 주는 주소나 명령과 <code class="inline">r1c-choice.env</code>의 <code class="inline">ALLOW_ENTRY</code>를 글자 단위로 비교하고(로컬 서버는 인자 순서까지), 고친 뒤 02의 Step 5를 다시 실행합니다</td></tr>
+    <tr><td>목록 밖 서버가 등록된다</td><td>사용자 설정의 허용 목록이 합쳐져 넓어졌을 수 있습니다. <code class="inline">jq '.allowedMcpServers' ~/.claude/settings.json</code>이 <code class="inline">null</code>이 아니면 그 목록에 든 서버도 허용됩니다. 세션 밖에서 작업 폴더로 <code class="inline">cd</code> 했는지도 봅니다</td></tr>
+    <tr><td><code class="inline">claude mcp list</code>에서 연결 실패</td><td>원격 서버는 주소 오타와 네트워크. 로컬 서버는 <code class="inline">npx</code>, <code class="inline">uvx</code>가 있는지. alphavantage는 <code class="inline">uvx --from marketdata-mcp-server --with "mcp&lt;2" marketdata-mcp --help</code>가 되는지. 등록을 고치려면 <code class="inline">claude mcp remove &lt;이름&gt;</code> 후 다시 <code class="inline">add</code></td></tr>
+    <tr><td>alphavantage가 한도 메시지를 낸다</td><td>무료 키는 하루 25회입니다. 질문을 좁히거나 다른 서버로 R1을 끝내고, 키 쪽은 다음 날 다시 시험합니다</td></tr>
+    <tr><td>정상 MCP 호출이 막힌다</td><td>메시지 앞머리를 봅니다. <code class="inline">MCP: 쓰기 성격 도구</code>면 mcp-guard의 패턴이 그 도구 이름에 걸린 것이니 패턴을 좁힙니다. 도구 이름의 서버 부분이 <code class="inline">SRV</code>와 같은지도 봅니다</td></tr>
+    <tr><td>훅이 아예 안 돈다</td><td>세션을 다시 열었는지, 폴더 신뢰(Yes, I trust this folder)를 눌렀는지. Ch2 Lab 2에서 managed 정책에 넣은 <code class="inline">allowManagedHooksOnly</code>가 남아 있으면 사용자, 프로젝트, 플러그인 훅이 모두 무시됩니다. <code class="inline">sudo jq '.allowManagedHooksOnly' /etc/claude-code/managed-settings.json</code>이 <code class="inline">true</code>면 Ch2 Lab 2 TASK 07(전체 원복)을 먼저 합니다</td></tr>
+  </tbody></table>
+  <div class="checkpoint">
+    <div class="cp-title">CHECKPOINT</div>
+    <label class="cp-item"><input type="checkbox"><span>목록 밖 서버 두 개의 등록이 <code>not allowed by enterprise policy</code>로 막혔다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>다른 호스트 호출이 막혔다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>고른 서버와 agent를 거치는 정상 요청은 통과했다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>스크립트를 치웠을 때도 막혔고, 스크립트를 되돌렸다</span></label>
+  </div>
+</section>
+
+<section class="task" id="task-04" data-min="10">
+  <div class="task-head"><span class="task-num">04</span><h2>R1 정리</h2><span class="time-badge">10분</span></div>
+  <p class="task-goal">CLAUDE.md를 짧게 정리하고, 작업 폴더에 키나 토큰이 없는지 확인한 뒤 쇼케이스 1 공유 문구를 준비합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> R2는 이 폴더를 그대로 plugin으로 묶습니다. 키나 토큰이 어떤 파일에 남아 있으면 plugin에 따라 들어가므로, 묶기 전에 확인합니다.</p>
+  <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게, 그리고 키 검사</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
+cat &gt; CLAUDE.md &lt;&lt; EOF
+# 내가 고른 MCP (캡스톤 R1-C)
+데이터: ${SRV} MCP 만 쓴다. 다른 MCP 서버, 웹 검색은 쓰지 않는다.
+역할: mcp-researcher(조사와 출처 정리), evidence-reviewer(근거 검토, 읽기 전용).
+결과물: 결론, 근거 표(주장, 출처, 기준일), 확인하지 못한 것. 개인정보, 키, 토큰 값은 쓰지 않는다.
+가드레일: .claude/settings.json 의 allowedMcpServers 가 이 폴더의 MCP 서버를 ${SRV} 하나로 묶는다.
+.claude/hooks 의 mcp-guard.sh(허용 서버의 읽기 도구만), net-guard.sh(호출 대상 ${NET_ALLOW:-없음}) 가 막는다. 우회하지 않는다.
+EOF
+jq -r '.. | objects | (.ALPHA_VANTAGE_API_KEY?, .Authorization?) | strings | sub("^Bearer "; "")' ~/.claude.json 2&gt;/dev/null \
+  | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -rlF --exclude-dir=docs -- "$V" . ; done
+echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"
+find . -type f -not -path './docs/*' | sort</code></pre>
+  </div>
+  <p class="body">키 검사는 alphavantage나 github처럼 키, 토큰을 쓰는 서버를 골랐을 때 의미가 있습니다. 파일 이름이 나오지 않고, 목록에 <code class="inline">.claude/agents/</code> 2개, <code class="inline">.claude/hooks/</code> 2개, <code class="inline">.claude/settings.json</code>, <code class="inline">CLAUDE.md</code>, <code class="inline">r1c-choice.env</code>가 보이면 R2의 재료가 갖춰진 것입니다.</p>
+  <div class="callout tip">
+    <span class="co-title">R2에서 쓰입니다</span>
+    이 폴더의 <code class="inline">.claude/agents/</code>, <code class="inline">.claude/hooks/</code>, <code class="inline">.claude/settings.json</code>의 허용 목록 항목, <code class="inline">r1c-choice.env</code>의 등록 명령이 R2에서 plugin으로 묶을 재료입니다. 키와 토큰은 plugin에 들어가지 않고 각 사용자의 MCP 등록에만 있습니다.
+  </div>
+  <div class="step-title"><span class="step-no">2</span>쇼케이스 1 공유 문구</div>
+  <p class="body">쇼케이스 1에서는 Slack 워크숍 채널에 아래 네 줄을 올리면 됩니다. 정식 출품은 R2 끝에 <a href="ClaudeCode_Capstone_Overview.html#submit">캡스톤 개요의 출품 양식</a>으로 하고, R1에서 받은 "가드레일이 막은 장면"이 그 양식의 4번이 됩니다.</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Slack 공유 문구, 예시</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>[R1-C 내가 고른 MCP]
+MCP: (고른 서버 이름과 제공처, 예: aws-knowledge, AWS 공식)
+agents: mcp-researcher(조사와 출처), evidence-reviewer(근거 검토, 읽기 전용) (역할과 도구 권한)
+가드레일: MCP 허용 목록(allowedMcpServers), 허용 서버의 읽기 도구만, 호출 대상 제한. 막힌 장면 캡처 첨부</code></pre>
+  </div>
+  <div class="callout warn">
+    <span class="co-title">올리기 전에</span>
+    캡처에 API 키, 토큰, <code class="inline">~/.claude.json</code> 내용, docs 폴더의 문서 원문이 보이지 않는지 확인합니다.
+  </div>
+  <div class="checkpoint">
+    <div class="cp-title">CHECKPOINT</div>
+    <label class="cp-item"><input type="checkbox"><span>작업 폴더에 agent, 훅, 설정, <code>CLAUDE.md</code>가 갖춰져 있고 키와 토큰은 없다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>공유 문구와 막힌 장면 캡처를 준비했다</span></label>
+  </div>
+  <p class="body">R1이 끝났으면 <a href="ClaudeCode_Capstone_Overview.html#checklist">캡스톤 개요의 완주 체크리스트</a> 1번, 3번, 4번이 채워졌는지 봅니다. 나머지는 R2에서 채웁니다.</p>
+</section>
+
+</main>
+</div>
+<footer>
+  <div class="who">Claude Code Deep Dive Workshop, Capstone R1-C 내가 고른 MCP</div>
+  <div>개요는 <a href="ClaudeCode_Capstone_Overview.html">Capstone Overview</a>, 시작 전 설치는 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup</a>, 추천 서버는 2026-11-09에 확인, 기준: 2026.11</div>
+</footer>
+
+
+<script>
+(function () {
+  "use strict";
+  document.querySelectorAll(".seg").forEach(function (seg) {
+    seg.addEventListener("click", function () {
+      var el = document.getElementById(seg.dataset.task);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+  var sections = document.querySelectorAll("section[id]");
+  var navLinks = document.querySelectorAll(".sidenav a[data-nav]");
+  var segs = document.querySelectorAll(".seg[data-task]");
+  if ("IntersectionObserver" in window) {
+    var current = null;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) { if (entry.isIntersecting) current = entry.target.id; });
+      if (!current) return;
+      navLinks.forEach(function (a) { a.classList.toggle("active", a.dataset.nav === current); });
+      segs.forEach(function (s) { s.classList.toggle("active", s.dataset.task === current); });
+    }, { rootMargin: "-20% 0px -65% 0px" });
+    sections.forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var KEY = "hol-theme";
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "theme-toggle";
+  function apply(light) {
+    document.documentElement.classList.toggle("light", light);
+    btn.textContent = light ? "다크" : "프로젝터";
+    btn.title = light ? "다크 모드로 전환" : "프로젝터 모드(라이트)로 전환";
+    btn.setAttribute("aria-pressed", light ? "true" : "false");
+    btn.setAttribute("aria-label", btn.title);
+  }
+  // One switch for the whole event site: fsi-theme is shared by eDM, portal, labs and decks.
+  function fsiTheme(legacy){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}if(q==='light'||q==='dark'){try{localStorage.setItem('fsi-theme',q)}catch(e){}return q}var s=null;try{s=localStorage.getItem('fsi-theme')||localStorage.getItem(legacy)}catch(e){}return s==='light'?'light':'dark'}
+  apply(fsiTheme(KEY) === "light");
+  btn.addEventListener("click", function () {
+    var next = !document.documentElement.classList.contains("light");
+    apply(next);
+    try { localStorage.setItem("fsi-theme", next ? "light" : "dark"); localStorage.setItem(KEY, next ? "light" : "dark"); } catch (e) {}
+  });
+  window.addEventListener("storage", function (e) {
+    if (e.key === "fsi-theme" && (e.newValue === "light" || e.newValue === "dark")) apply(e.newValue === "light");
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  document.querySelectorAll(".copy-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var pre = btn.closest(".code-wrap").querySelector("pre");
+      var text = pre.textContent.replace(/\n{3,}/g, "\n\n").trim();
+      function done() {
+        var old = btn.textContent;
+        btn.textContent = "복사됨 ✓";
+        btn.classList.add("copied");
+        setTimeout(function () { btn.textContent = old; btn.classList.remove("copied"); }, 1600);
+      }
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+      } else { fallback(); }
+    });
+  });
+})();
+</script>
+<script type="application/json" id="viz-data">
+{
+ "r1c-fetch": {
+  "title": "TASK 00 무엇을 내 EC2로 받나요: 설치 스크립트와 로컬 MCP 서버 패키지",
+  "nodes": [
+   {
+    "id": "src",
+    "ic": "globe",
+    "lb": "인터넷의 배포처",
+    "sb": "고른 서버에 따라 다름"
+   },
+   {
+    "id": "ec2",
+    "img": "images/aws-icons/Arch_Amazon-EC2_48.svg",
+    "lb": "내 실습 EC2",
+    "sb": "~/claude-lab/capstone"
+   },
+   {
+    "id": "srv",
+    "ic": "plug",
+    "lb": "로컬 MCP 서버",
+    "sb": "내 EC2에서 도는 프로세스"
+   }
+  ],
+  "edges": [
+   "curl, uvx, npx -y (HTTPS)",
+   "stdio로 연결"
+  ],
+  "side": [
+   {
+    "id": "remote",
+    "ic": "server",
+    "lb": "원격 HTTP 서버",
+    "sb": "aws-knowledge, microsoft-learn, deepwiki, github: 받는 것 없이 주소로 연결"
+   }
+  ],
+  "steps": [
+   {
+    "t": "uvx가 없을 때만: uv 설치",
+    "on": [
+     "src",
+     "ec2"
+    ],
+    "edge": 0,
+    "chip": "install.sh",
+    "set": {
+     "src": {
+      "lb": "astral.sh",
+      "sb": "uv 설치 스크립트"
+     },
+     "ec2": {
+      "sb": "~/.local/bin/uv, uvx"
+     }
+    },
+    "cap": "alphavantage를 고르는데 `uvx`가 없으면 `curl -LsSf https://astral.sh/uv/install.sh`가 설치 스크립트를 받아 바로 `sh`로 실행합니다. `UV_INSTALL_DIR`로 정한 `~/.local/bin`에 uv와 uvx가 생깁니다."
+   },
+   {
+    "t": "alphavantage: uvx가 패키지를 받음",
+    "on": [
+     "src",
+     "ec2"
+    ],
+    "edge": 0,
+    "chip": "marketdata-mcp-server",
+    "set": {
+     "src": {
+      "lb": "Python 패키지 저장소",
+      "sb": "marketdata-mcp-server, mcp<2"
+     },
+     "srv": {
+      "sb": "marketdata-mcp"
+     }
+    },
+    "cap": "등록 명령의 `uvx --from marketdata-mcp-server --with \"mcp<2\" marketdata-mcp`는 서버를 띄울 때 그 패키지와 2.x 미만의 `mcp`를 내려받아 `marketdata-mcp`를 실행합니다. 키는 내려받는 것이 아니라 `--env`로 `~/.claude.json`에만 들어갑니다."
+   },
+   {
+    "t": "docs: npx -y가 패키지를 받음",
+    "on": [
+     "src",
+     "ec2"
+    ],
+    "edge": 0,
+    "chip": "server-filesystem@2.2.0",
+    "set": {
+     "src": {
+      "lb": "npm 패키지 저장소",
+      "sb": "@modelcontextprotocol/server-filesystem@2.2.0"
+     },
+     "srv": {
+      "sb": "--read-only, docs 폴더만"
+     }
+    },
+    "cap": "docs 서버의 `npx -y @modelcontextprotocol/server-filesystem@2.2.0`은 묻지 않고(`-y`) 그 버전의 패키지를 내려받아 실행합니다. 버전을 2.2.0으로 고정해 `--read-only`가 동작합니다."
+   },
+   {
+    "t": "받은 서버가 내 EC2에서 돎",
+    "on": [
+     "ec2",
+     "srv"
+    ],
+    "edge": 1,
+    "cap": "받은 서버는 내 EC2의 프로세스로 돌고, Claude Code와 표준 입출력(stdio)으로 주고받습니다. `claude mcp list`의 `✔ Connected`가 이 연결입니다."
+   },
+   {
+    "t": "원격 서버는 받지 않음",
+    "on": [
+     "remote"
+    ],
+    "ok": [
+     "ec2"
+    ],
+    "cap": "aws-knowledge, microsoft-learn, deepwiki, github는 원격 HTTP 서버라 내 EC2로 내려받는 것이 없습니다. `claude mcp add --transport http` 뒤의 주소로 연결만 합니다."
+   }
+  ]
+ },
+ "mcp-gate": {
+  "title": "TASK 02 가드레일: 서버 연결, 도구 호출, 외부 호출이 각각 어디서 걸리나",
+  "nodes": [
+   {
+    "id": "cl",
+    "ic": "bot",
+    "lb": "Claude",
+    "sb": "mcp-researcher, evidence-reviewer"
+   },
+   {
+    "id": "mg",
+    "ic": "shield",
+    "lb": "PreToolUse 훅",
+    "sb": "mcp-guard.sh (mcp__.*)"
+   },
+   {
+    "id": "srv",
+    "ic": "plug",
+    "lb": "고른 MCP 서버",
+    "sb": "r1c-choice.env의 SRV"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "결과",
+    "sb": ""
+   }
+  ],
+  "edges": [
+   "도구 호출",
+   "통과",
+   "응답"
+  ],
+  "side": [
+   {
+    "id": "allow",
+    "ic": "lock",
+    "lb": "allowedMcpServers",
+    "sb": ".claude/settings.json, 고른 서버 하나"
+   },
+   {
+    "id": "ng",
+    "ic": "shield",
+    "lb": "net-guard.sh",
+    "sb": "Bash, WebFetch의 호출 대상 (NET_ALLOW)"
+   },
+   {
+    "id": "deny",
+    "ic": "lock",
+    "lb": "permissions.deny",
+    "sb": "WebSearch, Read(~/.claude.json)"
+   }
+  ],
+  "steps": [
+   {
+    "t": "목록 밖 서버 등록",
+    "bad": [
+     "allow",
+     "res"
+    ],
+    "set": {
+     "res": {
+      "lb": "등록 거부",
+      "sb": "not allowed by enterprise policy"
+     }
+    },
+    "cap": "03 Step 1처럼 허용 목록에 없는 서버를 `claude mcp add`로 등록하면 `allowedMcpServers`가 막습니다. 원격 서버는 주소(`serverUrl`), 로컬 서버는 명령과 인자(`serverCommand`)가 순서까지 같아야 통과합니다."
+   },
+   {
+    "t": "고른 서버만 연결",
+    "on": [
+     "srv"
+    ],
+    "ok": [
+     "allow"
+    ],
+    "cap": "허용 목록 항목과 같은 주소나 명령으로 등록한 고른 서버 하나만 이 폴더에서 연결됩니다. 사용자 범위로 등록한 서버와 Setup의 plugin이 내놓는 MCP 서버도 이 폴더에서는 보이지 않습니다."
+   },
+   {
+    "t": "읽기 도구는 통과",
+    "on": [
+     "cl"
+    ],
+    "ok": [
+     "mg",
+     "srv",
+     "res"
+    ],
+    "edge": [
+     0,
+     1,
+     2
+    ],
+    "chip": "mcp__SRV__읽기 도구",
+    "set": {
+     "res": {
+      "lb": "통과",
+      "sb": "출처가 붙은 조사 결과"
+     }
+    },
+    "cap": "agent가 고른 서버의 읽기 도구를 부르면 `mcp-guard.sh`가 도구 이름 `mcp__<서버>__<도구>`의 서버 부분이 인자로 받은 `SRV`인지 보고 `exit 0`을 냅니다. subagent의 도구 호출도 같은 PreToolUse 훅을 지납니다."
+   },
+   {
+    "t": "쓰기 성격 도구는 차단",
+    "on": [
+     "cl"
+    ],
+    "bad": [
+     "mg",
+     "res"
+    ],
+    "edge": 0,
+    "chip": "mcp__SRV__create_item",
+    "set": {
+     "res": {
+      "lb": "차단 (exit 2)",
+      "sb": "MCP: 쓰기 성격 도구(...)는 차단됩니다"
+     }
+    },
+    "cap": "고른 서버의 도구라도 이름에 create, update, delete, write, push, merge, add 같은 말이 들어 있으면 `mcp-guard.sh`가 `exit 2`로 막습니다. 도구 이름 기준의 예시 패턴입니다."
+   },
+   {
+    "t": "다른 서버의 도구는 차단",
+    "on": [
+     "cl"
+    ],
+    "bad": [
+     "mg",
+     "res"
+    ],
+    "edge": 0,
+    "chip": "mcp__other-server__search",
+    "set": {
+     "res": {
+      "lb": "차단 (exit 2)",
+      "sb": "MCP: 허용 목록 밖의 MCP 도구"
+     }
+    },
+    "cap": "도구 이름의 서버 부분이 `SRV`가 아니면 `mcp-guard.sh`가 막습니다. 02 Step 4의 직접 시험 첫 줄이 이 장면입니다."
+   },
+   {
+    "t": "다른 호스트 호출은 차단",
+    "on": [
+     "cl"
+    ],
+    "bad": [
+     "ng",
+     "res"
+    ],
+    "ok": [
+     "deny"
+    ],
+    "set": {
+     "res": {
+      "lb": "차단 (exit 2)",
+      "sb": "NET: 허용되지 않은 호출 대상(example.com)"
+     }
+    },
+    "cap": "Bash로 `curl https://example.com`을 부르면 `net-guard.sh`가 명령 글자에서 호스트를 뽑아 `NET_ALLOW`에 없으면 막습니다. 웹 검색은 `permissions.deny`의 `WebSearch`로 아예 빠져 있습니다."
+   },
+   {
+    "t": "훅 스크립트가 없을 때",
+    "on": [
+     "cl"
+    ],
+    "bad": [
+     "ng",
+     "res"
+    ],
+    "set": {
+     "ng": {
+      "sb": "net-guard.sh 없음"
+     },
+     "res": {
+      "lb": "차단",
+      "sb": "onFailure: block"
+     }
+    },
+    "cap": "03 Step 4처럼 `net-guard.sh`를 치우면 훅이 시작조차 못 합니다. 이때도 `onFailure`: `block`이 차단으로 끝냅니다. 이것이 fail-closed입니다. 확인 뒤 스크립트를 바로 되돌립니다."
+   }
+  ]
+ }
+}
+</script>
+<!-- VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim, page data lives in #viz-data) -->
+<script>
+/* VIZ COMPONENT v1: how a page uses it
+   1) Paste badges: automatic. Every .code-wrap (except .output) gets a badge from its .code-label text:
+      "Terminal..." -> 터미널, "Claude 세션..." -> Claude 세션, "Slack..." -> Slack, a label with 파일 -> 파일 내용,
+      a label with 브라우저 or 설치 창 -> 브라우저. Override with <div class="code-wrap" data-paste="term|claude|file|slack|web"
+      data-paste-path="~/x/y.md">. Terminal blocks that run cat > PATH << get a strip naming the file they create.
+   2) Paste guide: <div class="paste-guide" data-types="term claude file"></div> (data-types optional; default = badge
+      types found on the page). Renders the 노트북 브라우저 -> code-server(EC2) -> 편집기/터미널/Claude 세션 schematic.
+   3) Glossary: <span class="gl" data-gl="hook">훅</span> shows the GL definition on hover, focus or tap.
+      <div class="gl-list"></div> renders a "더 알아보기" list of the terms used on the page.
+   4) Flow and copy visuals: <div class="viz" data-viz="NAME"></div> plus one page-level
+      JSON block (script type="application/json" id="viz-data") holding {"NAME": {...}}, where a diagram is
+      { "title": "...", "nodes": [{"id","lb","sb","ic": shape | "img": "images/aws-icons/x.svg", "tile": true, "links": [["text","href"]]}],
+        "edges": ["label between node 1 and 2", ...], "side": [nodes shown under the row, no arrows],
+        "steps": [{"t": "short title", "cap": "caption, `code` allowed", "on": [ids], "ok": [ids], "bad": [ids],
+                   "edge": 0 | [0, 1], "chip": "file moving along that edge (copy mode)", "set": {"id": {"lb","sb"}}}] }
+      Shapes: browser server folder doc terminal chat plug globe shield key lock user bot result.
+      A step's "set" may change lb, sb, ic or img; a set.ic replaces the node's img with that shape for the step.
+      Buttons: 이전, 재생 (one pass, no loop; hidden with fewer than 2 steps), 다음, numbered steps.
+      A .viz whose data is missing, or has no nodes or steps, is hidden. prefers-reduced-motion: opens on the last step, no 재생. */
+(function () {
+  "use strict";
+  var TYPES = {
+    term: { lb: "터미널", zone: "term", cap: "code-server 아래쪽 Terminal 창(내 EC2의 리눅스 셸)에 붙여 넣고 Enter를 누릅니다. 여러 줄 블록도 통째로 붙여 넣으면 됩니다." },
+    claude: { lb: "Claude 세션", zone: "claude", cap: "터미널에서 claude를 실행한 뒤 나오는 프롬프트 칸에 붙여 넣습니다. 셸 명령이 아니라 Claude에게 보내는 요청입니다." },
+    file: { lb: "파일 내용", zone: "editor", cap: "code-server 편집기에서 블록 위에 적힌 경로의 파일을 열고, 이 내용을 넣어 저장합니다." },
+    slack: { lb: "Slack 메시지", zone: "browser", cap: "내 노트북 브라우저의 Slack 워크숍 채널 메시지 칸에 붙여 넣습니다. 실습 EC2에는 들어가지 않습니다." },
+    web: { lb: "브라우저", zone: "browser", cap: "내 노트북 브라우저의 다른 탭이나 창(예: 설치 창)에 넣습니다. 터미널에 붙여 넣는 명령이 아닙니다." }
+  };
+  var GL = {
+    hook: ["훅", "Claude Code가 프롬프트를 받을 때나 도구를 쓰기 직전 같은 정해진 순간에 자동으로 실행하는 내 스크립트입니다. exit 2로 끝나면 그 동작을 막습니다."],
+    mcp: ["MCP", "Model Context Protocol. Claude Code에 외부 데이터와 도구를 붙이는 연결 방식입니다. MCP 서버가 도구(예: search_trades)를 내놓으면 Claude가 그 도구를 부릅니다."],
+    plugin: ["plugin", "agents, skills, 훅, MCP 설정을 한 폴더에 묶어 설치 한 줄로 나눠 주는 단위입니다."],
+    marketplace: ["marketplace", "설치할 수 있는 plugin 목록(marketplace.json)을 담은 폴더나 git 저장소입니다. 추가한 뒤 plugin이름@마켓플레이스이름으로 설치합니다."],
+    userConfig: ["userConfig", "plugin을 설치할 때 키 같은 값을 묻는 칸입니다. sensitive로 둔 값은 설정 파일이 아닌 비밀 저장소에 들어갑니다."],
+    failclosed: ["fail-closed", "검사기가 오류를 내거나 아예 실행되지 못해도 통과가 아니라 차단으로 끝나게 하는 설계입니다. 이 실습에서는 오류 경로의 exit 2와 onFailure: block이 맡습니다."],
+    local: ["local 범위", "claude mcp add에 범위를 주지 않을 때의 기본값입니다. 등록한 폴더에서만 보이고, 설정은 ~/.claude.json에 저장됩니다."],
+    harness: ["AgentCore harness", "모델, 시스템 프롬프트, 도구를 설정 파일로 정하면 AgentCore가 에이전트 루프를 돌려 주는 방식입니다."]
+  };
+  var P = {
+    browser: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M6 6.5h.01M8.5 6.5h.01"/>',
+    server: '<rect x="4" y="3" width="16" height="7" rx="1.5"/><rect x="4" y="14" width="16" height="7" rx="1.5"/><path d="M8 6.5h.01M8 17.5h.01"/>',
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+    terminal: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+    plug: '<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+    shield: '<path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    key: '<circle cx="8" cy="14" r="4"/><path d="M11 11l9-9M16 6l3 3M14 8l2 2"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    bot: '<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 13h.01M15 13h.01"/>',
+    result: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+  };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function md(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function shape(name) { return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[name] || P.result) + "</svg>"; }
+
+  /* 1) paste badges */
+  var found = {};
+  document.querySelectorAll(".code-wrap").forEach(function (w) {
+    if (w.classList.contains("output")) return;
+    var head = w.querySelector(".code-head"), label = w.querySelector(".code-label");
+    if (!head) return;
+    var t = w.getAttribute("data-paste"), txt = label ? label.textContent : "";
+    if (!t) t = /^\s*terminal/i.test(txt) ? "term" : /^\s*Claude 세션/.test(txt) ? "claude" : /^\s*Slack/i.test(txt) ? "slack" : /파일/.test(txt) ? "file" : /브라우저|설치 창/.test(txt) ? "web" : "";
+    if (!TYPES[t]) return;
+    found[t] = true;
+    var b = el("span", "pbadge t-" + t, "붙여 넣을 곳: " + TYPES[t].lb);
+    b.title = TYPES[t].cap;
+    if (label && label.nextSibling) head.insertBefore(b, label.nextSibling); else head.insertBefore(b, head.firstChild);
+    var pre = w.querySelector("pre"), paths = [];
+    if (w.getAttribute("data-paste-path")) paths.push(w.getAttribute("data-paste-path"));
+    else if (t === "term" && pre) {
+      var dir = "";
+      pre.textContent.split("\n").forEach(function (line) {
+        var cd = line.match(/^\s*cd\s+([^\s;&|]+)/); if (cd) dir = cd[1];
+        line.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) {
+          paths.push(/^[\/~$]/.test(p) || !dir ? p : dir.replace(/\/$/, "") + "/" + p.replace(/^\.\//, ""));
+        });
+      });
+    }
+    if (paths.length) {
+      var strip = el("div", "pb-strip", (t === "file" ? "저장할 파일: " : "붙여 넣으면 이 파일이 만들어집니다: ") + paths.map(function (p) { return "<code>" + esc(p) + "</code>"; }).join(", "));
+      head.parentNode.insertBefore(strip, head.nextSibling);
+    }
+  });
+
+  /* 2) paste guide */
+  document.querySelectorAll(".paste-guide").forEach(function (host) {
+    var list = (host.getAttribute("data-types") || Object.keys(found).join(" ") || "term claude").split(/\s+/).filter(function (k) { return TYPES[k]; });
+    var d = el("details", "pg");
+    var seen = false;
+    var seenKey = "fsi-paste-guide:" + location.pathname;
+    try { seen = localStorage.getItem(seenKey) === "seen"; localStorage.setItem(seenKey, "seen"); } catch (e) {}
+    d.open = !seen;
+    d.innerHTML = '<summary>어디에 붙여 넣나요?<span>코드 블록 위의 색 배지가 붙여 넣을 곳입니다. 배지를 눌러 보세요.</span></summary>' +
+      '<div class="pg-body"><div class="pg-legend" role="group" aria-label="붙여 넣을 곳 종류"></div>' +
+      '<div class="pg-map"><div class="pg-box pg-zone" data-zone="browser"><b>내 노트북 브라우저</b>실습 화면과 Slack을 여는 곳</div>' +
+      '<div class="pg-arrow" aria-hidden="true">→</div>' +
+      '<div class="pg-box"><b>code-server (내 실습 EC2)</b>1인 1대의 EC2를 브라우저로 엽니다' +
+      '<div class="pg-ide"><div class="pg-box pg-zone" data-zone="editor"><b>파일 편집기</b>파일을 열어 고치고 저장</div>' +
+      '<div class="pg-box pg-zone pg-term" data-zone="term"><b>터미널 (Terminal 창)</b>리눅스 셸 명령' +
+      '<div class="pg-box pg-zone" data-zone="claude"><b>Claude 세션</b>터미널에서 <code>claude</code>를 실행한 뒤의 프롬프트 칸</div></div></div></div></div>' +
+      '<p class="pg-cap" aria-live="polite">배지를 누르면 그 텍스트가 들어갈 곳이 밝게 표시됩니다.</p></div>';
+    var legend = d.querySelector(".pg-legend"), cap = d.querySelector(".pg-cap");
+    list.forEach(function (k) {
+      var b = el("button", "pbadge t-" + k, TYPES[k].lb);
+      b.type = "button"; b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        legend.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        d.querySelectorAll(".pg-zone").forEach(function (z) { z.classList.toggle("on", z.getAttribute("data-zone") === TYPES[k].zone); });
+        d.style.setProperty("--hl", "var(--pt-" + k + ")");
+        cap.innerHTML = "<strong>" + esc(TYPES[k].lb) + ":</strong> " + esc(TYPES[k].cap);
+      });
+      legend.appendChild(b);
+    });
+    host.appendChild(d);
+  });
+
+  /* 3) glossary */
+  var used = [];
+  document.querySelectorAll(".gl[data-gl]").forEach(function (g, i) {
+    var k = g.getAttribute("data-gl"); if (!GL[k]) return;
+    if (used.indexOf(k) < 0) used.push(k);
+    g.tabIndex = 0;
+    var tip = el("span", "gl-tip", "<strong>" + esc(GL[k][0]) + "</strong>: " + esc(GL[k][1]));
+    tip.id = "gl-tip-" + i; tip.setAttribute("role", "tooltip");
+    g.setAttribute("aria-describedby", tip.id);
+    g.appendChild(tip);
+    function place() { var r = g.getClientRects()[0] || g.getBoundingClientRect(); tip.classList.toggle("flip", r.left + Math.min(300, window.innerWidth - 32) > window.innerWidth - 16); }
+    g.addEventListener("mouseenter", place); g.addEventListener("focus", place);
+  });
+  document.querySelectorAll(".gl-list").forEach(function (host) {
+    if (!used.length) return;
+    var d = el("details", "gl-more", "<summary>더 알아보기: 이 페이지의 용어</summary><dl>" +
+      used.map(function (k) { return "<dt>" + esc(GL[k][0]) + "</dt><dd>" + esc(GL[k][1]) + "</dd>"; }).join("") + "</dl>");
+    host.appendChild(d);
+  });
+
+  /* 4) flow and copy visuals */
+  var data = {};
+  try { var src = document.getElementById("viz-data"); if (src) data = JSON.parse(src.textContent); } catch (e) { data = {}; }
+  function nodeHtml(n) {
+    var ic = n.img ? '<img class="ic' + (n.tile ? " tile" : "") + '" src="' + esc(n.img) + '" alt="">' : shape(n.ic);
+    var links = (n.links || []).map(function (l) { return '<a href="' + esc(l[1]) + '">' + esc(l[0]) + "</a>"; }).join("");
+    return ic + '<span><span class="lb">' + esc(n.lb) + "</span>" + (n.sb ? '<span class="sb">' + esc(n.sb) + "</span>" : "") +
+      (links ? '<span class="lk">' + links + "</span>" : "") + "</span>";
+  }
+  document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
+    var v = data[host.getAttribute("data-viz")];
+    if (!v || !v.nodes || !v.nodes.length || !v.steps || !v.steps.length) { host.hidden = true; return; }
+    var cur = 0, timer = null, all = (v.nodes || []).concat(v.side || []);
+    host.classList.add("n" + v.nodes.length);
+    host.setAttribute("role", "group");
+    host.setAttribute("aria-label", v.title || "흐름 그림");
+    var row = el("div", "viz-row"), side = el("div", "viz-side"), nodeEls = {}, arrows = [];
+    v.nodes.forEach(function (n, i) {
+      if (i > 0) {
+        var a = el("div", "viz-arrow", '<span class="el">' + esc((v.edges || [])[i - 1] || "") + '</span><span class="ln"></span>');
+        a.setAttribute("aria-hidden", "true"); arrows.push(a); row.appendChild(a);
+      }
+      nodeEls[n.id] = el("div", "viz-node"); row.appendChild(nodeEls[n.id]);
+    });
+    (v.side || []).forEach(function (n) { nodeEls[n.id] = el("div", "viz-node"); side.appendChild(nodeEls[n.id]); });
+    var cap = el("div", "viz-cap"); cap.setAttribute("aria-live", "polite");
+    var ctl = el("div", "viz-ctl"), dots = el("div", "dots");
+    var prev = el("button", "", "◀ 이전"), play = el("button", "", "▶ 재생"), next = el("button", "", "다음 ▶");
+    [prev, play, next].forEach(function (b) { b.type = "button"; });
+    v.steps.forEach(function (s, i) {
+      var b = el("button", "", String(i + 1)); b.type = "button";
+      b.setAttribute("aria-label", (i + 1) + "단계: " + (s.t || ""));
+      b.addEventListener("click", function () { stop(); show(i); });
+      dots.appendChild(b);
+    });
+    ctl.appendChild(prev); if (!reduce && v.steps.length > 1) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
+    var allTxt = el("details", "viz-all", "<summary>모든 단계 글로 보기</summary><ol>" +
+      v.steps.map(function (s) { return "<li>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap) + "</li>"; }).join("") + "</ol>");
+    host.appendChild(el("div", "viz-title", esc(v.title || "무슨 일이 일어나나요?")));
+    host.appendChild(row); if (v.side && v.side.length) host.appendChild(side);
+    host.appendChild(cap); host.appendChild(ctl); host.appendChild(allTxt);
+    function edges(s) { return s.edge == null ? [] : [].concat(s.edge); }
+    function show(k) {
+      cur = k; var s = v.steps[k], set = s.set || {};
+      all.forEach(function (n) {
+        var e = nodeEls[n.id], o = set[n.id] || {};
+        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: o.img || (o.ic ? null : n.img), tile: n.tile, links: n.links });
+        e.className = "viz-node" + ((s.bad || []).indexOf(n.id) >= 0 ? " bad" : (s.ok || []).indexOf(n.id) >= 0 ? " ok" : (s.on || []).indexOf(n.id) >= 0 ? " on" : "");
+      });
+      var done = [];
+      for (var j = 0; j < k; j++) done = done.concat(edges(v.steps[j]));
+      arrows.forEach(function (a, i) {
+        var on = edges(s).indexOf(i) >= 0;
+        a.className = "viz-arrow" + (on ? " on" : done.indexOf(i) >= 0 ? " done" : "");
+        var old = a.querySelector(".viz-chip"); if (old) old.remove();
+        if (on && s.chip) a.querySelector(".ln").appendChild(el("span", "viz-chip", esc(s.chip)));
+      });
+      cap.innerHTML = '<span class="q">지금 무슨 일이? (' + (k + 1) + "/" + v.steps.length + ")</span>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap);
+      dots.querySelectorAll("button").forEach(function (b, i) { if (i === k) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+      prev.disabled = k === 0; next.disabled = k === v.steps.length - 1;
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; play.textContent = "▶ 재생"; } }
+    prev.addEventListener("click", function () { stop(); if (cur > 0) show(cur - 1); });
+    next.addEventListener("click", function () { stop(); if (cur < v.steps.length - 1) show(cur + 1); });
+    play.addEventListener("click", function () {
+      if (timer) { stop(); return; }
+      show(cur >= v.steps.length - 1 ? 0 : cur);
+      play.textContent = "❚❚ 멈춤";
+      timer = setInterval(function () { if (cur < v.steps.length - 1) show(cur + 1); if (cur >= v.steps.length - 1) stop(); }, 2600);
+    });
+    function fit() { host.classList.toggle("vert", host.clientWidth < (v.nodes.length >= 5 ? 760 : 560)); }
+    fit();
+    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(host); else window.addEventListener("resize", fit);
+    show(reduce ? v.steps.length - 1 : 0);
+  });
+})();
+</script>
+<!-- VIZ COMPONENT v1 END -->
+</body>
+</html>

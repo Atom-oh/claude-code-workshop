@@ -31,11 +31,12 @@ original import archive (`labs.zip`). Those hours were not independently
 confirmed by the organizer. If they change, update `eDM.html` and `eDM.txt`
 together. The plain-text email groups some consecutive sessions.
 
-The portal distinguishes six regular elective missions from the self-directed
-Playbook Foundry mission; the Agent SDK lab (labeled "SDK", not a chapter) is
-also self-directed. Imported
-pages contained inconsistent model versions, so the new invitation does not
-claim a single confirmed model version.
+The portal lists the chapter labs, the new Round 1 and Round 2 capstone
+missions, the self-paced Agent SDK lab (labeled "SDK", not a chapter), and the
+reference pages. The old Capstone 1-7 missions (including Playbook Foundry)
+remain only as an archive of earlier examples. Imported pages contained
+inconsistent model versions, so the new invitation does not claim a single
+confirmed model version.
 
 ## Use and Validation Limits
 
@@ -113,6 +114,27 @@ import removed one missing local webfont stylesheet and two browser-extension
 references. The portal also received a small-screen wrapping correction. This
 import did not validate lab commands, model versions, or cloud deployments.
 The import archive is provenance, not a required tracked build dependency.
+
+## Capstone redesign (2026-11-09)
+
+The capstone is no longer a free-topic build that must be deployed to
+CloudFront. Round 1 (Day 1, 15:50–17:40) is "my agents and guardrails": each
+participant picks one data mission (R1-A customer-tailored service on MyData,
+R1-B Seoul real-estate public data with a self-built MCP, R1-C an MCP of their
+choice). Round 2 (Day 2, 13:40–16:40) is "publish and reuse my plugin": bundle
+the R1 agents into a plugin, publish it to a marketplace, install it in a fresh
+folder, then complete at least two of R2-1 (recurring analysis report), R2-2
+(planning proposal), R2-3 (AgentCore app, optional). Submission in Slack is the
+plugin install command, the two task results, and the scene where a guardrail
+blocked something; CloudFront is not required. Times are unchanged.
+
+New pages: `ClaudeCode_Capstone_Overview.html`,
+`ClaudeCode_Capstone_R1A/R1B/R1C_HandsOnLab.html`, and
+`ClaudeCode_Capstone_R2_Package/R2_1/R2_2/R2_3_HandsOnLab.html` (the eDM links
+R2 missions through the Overview `#missions-r2` anchor). The old Capstone 1–7
+missions stay in the repository as an archive of earlier examples ("예전 예시")
+and are no longer linked from the invitation except Playbook Foundry in the
+self-paced list.
 
 ## Intro Video
 

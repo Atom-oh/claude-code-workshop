@@ -26,3 +26,7 @@ Thumbs.db
 
 # Generated synthetic MyData
 tools/mydata/dist/
+
+# Python bytecode (tests and smoke runs create these inside published dirs)
+__pycache__/
+*.pyc

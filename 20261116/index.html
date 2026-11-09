@@ -194,7 +194,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
     캡스톤은 라운드마다 미션 <strong>하나를 선택</strong>해 완주하며, 제공되는 실습 환경에서 진행합니다.
   </p>
   <div class="hero-meta">
-    <span>구성 <strong>준비 1 + Chapter 6 (랩 7) + Capstone 7 + Reference 3</strong></span>
+    <span>구성 <strong>준비 1 + Chapter 6 (랩 7) + Capstone R1·R2 + Reference 3</strong></span>
     <span>환경 <strong>EC2 code-server + Amazon Bedrock + Claude Apps Gateway</strong></span>
     <span>리전 <strong>us-east-1</strong></span>
     <span>일시 <strong>2026.11.16–17 · 양일 10:00–18:00</strong></span>
@@ -209,11 +209,11 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
     <span class="chip">Ch1 동작 원리</span><span class="arrow">→</span>
     <span class="chip">Ch2 Bedrock 위에서 안전하게</span><span class="arrow">→</span>
     <span class="chip">Ch3 Subagent</span><span class="arrow">→</span>
-    <span class="chip">Capstone R1, 게임/미술관/지진 워치</span>
+    <span class="chip">Capstone R1, 내 agents와 가드레일</span>
     <span class="day" style="margin-left:14px">DAY 2 · 11.17 (화)</span>
     <span class="chip">Ch4 확장하기</span><span class="arrow">→</span>
     <span class="chip">Ch5 비용 효율</span><span class="arrow">→</span>
-    <span class="chip">Capstone R2, 증시/유튜브/뉴스룸 렌즈</span><span class="arrow">→</span>
+    <span class="chip">Capstone R2, 내 plugin 배포와 재사용</span><span class="arrow">→</span>
     <span class="chip">Ch6 조직의 비용</span>
   </div>
 </nav>
@@ -293,16 +293,12 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
 </section>
 
 <section class="wrap" id="capstones">
-  <div class="sec-title"><h2>Capstone Missions</h2><span class="tag">이틀 2라운드 / 주제 자유, 예시 미션 6종</span></div>
+  <div class="sec-title"><h2>Capstone Missions</h2><span class="tag">이틀 2라운드 / 내 agents, 가드레일, plugin</span></div>
   <p class="sec-desc">
-    이틀 동안 두 번 완결합니다. 주제는 자유입니다. 만들고 싶은 것을 직접 정하고, 떠오르지 않으면 아래 예시 미션을 그대로 따라가세요.
-    Day 1 라운드 1 예시는 <b>게임</b>, <b>미술관</b>(Bedrock 미사용), 2시간 트랙 <b>지진 워치</b>(CloudFront 실배포)이고,
-    Day 2 라운드 2 예시는 Bedrock 분석이 살아 있는 <b>증시</b>, <b>유튜브</b>, 2시간 트랙 <b>뉴스룸 렌즈</b>(키 발급 없음, CloudFront 실배포까지)입니다.
-    어떤 주제든 superpowers의 brainstorm → plan → execute 워크플로로 진행하고, 마지막에는 <b>CloudFront URL로 배포해 Slack에 출품</b>합니다.
-    배포 패턴과 Slack 양식은 <a href="ClaudeCode_Capstone_Setup.html#submit" style="color:var(--orange)">캡스톤 준비의 출품 방법</a>을 보세요. 증시와 유튜브 예시는 로컬에서 완결되므로 배포 단계를 더해야 합니다.
-    일곱 번째 미션 Playbook Foundry는 자율 라운드입니다. 라운드가 일찍 끝났거나 복습할 때 진행하세요.
-    완주하면 어떤 화면이 나오는지 궁금하면 <a href="https://capstone.atomai.click/" style="color:var(--orange)">Capstone Showcase</a>에서
-    예시 미션 완성작과 자유 주제 출품작을 미리 둘러볼 수 있습니다.
+    캡스톤의 목적은 나만의 agents와 가드레일을 만들고, 그것을 plugin으로 묶어 사내에 배포해 다시 쓰는 것입니다.
+    <b>R1 (Day 1 15:50-17:40, 110분)</b>은 데이터 미션 셋 중 하나를 골라 Subagent 2개 이상과 실제로 막는 가드레일을 만들고,
+    <b>R2 (Day 2 13:40-16:40, 180분)</b>는 공통 단계에서 그 결과를 plugin으로 묶어 마켓플레이스에 올린 뒤 미션 둘 이상을 진행합니다.
+    먼저 <a href="ClaudeCode_Capstone_Overview.html" style="color:var(--orange)">캡스톤 개요</a>를 읽고 시작하세요.
   </p>
   <div class="rows" style="margin-bottom:14px">
     <a class="row" href="ClaudeCode_Capstone_Setup.html">
@@ -315,7 +311,83 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
     </a>
   </div>
 
+
+  <div class="rows" style="margin-bottom:14px">
+    <a class="row" href="ClaudeCode_Capstone_Overview.html">
+      <span class="ch" style="color:var(--lavender)">OVERVIEW</span>
+      <span class="body">
+        <h3>캡스톤 개요, 내 에이전트와 플러그인을 만들어 다시 쓴다</h3>
+        <p>R1과 R2의 진행 순서, 미션 선택 기준, 산출물의 모양을 한 장으로 봅니다.</p>
+      </span>
+      <span class="side"><span class="time">먼저 읽기</span><span class="go">열기 →</span></span>
+    </a>
+  </div>
+
+  <h3 style="margin:22px 0 12px;font-size:16px">R1 · Day 1 · 셋 중 하나</h3>
   <div class="cards">
+    <a class="card" href="ClaudeCode_Capstone_R1A_HandsOnLab.html">
+      <span class="mnum">R1-A</span>
+      <span class="identity">고객 맞춤 서비스</span>
+      <h3>마이데이터로 에이전트와 가드레일</h3>
+      <p class="desc">고객 한 명의 상담 준비를 맡길 자기 Subagent와, 개인정보 패턴과 원본 raw/ 접근을 막는 가드레일을 만듭니다.</p>
+      <span class="foot"><span>Day 1 · 110분 중 하나</span><span class="go">시작 →</span></span>
+    </a>
+    <a class="card" href="ClaudeCode_Capstone_R1B_HandsOnLab.html">
+      <span class="mnum">R1-B</span>
+      <span class="identity">서울 부동산 시세</span>
+      <h3>공공데이터 MCP와 에이전트, 가드레일</h3>
+      <p class="desc">실거래가 MCP 서버(골격 제공), 시세 정리와 이상 거래 탐지 Subagent 2개, 키 유출과 호출 대상을 막는 가드레일. 키 발급 전에는 mock 모드로 진행합니다.</p>
+      <span class="foot"><span>Day 1 · 110분 중 하나</span><span class="go">시작 →</span></span>
+    </a>
+    <a class="card" href="ClaudeCode_Capstone_R1C_HandsOnLab.html">
+      <span class="mnum">R1-C</span>
+      <span class="identity">내가 고른 MCP</span>
+      <h3>이미 있는 MCP 서버 위에 에이전트 세우기</h3>
+      <p class="desc">MCP 서버를 직접 만들지 않고 연결해, 자료를 찾아 정리하는 Subagent 2개와 외부 호스트를 묶는 가드레일을 세웁니다.</p>
+      <span class="foot"><span>Day 1 · 110분 중 하나</span><span class="go">시작 →</span></span>
+    </a>
+  </div>
+
+  <h3 style="margin:28px 0 12px;font-size:16px">R2 · Day 2 · 공통 단계 뒤 둘 이상</h3>
+  <div class="rows" style="margin-bottom:14px">
+    <a class="row" href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html">
+      <span class="ch" style="color:var(--green)">R2 공통</span>
+      <span class="body">
+        <h3>R2 공통 단계, plugin으로 묶어 마켓플레이스 배포</h3>
+        <p>R1에서 만든 agent, 훅, 설정을 plugin 하나로 묶어 마켓플레이스에 올리고 동료 폴더에서 설치합니다.</p>
+      </span>
+      <span class="side"><span class="time">75분</span><span class="go">열기 →</span></span>
+    </a>
+  </div>
+  <div class="cards">
+    <a class="card" href="ClaudeCode_Capstone_R2_1_HandsOnLab.html">
+      <span class="mnum">R2-1</span>
+      <span class="identity">정기 분석 리포트</span>
+      <h3>설치한 plugin으로 같은 형식의 리포트 반복</h3>
+      <p class="desc">동료 폴더에서 periodic-report skill을 대상이나 기간만 바꿔 두 번 돌려, 형식이 같은지와 agent와 skill이 plugin에서 왔는지 봅니다.</p>
+      <span class="foot"><span>Day 2 · 미션 45분</span><span class="go">시작 →</span></span>
+    </a>
+    <a class="card" href="ClaudeCode_Capstone_R2_2_HandsOnLab.html">
+      <span class="mnum">R2-2</span>
+      <span class="identity">기획안 작성</span>
+      <h3>같은 plugin으로 분석을 기획안으로</h3>
+      <p class="desc">리포트 하나를 근거로 proposal-draft skill을 돌려 기획안을 만들고, 같은 agent를 다시 쓰는 모습을 확인합니다.</p>
+      <span class="foot"><span>Day 2 · 미션 45분</span><span class="go">시작 →</span></span>
+    </a>
+    <a class="card" href="ClaudeCode_Capstone_R2_3_HandsOnLab.html">
+      <span class="mnum">R2-3 선택</span>
+      <span class="identity">AgentCore 앱</span>
+      <h3>같은 plugin을 AgentCore 앱으로 (선택)</h3>
+      <p class="desc">같은 agent와 skill을 AgentCore에 올려 Claude Code 밖에서 쓰는 앱으로 만듭니다. 고르면 두 개 중 하나로 셉니다.</p>
+      <span class="foot"><span>Day 2 · 선택 미션</span><span class="go">시작 →</span></span>
+    </a>
+  </div>
+
+  <details id="capstone-archive" style="margin-top:28px">
+    <summary style="cursor:pointer;font-weight:700;color:var(--muted)">예전 예시 (지난 회차 미션)</summary>
+    <p class="sec-desc" style="margin-top:12px">지난 회차에 쓰던 예시 미션입니다. 새 캡스톤에서는 쓰지 않으며 참고용으로만 남겨 둡니다.
+      이전 랩: <a href="ClaudeCode_CapstoneA_HandsOnLab.html" style="color:var(--orange)">Lab A</a> · <a href="ClaudeCode_CapstoneB_HandsOnLab.html" style="color:var(--orange)">Lab B</a> · <a href="ClaudeCode_CapstoneC_HandsOnLab.html" style="color:var(--orange)">Lab C</a> · <a href="ClaudeCode_CapstoneD_HandsOnLab.html" style="color:var(--orange)">Lab D</a></p>
+    <div class="cards" style="margin-top:14px">
 
     <a class="card" href="ClaudeCode_Capstone1_HandsOnLab.html">
       <span class="mnum">MISSION 1</span>
@@ -386,7 +458,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="finale">피날레: <b>후보 6건을 필터에 태워 승급/대기 판정, 출고 게이트 통과</b></p>
       <span class="foot"><span>135분 / 미션 5 + DoD</span><span class="go">시작 →</span></span>
     </a>
-  </div>
+  </div>  </details>
 </section>
 
 

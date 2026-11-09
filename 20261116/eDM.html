@@ -282,8 +282,8 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
 
   <section class="sec" id="flow" aria-label="워크샵 소개">
     <p class="intro" id="why" style="margin-top:0">Claude Code를 개인의 도구에서 팀의 개발 플랫폼으로 연결하는 이틀입니다. 금융 서비스 산업 고객을 대상으로, <strong>Amazon Bedrock 기준의 배포와 정책, 가드레일과 DLP, 전문 에이전트와 플러그인, 토큰과 비용 통제</strong>까지 공식 문서를 기준으로 실습하며 익힙니다.</p>
-    <p class="intro"><strong>Day 1은 개인의 도구에서 조직의 통제로 가는 흐름입니다.</strong> 작동 원리에서 출발해 Bedrock 배포와 managed settings, DLP 5층 가드레일을 직접 적용하고 Subagent로 일을 나눠 맡깁니다. 오후에는 게임, 미술관, 지진 워치 중 하나를 선택해 첫 결과물을 완성합니다.</p>
-    <p class="intro"><strong>Day 2는 팀의 플랫폼으로 확장하고 측정하는 날입니다.</strong> 플러그인과 mods로 팀 표준을 배포하고, 컨텍스트 엔지니어링으로 토큰을 아낍니다. 증시, 유튜브, 뉴스룸 렌즈 중 하나에 AI 분석을 더한 뒤, 이틀간 사용한 토큰을 대시보드로 확인하고, Claude Apps Gateway에서 사용자 지출 한도를 직접 걸어 보며 조직의 비용 통제를 정리합니다.</p>
+    <p class="intro"><strong>Day 1은 개인의 도구에서 조직의 통제로 가는 흐름입니다.</strong> 작동 원리에서 출발해 Bedrock 배포와 managed settings, DLP 5층 가드레일을 직접 적용하고 Subagent로 일을 나눠 맡깁니다. 오후에는 고객 마이데이터, 서울 부동산 공공데이터, 내가 고른 MCP 중 하나를 골라 나만의 agents와 가드레일을 만듭니다.</p>
+    <p class="intro"><strong>Day 2는 팀의 플랫폼으로 확장하고 측정하는 날입니다.</strong> 플러그인과 mods로 팀 표준을 배포하고, 컨텍스트 엔지니어링으로 토큰을 아낍니다. 오후에는 첫날의 agents를 plugin 하나로 묶어 마켓플레이스에 배포하고, 새 폴더에서 설치해 서로 다른 업무 두 가지에 다시 씁니다. 이어서 이틀간 사용한 토큰을 대시보드로 확인하고, Claude Apps Gateway에서 사용자 지출 한도를 직접 걸어 보며 조직의 비용 통제를 정리합니다.</p>
     <div class="cta"><a class="btn primary" href="#day1">Day 1 아젠다</a><a class="btn" href="#day2">Day 2 아젠다</a><a class="btn" href="index.html">Hands-on Lab 포털</a></div>
   </section>
 
@@ -350,11 +350,11 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
       <div class="slot"><div class="time">15:40–15:50</div><div class="title">Break</div></div>
       <article class="session capstone" id="capstone">
         <div class="top"><span class="time">15:50–17:40</span><span class="badge lab">LAB</span><span class="dur">110분</span></div>
-        <h3><span class="chip">CAPSTONE R1</span>오늘 배운 것으로 첫 완결</h3>
-        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> 빌드와 검증 → <b>③</b> CloudFront 배포와 Slack 출품</p>
-        <p class="syn">만들고 싶은 것을 직접 정해 완주합니다. 주제가 떠오르지 않으면 <b>Press Start · 게임</b>, <b>Frame It · 미술관</b>, <b>Quake Watch · 지진 워치</b> 예시 미션을 그대로 따라가도 됩니다. 오늘 만든 에이전트를 활용해 결과물을 만들고, CloudFront URL로 배포해 Slack에 출품합니다. ③을 다 못 끝내면 쇼케이스 1 시작 전까지 마무리합니다.</p>
-        <p class="out"><b>산출물</b>CloudFront URL로 열리는 첫 번째 결과물</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Capstone_Setup.html#submit">출품 방법</a><a class="lab" href="ClaudeCode_Capstone1_HandsOnLab.html">예시 · 게임</a><a class="lab" href="ClaudeCode_Capstone3_HandsOnLab.html">예시 · 미술관</a><a class="lab" href="ClaudeCode_Capstone5_HandsOnLab.html">예시 · 지진 워치</a><a class="lab" href="https://capstone.atomai.click/">지난 출품작</a></div>
+        <h3><span class="chip">CAPSTONE R1</span>내 agents와 가드레일</h3>
+        <p class="steps"><b>①</b> 데이터 미션 고르기 → <b>②</b> 내 agents 만들기 → <b>③</b> 가드레일 걸고 막히는 장면 확인</p>
+        <p class="syn">오늘 배운 Subagent와 DLP 가드레일로 고른 데이터에 맞는 나만의 agents를 만들고, 위험한 요청이 막히는 것까지 확인합니다. 미션은 셋 중 하나를 고릅니다. <b>R1-A 고객 맞춤 서비스</b>(마이데이터), <b>R1-B 서울 부동산 시세</b>(공공데이터 MCP 직접 제작), <b>R1-C 내가 고른 MCP</b>입니다. 다 만든 뒤 Slack에 결과 한 장을 올립니다. 내일 이 agents를 plugin으로 묶습니다.</p>
+        <p class="out"><b>산출물</b>고른 데이터에 맞게 동작하는 내 agents와 가드레일</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Capstone_Overview.html#missions-r1">R1 미션 안내</a><a class="lab" href="ClaudeCode_Capstone_Setup.html">준비와 출품 방법</a><a class="lab" href="https://capstone.atomai.click/">지난 출품작</a></div>
       </article>
       <div class="slot ops"><div class="time">17:40–18:00</div><div class="title">쇼케이스 1<small>Slack 출품작 하이라이트와 둘째 날 과제 안내</small></div></div>
     </div>
@@ -383,11 +383,11 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
       </article>
       <article class="session capstone">
         <div class="top"><span class="time">13:40–16:40</span><span class="badge lab">LAB</span><span class="dur">180분</span></div>
-        <h3><span class="chip">CAPSTONE R2</span>AI를 품은 두 번째 완결</h3>
-        <p class="steps"><b>①</b> 설계와 계획 → <b>②</b> AI 분석과 팀 플러그인 연결 → <b>③</b> 검증, CloudFront 배포와 Slack 출품</p>
-        <p class="syn">만들고 싶은 것에 AI 분석을 더해 두 번째 결과물을 완성합니다. <b>Market Desk · 증시</b>, <b>Trend Radar · 유튜브</b>, <b>Newsroom Lens · 뉴스룸 렌즈</b>는 따라갈 수 있는 예시 미션이고, 첫날 결과물을 확장해도 됩니다. 오전에 만든 팀 플러그인과 토큰 절감 원리를 적용하고, 완성작은 CloudFront URL로 배포해 Slack에 출품합니다. 증시와 유튜브 예시는 로컬에서 완결되므로 출품 방법의 배포 단계를 더해 주세요.</p>
-        <p class="out"><b>산출물</b>AI 분석을 연결해 CloudFront URL로 열리는 두 번째 결과물</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Capstone_Setup.html#submit">출품 방법</a><a class="lab" href="ClaudeCode_Capstone2_HandsOnLab.html">예시 · 증시</a><a class="lab" href="ClaudeCode_Capstone4_HandsOnLab.html">예시 · 유튜브</a><a class="lab" href="ClaudeCode_Capstone6_HandsOnLab.html">예시 · 뉴스룸 렌즈</a><a class="lab" href="https://capstone.atomai.click/">지난 출품작</a></div>
+        <h3><span class="chip">CAPSTONE R2</span>내 plugin 배포와 재사용</h3>
+        <p class="steps"><b>①</b> plugin으로 묶어 마켓플레이스에 배포 → <b>②</b> 새 폴더에서 설치 → <b>③</b> 업무 두 가지 이상에 재사용</p>
+        <p class="syn">R1의 agents와 새로 만든 skill, MCP 설정, 가드레일 훅을 plugin 하나로 묶어 마켓플레이스에 배포하고, 새 폴더에서 설치해 씁니다. 이어서 <b>R2-1 정기 분석 리포트</b>, <b>R2-2 기획안 작성</b>, <b>R2-3 AgentCore 앱</b>(선택) 중 두 개 이상을 같은 plugin으로 해 냅니다. 오전의 plugin 내용과 토큰 절감 원리를 그대로 적용합니다. Slack에는 plugin 설치 명령, 업무 두 가지 결과, 가드레일이 막은 장면을 올립니다.</p>
+        <p class="out"><b>산출물</b>배포한 plugin과, 그것으로 해 낸 서로 다른 업무 두 가지 이상</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html">plugin으로 묶기</a><a class="lab" href="ClaudeCode_Capstone_Overview.html#missions-r2">R2 미션 안내</a><a class="lab" href="ClaudeCode_Capstone_Overview.html#submit">출품 방법</a><a class="lab" href="https://capstone.atomai.click/">지난 출품작</a></div>
       </article>
       <div class="slot"><div class="time">16:40–16:50</div><div class="title">Break</div></div>
       <article class="session">
@@ -407,7 +407,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
     <div class="sec-label">SELF-PACED / REFERENCE</div><h2>자율 실습과 참고 자료</h2><div class="meta">정규 세션 밖에서 이어 갈 랩과 실습 중 찾아볼 자료</div>
     <div class="refs">
       <a class="ref" href="ClaudeCode_AgentSDK_HandsOnLab.html"><span class="tag">SDK</span><div><h3>Agent SDK, Claude Code를 코드에서 부른다</h3><p>대화 메모리와 커스텀 도구 등, 정규 세션 밖에서 이어 가는 자율 실습 트랙입니다.</p></div><span class="go">열기 →</span></a>
-      <a class="ref" href="ClaudeCode_Capstone7_HandsOnLab.html"><span class="tag">CAP 7</span><div><h3>Playbook Foundry · 기술 플레이북</h3><p>반복해서 활용할 기술 플레이북을 만드는 자율 캡스톤 미션입니다.</p></div><span class="go">열기 →</span></a>
+      <a class="ref" href="ClaudeCode_Capstone7_HandsOnLab.html"><span class="tag">CAP 7</span><div><h3>Playbook Foundry · 기술 플레이북</h3><p>예전 캡스톤 예시 미션입니다. 반복해서 활용할 기술 플레이북을 만드는 자율 실습으로 남겨 두었습니다.</p></div><span class="go">열기 →</span></a>
       <a class="ref" href="ClaudeCode_Reference1_Directory.html"><span class="tag">REF 1</span><div><h3>디렉토리 구조, 무엇이 어디에 있는가</h3><p>사용자·프로젝트·관리 설정의 구조와 CLAUDE.md 계층을 확인합니다.</p></div><span class="go">열기 →</span></a>
       <a class="ref" href="ClaudeCode_Reference2_Commands.html"><span class="tag">REF 2</span><div><h3>슬래시 커맨드, 세션을 조종하는 레버</h3><p>작업 흐름과 세션 관리를 위한 주요 명령을 찾아볼 수 있습니다.</p></div><span class="go">열기 →</span></a>
       <a class="ref" href="ClaudeCode_Reference3_Plugins.html"><span class="tag">REF 3</span><div><h3>플러그인, 팀의 작업 방식을 배포하는 단위</h3><p>플러그인 설치와 워크샵에서 쓰는 도구의 역할을 정리한 자료입니다.</p></div><span class="go">열기 →</span></a>
@@ -417,7 +417,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
     </div>
   </section>
 
-  <a class="banner" href="index.html" id="start" style="display:block"><h3>Hands-on Lab 포털 열기</h3><p>챕터별 랩, 캡스톤 예시 미션 6종과 자율 미션 1종, Reference 3부작을 한곳에서 확인합니다.</p><div class="cta"><span class="btn primary">Lab 포털 열기 →</span></div></a>
+  <a class="banner" href="index.html" id="start" style="display:block"><h3>Hands-on Lab 포털 열기</h3><p>챕터별 랩, 라운드별 캡스톤 미션(R1, R2), 자율 실습, Reference 3부작을 한곳에서 확인합니다.</p><div class="cta"><span class="btn primary">Lab 포털 열기 →</span></div></a>
 
   <section class="sec" id="after">
     <div id="survey"><div class="sec-label">AFTER THE WORKSHOP</div><h2>교육 후 설문</h2><div class="meta">이틀 과정에 대한 의견을 들려주세요.</div>
