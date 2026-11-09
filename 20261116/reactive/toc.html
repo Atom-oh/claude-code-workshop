@@ -1,109 +1,268 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claude Code Deep Dive Workshop, FSI Edition - Table of Contents</title>
-  <link rel="stylesheet" href="./common/theme.css">
-  <style>
-    body { display: flex; flex-direction: column; min-height: 100vh; }
-    .toc-container {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 2rem; gap: 1.5rem;
-    }
-    .toc-title { font-size: 2.5rem; color: var(--text-primary); }
-    .block-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem; max-width: 800px; width: 100%;
-    }
-    .block-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: .5rem; padding: 1.5rem; text-align: center;
-      display: flex; flex-direction: column; gap: 0.5rem;
-      transition: all var(--transition-fast);
-    }
-    .block-card:hover {
-      border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow);
-    }
-    .block-link { text-decoration: none; flex: 1; }
-    .block-card h3 { color: var(--text-primary); margin: 0; }
-    .block-export-row { display: flex; gap: 0.25rem; justify-content: center; }
-    .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 0.2rem; color: var(--text-secondary); cursor: pointer; }
-    .btn-sm:hover { border-color: var(--accent); color: var(--text-primary); }
-    .export-toolbar {
-      display: flex; gap: 0.5rem; margin-top: 1.5rem;
-    }
-    .export-toolbar .btn {
-      padding: 0.5rem 1rem; font-size: 0.875rem;
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 0.25rem; color: var(--text-primary);
-      cursor: pointer; transition: all var(--transition-fast);
-    }
-    .export-toolbar .btn:hover {
-      border-color: var(--accent); background: var(--bg-elevated);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강의자료 · Claude Code Deep Dive Workshop, FSI Edition</title>
+<!-- Hand-maintained chapter index for the reactive decks. The Remarp build writes a
+     plain toc.html; restore this file after every build (see AGENTS.md). -->
+<script>/* Dark by default; light is the projector mode, shared site-wide via fsi-theme. */(function(){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}var t;if(q==='light'||q==='dark'){t=q;try{localStorage.setItem('fsi-theme',q)}catch(e){}}else{try{t=localStorage.getItem('fsi-theme')||localStorage.getItem('fsi-deck-theme')}catch(e){}}document.documentElement.dataset.theme=t==='light'?'light':'dark'})();</script>
+<style>
+:root {
+  --bg: #0b121c; --panel: #121c2a; --panel-2: #172334; --line: #26364a;
+  --ink: #edf1f5; --muted: #a6b2c1; --accent: #ff9900; --accent-ink: #ffb547; --accent-on: #16191f;
+  --chip: #1e2c3c; --shadow: 0 18px 40px rgba(0, 0, 0, .35);
+  --sans: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
+  color-scheme: dark;
+}
+/* Light = projector mode: text >= 7:1, accent text >= 4.5:1, borders ~3:1. */
+:root[data-theme="light"] {
+  --bg: #f2f4f7; --panel: #ffffff; --panel-2: #f7f8fa; --line: #8a95a3;
+  --ink: #0f141a; --muted: #3d4654; --accent: #b45309; --accent-ink: #9a4300; --accent-on: #ffffff;
+  --chip: #e3e7ea; --shadow: 0 10px 24px rgba(15, 20, 26, .10);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; word-break: keep-all; }
+a { color: inherit; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 64px; }
+
+/* header */
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.kicker { font: 600 13px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); }
+h1 { margin: 10px 0 6px; font-size: clamp(30px, 4vw, 44px); line-height: 1.15; letter-spacing: -.01em; }
+.lead { margin: 0; color: var(--muted); font-size: 17px; }
+.top-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  font: 600 14px/1.2 var(--sans); text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-on); }
+.btn:focus-visible, .card a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* days */
+.day { margin-top: 44px; }
+.day-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.day-head .d { font: 700 14px/1 var(--mono); letter-spacing: .1em; color: var(--accent-ink); }
+.day-head h2 { margin: 0; font-size: 22px; }
+.day-head .date { color: var(--muted); font-size: 14px; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+
+/* chapter card */
+.card { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+.thumb { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--panel-2); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.body { display: flex; flex-direction: column; gap: 8px; padding: 18px 18px 16px; flex: 1; }
+.when { font: 600 13px/1.4 var(--mono); color: var(--accent-ink); }
+.card h3 { margin: 0; font-size: 20px; line-height: 1.35; }
+.card h3 a { text-decoration: none; }
+.card h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tag { margin: 0; color: var(--muted); font-size: 15px; }
+.meta { margin: 0; color: var(--muted); font-size: 13px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 10px; }
+.actions .btn { padding: 7px 12px; font-size: 13px; }
+details.export { border-top: 1px solid var(--line); padding: 10px 18px 12px; font-size: 13px; color: var(--muted); }
+details.export summary { cursor: pointer; }
+details.export .row { display: flex; gap: 8px; margin-top: 8px; }
+details.export button { font: 600 12px/1 var(--sans); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); cursor: pointer; }
+
+.foot { margin-top: 48px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+.foot .row { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Export progress overlay (styles from common/theme.css, which this page does not load). */
+.export-overlay { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, .85); }
+.export-progress-content { text-align: center; max-width: 400px; width: 90%; }
+.export-progress-text { color: #fff; font: 600 16px/1.4 var(--sans); margin-bottom: 16px; }
+.export-progress-track { height: 4px; background: rgba(255, 255, 255, .25); border-radius: 2px; overflow: hidden; }
+.export-progress-bar { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; transition: width 200ms ease; }
+details.export button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 960px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .grid { grid-template-columns: 1fr; } .wrap { padding: 28px 16px 48px; } }
+@media print { .top-actions, details.export, .foot .row, .actions { display: none; } .card { box-shadow: none; break-inside: avoid; } }
+</style>
 </head>
 <body>
-<div class="toc-container">
-  <h1 class="toc-title">Claude Code Deep Dive Workshop, FSI Edition</h1>
-  <div class="block-grid">
-        <div class="block-card">
-      <a href="01-ch1-how-it-works.html" class="block-link"><h3>01-ch1-how-it-works</h3></a>
-      <div class="block-export-row">
-        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'01-ch1-how-it-works',blocks:['01-ch1-how-it-works.html']})">PDF</button>
-        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['01-ch1-how-it-works.html']})">ZIP</button>
-        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'01-ch1-how-it-works',blocks:['01-ch1-how-it-works.html']})">PPTX</button>
-      </div>
+<main class="wrap">
+  <header class="top">
+    <div>
+      <div class="kicker">Claude Code Deep Dive Workshop · FSI Edition</div>
+      <h1>강의자료</h1>
+      <p class="lead">2026년 11월 16일(월)–17일(화) · 센터필드 18층 · 6개 챕터, 155장</p>
     </div>
-    <div class="block-card">
-      <a href="02-ch2-bedrock-safe.html" class="block-link"><h3>02-ch2-bedrock-safe</h3></a>
-      <div class="block-export-row">
-        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'02-ch2-bedrock-safe',blocks:['02-ch2-bedrock-safe.html']})">PDF</button>
-        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['02-ch2-bedrock-safe.html']})">ZIP</button>
-        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'02-ch2-bedrock-safe',blocks:['02-ch2-bedrock-safe.html']})">PPTX</button>
-      </div>
+    <nav class="top-actions" aria-label="바로 가기">
+      <a class="btn primary" href="index.html">전체 슬라이드 이어 보기</a>
+      <a class="btn" href="../index.html">실습 포털</a>
+      <a class="btn" href="../eDM.html">행사 안내</a>
+      <button class="btn" type="button" id="themeBtn"></button>
+    </nav>
+  </header>
+
+  <section class="day" aria-labelledby="d1">
+    <div class="day-head"><span class="d">DAY 1</span><h2 id="d1">개인의 도구에서 조직의 통제로</h2><span class="date">11월 16일(월)</span></div>
+    <div class="grid">
+      <article class="card">
+        <a class="thumb" tabindex="-1" href="01-ch1-how-it-works.html" aria-label="Chapter 1 슬라이드 열기"><img src="../media/chapters/ch1-preview.jpg" alt="" loading="lazy"></a>
+        <div class="body">
+          <div class="when">10:10–10:40 · 강의 30분</div>
+          <h3><a href="01-ch1-how-it-works.html">Claude Code는 어떻게 동작하는가</a></h3>
+          <p class="tag">에이전트 루프부터 이틀 동안 배울 내용까지</p>
+          <p class="meta">슬라이드 27장 · 실습은 13:00 통합 랩</p>
+          <div class="actions">
+            <a class="btn primary" href="01-ch1-how-it-works.html">슬라이드</a>
+            <a class="btn" href="../media/chapters/ch1-preview.mp4" target="_blank" rel="noopener">▶ 1분 미리보기</a>
+            <a class="btn" href="../ClaudeCode_Ch1_HandsOnLab.html">핸즈온 랩</a>
+            <a class="btn" href="../slides/ClaudeCode_FSI_Ch1_20261116.pdf">PDF</a>
+          </div>
+        </div>
+        <details class="export"><summary>내보내기</summary><div class="row">
+          <button type="button" onclick="ExportUtils.exportPDF({title:'Chapter 1. Claude Code는 어떻게 동작하는가',blocks:['01-ch1-how-it-works.html']})">PDF</button>
+          <button type="button" onclick="ExportUtils.downloadZIP({blocks:['01-ch1-how-it-works.html']})">ZIP</button>
+          <button type="button" onclick="ExportUtils.exportPPTX({title:'Chapter 1. Claude Code는 어떻게 동작하는가',blocks:['01-ch1-how-it-works.html']})">PPTX</button>
+        </div></details>
+      </article>
+      <article class="card">
+        <a class="thumb" tabindex="-1" href="02-ch2-bedrock-safe.html" aria-label="Chapter 2 슬라이드 열기"><img src="../media/chapters/ch2-preview.jpg" alt="" loading="lazy"></a>
+        <div class="body">
+          <div class="when">10:50–11:40 · 강의 50분</div>
+          <h3><a href="02-ch2-bedrock-safe.html">Bedrock 위에서 안전하게 쓰기</a></h3>
+          <p class="tag">키는 나눠 주지 않고, 정책은 파일로, 막을 것은 앞에서</p>
+          <p class="meta">슬라이드 25장 · 실습은 13:00 통합 랩 (Lab 1 · Lab 2)</p>
+          <div class="actions">
+            <a class="btn primary" href="02-ch2-bedrock-safe.html">슬라이드</a>
+            <a class="btn" href="../media/chapters/ch2-preview.mp4" target="_blank" rel="noopener">▶ 1분 미리보기</a>
+            <a class="btn" href="../ClaudeCode_Ch2_HandsOnLab.html">랩 1 · 정책</a>
+            <a class="btn" href="../ClaudeCode_Ch2_Guardrails_HandsOnLab.html">랩 2 · 가드레일</a>
+            <a class="btn" href="../slides/ClaudeCode_FSI_Ch2_20261116.pdf">PDF</a>
+          </div>
+        </div>
+        <details class="export"><summary>내보내기</summary><div class="row">
+          <button type="button" onclick="ExportUtils.exportPDF({title:'Chapter 2. Bedrock 위에서 안전하게 쓰기',blocks:['02-ch2-bedrock-safe.html']})">PDF</button>
+          <button type="button" onclick="ExportUtils.downloadZIP({blocks:['02-ch2-bedrock-safe.html']})">ZIP</button>
+          <button type="button" onclick="ExportUtils.exportPPTX({title:'Chapter 2. Bedrock 위에서 안전하게 쓰기',blocks:['02-ch2-bedrock-safe.html']})">PPTX</button>
+        </div></details>
+      </article>
+      <article class="card">
+        <a class="thumb" tabindex="-1" href="03-ch3-subagents.html" aria-label="Chapter 3 슬라이드 열기"><img src="../media/chapters/ch3-preview.jpg" alt="" loading="lazy"></a>
+        <div class="body">
+          <div class="when">14:00–14:40 강의 · 14:40–15:40 랩</div>
+          <h3><a href="03-ch3-subagents.html">Subagent로 일 나눠 맡기기</a></h3>
+          <p class="tag">역할별 에이전트로 나누고, 병렬로 맡기기</p>
+          <p class="meta">슬라이드 27장</p>
+          <div class="actions">
+            <a class="btn primary" href="03-ch3-subagents.html">슬라이드</a>
+            <a class="btn" href="../media/chapters/ch3-preview.mp4" target="_blank" rel="noopener">▶ 1분 미리보기</a>
+            <a class="btn" href="../ClaudeCode_Ch3_HandsOnLab.html">핸즈온 랩</a>
+            <a class="btn" href="../slides/ClaudeCode_FSI_Ch3_20261116.pdf">PDF</a>
+          </div>
+        </div>
+        <details class="export"><summary>내보내기</summary><div class="row">
+          <button type="button" onclick="ExportUtils.exportPDF({title:'Chapter 3. Subagent로 일 나눠 맡기기',blocks:['03-ch3-subagents.html']})">PDF</button>
+          <button type="button" onclick="ExportUtils.downloadZIP({blocks:['03-ch3-subagents.html']})">ZIP</button>
+          <button type="button" onclick="ExportUtils.exportPPTX({title:'Chapter 3. Subagent로 일 나눠 맡기기',blocks:['03-ch3-subagents.html']})">PPTX</button>
+        </div></details>
+      </article>
     </div>
-    <div class="block-card">
-      <a href="03-ch3-subagents.html" class="block-link"><h3>03-ch3-subagents</h3></a>
-      <div class="block-export-row">
-        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'03-ch3-subagents',blocks:['03-ch3-subagents.html']})">PDF</button>
-        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['03-ch3-subagents.html']})">ZIP</button>
-        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'03-ch3-subagents',blocks:['03-ch3-subagents.html']})">PPTX</button>
-      </div>
+  </section>
+
+  <section class="day" aria-labelledby="d2">
+    <div class="day-head"><span class="d">DAY 2</span><h2 id="d2">팀의 플랫폼으로 확장하고, 측정하기</h2><span class="date">11월 17일(화)</span></div>
+    <div class="grid">
+      <article class="card">
+        <a class="thumb" tabindex="-1" href="04-ch4-extending.html" aria-label="Chapter 4 슬라이드 열기"><img src="../media/chapters/ch4-preview.jpg" alt="" loading="lazy"></a>
+        <div class="body">
+          <div class="when">10:10–11:30 · 강의 + 랩 80분</div>
+          <h3><a href="04-ch4-extending.html">Claude Code 확장하기</a></h3>
+          <p class="tag">Plugins &amp; Mods로 나의 Claude Code를 팀의 플랫폼으로</p>
+          <p class="meta">슬라이드 31장</p>
+          <div class="actions">
+            <a class="btn primary" href="04-ch4-extending.html">슬라이드</a>
+            <a class="btn" href="../media/chapters/ch4-preview.mp4" target="_blank" rel="noopener">▶ 1분 미리보기</a>
+            <a class="btn" href="../ClaudeCode_Ch4_HandsOnLab.html">핸즈온 랩</a>
+            <a class="btn" href="../slides/ClaudeCode_FSI_Ch4_20261116.pdf">PDF</a>
+          </div>
+        </div>
+        <details class="export"><summary>내보내기</summary><div class="row">
+          <button type="button" onclick="ExportUtils.exportPDF({title:'Chapter 4. Claude Code 확장하기',blocks:['04-ch4-extending.html']})">PDF</button>
+          <button type="button" onclick="ExportUtils.downloadZIP({blocks:['04-ch4-extending.html']})">ZIP</button>
+          <button type="button" onclick="ExportUtils.exportPPTX({title:'Chapter 4. Claude Code 확장하기',blocks:['04-ch4-extending.html']})">PPTX</button>
+        </div></details>
+      </article>
+      <article class="card">
+        <a class="thumb" tabindex="-1" href="05-ch5-cost-efficient.html" aria-label="Chapter 5 슬라이드 열기"><img src="../media/chapters/ch5-preview.jpg" alt="" loading="lazy"></a>
+        <div class="body">
+          <div class="when">12:40–13:40 · 강의 + 데모 + 랩 60분</div>
+          <h3><a href="05-ch5-cost-efficient.html">비용 효율적으로 쓰기</a></h3>
+          <p class="tag">같은 일을 더 적은 토큰으로</p>
+          <p class="meta">슬라이드 26장</p>
+          <div class="actions">
+            <a class="btn primary" href="05-ch5-cost-efficient.html">슬라이드</a>
+            <a class="btn" href="../media/chapters/ch5-preview.mp4" target="_blank" rel="noopener">▶ 1분 미리보기</a>
+            <a class="btn" href="../ClaudeCode_Ch5_HandsOnLab.html">핸즈온 랩</a>
+            <a class="btn" href="../slides/ClaudeCode_FSI_Ch5_20261116.pdf">PDF</a>
+          </div>
+        </div>
+        <details class="export"><summary>내보내기</summary><div class="row">
+          <button type="button" onclick="ExportUtils.exportPDF({title:'Chapter 5. 비용 효율적으로 쓰기',blocks:['05-ch5-cost-efficient.html']})">PDF</button>
+          <button type="button" onclick="ExportUtils.downloadZIP({blocks:['05-ch5-cost-efficient.html']})">ZIP</button>
+          <button type="button" onclick="ExportUtils.exportPPTX({title:'Chapter 5. 비용 효율적으로 쓰기',blocks:['05-ch5-cost-efficient.html']})">PPTX</button>
+        </div></details>
+      </article>
+      <article class="card">
+        <a class="thumb" tabindex="-1" href="06-ch6-org-cost.html" aria-label="Chapter 6 슬라이드 열기"><img src="../media/chapters/ch6-preview.jpg" alt="" loading="lazy"></a>
+        <div class="body">
+          <div class="when">16:50–17:40 · 강의 + 데모 + 랩 50분</div>
+          <h3><a href="06-ch6-org-cost.html">조직의 비용 보고 통제하기</a></h3>
+          <p class="tag">쓴 만큼 보고, 넘치면 막는다</p>
+          <p class="meta">슬라이드 19장</p>
+          <div class="actions">
+            <a class="btn primary" href="06-ch6-org-cost.html">슬라이드</a>
+            <a class="btn" href="../media/chapters/ch6-preview.mp4" target="_blank" rel="noopener">▶ 1분 미리보기</a>
+            <a class="btn" href="../ClaudeCode_Ch6_HandsOnLab.html">핸즈온 랩</a>
+            <a class="btn" href="../slides/ClaudeCode_FSI_Ch6_20261116.pdf">PDF</a>
+          </div>
+        </div>
+        <details class="export"><summary>내보내기</summary><div class="row">
+          <button type="button" onclick="ExportUtils.exportPDF({title:'Chapter 6. 조직의 비용 보고 통제하기',blocks:['06-ch6-org-cost.html']})">PDF</button>
+          <button type="button" onclick="ExportUtils.downloadZIP({blocks:['06-ch6-org-cost.html']})">ZIP</button>
+          <button type="button" onclick="ExportUtils.exportPPTX({title:'Chapter 6. 조직의 비용 보고 통제하기',blocks:['06-ch6-org-cost.html']})">PPTX</button>
+        </div></details>
+      </article>
     </div>
-    <div class="block-card">
-      <a href="04-ch4-extending.html" class="block-link"><h3>04-ch4-extending</h3></a>
-      <div class="block-export-row">
-        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'04-ch4-extending',blocks:['04-ch4-extending.html']})">PDF</button>
-        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['04-ch4-extending.html']})">ZIP</button>
-        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'04-ch4-extending',blocks:['04-ch4-extending.html']})">PPTX</button>
-      </div>
-    </div>
-    <div class="block-card">
-      <a href="05-ch5-cost-efficient.html" class="block-link"><h3>05-ch5-cost-efficient</h3></a>
-      <div class="block-export-row">
-        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'05-ch5-cost-efficient',blocks:['05-ch5-cost-efficient.html']})">PDF</button>
-        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['05-ch5-cost-efficient.html']})">ZIP</button>
-        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'05-ch5-cost-efficient',blocks:['05-ch5-cost-efficient.html']})">PPTX</button>
-      </div>
-    </div>
-    <div class="block-card">
-      <a href="06-ch6-org-cost.html" class="block-link"><h3>06-ch6-org-cost</h3></a>
-      <div class="block-export-row">
-        <button class="btn-sm" onclick="ExportUtils.exportPDF({title:'06-ch6-org-cost',blocks:['06-ch6-org-cost.html']})">PDF</button>
-        <button class="btn-sm" onclick="ExportUtils.downloadZIP({blocks:['06-ch6-org-cost.html']})">ZIP</button>
-        <button class="btn-sm" onclick="ExportUtils.exportPPTX({title:'06-ch6-org-cost',blocks:['06-ch6-org-cost.html']})">PPTX</button>
-      </div>
-    </div>
-  </div>
-  <div class="export-toolbar">
-    <button class="btn" onclick="ExportUtils.exportPDF({title:'Claude Code Deep Dive Workshop, FSI Edition'})">Export PDF</button>
-    <button class="btn" onclick="ExportUtils.downloadZIP()">Download ZIP</button>
-    <button class="btn" onclick="ExportUtils.exportPPTX({title:'Claude Code Deep Dive Workshop, FSI Edition'})">Export PPTX</button>
-  </div>
-</div>
+  </section>
+
+  <footer class="foot">
+    <span>슬라이드에서 <b>P</b> 발표자 보기 · <b>F</b> 전체 화면 · <b>T</b> 프로젝터 모드 · <b>O</b> 한눈에 보기</span>
+    <span class="row">
+      <span>전체 내보내기:</span>
+      <button class="btn" type="button" onclick="ExportUtils.exportPDF({title:'Claude Code Deep Dive Workshop, FSI Edition',blocks:['01-ch1-how-it-works.html','02-ch2-bedrock-safe.html','03-ch3-subagents.html','04-ch4-extending.html','05-ch5-cost-efficient.html','06-ch6-org-cost.html']})">PDF</button>
+      <button class="btn" type="button" onclick="ExportUtils.downloadZIP({blocks:['01-ch1-how-it-works.html','02-ch2-bedrock-safe.html','03-ch3-subagents.html','04-ch4-extending.html','05-ch5-cost-efficient.html','06-ch6-org-cost.html']})">ZIP</button>
+      <button class="btn" type="button" onclick="ExportUtils.exportPPTX({title:'Claude Code Deep Dive Workshop, FSI Edition',blocks:['01-ch1-how-it-works.html','02-ch2-bedrock-safe.html','03-ch3-subagents.html','04-ch4-extending.html','05-ch5-cost-efficient.html','06-ch6-org-cost.html']})">PPTX</button>
+    </span>
+  </footer>
+</main>
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('themeBtn');
+  function label() {
+    var light = root.dataset.theme === 'light';
+    btn.textContent = light ? '다크 모드' : '프로젝터 모드';
+    btn.setAttribute('aria-pressed', String(light));
+    btn.setAttribute('aria-label', light ? '다크 모드로 전환' : '프로젝터 모드(라이트)로 전환');
+  }
+  label();
+  btn.addEventListener('click', function () {
+    root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+    try { localStorage.setItem('fsi-theme', root.dataset.theme); } catch (e) {}
+    label();
+  });
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'fsi-theme' && (e.newValue === 'light' || e.newValue === 'dark')) { root.dataset.theme = e.newValue; label(); }
+  });
+})();
+</script>
 <script src="./common/export-utils.js"></script>
 </body>
 </html>
