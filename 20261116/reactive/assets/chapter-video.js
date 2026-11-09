@@ -1,8 +1,10 @@
 /* FSI decks: a "1분 미리보기" button on each chapter cover.
  * The first slide of every block (data-block="0N-…") is its cover. The button opens
  * the chapter's one-minute preview video (../media/chapters/chN-preview.mp4, the
- * landscape Short) in an in-deck player. While the player is open, keys go to the
- * player, not the deck; Esc or the backdrop closes it.
+ * landscape Short) in an in-deck player. While the player is open the deck gets no
+ * keys (the video's own controls still do), Tab stays inside the player, and Esc,
+ * the backdrop, ✕ or any slide change (e.g. from the presenter view) closes it and
+ * returns focus to the cover button.
  * Loaded once by assets/stepviz.js.
  */
 (function () {
@@ -13,17 +15,28 @@
   var BASE = '../media/chapters/';
   var modal = null;
   var video = null;
+  var opener = null;
+  var watch = null;
 
   function src(n) { return BASE + 'ch' + n + '-preview.mp4'; }
 
   function close() {
-    if (!modal) return;
+    if (!modal || modal.hidden) return;
     video.pause();
     modal.hidden = true;
+    if (watch) { watch.disconnect(); watch = null; }
+    if (opener && document.contains(opener)) opener.focus();
   }
 
-  function open(n) {
+  function open(n, btn) {
     if (!modal) build();
+    opener = btn || null;
+    // Close if the deck leaves this cover (keyboard elsewhere, presenter view, swipe).
+    var slide = btn && btn.closest('.slide');
+    if (slide && window.MutationObserver) {
+      watch = new MutationObserver(function () { if (!slide.classList.contains('active')) close(); });
+      watch.observe(slide, { attributes: true, attributeFilter: ['class'] });
+    }
     video.src = src(n);
     video.poster = BASE + 'ch' + n + '-preview.jpg';
     modal.querySelector('.fsi-cv-title').textContent = 'Chapter ' + n + ' · 1분 미리보기';
@@ -53,9 +66,21 @@
     video = modal.querySelector('video');
     modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
     modal.querySelector('.fsi-cv-close').addEventListener('click', close);
-    // Keep deck shortcuts (arrows, Space, F, P, T …) away while the player is open.
+    // Inside the player: keys reach the focused control (Space/arrows on the video),
+    // then stop here so the deck never sees them. Tab is kept inside the player.
+    modal.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      else if (e.key === 'Tab') {
+        var f = [].slice.call(modal.querySelectorAll('button, a[href], video'));
+        var i = f.indexOf(document.activeElement);
+        if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+      }
+      e.stopPropagation();
+    });
+    // Focus outside the player (e.g. after a click on the page): hold deck shortcuts.
     window.addEventListener('keydown', function (e) {
-      if (modal.hidden) return;
+      if (modal.hidden || modal.contains(e.target)) return;
       if (e.key === 'Escape') { e.preventDefault(); close(); }
       e.stopPropagation();
     }, true);
@@ -81,9 +106,9 @@
       btn.className = 'fsi-cv-btn';
       btn.textContent = '▶ 1분 미리보기';
       btn.setAttribute('aria-label', 'Chapter ' + n + ' 1분 미리보기 영상 재생');
-      btn.addEventListener('click', function (e) { e.stopPropagation(); open(n); });
+      btn.addEventListener('click', function (e) { e.stopPropagation(); open(n, btn); });
       btn.addEventListener('keydown', function (e) {
-        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); open(n); }
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); open(n, btn); }
       });
       slide.appendChild(btn);
     });
