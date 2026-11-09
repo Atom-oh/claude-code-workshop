@@ -85,8 +85,8 @@ Session mapping:
   Lab 2), Ch3 lecture 14:00–14:40, Ch3 lab 14:40–15:40, Capstone Round 1
   15:50–17:40. The combined lab's required TASKs add up to about 100 minutes
   by the lab pages' own estimates (Preflight 5, Ch1 20, Lab 1 47, Lab 2 32),
-  so facilitators choose which TASKs run in the session; each lab's restore
-  TASK must still run. The Ch3 deck is still paced for a 17-minute lecture
+  so facilitators choose which TASKs run in the session; the Ch2 Lab 1 and Lab 2
+  restore TASKs must still run. The Ch3 deck is still paced for a 17-minute lecture
   and a 33-minute lab.
 - Day 2 times are unchanged: Ch4 10:10–11:30, Ch5 12:40–13:40 (lab TASK
   01–04), Ch6 16:50–17:40 (lab TASK 01–03 as a participant lab: telemetry,

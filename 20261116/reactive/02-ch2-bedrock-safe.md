@@ -69,7 +69,7 @@ Chapter 2, Bedrock 위에서 안전하게 쓰기를 시작하겠습니다. Bedro
 [요약]
 • Part 1 Bedrock에 연결하기 18분, Part 2 정책은 파일로 10분, Part 3 무엇을 못 하게 할 것인가 16분
 • 강의는 핵심 기능 위주, IAM 세부, auto mode, 샌드박스, 게이트웨이 같은 깊은 내용은 실습으로
-• 실습은 점심 뒤 Ch2 Lab 1과 Lab 2, 각 50분
+• 실습은 점심 뒤 13:00 통합 랩 60분에서 Preflight, Ch1 Lab에 이어 Ch2 Lab 1과 Lab 2
 
 오늘 순서는 세 Part입니다.
 첫째, Bedrock에 어떻게 붙는지, 둘째, 회사 정책을 어떻게 파일로 내려보내는지, 셋째, 위험한 동작을 어떻게 막고 기록하는지입니다.
@@ -1211,6 +1211,6 @@ Chapter 2 Key Takeaways
 • 다음은 점심, 13:00 통합 랩에서 Preflight와 Ch1 Lab, 이어서 Ch2 Lab 1과 Lab 2
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 바로 이어서 11시 30분에 Preflight와 Ch1 Lab을 하고, 오늘 본 정책과 훅은 점심 뒤 13시 Ch2 Lab 1, 13시 50분 Lab 2에서 직접 배포하고 뚫어 보겠습니다.
+감사합니다. 이제 점심이고, 13시 통합 랩에서 Preflight와 Ch1 Lab을 마친 뒤 오늘 본 정책과 훅을 Ch2 Lab 1과 Lab 2에서 직접 배포하고 뚫어 보겠습니다.
 질문은 Slack 채널에 언제든 편하게 남겨 주세요.
 :::
