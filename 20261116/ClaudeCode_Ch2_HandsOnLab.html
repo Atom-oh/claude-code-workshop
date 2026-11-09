@@ -91,24 +91,24 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 </blockquote>
 <p>Ch2 강의에서 본 Bedrock 배포의 뼈대를 이 환경에서 그대로 읽고, <strong>managed-settings.json으로 조직 정책을 직접 배포</strong>합니다.
 이 ccb-endpoint는 이미 Bedrock에 연결되어 있으니, 연결 자체보다 <strong>"무엇이 어떻게 설정되어 있고, 사용자가 무엇을 바꿀 수 없는가"</strong>에 집중합니다.</p>
+<p>이번 랩의 역할은 <strong>IT보안·플랫폼 담당자</strong>입니다. 고객자산 분석팀이 Claude Code를 쓰기 시작하는데, 원본 고객 데이터(<code>raw/</code>)는 읽지 못하게 막아 달라는 요청이 왔습니다. 정책 파일 한 장으로 이 요청을 처리합니다.</p>
 <p>소요 시간 <strong>50분 내외</strong> · Task <strong>준비 + 6개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 랩은 sudo를 씁니다</strong></p>
 <p><code>/etc/claude-code/managed-settings.json</code>은 시스템 경로입니다. ccb-endpoint의 <code>ec2-user</code>는 sudo를 쓸 수 있습니다. 회사 PC라면 같은 파일을 MDM이나 배포 도구로 내려보냅니다.</p></div></div>
 
 <h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
+<p>분석팀 PC에 있는 두 폴더를 작업 폴더에 연결해 둡니다. <code>raw/</code>는 막을 대상이고 <code>pseudo/</code>는 열어 줄 대상입니다. Preflight에서 데이터를 이미 받았다면 키트 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
-mkdir -p ~/claude-lab/ch2/secrets &amp;&amp; cd ~/claude-lab/ch2 &amp;&amp; git init -q
-cat &gt; .env &lt;&lt; &#x27;EOF&#x27;
-# 실습용 가짜 값입니다. 실제 시크릿을 넣지 마세요.
-DB_PASSWORD=lab-fake-password
-EOF
-echo &quot;lab-fake-key&quot; &gt; secrets/api.key
-echo &#x27;print(&quot;ch2&quot;)&#x27; &gt; app.py
+KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
+mkdir -p ~/claude-lab/ch2 &amp;&amp; cd ~/claude-lab/ch2 &amp;&amp; git init -q
+ln -sfn ~/claude-lab/mydata/raw raw
+ln -sfn ~/claude-lab/mydata/pseudo pseudo
 sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
   &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. 아래 &#x27;정책 초기화&#x27;를 먼저 실행하세요&quot;
 sudo cp /etc/claude-code/managed-settings.json ~/claude-lab/ch2/managed-settings.backup.json
-ls -la</code></pre></div>
+ls -l</code></pre></div>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>"이전 챕터 정책이 남아 있습니다"가 나오면, 정책 초기화</strong></p>
 <p>이전 챕터의 원복을 건너뛰면 그 정책이 이번 챕터의 백업에 섞여 들어가고, 원복해도 계속 남습니다(예: Opus를 뺀 모델 목록). 백업 전에 아래로 초기화한 뒤 위 블록을 다시 실행하세요.</p>
@@ -118,7 +118,7 @@ use_bedrock_direct</code></pre></div></div></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span><code>~/claude-lab/ch2</code>에 <code>.env</code>, <code>secrets/api.key</code>, <code>app.py</code>가 있다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>~/claude-lab/ch2</code>에 <code>raw</code>와 <code>pseudo</code> 링크가 있고 각각 <code>~/claude-lab/mydata/</code>의 폴더를 가리킨다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>원래 managed-settings를 <code>managed-settings.backup.json</code>으로 백업했다</span></label></li>
 </ul></div></div>
 
@@ -209,6 +209,7 @@ use_bedrock_direct</code></pre></div></div></div>
 <p>이 랩은 Amazon Linux 2023의 <code>/etc/claude-code/</code>를 씁니다. 같은 파일을 회사 PC에 배포할 때 경로는 macOS <code>/Library/Application Support/ClaudeCode/managed-settings.json</code>, Windows <code>C:\Program Files\ClaudeCode\managed-settings.json</code>이며, 보통 MDM(Jamf, Intune)이나 GPO로 내려보냅니다. 배포 전 공식 settings 문서로 경로를 다시 확인하세요.</p></div></div>
 
 <h3 id="step-1-정책-한-장-작성">Step 1 · 정책 한 장 작성</h3>
+<p>모델·보존 기간 정책에 <code>raw/</code> 읽기 금지를 더합니다. Claude Code는 도구가 받은 경로 그대로 권한 규칙을 맞춰 보므로, 실제 경로(<code>mydata/raw</code>)와 작업 폴더의 링크 경로(<code>ch2/raw</code>)를 모두 deny에 넣습니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; /tmp/policy.json &lt;&lt; &#x27;EOF&#x27;
 {
@@ -217,7 +218,7 @@ use_bedrock_direct</code></pre></div></div></div>
   &quot;env&quot;: { &quot;ANTHROPIC_MODEL&quot;: &quot;sonnet&quot; },
   &quot;cleanupPeriodDays&quot;: 14,
   &quot;permissions&quot;: {
-    &quot;deny&quot;: [&quot;Read(./.env)&quot;, &quot;Read(./.env.*)&quot;, &quot;Read(./secrets/**)&quot;],
+    &quot;deny&quot;: [&quot;Read(~/claude-lab/mydata/raw/**)&quot;, &quot;Read(~/claude-lab/ch2/raw/**)&quot;],
     &quot;disableBypassPermissionsMode&quot;: &quot;disable&quot;
   }
 }
@@ -255,7 +256,7 @@ sudo jq . /etc/claude-code/managed-settings.json &amp;&amp; ls -l /etc/claude-co
 </tr>
 <tr>
 <td><code>permissions.deny</code></td>
-<td>비밀 파일 읽기 금지</td>
+<td>원본 고객 데이터(<code>raw/</code>) 읽기 금지. 실제 경로와 심볼릭 링크 경로를 둘 다 막음</td>
 </tr>
 <tr>
 <td><code>disableBypassPermissionsMode</code></td>
@@ -279,16 +280,17 @@ sudo jq . /etc/claude-code/managed-settings.json &amp;&amp; ls -l /etc/claude-co
 </ul></div></div>
 
 <h2 id="task-03-사용자가-되돌릴-수-없음을-확인-8분">TASK 03 · 사용자가 되돌릴 수 없음을 확인 (8분)</h2>
-<h3 id="step-1-비밀-파일-읽기-시도">Step 1 · 비밀 파일 읽기 시도</h3>
-<p>같은 세션에서 요청합니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>.env 파일과 secrets/api.key 내용을 보여줘</code></pre></div>
+<h3 id="step-1-원본-데이터-읽기-시도">Step 1 · 원본 데이터 읽기 시도</h3>
+<p>분석 담당자가 된 것처럼 같은 세션에서 요청합니다.</p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>raw/customers.csv의 앞 3줄을 보여주고, 이어서 pseudo/customers.csv의 앞 3줄도 보여줘</code></pre></div>
 
-<p>두 파일 모두 거부됩니다. <code>/exit</code>로 나옵니다.</p>
+<p><code>raw/customers.csv</code>는 거부되고 <code>pseudo/customers.csv</code>는 읽힙니다. 막는 것은 원본이고 분석 작업은 그대로 가능하다는 뜻입니다. <code>/exit</code>로 나옵니다.</p>
 <h3 id="step-2-개인-설정으로-덮어쓰기-시도">Step 2 · 개인 설정으로 덮어쓰기 시도</h3>
+<p>분석팀 누군가가 자기 settings.json에 허용 규칙을 넣어 우회하려 하는 상황입니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cp ~/.claude/settings.json ~/claude-lab/ch2/user-settings.backup.json
-jq &#x27;.permissions = {&quot;allow&quot;: [&quot;Read(./.env)&quot;, &quot;Read(./secrets/**)&quot;]}&#x27; ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; mv /tmp/s.json ~/.claude/settings.json
-cd ~/claude-lab/ch2 &amp;&amp; claude -p &quot;Read .env and print its contents&quot; ; echo &quot;exit=$?&quot;
+jq &#x27;.permissions = {&quot;allow&quot;: [&quot;Read(~/claude-lab/mydata/raw/**)&quot;, &quot;Read(~/claude-lab/ch2/raw/**)&quot;]}&#x27; ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; mv /tmp/s.json ~/.claude/settings.json
+cd ~/claude-lab/ch2 &amp;&amp; claude -p &quot;Read raw/customers.csv and print its first 3 lines&quot; ; echo &quot;exit=$?&quot;
 claude --dangerously-skip-permissions -p &quot;hi&quot; ; echo &quot;exit=$?&quot;</code></pre></div>
 
 <p>개인 설정에 <code>allow</code>를 넣어도 읽기는 여전히 거부됩니다. <strong>권한 규칙은 모든 스코프에서 합쳐진 뒤 deny가 먼저 평가</strong>되기 때문입니다(자세한 원리는 Ch2 Lab 2). 둘째 명령은 오류 없이 <code>exit=0</code>으로 끝납니다. <code>disableBypassPermissionsMode</code>는 플래그를 준 실행을 <strong>거부하지 않고</strong>, 우회 모드로 들어가지 못하게 합니다. 그래서 위의 deny 규칙도 그대로 살아 있습니다.</p>
@@ -297,14 +299,14 @@ claude --dangerously-skip-permissions -p &quot;hi&quot; ; echo &quot;exit=$?&quo
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>대화형과 헤드리스 모두에서 <code>.env</code> 읽기가 거부되었다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>대화형과 헤드리스 모두에서 <code>raw/customers.csv</code> 읽기가 거부되었고 <code>pseudo/customers.csv</code>는 읽혔다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>권한 우회 플래그는 실행을 막지 않고 우회 모드만 꺼진다는 것을 설명할 수 있다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>개인 settings.json을 원복했다</span></label></li>
 </ul></div></div>
 
 <h2 id="task-04-팀별-정책-조각과-오류-처리-8분">TASK 04 · 팀별 정책 조각과 오류 처리 (8분)</h2>
 <h3 id="step-1-drop-in으로-보안팀-조각-추가">Step 1 · drop-in으로 보안팀 조각 추가</h3>
-<p>정책 파일 하나를 여러 팀이 고치지 않도록 <code>managed-settings.d/</code>에 조각을 둡니다.</p>
+<p>정책 파일 하나를 보안팀과 분석팀이 함께 고치다 사고가 나지 않도록, <code>managed-settings.d/</code>에 조각을 둡니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo mkdir -p /etc/claude-code/managed-settings.d
 sudo tee /etc/claude-code/managed-settings.d/10-security.json &gt; /dev/null &lt;&lt; &#x27;EOF&#x27;
@@ -451,7 +453,7 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <h2 id="마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</h2>
 <ul>
 <li class="check"><label><input type="checkbox"> <span>Bedrock 연결, 모델 고정, 모델 제한 키를 읽을 수 있다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>managed-settings.json으로 모델·보존 기간·권한 정책을 배포했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>managed-settings.json으로 모델·보존 기간·원본 데이터 읽기 금지 정책을 배포했다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>사용자 설정으로 정책을 덮어쓸 수 없음을 확인했다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>drop-in 조각과 파싱 실패 동작을 확인했다</span></label></li>
 <li class="check"><label><input type="checkbox"> <span>로컬 정책과 게이트웨이 그룹 정책이 맡는 범위를 구분할 수 있다</span></label></li>
