@@ -658,6 +658,135 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 .backlinks { margin-top: 14px; font-size: 14px; color: var(--muted); }
 .backlinks a { margin-right: 14px; }
 .cp-item-wrap { margin-top: 6px; }
+/* ==== VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim) ==== */
+/* Paste badges, "어디에 붙여 넣나요?" guide, glossary tips and step-through flow visuals.
+   Markup and data contract: see the comment at the top of the VIZ COMPONENT script. */
+:root {
+  --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF;
+  --viz-bad: #FF6B8B; --viz-chip-bg: #FF9900; --viz-chip-fg: #12181F;
+}
+html.light {
+  --pt-term: #08615A; --pt-claude: #8C3A12; --pt-file: #1A549C; --pt-slack: #5F37B0; --pt-web: #5F37B0;
+  --viz-bad: #B3264A; --viz-chip-bg: #9A4300; --viz-chip-fg: #FFFFFF;
+}
+/* Code blocks stay dark in both themes, so their badges keep the dark palette. */
+.code-wrap { --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF; }
+.code-head { flex-wrap: wrap; gap: 6px 10px; }
+.pbadge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; line-height: 1.3;
+  padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pbadge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.code-head .pbadge { margin-right: auto; }
+.code-head .copy-btn { margin-left: auto; }
+.pbadge.t-term { color: var(--pt-term); } .pbadge.t-claude { color: var(--pt-claude); }
+.pbadge.t-file { color: var(--pt-file); } .pbadge.t-slack { color: var(--pt-slack); } .pbadge.t-web { color: var(--pt-web); }
+.pb-strip { padding: 6px 14px; font-size: 12.5px; color: #A6ABBE; border-bottom: 1px solid #2A3542; background: rgba(125, 183, 255, 0.06); }
+.pb-strip code { font-family: var(--font-code); color: #7DB7FF; overflow-wrap: anywhere; }
+
+.pg { margin: 0 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); }
+.pg > summary { cursor: pointer; padding: 14px 18px; font-weight: 800; font-size: 15px; color: var(--text); list-style: none; }
+.pg > summary::-webkit-details-marker { display: none; }
+.pg > summary::before { content: "▸ "; color: var(--orange); }
+.pg[open] > summary::before { content: "▾ "; }
+.pg > summary span { font-weight: 400; font-size: 13.5px; color: var(--muted); margin-left: 6px; }
+.pg-body { padding: 0 18px 18px; }
+.pg-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.pg-legend button { font-family: var(--font-body); background: transparent; cursor: pointer; }
+.pg-legend button[aria-pressed="true"] { background: var(--bg-inline); box-shadow: 0 0 0 2px currentColor inset; }
+.pg-map { display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 3fr); gap: 10px; align-items: start; font-size: 13px; }
+.pg-box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--muted); min-width: 0; }
+.pg-box b { display: block; color: var(--text); font-size: 13.5px; }
+.pg-arrow { align-self: center; text-align: center; color: var(--dim); font-weight: 800; }
+.pg-ide { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px; margin-top: 8px; }
+.pg-term .pg-box { margin-top: 8px; }
+.pg-zone.on { border-color: var(--hl, var(--orange)); box-shadow: 0 0 0 3px var(--orange-dim); }
+.pg-zone.on > b { color: var(--hl, var(--orange)); }
+.pg-cap { margin-top: 12px; color: var(--text); font-size: 14px; min-height: 1.75em; }
+@media (max-width: 620px) {
+  .pg-map { grid-template-columns: minmax(0, 1fr); }
+  .pg-arrow { transform: rotate(90deg); }
+  .pg-ide { grid-template-columns: minmax(0, 1fr); }
+}
+
+.gl { border-bottom: 1px dotted var(--orange); cursor: help; position: relative; }
+.gl:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
+.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: min(300px, calc(100vw - 32px));
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--orange); border-radius: 8px; padding: 8px 12px;
+  font-size: 13px; font-weight: 400; line-height: 1.6; white-space: normal; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+.gl-tip.flip { left: auto; right: 0; }
+.gl:hover .gl-tip, .gl:focus .gl-tip, .gl:focus-within .gl-tip { display: block; }
+@media (max-width: 900px) {
+  .gl-tip, .gl-tip.flip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
+}
+details.gl-more { margin: 0 0 40px; color: var(--muted); font-size: 14px; }
+details.gl-more summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+details.gl-more dl { margin-top: 8px; }
+details.gl-more dt { color: var(--text); font-weight: 800; margin-top: 8px; }
+details.gl-more dd { margin: 0; }
+
+.viz { margin: 18px 0 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); padding: 16px 18px; }
+.viz-title { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; color: var(--orange); }
+.viz-row { display: flex; align-items: stretch; margin: 14px 0 10px; }
+.viz-node { flex: 1 1 0; min-width: 0; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 8px;
+  text-align: center; background: var(--bg); color: var(--muted); transition: border-color 0.2s, box-shadow 0.2s; }
+.viz-node .ic { display: block; width: 40px; height: 40px; margin: 0 auto 6px; }
+.viz-node img.ic { border-radius: 6px; }
+.viz-node img.ic.tile { background: #FFFFFF; padding: 4px; }
+.viz-node .lb { display: block; font-weight: 800; font-size: 13.5px; color: var(--text); line-height: 1.35; }
+.viz-node .sb { display: block; font-size: 12px; color: var(--muted); font-family: var(--font-code); overflow-wrap: anywhere; line-height: 1.45; margin-top: 3px; }
+.viz-node .lk { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 10px; margin-top: 6px; font-size: 12.5px; font-weight: 700; }
+.viz-node.on { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); color: var(--orange); }
+.viz-node.ok { border-color: var(--green); color: var(--green); }
+.viz-node.bad { border-color: var(--viz-bad); color: var(--viz-bad); }
+.viz-node.ok .sb, .viz-node.bad .sb { color: inherit; }
+.viz-arrow { flex: 0 1 72px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
+.viz-arrow .el { font-size: 11px; line-height: 1.3; text-align: center; color: var(--dim); font-family: var(--font-code); overflow-wrap: anywhere; min-height: 1.3em; }
+.viz-arrow .ln { position: relative; height: 24px; }
+.viz-arrow .ln::before { content: ""; position: absolute; left: 0; right: 7px; top: 11px; border-top: 2px dashed var(--line); }
+.viz-arrow .ln::after { content: ""; position: absolute; right: 0; top: 6px; border: 6px solid transparent; border-left: 8px solid var(--line); border-right: 0; }
+.viz-arrow.done .ln::before { border-top-style: solid; }
+.viz-arrow.on .ln::before { border-top: 2px solid var(--orange); }
+.viz-arrow.on .ln::after { border-left-color: var(--orange); }
+.viz-arrow.on .el { color: var(--orange); font-weight: 700; }
+.viz-chip { position: absolute; top: 1px; left: 100%; transform: translateX(-100%); z-index: 2; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; font-family: var(--font-code); font-size: 11px; font-weight: 800; line-height: 20px; padding: 0 7px;
+  border-radius: 5px; background: var(--viz-chip-bg); color: var(--viz-chip-fg); animation: viz-mx 1.4s ease-in-out both; }
+@keyframes viz-mx { from { left: 0; transform: translateX(0); opacity: 0.3; } to { left: 100%; transform: translateX(-100%); opacity: 1; } }
+@keyframes viz-my { from { top: 0; transform: translateY(0); opacity: 0.3; } to { top: 100%; transform: translateY(-100%); opacity: 1; } }
+.viz-side { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.viz-side .viz-node { flex: 1 1 160px; display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 10px; }
+.viz-side .viz-node .ic { width: 28px; height: 28px; margin: 0; flex: none; }
+.viz-cap { border-left: 3px solid var(--orange); background: var(--orange-dim); border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 4px 0 12px; font-size: 14.5px; color: var(--text); }
+.viz-cap .q { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; color: var(--orange); margin-bottom: 2px; }
+.viz-cap code, .viz-all code { font-family: var(--font-code); font-size: 0.88em; background: var(--bg-inline); color: var(--orange); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+.viz-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.viz-ctl button { font-family: var(--font-body); font-size: 13px; font-weight: 700; color: var(--text); background: var(--bg-inline);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; min-height: 32px; }
+.viz-ctl button:hover { border-color: var(--orange); color: var(--orange); }
+.viz-ctl button:disabled { opacity: 0.45; cursor: default; }
+.viz-ctl .dots { display: flex; flex-wrap: wrap; gap: 6px; }
+.viz-ctl .dots button { min-width: 32px; padding: 5px 0; }
+.viz-ctl .dots button[aria-current="step"] { background: var(--orange); border-color: var(--orange); color: var(--viz-chip-fg); }
+html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
+.viz-all { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+.viz-all summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+.viz-all ol { padding-left: 20px; margin-top: 6px; }
+.viz-all li { margin: 4px 0; }
+/* Narrow diagrams: the script adds .vert when the box is too narrow for one row. */
+.viz.vert .viz-row { flex-direction: column; }
+.viz.vert .viz-arrow { flex: 0 0 auto; max-width: none; height: 48px; padding: 0; }
+.viz.vert .viz-arrow .ln { position: absolute; left: 50%; top: 0; bottom: 0; width: 24px; height: auto; margin-left: -12px; }
+.viz.vert .viz-arrow .ln::before { left: 11px; right: auto; top: 0; bottom: 7px; border-top: 0; border-left: 2px dashed var(--line); }
+.viz.vert .viz-arrow .ln::after { right: auto; left: 6px; top: auto; bottom: 0; border: 6px solid transparent; border-top: 8px solid var(--line); border-bottom: 0; }
+.viz.vert .viz-arrow.done .ln::before { border-left-style: solid; }
+.viz.vert .viz-arrow.on .ln::before { border-left: 2px solid var(--orange); }
+.viz.vert .viz-arrow.on .ln::after { border-top-color: var(--orange); }
+.viz.vert .viz-arrow .el { position: absolute; left: calc(50% + 18px); right: 0; top: 50%; transform: translateY(-50%); text-align: left; }
+.viz.vert .viz-chip { top: 100%; left: auto; right: calc(50% + 10px); transform: translateY(-100%); max-width: calc(50% - 14px); animation-name: viz-my; }
+@media (prefers-reduced-motion: reduce) {
+  .viz-chip { animation: none !important; }
+  .viz-node, .pg-zone { transition: none !important; }
+}
+/* ==== VIZ COMPONENT v1 END ==== */
 </style>
 </head>
 <body>
@@ -668,8 +797,8 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
   <h1>R2 공통 단계: R1에서 만든 것을 plugin 하나로 묶어 마켓플레이스에 올리기</h1>
   <div class="subtitle">R1의 agents, 새로 만드는 skill, MCP 설정, 가드레일 훅을 plugin 하나로 묶고, 로컬 마켓플레이스에 올린 뒤 새 폴더에서 동료처럼 설치해 가드레일까지 따라오는지 확인한다</div>
   <p class="lede">
-    R1의 작업 폴더 <code class="inline">~/claude-lab/capstone/</code>에는 이 폴더에서만 쓰이는 agent, 훅, 설정이 있습니다. 이 단계에서 그것을 <strong>다른 폴더, 다른 사람이 설치 한 줄로 받아 쓰는 plugin</strong>으로 바꿉니다.
-    plugin 원본은 <code class="inline">~/claude-lab/capstone/my-kit/</code>, 마켓플레이스는 <code class="inline">~/claude-lab/capstone/marketplace/</code>, 동료 역할의 새 폴더는 <code class="inline">~/claude-lab/capstone-try/</code>입니다.
+    R1의 작업 폴더 <code class="inline">~/claude-lab/capstone/</code>에는 이 폴더에서만 쓰이는 agent, <span class="gl" data-gl="hook">훅</span>, 설정이 있습니다. 이 단계에서 그것을 <strong>다른 폴더, 다른 사람이 설치 한 줄로 받아 쓰는 <span class="gl" data-gl="plugin">plugin</span></strong>으로 바꿉니다.
+    plugin 원본은 <code class="inline">~/claude-lab/capstone/my-kit/</code>, <span class="gl" data-gl="marketplace">마켓플레이스</span>는 <code class="inline">~/claude-lab/capstone/marketplace/</code>, 동료 역할의 새 폴더는 <code class="inline">~/claude-lab/capstone-try/</code>입니다.
     명령 형식은 <a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4 랩</a>의 plugin, 로컬 마켓플레이스와 같습니다. 이 단계를 끝내면 R2 미션 두 개 이상을 같은 plugin으로 합니다.
   </p>
   <div class="backlinks">
@@ -715,10 +844,16 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 
 <main>
 
+<div class="paste-guide"></div>
+<div class="gl-list"></div>
+
 <section class="task" id="task-00" data-min="10">
   <div class="task-head"><span class="task-num">00</span><h2>R1 산출물 확인</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">R1 작업 폴더에 묶을 재료가 있는지 보고, 고른 트랙의 이름들을 <code class="inline">r2.env</code>에 적습니다.</p>
   <p class="body">명령은 모두 Claude 세션 <strong>밖의 터미널</strong>에서 실행합니다. plugin 훅의 <code class="inline">onFailure</code>는 Claude Code v2.1.295 이상이 필요하니 버전도 함께 봅니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 이 페이지와 R2 미션 페이지의 블록이 모두 <code class="inline">r2.env</code>의 이름을 읽습니다. 트랙의 이름을 여기서 한 번 적어 두면 뒤의 블록은 트랙과 상관없이 같습니다.</p>
+  <p class="body">먼저 이 페이지 전체에서 파일이 어디서 어디로 가는지 그림으로 봅니다.</p>
+  <div class="viz" data-viz="package-flow"></div>
   <div class="step-title"><span class="step-no">1</span>재료 확인</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -734,7 +869,7 @@ jq -c '.hooks | keys' .claude/settings.json</code></pre>
     <tr><td>C 내가 고른 MCP (<a href="ClaudeCode_Capstone_R1C_HandsOnLab.html">R1-C</a>)</td><td><code class="inline">mcp-researcher</code>, <code class="inline">evidence-reviewer</code></td><td><code class="inline">mcp-guard.sh</code>, <code class="inline">net-guard.sh</code></td><td><code class="inline">r1c-choice.env</code></td></tr>
   </tbody></table>
   <div class="step-title"><span class="step-no">2</span>트랙 이름 적기: 고른 트랙 블록 하나만</div>
-  <p class="body"><code class="inline">r2.env</code>에는 plugin 이름(<code class="inline">KIT</code>), 트랙, MCP 서버 이름(<code class="inline">SRV</code>), 자료를 모으는 agent(<code class="inline">COLLECT</code>)와 읽기 전용 검토 agent(<code class="inline">REVIEW</code>)를 적습니다. 이 페이지와 R2 미션 페이지의 블록이 모두 이 파일을 읽습니다. plugin 이름을 바꾸려면 <code class="inline">KIT=</code> 줄만 고치고, 세션에 입력하는 명령의 <code class="inline">my-kit</code>도 그 이름으로 바꿔 씁니다(영문 소문자와 <code class="inline">-</code>). agent 이름을 R1에서 바꿨다면 <code class="inline">COLLECT</code>, <code class="inline">REVIEW</code>도 맞춥니다.</p>
+  <p class="body"><code class="inline">r2.env</code>에는 plugin 이름(<code class="inline">KIT</code>), 트랙, <span class="gl" data-gl="mcp">MCP</span> 서버 이름(<code class="inline">SRV</code>), 자료를 모으는 agent(<code class="inline">COLLECT</code>)와 읽기 전용 검토 agent(<code class="inline">REVIEW</code>)를 적습니다. 이 페이지와 R2 미션 페이지의 블록이 모두 이 파일을 읽습니다. plugin 이름을 바꾸려면 <code class="inline">KIT=</code> 줄만 고치고, 세션에 입력하는 명령의 <code class="inline">my-kit</code>도 그 이름으로 바꿔 씁니다(영문 소문자와 <code class="inline">-</code>). agent 이름을 R1에서 바꿨다면 <code class="inline">COLLECT</code>, <code class="inline">REVIEW</code>도 맞춥니다.</p>
   <details class="solution">
     <summary>트랙 A: 마이데이터</summary>
     <div class="sol-body">
@@ -809,8 +944,9 @@ EOF
   <div class="task-head"><span class="task-num">01</span><h2>skill 만들기</h2><span class="time-badge">15분</span></div>
   <p class="task-goal">반복 업무의 절차와 출력 형식을 skill로 적습니다. R2 미션에서 쓸 skill은 여기서 다 만들고, 미션 페이지에서는 새로 짜지 않습니다.</p>
   <p class="body">agent는 "누가 하는가", skill은 "어떤 순서로 무엇을 내놓는가"입니다. 아래 두 skill은 R1의 두 agent(모으는 역할과 읽기 전용 검토 역할)에게 일을 나눠 주고, 결과를 늘 같은 형식으로 냅니다. skill 안에서 agent는 plugin 이름이 붙은 <code class="inline">my-kit:agent이름</code>으로 부릅니다. plugin에 들어간 agent와 skill은 plugin 이름 아래로 묶이기 때문입니다 (<a href="https://code.claude.com/docs/en/plugins/components">plugin 구성 요소 공식 문서</a>). frontmatter는 <code class="inline">name</code>과 <code class="inline">description</code>만 씁니다. 이 둘만 쓰면 Claude Code 밖(R2-3의 AgentCore 등)에서도 같은 파일을 그대로 읽을 수 있습니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 절차와 출력 형식을 skill 파일에 적어 두면, 미션마다 프롬프트로 형식을 다시 설명하지 않아도 결과가 늘 같은 형식으로 나옵니다.</p>
   <div class="step-title"><span class="step-no">1</span>정기 분석 리포트: periodic-report (모든 트랙, R2-1)</div>
-  <div class="code-wrap">
+  <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/skills/periodic-report/SKILL.md">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
 K=~/claude-lab/capstone/$KIT
@@ -845,7 +981,7 @@ EOF
 head -4 $K/skills/periodic-report/SKILL.md</code></pre>
   </div>
   <div class="step-title"><span class="step-no">2</span>기획안: proposal-draft (R2-2를 고를 때)</div>
-  <div class="code-wrap">
+  <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/skills/proposal-draft/SKILL.md">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
 K=~/claude-lab/capstone/$KIT
@@ -903,9 +1039,10 @@ ls $K/skills</code></pre>
     <tr><td><code class="inline">.claude/hooks/*.sh</code></td><td><code class="inline">scripts/*.sh</code></td><td>스크립트 내용은 그대로입니다</td></tr>
     <tr><td><code class="inline">.claude/settings.json</code>의 <code class="inline">hooks</code></td><td><code class="inline">hooks/hooks.json</code></td><td>같은 모양을 <code class="inline">"hooks"</code> 키로 감쌉니다. 스크립트 경로는 <code class="inline">"${CLAUDE_PLUGIN_ROOT}/scripts/…"</code>(설치된 plugin의 위치)로 쓰고 큰따옴표로 감쌉니다</td></tr>
     <tr><td>MCP 등록(<code class="inline">claude mcp add</code>, <code class="inline">~/.claude.json</code>)</td><td><code class="inline">.mcp.json</code></td><td>키와 토큰은 파일에 쓰지 않고 <code class="inline">${user_config.이름}</code>으로 적습니다. 설치하는 사람이 설치 창에서 넣고, 값은 settings.json이 아닌 비밀 저장소에 들어갑니다</td></tr>
-    <tr><td>(없음)</td><td><code class="inline">.claude-plugin/plugin.json</code>, <code class="inline">README.md</code></td><td>이름, 버전 <code class="inline">0.1.0</code>, 설명, 키를 묻는 칸(<code class="inline">userConfig</code>)</td></tr>
+    <tr><td>(없음)</td><td><code class="inline">.claude-plugin/plugin.json</code>, <code class="inline">README.md</code></td><td>이름, 버전 <code class="inline">0.1.0</code>, 설명, 키를 묻는 칸(<span class="gl" data-gl="userConfig"><code class="inline">userConfig</code></span>)</td></tr>
     <tr><td><code class="inline">permissions.deny</code>, <code class="inline">allowedMcpServers</code></td><td>넣을 수 없음</td><td>plugin의 설정 파일은 <code class="inline">agent</code>, <code class="inline">subagentStatusLine</code>만 적용됩니다. 이 둘은 04에서 업무 폴더 설정으로 나눠 줍니다</td></tr>
   </tbody></table>
+  <p class="body"><strong>왜 필요한가요:</strong> R1 폴더의 agent와 훅은 그 폴더에서만 쓰입니다. plugin 폴더 하나로 모아야 다른 폴더, 다른 사람이 설치 한 줄로 같은 것을 받습니다.</p>
   <div class="step-title"><span class="step-no">1</span>공통: 매니페스트, agents, 스크립트</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -925,7 +1062,7 @@ grep -H '^tools:' $K/agents/*.md</code></pre>
   </div>
   <p class="body">마지막 줄들은 plugin 안 agent의 <code class="inline">tools</code> 줄입니다. 트랙 B, C는 MCP 도구가 <code class="inline">mcp__plugin_my-kit_…</code>로 바뀌어 있어야 합니다. plugin이 내놓는 MCP 서버의 도구는 이 이름으로 불리므로, 옛 이름이 남아 있으면 agent가 그 도구를 쓰지 못합니다.</p>
   <div class="step-title"><span class="step-no">2</span>공통: README</div>
-  <div class="code-wrap">
+  <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/README.md">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
 K=~/claude-lab/capstone/$KIT
@@ -956,7 +1093,7 @@ cat $K/README.md</code></pre>
   <details class="solution">
     <summary>트랙 A: DLP 훅과 raw/ 차단 훅 (MCP 없음)</summary>
     <div class="sol-body">
-  <div class="code-wrap">
+  <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/hooks/hooks.json">
     <div class="code-head"><span class="code-label">Terminal, 트랙 A일 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
 K=~/claude-lab/capstone/$KIT
@@ -983,7 +1120,7 @@ claude plugin validate $K | tail -1</code></pre>
   <details class="solution">
     <summary>트랙 B: 서울 MCP 서버, 키 훅, 호출 대상 훅</summary>
     <div class="sol-body">
-  <div class="code-wrap">
+  <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/.mcp.json, ~/claude-lab/capstone/my-kit/hooks/hooks.json">
     <div class="code-head"><span class="code-label">Terminal, 트랙 B일 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
 K=~/claude-lab/capstone/$KIT
@@ -1023,6 +1160,7 @@ uv run --no-project --quiet --python 3.12 --with "mcp&gt;=1.2,&lt;2.4" python -c
 claude plugin validate $K | tail -1</code></pre>
   </div>
       <p class="body">MCP 서버 코드(<code class="inline">server.py</code>, <code class="inline">sample.json</code>, <code class="inline">README.md</code>)를 plugin에 넣고, <code class="inline">uv run</code>이 <code class="inline">mcp</code> 패키지를 받아 실행합니다. <code class="inline">mcp 준비됨</code> 줄은 처음 실행할 때 내려받기를 미리 끝내 두는 것입니다. 키는 <code class="inline">userConfig</code>의 <code class="inline">seoul_api_key</code>(가려서 입력, 비밀 저장소에 저장)로 받아 MCP 서버의 <code class="inline">SEOUL_API_KEY</code>로만 넘깁니다. 비워 두면 서버가 <code class="inline">sample.json</code>으로 동작합니다(mock).</p>
+  <div class="viz" data-viz="uv-fetch"></div>
       <p class="body"><code class="inline">key-guard.sh</code>는 R1-B와 같은 스크립트입니다. 훅 명령 앞의 <code class="inline">SEOUL_API_KEY="$CLAUDE_PLUGIN_OPTION_SEOUL_API_KEY"</code>는 설치 창에서 넣은 키 값을 훅에게만 건네, 같은 값이 파일, 명령, 프롬프트에 보이면 막게 합니다. 값을 넣지 않았으면 R1-B처럼 <code class="inline">~/.claude.json</code>의 등록 값을 찾아 씁니다.</p>
     </div>
   </details>
@@ -1075,6 +1213,7 @@ claude plugin validate $K | tail -1</code></pre>
   <div class="task-head"><span class="task-num">03</span><h2>로컬 마켓플레이스에 올리기</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">마켓플레이스 폴더에 <code class="inline">my-kit</code>를 복사해 올리고, 카탈로그 <code class="inline">marketplace.json</code>을 만듭니다.</p>
   <p class="body">마켓플레이스는 plugin 목록(카탈로그)과 plugin 파일을 담은 폴더입니다. 카탈로그의 상대 경로 <code class="inline">./plugins/my-kit</code>은 마켓플레이스 폴더 <strong>안</strong>을 가리켜야 하고, <code class="inline">..</code>으로 밖을 가리키면 검증에서 실패하고, 심볼릭 링크로 이은 경로는 읽히지 않습니다 (<a href="https://code.claude.com/docs/en/plugins/marketplace-reference">마켓플레이스 공식 문서</a>). 그래서 원본 <code class="inline">my-kit/</code>을 복사해 올립니다. 복사가 곧 배포입니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 설치 명령 <code class="inline">my-kit@capstone-local</code>의 <code class="inline">@</code> 뒤가 이 마켓플레이스 이름입니다. 마켓플레이스가 있어야 동료가 plugin을 이름으로 설치합니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
@@ -1103,6 +1242,7 @@ claude plugin validate $M</code></pre>
 <section class="task" id="task-04" data-min="15">
   <div class="task-head"><span class="task-num">04</span><h2>새 폴더에서 설치하고 가드레일 확인</h2><span class="time-badge">15분</span></div>
   <p class="task-goal">agent도 skill도 훅도 없는 새 폴더에서 설치 한 줄로 plugin을 받고, 가드레일이 함께 따라와 막는 것을 확인합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> R1 폴더에는 agent와 훅이 이미 있어서, 거기서는 plugin이 무엇을 싣고 왔는지 알 수 없습니다. 아무것도 없는 새 폴더에 설치해야 가드레일까지 따라오는지 확인됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>동료 폴더 만들기</div>
   <p class="body">동료 폴더에는 데이터에 닿는 데 필요한 것만 둡니다(트랙 A는 <code class="inline">pseudo</code> 링크와 <code class="inline">segments.md</code>). R1 설정 중 plugin에 넣을 수 없었던 권한 deny 규칙과 MCP 허용 목록은 이 폴더의 <code class="inline">.claude/settings.json</code>으로 옮깁니다. 저장소에 함께 두는 설정이라 동료도 같은 규칙을 받습니다.</p>
   <div class="code-wrap">
@@ -1193,7 +1333,7 @@ Projected token cost
     <tr><td>C</td><td><code class="inline">curl로 https://example.com 의 첫 줄을 가져와 주세요</code><br><code class="inline">웹 검색으로 오늘 원/달러 환율을 찾아 주세요</code></td><td><code class="inline">NET:</code>, 웹 검색 도구 없음(권한 거부)</td><td><code class="inline">@my-kit:mcp-researcher 로</code> (R1-C 01에서 보낸 질문)</td></tr>
   </tbody></table>
   <p class="body">권한 거부는 1에서 옮긴 폴더 설정의 deny 규칙이, <code class="inline">DLP:</code>, <code class="inline">RAW:</code>, <code class="inline">KEY:</code>, <code class="inline">NET:</code>은 plugin 훅이 막은 것입니다. 트랙 C의 <code class="inline">mcp-guard.sh</code>는 폴더의 MCP 허용 목록이 빠졌을 때를 받치는 한 겹이라, 다른 MCP 서버가 보이지 않는 이 폴더에서는 나서지 않습니다.</p>
-  <p class="body">마지막으로 fail-closed를 봅니다. 두 번째 터미널에서 plugin의 스크립트 폴더를 치우고, 세션에서 아무 명령이나 시킨 뒤, 스크립트를 되돌립니다.</p>
+  <p class="body">마지막으로 <span class="gl" data-gl="failclosed">fail-closed</span>를 봅니다. 두 번째 터미널에서 plugin의 스크립트 폴더를 치우고, 세션에서 아무 명령이나 시킨 뒤, 스크립트를 되돌립니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>. ~/claude-lab/capstone/r2.env &amp;&amp; P=~/claude-lab/capstone/marketplace/plugins/$KIT
@@ -1235,6 +1375,7 @@ mv $P/scripts.off $P/scripts &amp;&amp; ls $P/scripts</code></pre>
 <section class="task" id="task-05" data-min="5">
   <div class="task-head"><span class="task-num">05</span><h2>(선택) git 저장소로 올리기</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">마켓플레이스 폴더를 git 저장소로 만들어, 다른 컴퓨터의 동료가 저장소 주소로 추가할 수 있게 합니다. R2 미션을 끝내고 시간이 남을 때 합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 로컬 폴더 마켓플레이스는 내 컴퓨터에서만 보입니다. git 저장소에 올리면 다른 컴퓨터의 동료도 같은 plugin을 받습니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone/marketplace
@@ -1348,5 +1489,446 @@ git push -u origin HEAD</code></pre>
   });
 })();
 </script>
+<script type="application/json" id="viz-data">
+{
+ "package-flow": {
+  "title": "R2 공통 단계 전체 흐름: R1 폴더에서 동료 폴더까지",
+  "nodes": [
+   {
+    "id": "r1",
+    "ic": "folder",
+    "lb": "R1 작업 폴더",
+    "sb": "~/claude-lab/capstone/.claude/"
+   },
+   {
+    "id": "kit",
+    "ic": "folder",
+    "lb": "plugin 원본",
+    "sb": "~/claude-lab/capstone/my-kit/"
+   },
+   {
+    "id": "mk",
+    "ic": "server",
+    "lb": "마켓플레이스",
+    "sb": "marketplace/ (capstone-local)"
+   },
+   {
+    "id": "try",
+    "ic": "folder",
+    "lb": "동료 폴더",
+    "sb": "~/claude-lab/capstone-try/ (local 범위)"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "따라온 것",
+    "sb": "my-kit: agents, skills, 훅, MCP"
+   }
+  ],
+  "edges": [
+   "02 복사와 이름 바꾸기",
+   "03 cp -R",
+   "04 /plugin install",
+   "설치 결과"
+  ],
+  "side": [
+   {
+    "id": "skill",
+    "ic": "doc",
+    "lb": "my-kit/skills/",
+    "sb": "01에서 새로 만듦: periodic-report, proposal-draft"
+   },
+   {
+    "id": "conf",
+    "ic": "lock",
+    "lb": "동료 폴더 .claude/settings.json",
+    "sb": "permissions.deny, allowedMcpServers (plugin에 못 넣는 설정)"
+   },
+   {
+    "id": "only",
+    "ic": "shield",
+    "lb": "이 폴더에서 켜진 plugin",
+    "sb": "my-kit 하나 (나머지는 --scope local로 끔)"
+   }
+  ],
+  "steps": [
+   {
+    "t": "R1 재료 확인 (00)",
+    "on": [
+     "r1"
+    ],
+    "cap": "R1 폴더의 `.claude/agents/`, `.claude/hooks/`, `.claude/settings.json`이 재료입니다. 고른 트랙의 이름은 `r2.env`에 적어 두고, 뒤 블록이 모두 이 파일을 읽습니다."
+   },
+   {
+    "t": "skill 만들기 (01)",
+    "on": [
+     "kit",
+     "skill"
+    ],
+    "cap": "`my-kit/skills/`에 절차와 출력 형식을 적은 `SKILL.md`를 만듭니다. skill 안에서 agent는 plugin 이름이 붙은 `my-kit:agent이름`으로 부릅니다."
+   },
+   {
+    "t": "plugin으로 묶기 (02)",
+    "on": [
+     "r1",
+     "kit"
+    ],
+    "edge": 0,
+    "chip": "agents, hooks",
+    "cap": "agents는 `agents/`로 옮기며 MCP 도구 이름을 `mcp__plugin_my-kit_서버__도구`로 바꾸고, 훅 스크립트는 `scripts/`로, 훅 설정은 `\"${CLAUDE_PLUGIN_ROOT}/scripts/…\"` 경로를 쓰는 `hooks/hooks.json`으로 갑니다. 키는 `${user_config.이름}`으로만 적고 `claude plugin validate`를 통과시킵니다."
+   },
+   {
+    "t": "마켓플레이스에 복사 (03)",
+    "on": [
+     "kit",
+     "mk"
+    ],
+    "edge": 1,
+    "chip": "my-kit 복사본",
+    "cap": "카탈로그의 `./plugins/my-kit`은 마켓플레이스 폴더 안을 가리켜야 하고 심볼릭 링크는 읽히지 않아서, 원본을 `cp -R`로 복사해 올립니다. 원본을 고치면 이 블록을 다시 실행하고 세션에서 `/reload-plugins`를 입력합니다."
+   },
+   {
+    "t": "새 폴더에 설치 (04)",
+    "on": [
+     "mk",
+     "try"
+    ],
+    "ok": [
+     "conf"
+    ],
+    "edge": 2,
+    "chip": "my-kit@capstone-local",
+    "cap": "agent도 skill도 없는 `capstone-try`에 deny 규칙과 MCP 허용 목록만 `.claude/settings.json`으로 옮긴 뒤, 세션에서 `/plugin marketplace add`와 `/plugin install`을 보냅니다. 설치 범위는 local scope를 고르고, 트랙 B와 C는 설치 창이 키 칸(`userConfig`)을 묻습니다."
+   },
+   {
+    "t": "이 폴더에서는 my-kit만",
+    "on": [
+     "try"
+    ],
+    "ok": [
+     "only"
+    ],
+    "cap": "사용자 범위로 설치해 둔 다른 plugin(Ch4의 `asset-team-kit@fsi-local` 등)이 켜져 있으면 막힌 장면이 어디서 왔는지 가릴 수 없습니다. `claude plugin disable … --scope local`로 이 폴더에서만 끄고, 켜진 목록에 `my-kit@capstone-local` 한 줄만 남깁니다."
+   },
+   {
+    "t": "가드레일까지 따라왔는지",
+    "on": [
+     "try"
+    ],
+    "ok": [
+     "res",
+     "only",
+     "conf"
+    ],
+    "edge": 3,
+    "cap": "`@my-kit`에 agent가, `/my-kit`에 `/my-kit:periodic-report`가 보이고, 막혀야 하는 요청은 `DLP:`, `RAW:`, `KEY:`, `NET:`(plugin 훅)이나 권한 거부(폴더 설정)로 막힙니다. 스크립트를 치워도 `onFailure`로 막히면 끝이고, 설치된 agent와 skill의 지문을 `kit.sha`에 남깁니다."
+   }
+  ]
+ },
+ "uv-fetch": {
+  "title": "트랙 B: uv와 mcp 패키지를 내 EC2로 받기",
+  "nodes": [
+   {
+    "id": "src",
+    "ic": "globe",
+    "lb": "인터넷의 배포처",
+    "sb": ""
+   },
+   {
+    "id": "ec2",
+    "img": "images/aws-icons/Arch_Amazon-EC2_48.svg",
+    "lb": "내 실습 EC2",
+    "sb": ""
+   },
+   {
+    "id": "srv",
+    "ic": "plug",
+    "lb": "plugin의 MCP 서버",
+    "sb": "${CLAUDE_PLUGIN_ROOT}/seoul-realestate/server.py"
+   }
+  ],
+  "edges": [
+   "curl, uv run --with (HTTPS)",
+   "uv run으로 실행"
+  ],
+  "steps": [
+   {
+    "t": "uv가 없을 때만 (00)",
+    "on": [
+     "src",
+     "ec2"
+    ],
+    "edge": 0,
+    "chip": "install.sh",
+    "set": {
+     "src": {
+      "lb": "astral.sh",
+      "sb": "uv 설치 스크립트"
+     },
+     "ec2": {
+      "sb": "~/.local/bin/uv"
+     }
+    },
+    "cap": "00의 트랙 B 블록에서 `command -v uv`가 실패하면 `curl`로 astral.sh의 설치 스크립트를 받아 `~/.local/bin`에 uv를 설치합니다. 있으면 이 줄은 건너뜁니다."
+   },
+   {
+    "t": "mcp 패키지 미리 받기 (02)",
+    "on": [
+     "src",
+     "ec2"
+    ],
+    "edge": 0,
+    "chip": "mcp>=1.2,<2.4",
+    "set": {
+     "src": {
+      "lb": "Python 패키지 저장소",
+      "sb": "mcp>=1.2,<2.4"
+     },
+     "ec2": {
+      "sb": "uv가 그때그때 만드는 환경"
+     }
+    },
+    "cap": "`uv run --no-project --quiet --python 3.12 --with \"mcp>=1.2,<2.4\" python -c 'import mcp…'`가 처음 실행할 때 필요한 내려받기를 미리 끝냅니다. `mcp 준비됨`이 나오면 됩니다."
+   },
+   {
+    "t": "설치한 사람의 EC2에서 실행",
+    "on": [
+     "ec2",
+     "srv"
+    ],
+    "edge": 1,
+    "set": {
+     "ec2": {
+      "sb": "설치한 사람마다 따로 생기는 환경"
+     }
+    },
+    "cap": "plugin의 `.mcp.json`은 같은 `uv run` 명령으로 `server.py`를 띄웁니다. 가상환경은 설치한 사람의 컴퓨터마다 따로 있어야 해서 plugin에 넣지 않고, R1의 `.venv`도 쓰지 않습니다."
+   }
+  ]
+ }
+}
+</script>
+<!-- VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim, page data lives in #viz-data) -->
+<script>
+/* VIZ COMPONENT v1: how a page uses it
+   1) Paste badges: automatic. Every .code-wrap (except .output) gets a badge from its .code-label text:
+      "Terminal..." -> 터미널, "Claude 세션..." -> Claude 세션, "Slack..." -> Slack, a label with 파일 -> 파일 내용,
+      a label with 브라우저 or 설치 창 -> 브라우저. Override with <div class="code-wrap" data-paste="term|claude|file|slack|web"
+      data-paste-path="~/x/y.md">. Terminal blocks that run cat > PATH << get a strip naming the file they create.
+   2) Paste guide: <div class="paste-guide" data-types="term claude file"></div> (data-types optional; default = badge
+      types found on the page). Renders the 노트북 브라우저 -> code-server(EC2) -> 편집기/터미널/Claude 세션 schematic.
+   3) Glossary: <span class="gl" data-gl="hook">훅</span> shows the GL definition on hover, focus or tap.
+      <div class="gl-list"></div> renders a "더 알아보기" list of the terms used on the page.
+   4) Flow and copy visuals: <div class="viz" data-viz="NAME"></div> plus one page-level
+      JSON block (script type="application/json" id="viz-data") holding {"NAME": {...}}, where a diagram is
+      { "title": "...", "nodes": [{"id","lb","sb","ic": shape | "img": "images/aws-icons/x.svg", "tile": true, "links": [["text","href"]]}],
+        "edges": ["label between node 1 and 2", ...], "side": [nodes shown under the row, no arrows],
+        "steps": [{"t": "short title", "cap": "caption, `code` allowed", "on": [ids], "ok": [ids], "bad": [ids],
+                   "edge": 0 | [0, 1], "chip": "file moving along that edge (copy mode)", "set": {"id": {"lb","sb"}}}] }
+      Shapes: browser server folder doc terminal chat plug globe shield key lock user bot result.
+      A step's "set" may change lb, sb, ic or img; a set.ic replaces the node's img with that shape for the step.
+      Buttons: 이전, 재생 (one pass, no loop; hidden with fewer than 2 steps), 다음, numbered steps.
+      A .viz whose data is missing, or has no nodes or steps, is hidden. prefers-reduced-motion: opens on the last step, no 재생. */
+(function () {
+  "use strict";
+  var TYPES = {
+    term: { lb: "터미널", zone: "term", cap: "code-server 아래쪽 Terminal 창(내 EC2의 리눅스 셸)에 붙여 넣고 Enter를 누릅니다. 여러 줄 블록도 통째로 붙여 넣으면 됩니다." },
+    claude: { lb: "Claude 세션", zone: "claude", cap: "터미널에서 claude를 실행한 뒤 나오는 프롬프트 칸에 붙여 넣습니다. 셸 명령이 아니라 Claude에게 보내는 요청입니다." },
+    file: { lb: "파일 내용", zone: "editor", cap: "code-server 편집기에서 블록 위에 적힌 경로의 파일을 열고, 이 내용을 넣어 저장합니다." },
+    slack: { lb: "Slack 메시지", zone: "browser", cap: "내 노트북 브라우저의 Slack 워크숍 채널 메시지 칸에 붙여 넣습니다. 실습 EC2에는 들어가지 않습니다." },
+    web: { lb: "브라우저", zone: "browser", cap: "내 노트북 브라우저의 다른 탭이나 창(예: 설치 창)에 넣습니다. 터미널에 붙여 넣는 명령이 아닙니다." }
+  };
+  var GL = {
+    hook: ["훅", "Claude Code가 프롬프트를 받을 때나 도구를 쓰기 직전 같은 정해진 순간에 자동으로 실행하는 내 스크립트입니다. exit 2로 끝나면 그 동작을 막습니다."],
+    mcp: ["MCP", "Model Context Protocol. Claude Code에 외부 데이터와 도구를 붙이는 연결 방식입니다. MCP 서버가 도구(예: search_trades)를 내놓으면 Claude가 그 도구를 부릅니다."],
+    plugin: ["plugin", "agents, skills, 훅, MCP 설정을 한 폴더에 묶어 설치 한 줄로 나눠 주는 단위입니다."],
+    marketplace: ["marketplace", "설치할 수 있는 plugin 목록(marketplace.json)을 담은 폴더나 git 저장소입니다. 추가한 뒤 plugin이름@마켓플레이스이름으로 설치합니다."],
+    userConfig: ["userConfig", "plugin을 설치할 때 키 같은 값을 묻는 칸입니다. sensitive로 둔 값은 설정 파일이 아닌 비밀 저장소에 들어갑니다."],
+    failclosed: ["fail-closed", "검사기가 오류를 내거나 아예 실행되지 못해도 통과가 아니라 차단으로 끝나게 하는 설계입니다. 이 실습에서는 오류 경로의 exit 2와 onFailure: block이 맡습니다."],
+    local: ["local 범위", "claude mcp add에 범위를 주지 않을 때의 기본값입니다. 등록한 폴더에서만 보이고, 설정은 ~/.claude.json에 저장됩니다."],
+    harness: ["AgentCore harness", "모델, 시스템 프롬프트, 도구를 설정 파일로 정하면 AgentCore가 에이전트 루프를 돌려 주는 방식입니다."]
+  };
+  var P = {
+    browser: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M6 6.5h.01M8.5 6.5h.01"/>',
+    server: '<rect x="4" y="3" width="16" height="7" rx="1.5"/><rect x="4" y="14" width="16" height="7" rx="1.5"/><path d="M8 6.5h.01M8 17.5h.01"/>',
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+    terminal: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+    plug: '<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+    shield: '<path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    key: '<circle cx="8" cy="14" r="4"/><path d="M11 11l9-9M16 6l3 3M14 8l2 2"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    bot: '<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 13h.01M15 13h.01"/>',
+    result: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+  };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function md(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function shape(name) { return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[name] || P.result) + "</svg>"; }
+
+  /* 1) paste badges */
+  var found = {};
+  document.querySelectorAll(".code-wrap").forEach(function (w) {
+    if (w.classList.contains("output")) return;
+    var head = w.querySelector(".code-head"), label = w.querySelector(".code-label");
+    if (!head) return;
+    var t = w.getAttribute("data-paste"), txt = label ? label.textContent : "";
+    if (!t) t = /^\s*terminal/i.test(txt) ? "term" : /^\s*Claude 세션/.test(txt) ? "claude" : /^\s*Slack/i.test(txt) ? "slack" : /파일/.test(txt) ? "file" : /브라우저|설치 창/.test(txt) ? "web" : "";
+    if (!TYPES[t]) return;
+    found[t] = true;
+    var b = el("span", "pbadge t-" + t, "붙여 넣을 곳: " + TYPES[t].lb);
+    b.title = TYPES[t].cap;
+    if (label && label.nextSibling) head.insertBefore(b, label.nextSibling); else head.insertBefore(b, head.firstChild);
+    var pre = w.querySelector("pre"), paths = [];
+    if (w.getAttribute("data-paste-path")) paths.push(w.getAttribute("data-paste-path"));
+    else if (t === "term" && pre) {
+      var dir = "";
+      pre.textContent.split("\n").forEach(function (line) {
+        var cd = line.match(/^\s*cd\s+([^\s;&|]+)/); if (cd) dir = cd[1];
+        line.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) {
+          paths.push(/^[\/~$]/.test(p) || !dir ? p : dir.replace(/\/$/, "") + "/" + p.replace(/^\.\//, ""));
+        });
+      });
+    }
+    if (paths.length) {
+      var strip = el("div", "pb-strip", (t === "file" ? "저장할 파일: " : "붙여 넣으면 이 파일이 만들어집니다: ") + paths.map(function (p) { return "<code>" + esc(p) + "</code>"; }).join(", "));
+      head.parentNode.insertBefore(strip, head.nextSibling);
+    }
+  });
+
+  /* 2) paste guide */
+  document.querySelectorAll(".paste-guide").forEach(function (host) {
+    var list = (host.getAttribute("data-types") || Object.keys(found).join(" ") || "term claude").split(/\s+/).filter(function (k) { return TYPES[k]; });
+    var d = el("details", "pg");
+    var seen = false;
+    var seenKey = "fsi-paste-guide:" + location.pathname;
+    try { seen = localStorage.getItem(seenKey) === "seen"; localStorage.setItem(seenKey, "seen"); } catch (e) {}
+    d.open = !seen;
+    d.innerHTML = '<summary>어디에 붙여 넣나요?<span>코드 블록 위의 색 배지가 붙여 넣을 곳입니다. 배지를 눌러 보세요.</span></summary>' +
+      '<div class="pg-body"><div class="pg-legend" role="group" aria-label="붙여 넣을 곳 종류"></div>' +
+      '<div class="pg-map"><div class="pg-box pg-zone" data-zone="browser"><b>내 노트북 브라우저</b>실습 화면과 Slack을 여는 곳</div>' +
+      '<div class="pg-arrow" aria-hidden="true">→</div>' +
+      '<div class="pg-box"><b>code-server (내 실습 EC2)</b>1인 1대의 EC2를 브라우저로 엽니다' +
+      '<div class="pg-ide"><div class="pg-box pg-zone" data-zone="editor"><b>파일 편집기</b>파일을 열어 고치고 저장</div>' +
+      '<div class="pg-box pg-zone pg-term" data-zone="term"><b>터미널 (Terminal 창)</b>리눅스 셸 명령' +
+      '<div class="pg-box pg-zone" data-zone="claude"><b>Claude 세션</b>터미널에서 <code>claude</code>를 실행한 뒤의 프롬프트 칸</div></div></div></div></div>' +
+      '<p class="pg-cap" aria-live="polite">배지를 누르면 그 텍스트가 들어갈 곳이 밝게 표시됩니다.</p></div>';
+    var legend = d.querySelector(".pg-legend"), cap = d.querySelector(".pg-cap");
+    list.forEach(function (k) {
+      var b = el("button", "pbadge t-" + k, TYPES[k].lb);
+      b.type = "button"; b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        legend.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        d.querySelectorAll(".pg-zone").forEach(function (z) { z.classList.toggle("on", z.getAttribute("data-zone") === TYPES[k].zone); });
+        d.style.setProperty("--hl", "var(--pt-" + k + ")");
+        cap.innerHTML = "<strong>" + esc(TYPES[k].lb) + ":</strong> " + esc(TYPES[k].cap);
+      });
+      legend.appendChild(b);
+    });
+    host.appendChild(d);
+  });
+
+  /* 3) glossary */
+  var used = [];
+  document.querySelectorAll(".gl[data-gl]").forEach(function (g, i) {
+    var k = g.getAttribute("data-gl"); if (!GL[k]) return;
+    if (used.indexOf(k) < 0) used.push(k);
+    g.tabIndex = 0;
+    var tip = el("span", "gl-tip", "<strong>" + esc(GL[k][0]) + "</strong>: " + esc(GL[k][1]));
+    tip.id = "gl-tip-" + i; tip.setAttribute("role", "tooltip");
+    g.setAttribute("aria-describedby", tip.id);
+    g.appendChild(tip);
+    function place() { var r = g.getClientRects()[0] || g.getBoundingClientRect(); tip.classList.toggle("flip", r.left + Math.min(300, window.innerWidth - 32) > window.innerWidth - 16); }
+    g.addEventListener("mouseenter", place); g.addEventListener("focus", place);
+  });
+  document.querySelectorAll(".gl-list").forEach(function (host) {
+    if (!used.length) return;
+    var d = el("details", "gl-more", "<summary>더 알아보기: 이 페이지의 용어</summary><dl>" +
+      used.map(function (k) { return "<dt>" + esc(GL[k][0]) + "</dt><dd>" + esc(GL[k][1]) + "</dd>"; }).join("") + "</dl>");
+    host.appendChild(d);
+  });
+
+  /* 4) flow and copy visuals */
+  var data = {};
+  try { var src = document.getElementById("viz-data"); if (src) data = JSON.parse(src.textContent); } catch (e) { data = {}; }
+  function nodeHtml(n) {
+    var ic = n.img ? '<img class="ic' + (n.tile ? " tile" : "") + '" src="' + esc(n.img) + '" alt="">' : shape(n.ic);
+    var links = (n.links || []).map(function (l) { return '<a href="' + esc(l[1]) + '">' + esc(l[0]) + "</a>"; }).join("");
+    return ic + '<span><span class="lb">' + esc(n.lb) + "</span>" + (n.sb ? '<span class="sb">' + esc(n.sb) + "</span>" : "") +
+      (links ? '<span class="lk">' + links + "</span>" : "") + "</span>";
+  }
+  document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
+    var v = data[host.getAttribute("data-viz")];
+    if (!v || !v.nodes || !v.nodes.length || !v.steps || !v.steps.length) { host.hidden = true; return; }
+    var cur = 0, timer = null, all = (v.nodes || []).concat(v.side || []);
+    host.classList.add("n" + v.nodes.length);
+    host.setAttribute("role", "group");
+    host.setAttribute("aria-label", v.title || "흐름 그림");
+    var row = el("div", "viz-row"), side = el("div", "viz-side"), nodeEls = {}, arrows = [];
+    v.nodes.forEach(function (n, i) {
+      if (i > 0) {
+        var a = el("div", "viz-arrow", '<span class="el">' + esc((v.edges || [])[i - 1] || "") + '</span><span class="ln"></span>');
+        a.setAttribute("aria-hidden", "true"); arrows.push(a); row.appendChild(a);
+      }
+      nodeEls[n.id] = el("div", "viz-node"); row.appendChild(nodeEls[n.id]);
+    });
+    (v.side || []).forEach(function (n) { nodeEls[n.id] = el("div", "viz-node"); side.appendChild(nodeEls[n.id]); });
+    var cap = el("div", "viz-cap"); cap.setAttribute("aria-live", "polite");
+    var ctl = el("div", "viz-ctl"), dots = el("div", "dots");
+    var prev = el("button", "", "◀ 이전"), play = el("button", "", "▶ 재생"), next = el("button", "", "다음 ▶");
+    [prev, play, next].forEach(function (b) { b.type = "button"; });
+    v.steps.forEach(function (s, i) {
+      var b = el("button", "", String(i + 1)); b.type = "button";
+      b.setAttribute("aria-label", (i + 1) + "단계: " + (s.t || ""));
+      b.addEventListener("click", function () { stop(); show(i); });
+      dots.appendChild(b);
+    });
+    ctl.appendChild(prev); if (!reduce && v.steps.length > 1) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
+    var allTxt = el("details", "viz-all", "<summary>모든 단계 글로 보기</summary><ol>" +
+      v.steps.map(function (s) { return "<li>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap) + "</li>"; }).join("") + "</ol>");
+    host.appendChild(el("div", "viz-title", esc(v.title || "무슨 일이 일어나나요?")));
+    host.appendChild(row); if (v.side && v.side.length) host.appendChild(side);
+    host.appendChild(cap); host.appendChild(ctl); host.appendChild(allTxt);
+    function edges(s) { return s.edge == null ? [] : [].concat(s.edge); }
+    function show(k) {
+      cur = k; var s = v.steps[k], set = s.set || {};
+      all.forEach(function (n) {
+        var e = nodeEls[n.id], o = set[n.id] || {};
+        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: o.img || (o.ic ? null : n.img), tile: n.tile, links: n.links });
+        e.className = "viz-node" + ((s.bad || []).indexOf(n.id) >= 0 ? " bad" : (s.ok || []).indexOf(n.id) >= 0 ? " ok" : (s.on || []).indexOf(n.id) >= 0 ? " on" : "");
+      });
+      var done = [];
+      for (var j = 0; j < k; j++) done = done.concat(edges(v.steps[j]));
+      arrows.forEach(function (a, i) {
+        var on = edges(s).indexOf(i) >= 0;
+        a.className = "viz-arrow" + (on ? " on" : done.indexOf(i) >= 0 ? " done" : "");
+        var old = a.querySelector(".viz-chip"); if (old) old.remove();
+        if (on && s.chip) a.querySelector(".ln").appendChild(el("span", "viz-chip", esc(s.chip)));
+      });
+      cap.innerHTML = '<span class="q">지금 무슨 일이? (' + (k + 1) + "/" + v.steps.length + ")</span>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap);
+      dots.querySelectorAll("button").forEach(function (b, i) { if (i === k) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+      prev.disabled = k === 0; next.disabled = k === v.steps.length - 1;
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; play.textContent = "▶ 재생"; } }
+    prev.addEventListener("click", function () { stop(); if (cur > 0) show(cur - 1); });
+    next.addEventListener("click", function () { stop(); if (cur < v.steps.length - 1) show(cur + 1); });
+    play.addEventListener("click", function () {
+      if (timer) { stop(); return; }
+      show(cur >= v.steps.length - 1 ? 0 : cur);
+      play.textContent = "❚❚ 멈춤";
+      timer = setInterval(function () { if (cur < v.steps.length - 1) show(cur + 1); if (cur >= v.steps.length - 1) stop(); }, 2600);
+    });
+    function fit() { host.classList.toggle("vert", host.clientWidth < (v.nodes.length >= 5 ? 760 : 560)); }
+    fit();
+    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(host); else window.addEventListener("resize", fit);
+    show(reduce ? v.steps.length - 1 : 0);
+  });
+})();
+</script>
+<!-- VIZ COMPONENT v1 END -->
 </body>
 </html>
