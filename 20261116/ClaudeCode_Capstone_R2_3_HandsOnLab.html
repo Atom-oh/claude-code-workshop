@@ -1475,7 +1475,7 @@ aws logs describe-log-groups --region "$REGION" \
     ],
     "edge": 1,
     "chip": "agentcore deploy",
-    "cap": "시스템 프롬프트는 AWS에 저장되므로 키와 개인정보 패턴이 없는지 먼저 봅니다. `agentcore deploy`가 CDK로 CloudFormation 스택을 만들고, 처음 배포하면 CDK bootstrap 스택도 생깁니다."
+    "cap": "시스템 프롬프트는 AWS에 저장되므로 키와 개인정보 패턴이 없는지 먼저 봅니다. `agentcore deploy`가 CDK로 CloudFormation 스택을 만들고, 처음 배포하면 CDK bootstrap 스택도 생깁니다. 계정 전체의 Transaction Search도 켜집니다 (끄려면 배포 전 `agentcore config transactionSearch false`)."
    },
    {
     "t": "harness가 생김",
@@ -1529,7 +1529,7 @@ aws logs describe-log-groups --region "$REGION" \
       "sb": "list-harnesses: 아무 줄도 없음"
      }
     },
-    "cap": "`list-harnesses`와 `list-stacks`(CapstoneApp)에 아무 줄도 없으면 정상입니다. 스택을 지워도 남는 로그 그룹은 오늘 만든 것만 지우고, 계정이 함께 쓰는 `CDKToolkit` 스택은 지우지 않습니다."
+    "cap": "`list-harnesses`와 `list-stacks`(CapstoneApp)에 아무 줄도 없으면 정상입니다. 스택을 지워도 남는 로그 그룹은 오늘 만든 것만 지우고, 계정이 함께 쓰는 `CDKToolkit` 스택은 지우지 않습니다. Transaction Search는 계정 설정이라 켜진 채 남습니다."
    }
   ]
  }

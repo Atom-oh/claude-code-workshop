@@ -1167,7 +1167,7 @@ claude plugin validate $K | tail -1</code></pre>
   <details class="solution">
     <summary>트랙 C: 고른 MCP 서버, 도구 훅, 호출 대상 훅</summary>
     <div class="sol-body">
-  <div class="code-wrap">
+  <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/.mcp.json, ~/claude-lab/capstone/my-kit/hooks/hooks.json">
     <div class="code-head"><span class="code-label">Terminal, 트랙 C일 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
 K=~/claude-lab/capstone/$KIT
@@ -1598,7 +1598,7 @@ git push -u origin HEAD</code></pre>
     ],
     "edge": 2,
     "chip": "my-kit@capstone-local",
-    "cap": "agent도 skill도 없는 `capstone-try`에 deny 규칙과 MCP 허용 목록만 `.claude/settings.json`으로 옮긴 뒤, 세션에서 `/plugin marketplace add`와 `/plugin install`을 보냅니다. 설치 범위는 local scope를 고르고, 트랙 B와 C는 설치 창이 키 칸(`userConfig`)을 묻습니다."
+    "cap": "agent도 skill도 없는 `capstone-try`에 deny 규칙과 MCP 허용 목록만 `.claude/settings.json`으로 옮긴 뒤, 세션에서 `/plugin marketplace add`와 `/plugin install`을 보냅니다. 설치 범위는 local scope(이 폴더의 `.claude/settings.local.json`에만 기록, R1-C의 MCP local 범위와는 다른 파일)를 고르고, 트랙 B와 C는 설치 창이 키 칸(`userConfig`)을 묻습니다."
    },
    {
     "t": "이 폴더에서는 my-kit만",

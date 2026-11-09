@@ -1088,13 +1088,13 @@ plugin: my-kit 0.1.0 (트랙 B), 설치: /plugin install my-kit@capstone-local
     "id": "col",
     "ic": "bot",
     "lb": "모으는 agent",
-    "sb": "my-kit:COLLECT"
+    "sb": "my-kit:$COLLECT (r2.env, 예: price-summarizer)"
    },
    {
     "id": "rev",
     "ic": "bot",
     "lb": "검토 agent",
-    "sb": "my-kit:REVIEW (읽기 전용)"
+    "sb": "my-kit:$REVIEW (r2.env, 예: anomaly-checker, 읽기 전용)"
    },
    {
     "id": "res",
@@ -1120,7 +1120,7 @@ plugin: my-kit 0.1.0 (트랙 B), 설치: /plugin install my-kit@capstone-local
     "id": "hook",
     "ic": "shield",
     "lb": "plugin 훅",
-    "sb": "DLP:, KEY:, NET:, MCP:"
+    "sb": "DLP:, RAW:, KEY:, NET:, MCP:"
    },
    {
     "id": "sha",
@@ -1159,7 +1159,7 @@ plugin: my-kit 0.1.0 (트랙 B), 설치: /plugin install my-kit@capstone-local
     ],
     "edge": 1,
     "chip": "대상, 기간",
-    "cap": "skill의 절차 1번대로 `my-kit:` 모으는 agent가 자료 수집과 집계를 맡습니다. 도중에 `DLP:`, `KEY:`, `NET:`, `MCP:` 메시지가 나오면 함께 설치된 plugin 훅이 막은 것입니다."
+    "cap": "skill의 절차 1번대로 `my-kit:` 모으는 agent가 자료 수집과 집계를 맡습니다. 도중에 `DLP:`, `RAW:`(트랙 A의 raw-guard), `KEY:`, `NET:`, `MCP:` 메시지가 나오면 함께 설치된 plugin 훅이 막은 것입니다."
    },
    {
     "t": "검토 agent에게",
