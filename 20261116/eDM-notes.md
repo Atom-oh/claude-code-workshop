@@ -31,11 +31,12 @@ original import archive (`labs.zip`). Those hours were not independently
 confirmed by the organizer. If they change, update `eDM.html` and `eDM.txt`
 together. The plain-text email groups some consecutive sessions.
 
-The portal distinguishes six regular elective missions from the self-directed
-Playbook Foundry mission (now an archived old example); the Agent SDK lab (labeled "SDK", not a chapter) is
-also self-directed. Imported
-pages contained inconsistent model versions, so the new invitation does not
-claim a single confirmed model version.
+The portal lists the chapter labs, the new Round 1 and Round 2 capstone
+missions, the self-paced Agent SDK lab (labeled "SDK", not a chapter), and the
+reference pages. The old Capstone 1-7 missions (including Playbook Foundry)
+remain only as an archive of earlier examples. Imported pages contained
+inconsistent model versions, so the new invitation does not claim a single
+confirmed model version.
 
 ## Use and Validation Limits
 
