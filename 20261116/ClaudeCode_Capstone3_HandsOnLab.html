@@ -739,12 +739,12 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <p class="body">이 캡스톤은 새 기술을 가르치지 않습니다. <strong>Ch1~6에서 배운 것을 실전 배치</strong>합니다.</p>
   <table class="tbl">
     <tr><th>챕터</th><th>이 캡스톤에서 재등장하는 곳</th></tr>
-    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 설치부터 Headless까지</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
-    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Subagents</a></td><td>M3~M4: 계약 추출 리팩터의 diff 리뷰를 code-reviewer에게, 전시 구조와 작품 다듬기 병행</td></tr>
-    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Admin Setup</a></td><td>배치 결정의 배경: 이 캡스톤은 Bedrock을 쓰지 않아 모델 통제선 밖에서도 완주됩니다, "AI가 필요 없는 곳엔 안 쓴다"도 설계입니다</td></tr>
-    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Settings, 훅과 스킬</a></td><td>OPT: 하네스 성숙화, 훅과 스킬을 프로젝트 자산으로 승격하는 마무리 의식</td></tr>
-    <tr><td><a href="ClaudeCode_Ch5_HandsOnLab.html" style="color:#c9a2ff">Ch5 CLI Reference</a></td><td>확장 방향: verify.mjs를 헤드리스 파이프라인의 게이트로, "PASS 없이는 배포 없음"의 자동화</td></tr>
-    <tr><td><a href="ClaudeCode_Ch6_HandsOnLab.html" style="color:#c9a2ff">Ch6 Agent SDK</a></td><td>확장 방향: 작품 생성기, query 한 번이 새 Piece 파일과 data.js 항목을 만드는 다음 단계</td></tr>
+    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 Claude Code는 어떻게 동작하는가</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
+    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>배치 결정의 배경: 이 캡스톤은 Bedrock을 쓰지 않아 모델 통제선 밖에서도 완주됩니다, "AI가 필요 없는 곳엔 안 쓴다"도 설계입니다</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Subagent로 일 나눠 맡기기</a></td><td>M3~M4: 계약 추출 리팩터의 diff 리뷰를 code-reviewer에게, 전시 구조와 작품 다듬기 병행</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Headless 통합과 CI</a></td><td>확장 방향: verify.mjs를 헤드리스 파이프라인의 게이트로, "PASS 없이는 배포 없음"의 자동화</td></tr>
+    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Claude Code 확장하기</a></td><td>OPT: 하네스 성숙화, 훅과 스킬을 프로젝트 자산으로 승격하는 마무리 의식</td></tr>
+    <tr><td><a href="ClaudeCode_AgentSDK_HandsOnLab.html" style="color:#c9a2ff">SDK Agent SDK 자율 실습</a></td><td>확장 방향: 작품 생성기, query 한 번이 새 Piece 파일과 data.js 항목을 만드는 다음 단계</td></tr>
   </table>
 
 </section>
@@ -956,7 +956,7 @@ ctx.fillRect(0, 0, w, h);</code></pre>
 <section class="task" id="m3">
   <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2, 두 번째 작품과 계약의 탄생</h2><span class="time-badge">30분</span></div>
   <p class="task-goal">이 랩의 정점입니다. 두 번째 작품을 <strong>일부러 통째로 베껴 쓴 다음</strong>, 그 중복을 보고 나서 계약을 뽑아냅니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 code-reviewer 서브에이전트, 계약 추출 리팩터의 diff 리뷰를 맡기기 딱 좋은 순간입니다.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 code-reviewer 서브에이전트, 계약 추출 리팩터의 diff 리뷰를 맡기기 딱 좋은 순간입니다.</p>
 
   <div class="step-title"><span class="step-no">1</span>중복을 만든다</div>
   <div class="code-wrap prompt">
@@ -1053,7 +1053,7 @@ Piece가 소유할 것: 캔버스 리사이즈와 DPR 스케일(DPR은 2로 상�
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 3, 전시관 개장</h2><span class="time-badge">20분</span></div>
   <p class="task-goal">작품 두 점을 <strong>전시</strong>로 만듭니다. 아트리움, 갤러리, 전시실 3단과 카탈로그를 세웁니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 병렬 감각. 전시 구조를 세우는 동안 작품 플래카드 문구를 서브에이전트로 병행할 수 있습니다.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 병렬 감각. 전시 구조를 세우는 동안 작품 플래카드 문구를 서브에이전트로 병행할 수 있습니다.</p>
 
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
@@ -1101,7 +1101,7 @@ Piece가 소유할 것: 캔버스 리사이즈와 DPR 스케일(DPR은 2로 상�
 <section class="task" id="m5">
   <div class="task-head"><span class="task-num">MISSION 05</span><h2>Phase 4, 배포와 개장</h2><span class="time-badge">20분</span></div>
   <p class="task-goal">계약을 <strong>기계가 검사</strong>하게 만든 다음, S3 + CloudFront로 전시를 엽니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 검증 루프가 기계 게이트로 승격됩니다. 자동화가 궁금하면 <a href="ClaudeCode_Ch5_HandsOnLab.html" style="color:#c9a2ff">Ch5</a>의 헤드리스 패턴이 다음입니다.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 검증 루프가 기계 게이트로 승격됩니다. 자동화가 궁금하면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴이 다음입니다.</p>
 
   <div class="step-title"><span class="step-no">1</span>계약 검사기를 만든다</div>
   <p class="body">렌더 루프에 단위 테스트를 붙이는 건 값이 없습니다. 하지만 카탈로그 계약이 깨지면
@@ -1362,7 +1362,7 @@ CDK 배포 스택(bin/, lib/)으로 이루어져 있다. 다음을 하네스에 
     <tr><td>경계를 깨끗이 그으면 테스트 가능성이 따라온다</td><td><code class="inline">engine.js</code>가 DOM을 안 만졌기에 <code class="inline">verify.mjs</code>가 가능했습니다</td></tr>
     <tr><td>비용을 상수가 아니라 규모에 비례시킨다</td><td>입자 수, 격자 칸 수, 배치 크기, 페이지 크기</td></tr>
     <tr><td>조용히 깨지는 것만 기계에게 검사시킨다</td><td>렌더 루프는 눈으로, 카탈로그 계약은 CI로</td></tr>
-    <tr><td>Ch2 서브에이전트</td><td>Phase 2의 리팩터에서 두 작품을 병렬로 옮길 때</td></tr>
+    <tr><td>Ch3 서브에이전트</td><td>Phase 2의 리팩터에서 두 작품을 병렬로 옮길 때</td></tr>
     <tr><td>Ch4 settings와 hooks</td><td><code class="inline">site/js/**</code> 저장 시 <code class="inline">verify.mjs</code>를 자동 실행</td></tr>
     <tr><td>같은 배포 패턴</td><td>S3 + CloudFront + BucketDeployment는 정적 배포의 표준 패턴. 이제 눈 감고도</td></tr>
   </tbody></table>

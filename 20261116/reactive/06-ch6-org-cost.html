@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Deep Dive Workshop, FSI Edition</title>
+  <meta name="generator" content="remarp">
+  <meta name="remarp-version" content="1">
+  <meta name="remarp-source" content="06-ch6-org-cost.md">
+  <meta name="remarp-block" content="06-ch6-org-cost">
+  <link rel="stylesheet" href="./common/theme.css">
+  <link rel="stylesheet" href="./common/deck-overlay.css">
+  <link rel="stylesheet" href="./common/deck-detail.css">
+  <link rel="stylesheet" href="./common/deck-nav.css">
+  <link rel="stylesheet" href="./common/deck-pen.css">
+
+  <style>:root { --slide-ratio-w: 16; --slide-ratio-h: 9; } :root { --slide-width: 960px; --slide-height: 540px; }</style>
+
+  <script>window.__remarpTheme = {"colors": {}, "footer": "\u00a9 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.", "pagination": true, "fonts": {}};</script>
+</head>
+<body>
+<div class="slide-deck theme-dark">
+<div class="slide theme-dark" data-remarp-id="s0" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기" style="background:linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%); padding:0; overflow:hidden;">
+  <h1 style="position:absolute; left:5%; top:48%; font-size:2.8rem; color:#fff; font-weight:300; line-height:1.2; width:53%; margin:0;">Chapter 6. 조직의 비용 보고 통제하기</h1>
+  <p style="position:absolute; left:5%; top:62%; font-size:1.3rem; color:rgba(255,255,255,0.8); width:53%; margin:0;">쓴 만큼 보고, 넘치면 막는다 (Claude Code v2.1.319, 2026-11-08 리허설 검증)</p>
+  <div style="position:absolute; left:5%; top:76%;">
+    <p style="font-size:1.05rem; color:#fff; font-weight:600; margin:0;">Choi, WooHyung</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:6px 0 0 0;">Prin. Solutions Architect</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:2px 0 0 0;">AWS Korea</p>
+  </div>
+
+</div>
+
+<div class="slide" data-remarp-id="s1" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s1-header"><h2>강의와 데모 20분, 랩 28분</h2></div>
+  <div class="slide-body" data-remarp-id="s1-body">
+    <p><!-- Slide 2: Agenda --></p>
+<p>계측, 계약 단가, 게이트웨이 지출 한도의 순서</p>
+<div class="c6 c6-agenda fsi">
+  <div class="fsi-grid-2">
+    <div class="pick"><span class="k">CHAPTER 06 / 50분</span><span class="t">조직의 비용 통제</span><span class="d"><span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span> 대시보드, modelPricing, 게이트웨이 지출 한도</span><span class="when">16:50 시작</span></div>
+    <div class="pick lab"><span class="k">LAB / Ch6 Lab</span><span class="t">TASK 01부터 03, 선택 TASK 04</span><span class="d">텔레메트리 경로, 그룹별 모델 정책, 지출 한도, 계약 단가</span><span class="when">강의 뒤 바로</span></div>
+  </div>
+  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 둡니다</span></div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s2" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+
+  <div class="slide-body" data-remarp-id="s2-body">
+    <p><!-- Slide 3: Part 02 divider --></p>
+<div class="fsi fsi-section">
+  <span class="num">CHAPTER 06 / 16:50</span>
+  <div class="name">조직의 비용 통제</div>
+  <p class="what">쓴 만큼 보고, 넘치면 막는다</p>
+  <ol>
+    <li><b>01</b>Bedrock에서 비용을 보는 법</li>
+    <li><b>02</b>OTel 대시보드</li>
+    <li><b>03</b>modelPricing과 AWS 쪽 도구</li>
+    <li><b>04</b>Claude Apps Gateway (참가자 실습)</li>
+  </ol>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s3" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s3-header"><h2>Bedrock은 콘솔과 직접 설치한 계측이 전부다</h2></div>
+  <div class="slide-body" data-remarp-id="s3-body">
+    <p><!-- Slide 4: Cost by setup --></p>
+<p>셋업별 비용 관리 방법</p>
+<div class="c6-pickset fsi">
+  <div class="fsi-stack" data-pick="c6-setup">
+    <button class="pick" data-key="bedrock"><span class="k">이 워크숍</span><span class="t">Amazon Bedrock</span></button>
+    <button class="pick" data-key="team"><span class="k">구독</span><span class="t">Claude Team, Enterprise</span></button>
+    <button class="pick" data-key="console"><span class="k">API</span><span class="t">Claude Console</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c6-setup">
+    <div data-for="team"><h4>Claude Team, Enterprise</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">조직 Analytics</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">관리 콘솔 지출 한도</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">CSV, Analytics API</span></div></div>
+    <div data-for="console"><h4>Claude Console</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">Console Usage</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">Workspace limit</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">Claude Code Analytics API</span></div></div>
+    <div data-for="bedrock"><h4>Amazon Bedrock</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">AWS 청구 콘솔</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">AWS 예산 도구</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">IAM principal, 태그(<span class="rp-detail" tabindex="0" data-tip="Cost and Usage Report 2.0. AWS 비용과 사용량 상세 보고서">CUR 2.0</span>), OTel, 게이트웨이</span></div><p>사용자별로 보려면 클라우드 콘솔만으로는 부족하고, 직접 설치한 계측이 필요합니다.</p></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s4" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+
+  <div class="slide-body" data-remarp-id="s4-body">
+    <p><!-- Slide 5: Bedrock reality --></p>
+<div class="fsi fsi-statement">
+  <span class="eyebrow">BEDROCK REALITY</span>
+  <div class="big">Bedrock에는 <em>Analytics</em><br>대시보드가 없습니다</div>
+  <p class="lead">계측을 설치해야 보이고, 설치하지 않은 사람은 잡히지 않습니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s5" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s5-header"><h2>OTel을 정책으로 켠다</h2></div>
+  <div class="slide-body" data-remarp-id="s5-body">
+    <p><!-- Slide 6: OTel by policy --></p>
+<p>managed settings env 한 블록이면 모두에게</p>
+<div id="c6-sv-otel"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s6" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s6-header"><h2>이틀간 우리가 쓴 토큰을 본다</h2></div>
+  <div class="slide-body" data-remarp-id="s6-body">
+    <p><!-- Slide 7: Demo dashboard --></p>
+<p>DEMO 10분, 강사 대시보드 (URL은 현장 안내)</p>
+<div class="fsi fsi-lab c6-lab">
+  <div class="head"><span class="tag">DEMO / 10분</span></div>
+  <ol class="steps">
+    <li><b>1</b><span>랩 환경은 Day 1부터 OTel 수집 중 (참가 안내문 고지)</span></li>
+    <li><b>2</b><span>전체 토큰, 비용 추이, Capstone 구간 피크 확인</span></li>
+    <li><b>3</b><span>모델별, 도구별 분포, 캐시 적중률</span></li>
+    <li><b>4</b><span>내 참가자 ID로 내 사용량 찾기</span></li>
+    <li><b>5</b><span>가장 비용이 컸던 패턴을 Ch5의 원리로 해석</span></li>
+  </ol>
+  <p class="where">화면에는 참가자 ID만 표시합니다. 회사별 사용량은 노출하지 않습니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s7" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s7-header"><h2>추정 비용을 청구서에 가깝게</h2></div>
+  <div class="slide-body" data-remarp-id="s7-body">
+    <p><!-- Slide 8: modelPricing --></p>
+<p>계약 단가로 보여 주는 modelPricing</p>
+<div class="c6-price fsi">
+  <div class="left">
+    <p class="c6-code-hd">managed-settings.json</p>
+    <pre class="c6-code"><span class="ln">{</span><span class="ln k">  "modelPricing": {</span><span class="ln k" id="c6-price-line">    "multiplier": 0.9</span><span class="ln">  }</span><span class="ln">}</span><span class="ln c"># /usage, Total cost … at your organization's configured rates</span></pre>
+    <ul>
+      <li>managed settings에서만 유효 (v2.1.242+)</li>
+      <li>multiplier가 1보다 작으면 할인, 크면 할증</li>
+      <li>모델별 단가는 overrides로</li>
+      <li><b>표시만 바꿈, 청구는 그대로</b></li>
+      <li>숫자는 계약 단가를 입력</li>
+    </ul>
+  </div>
+  <div class="right">
+    <div class="box">
+      <div class="row"><span>목록가 기준 추정 (예시 세션)</span><b>$0.55</b></div>
+      <input type="range" min="0.5" max="1.5" step="0.05" value="0.9" id="c6-price-in" aria-label="modelPricing multiplier">
+      <div class="row"><span>multiplier</span><b id="c6-price-m">0.90</b></div>
+      <div class="disp" id="c6-price-out">$0.50</div>
+      <p class="cap">예시: 원리 1의 /usage 세션 $0.55에 배수를 곱한 표시 금액입니다.</p>
+    </div>
+    <p class="c6-note">실제 정산은 AWS 청구서입니다. modelPricing은 /usage와 대시보드의 숫자를 청구서에 가깝게 맞추는 표시 설정입니다.</p>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s8" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s8-header"><h2>AWS 쪽에서도 본다</h2></div>
+  <div class="slide-body" data-remarp-id="s8-body">
+    <p><!-- Slide 9: AWS side tools --></p>
+<p>Claude Code 계측과 별개로 계정에서 보이는 것, 둘을 대사</p>
+<div class="c6">
+  <div class="c6-cards four">
+    <div class="c6-card"><span class="k">01</span><span class="t">Application inference profile 태그</span><span class="d">Ch2의 modelOverrides로 팀별 경로를 만들고 Cost Explorer에서 봅니다.</span></div>
+    <div class="c6-card"><span class="k">02</span><span class="t">AWS Budgets</span><span class="d">계정, 태그 단위 예산 알람</span></div>
+    <div class="c6-card"><span class="k">03</span><span class="t">전용 AWS 계정</span><span class="d">Claude Code 비용을 계정 경계로 분리 (공식 권장)</span></div>
+    <div class="c6-card"><span class="k">04</span><span class="t"><span class="rp-detail" tabindex="0" data-tip="Tokens Per Minute. 분당 처리할 수 있는 토큰 수 한도">TPM</span> 쿼터</span><span class="d">라이브 교육 같은 동시 사용 급증은 사전 증액</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s9" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s9-header"><h2>Bedrock 앞단의 게이트웨이</h2></div>
+  <div class="slide-body" data-remarp-id="s9-body">
+    <p><!-- Slide 10: Claude Apps Gateway --></p>
+<p>Claude Apps Gateway, 공식 구성과 이번 랩 구성</p>
+<div class="c6-gwwrap">
+<div id="c6-sv-gw"></div>
+<div class="c6-icons" aria-label="이 구성에 쓰이는 AWS 서비스">
+  <span><img src="common/aws-icons/services/Arch_Elastic-Load-Balancing_48.svg" alt="">ALB</span>
+  <span><img src="common/aws-icons/services/Arch_AWS-Fargate_48.svg" alt="">ECS Fargate</span>
+  <span><img src="common/aws-icons/services/Arch_Amazon-RDS_48.svg" alt="">RDS</span>
+  <span><img src="common/aws-icons/services/Arch_Amazon-Bedrock_48.svg" alt="">Bedrock</span>
+  <span><img src="common/aws-icons/services/Arch_Amazon-Route-53_48.svg" alt="">Route 53</span>
+  <span><img src="common/aws-icons/services/Arch_Amazon-Cognito_48.svg" alt="">Cognito</span>
+  <span><img src="common/aws-icons/services/Arch_Amazon-CloudFront_48.svg" alt="">CloudFront</span>
+</div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s10" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s10-header"><h2>사용자별 지출 한도를 실시간으로</h2></div>
+  <div class="slide-body" data-remarp-id="s10-body">
+    <p><!-- Slide 11: Spend limits --></p>
+<p>지출 한도의 범위, 기간, 초과 시 동작</p>
+<div class="c6-spend fsi">
+  <div class="meter" id="c6-spend">
+    <div class="bar" id="c6-spend-bar"><i id="c6-spend-fill"></i><b class="mk" style-left="75"></b><b class="mk" style-left="95"></b><b class="mk" style-left="100"></b></div>
+    <div class="ticks"><b class="tk" style-left="75">75%</b><b class="tk" style-left="95">95%</b><b class="tk up" style-left="100">100%</b></div>
+    <input type="range" min="0" max="110" step="5" value="40" id="c6-spend-in" aria-label="한도 대비 사용액(%)">
+    <div class="state" id="c6-spend-st"></div>
+    <p class="cap">한도 대비 사용액은 설명용 예시입니다.</p>
+  </div>
+  <div class="rows">
+    <div class="r"><span class="lb">범위</span><span class="vl">user (<span class="rp-detail" tabindex="0" data-tip="OIDC sub. IdP가 발급하는 사용자 고유 식별자">OIDC sub</span>), rbac_group, organization<em>그룹, 조직 한도는 1인당 기본값</em></span></div>
+    <div class="r"><span class="lb">기간</span><span class="vl">daily, weekly, monthly (UTC 기준 리셋)<em>기간별로 각각 적용</em></span></div>
+    <div class="r"><span class="lb">초과 시</span><span class="vl">429 billing_error + 리셋 시각<em>75%, 95%에서 사전 경고</em></span></div>
+    <div class="r"><span class="lb">단가</span><span class="vl">pricing.overrides, 목록가, 미지 모델 $5/$25 순<em>추정치, 정산은 AWS</em></span></div>
+    <div class="r"><span class="lb">설정</span><span class="vl">Admin API POST /v1/organizations/spend_limits<em>gateway.yaml이 아님</em></span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s11" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s11-header"><h2>운영 전에 정할 두 가지</h2></div>
+  <div class="slide-body" data-remarp-id="s11-body">
+    <p><!-- Slide 12: Two decisions before operation --></p>
+<p>기본값이 금융권 기대와 다를 수 있습니다</p>
+<div class="c6 c6-ops fsi">
+  <div class="c6-two">
+    <div class="c6-col bad" id="c6-ops-fail">
+      <h4>저장소 장애 시</h4>
+      <div class="mode"><button class="btn btn-sm" data-cycle>설정 바꿔 보기</button><span class="cur" id="c6-ops-cur"></span></div>
+      <div class="res" id="c6-ops-res"></div>
+      <ul><li>기본은 fail-open: 요청 통과, 경고 로그</li><li>enforcement.fail_closed_on_error: true면 차단</li><li>추론 중단과 미계측 지출 중 선택</li></ul>
+    </div>
+    <div class="c6-col">
+      <h4>개인정보</h4>
+      <ul><li>principal_emails 테이블에 이메일, 이름, 그룹 저장</li><li>기본 90일 보존 (identity_retention_days)</li><li>퇴사, 열람 요청 시 해당 행 삭제</li><li>spend, audit은 OIDC sub만 참조</li></ul>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s12" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s12-header"><h2>그룹 한도와 사용자 한도, 누가 이기나</h2></div>
+  <div class="slide-body" data-remarp-id="s12-body">
+    <p><!-- Slide 13: Quick check 2 --></p>
+<p>QUICK CHECK, 손을 들어 답해 주세요</p>
+<div class="fsi qc" id="c6-qc-3">
+  <p class="q">standard-users 그룹 한도가 $50/일인데 bob에게만 1센트 사용자 한도를 걸면?</p>
+  <div class="opts three">
+    <button class="opt"><b>A</b>그룹 한도 $50이 우선한다</button>
+    <button class="opt right"><b>B</b>사용자 한도가 우선해 다음 요청부터 429로 막힌다</button>
+    <button class="opt"><b>C</b>진행 중인 응답까지 즉시 끊긴다</button>
+  </div>
+  <p class="ans">정답 B. 사용자 한도가 그룹 기본값보다 우선합니다. 진행 중인 응답은 끝까지 갑니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s13" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s13-header"><h2>텔레메트리는 어디로 가는가, 6분</h2></div>
+  <div class="slide-body" data-remarp-id="s13-body">
+    <p><!-- Slide 14: Lab TASK 01 --></p>
+<p>LAB, Chapter 6 TASK 01</p>
+<div class="fsi fsi-lab c6-lab">
+  <ol class="steps">
+    <li><b>1</b><span>settings.json의 OTEL_* 환경 변수 읽기</span></li>
+    <li><b>2</b><span>otelcol, fanout 타이머 active 확인</span></li>
+    <li><b>3</b><span>scrub_logs: 내보내기 전 프롬프트 본문 삭제 규칙 찾기</span></li>
+    <li><b>4</b><span>exporters에서 CloudWatch + 중앙 대시보드 이중 전송 확인</span></li>
+  </ol>
+  <p class="where">Hands-on Lab 포털에서 Chapter 6 TASK 01을 엽니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s14" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s14-header"><h2>모델 정책과 지출 한도, 22분</h2></div>
+  <div class="slide-body" data-remarp-id="s14-body">
+    <p><!-- Slide 15: Lab TASK 02 to 03 --></p>
+<p>LAB, 게이트웨이 실습 Chapter 6 TASK 02부터 03까지</p>
+<div class="fsi fsi-lab c6-lab">
+  <ol class="steps">
+    <li><b>1</b><span>use_gateway, alice 로그인, /model에 Opus 포함, /usage Spend limit 확인</span></li>
+    <li><b>2</b><span>bob으로 재로그인, Opus 없음, 질문 1개로 지출 기록</span></li>
+    <li><b>3</b><span>Terminal 2: Admin API로 bob 조회, 사용자 한도 1센트</span></li>
+    <li><b>4</b><span>bob 다음 요청이 지출 한도 메시지로 거절</span></li>
+    <li><b>5</b><span>한도 DELETE, 그룹 한도 복원, use_bedrock_direct</span></li>
+  </ol>
+  <p class="where">각자 계정의 게이트웨이로 진행합니다. Hands-on Lab 포털, Chapter 6 TASK 02부터 03. 게이트웨이 장애 팀은 강사 화면을 봅니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s15" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s15-header"><h2>내 계정에 비용 설정 적용, 10분</h2></div>
+  <div class="slide-body" data-remarp-id="s15-body">
+    <p><!-- Slide 16: Optional lab TASK 04 --></p>
+<p>선택 LAB, Chapter 6 선택 TASK 04</p>
+<div class="fsi fsi-lab c6-lab">
+  <ol class="steps">
+    <li><b>1</b><span>managed settings에 modelPricing.multiplier 병합</span></li>
+    <li><b>2</b><span>/usage에서 configured rates 표시 확인</span></li>
+    <li><b>3</b><span>대시보드에서 적용 전후 내 사용량 비교</span></li>
+    <li><b>4</b><span>백업으로 원복</span></li>
+  </ol>
+  <p class="where">각자 Bedrock 직결로 진행합니다. Hands-on Lab 포털, Chapter 6 선택 TASK 04.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s16" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s16-header"><h2>자주 받는 질문</h2></div>
+  <div class="slide-body" data-remarp-id="s16-body">
+    <p><!-- Slide 17: Deep dive FAQ --></p>
+<p>더 알아보기, OTel 지표, 이상 징후, Admin API</p>
+<div class="c6-pickset c6-dd fsi">
+  <div class="fsi-stack" data-pick="c6-dd2">
+    <button class="pick" data-key="met"><span class="k">1</span><span class="t">OTel 지표 모음</span></button>
+    <button class="pick" data-key="anom"><span class="k">2</span><span class="t">이상 징후 패턴</span></button>
+    <button class="pick" data-key="api"><span class="k">3</span><span class="t">Admin API로 한도 운영</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c6-dd2">
+    <div data-for="met"><h4>대시보드의 숫자는 어디서 오나</h4>
+      <div class="c6-tbl">
+        <div class="tr h"><span>지표</span><span>속성</span><span>용도</span></div>
+        <div class="tr"><span>token.usage</span><span>type: input, output, cacheRead, cacheCreation</span><span>캐시 효율, 모델별 사용량</span></div>
+        <div class="tr"><span>cost.usage</span><span>model</span><span>추정 비용 (정산은 AWS)</span></div>
+        <div class="tr"><span>session.count</span><span>user, team 속성</span><span>활성 사용자</span></div>
+        <div class="tr"><span>lines_of_code.count</span><span>type: added, removed</span><span>생산성 지표</span></div>
+        <div class="tr"><span>commit.count, pull_request.count</span><span>없음</span><span>산출물</span></div>
+        <div class="tr"><span>active_time.total</span><span>없음</span><span>실제 사용 시간</span></div>
+      </div><p>지표 이름 앞에는 모두 <code>claude_code.</code> 접두사가 붙습니다.</p></div>
+    <div data-for="anom"><h4>숫자를 보고 무엇을 의심하나</h4>
+      <div class="c6-tbl">
+        <div class="tr h"><span>패턴</span><span>의심</span><span>처방</span></div>
+        <div class="tr"><span>cacheRead 비율이 낮음</span><span>긴 휴식 후 재개, 접두부가 자주 바뀜</span><span>세션 위생, CLAUDE.md 안정화</span></div>
+        <div class="tr"><span>input 토큰 급증</span><span>큰 로그, 파일을 통째로 읽음</span><span>출력 필터 훅, Subagent 격리</span></div>
+        <div class="tr"><span>Opus 비중이 높음</span><span>기본 모델 미고정</span><span>ANTHROPIC_DEFAULT_*, availableModels</span></div>
+        <div class="tr"><span>특정 사용자 급증</span><span>자동화 루프, 병렬 남용</span><span>게이트웨이 사용자 한도</span></div>
+        <div class="tr"><span>분류기 호출 비중 큼</span><span>auto mode 분류기가 큰 모델로 폴백</span><span>CLAUDE_CODE_AUTO_MODE_MODEL 명시 (Ch2 Lab 2)</span></div>
+      </div></div>
+    <div data-for="api"><h4>그룹 기본값 + 예외 사용자</h4>
+      <pre class="c6-code"><span class="ln c"># 그룹 기본값: standard-users 1인당 하루 $50</span><span class="ln k">curl -X POST "$GW/v1/organizations/spend_limits" \</span><span class="ln">  -H "x-api-key: $WRITE" \</span><span class="ln">  -H "Content-Type: application/json" \</span><span class="ln">  -d '{"scope":{"type":"rbac_group",</span><span class="ln">             "rbac_group_id":"standard-users"},</span><span class="ln">       "amount":"5000","period":"daily"}'</span><span class="ln c"># 현재 적용 한도와 사용액</span><span class="ln k">curl -G "$GW/v1/organizations/spend_limits/effective" \</span><span class="ln">  --data-urlencode 'period[]=daily' -H "x-api-key: $READ"</span></pre>
+      <p>amount는 US 센트 문자열입니다. 그룹 한도는 공유 풀이 아닌 1인당 기본값이고, 사용자 한도가 그룹보다 우선합니다. write 키는 소수만, 비밀 저장소에 보관합니다.</p></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s17" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s17-header"><h2>보고, 막기</h2></div>
+  <div class="slide-body" data-remarp-id="s17-body">
+    <p><!-- Slide 18: Key Takeaways --></p>
+<p>Chapter 6 Key Takeaways</p>
+<div class="c6-recap">
+  <div class="grid">
+    <div class="rc"><b>01</b><span>Bedrock은 Analytics가 없다. OTel을 정책으로 켠다</span></div>
+    <div class="rc"><b>02</b><span>modelPricing으로 계약 단가 표시, 정산은 AWS와 대사</span></div>
+    <div class="rc"><b>03</b><span>게이트웨이: SSO, 그룹 정책, 지출 한도, 사설망 전용</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s18" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="center-content" style="height:100%; gap:1.5rem;">
+    <h1 style="font-family:var(--font-display); letter-spacing:var(--tracking-tight, -0.02em); font-size:3rem; color:var(--text-primary);">Thank You</h1>
+    <p style="color:var(--text-secondary); font-size:1.1rem;">다음은 Capstone 쇼케이스와 Closing입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에 언제든 편하게 남겨 주세요.</p>
+    <p style="color:var(--text-muted); font-size:1rem; margin-top:0.5rem;">수고하셨습니다!</p>
+    <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+            <a href="toc.html" class="btn btn-primary btn-sm" style="text-decoration:none;">← 목차로 돌아가기</a>
+    </div>
+  </div>
+</div>
+</div>
+<script src="./common/animation-utils.js"></script>
+<script src="./common/deck-overlay.js"></script>
+<script src="./common/deck-detail.js"></script>
+<script src="./common/deck-nav.js"></script>
+<script src="./common/deck-pen.js"></script>
+<script src="./common/slide-framework.js"></script>
+<script src="./common/quiz-component.js"></script>
+<script src="./common/presenter-view.js"></script>
+<script>
+(function(){
+(function(){function css(h){var has=[].some.call(document.querySelectorAll('link'),function(x){return x.getAttribute('href')===h;});if(has)return;var l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l);}css('assets/fsi.css');css('assets/ch6.css');if(!window.__fsiLoaded){window.__fsiLoaded=true;var s=document.createElement('script');s.src='assets/stepviz.js';document.head.appendChild(s);}})();
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c6-setup', { start: 0 }); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var MS = {id:'ms',x:50,y:60,w:320,h:90,t:'managed settings',s:'env 한 블록',c:'danger'};
+  var CC = {id:'cc',x:50,y:300,w:320,h:90,t:'Claude Code',s:'지표와 로그 생성',c:'accent'};
+  var COL = {id:'col',x:460,y:300,w:320,h:90,t:'OTel 수집기',s:'OTLP 엔드포인트',c:'warning'};
+  var DB = {id:'db',x:860,y:150,w:280,h:90,t:'대시보드',s:'팀별 집계',c:'info'};
+  var CW = {id:'cw',x:860,y:340,w:280,h:90,t:'CloudWatch',s:'랩 환경 이중 전송',c:'info'};
+  var Z = [{x:20,y:20,w:1140,h:440,l:'텔레메트리 경로'}];
+  var N = [MS, CC, COL, DB, CW];
+  var env = ['"env": {','  "CLAUDE_CODE_ENABLE_TELEMETRY": "1",','  "OTEL_METRICS_EXPORTER": "otlp",','  "OTEL_LOGS_EXPORTER": "otlp",','  "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",','  "OTEL_EXPORTER_OTLP_ENDPOINT":','    "https://otel.corp.example.internal",','  "OTEL_RESOURCE_ATTRIBUTES":','    "department=platform,team.id=core"','}'];
+  F.stepviz('#c6-sv-otel', [
+    {kicker:'STEP 1', title:'정책으로 켜면 모두가 계측됩니다',
+     body:'OTel(OpenTelemetry)은 켜야 생깁니다. <b>managed settings의 env 한 블록</b>으로 배포하면 사용자가 끌 수 없고, 빠지는 사람이 없습니다.',
+     facts:['CLAUDE_CODE_ENABLE_TELEMETRY: 1','managed settings로 배포','설치하지 않은 사람이 없게'],
+     zones:Z, nodes:N, hot:['ms','cc'],
+     edges:[{f:'ms',t:'cc',c:'danger',l:'env 배포',o:0}],
+     snip:{hd:'managed-settings.json (env)',path:'OTel을 정책으로 켜기',lines:env,hl:[2],note:'엔드포인트는 예시 주소입니다.'}},
+    {kicker:'STEP 2', title:'OTLP로 조직 수집기에 보냅니다',
+     body:'지표와 로그를 <b>OTLP(OpenTelemetry 전송 규격), http/protobuf</b>로 조직이 정한 수집기 엔드포인트에 보냅니다.',
+     facts:['OTEL_METRICS_EXPORTER: otlp','OTEL_LOGS_EXPORTER: otlp','목적지는 조직 수집기'],
+     zones:Z, nodes:N, hot:['cc','col'],
+     edges:[{f:'cc',t:'col',c:'warning',l:'OTLP, http/protobuf',o:0}], loop:true,
+     snip:{hd:'managed-settings.json (env)',path:'내보내기 설정',lines:env,hl:[3,4,5,6,7],note:'목적지가 회사 안이라는 점이 Bedrock 경로의 장점입니다.'}},
+    {kicker:'STEP 3', title:'대표 지표',
+     body:'수집기에서 대시보드로 가는 대표 지표는 <b>token.usage, cost.usage, session.count</b>와 코드 산출물 지표입니다.',
+     facts:['claude_code.token.usage','claude_code.cost.usage','claude_code.session.count','lines_of_code, commit, PR'],
+     zones:Z, nodes:N, hot:['col','db'],
+     edges:[{f:'cc',t:'col',c:'warning',o:0},{f:'col',t:'db',c:'info',l:'지표',o:1}], loop:true,
+     snip:{hd:'대표 지표',path:'OTel metrics',lines:['claude_code.token.usage','claude_code.cost.usage','claude_code.session.count','claude_code.lines_of_code.count','claude_code.commit.count','claude_code.pull_request.count'],hl:[1,2,3],note:'cost.usage는 추정 비용입니다. 정산은 AWS입니다.'}},
+    {kicker:'STEP 4', title:'resource 속성으로 팀별 집계',
+     body:'<b>OTEL_RESOURCE_ATTRIBUTES</b>에 부서와 팀을 넣으면 대시보드에서 <b>팀별로 집계</b>할 수 있습니다.',
+     facts:['department=platform','team.id=core','팀마다 다른 값으로 배포'],
+     zones:Z, nodes:N, hot:['ms','db'],
+     edges:[{f:'col',t:'db',c:'info',l:'팀별',o:0}],
+     snip:{hd:'managed-settings.json (env)',path:'팀 속성',lines:env,hl:[8,9],note:'값은 예시입니다. 팀별 managed settings로 다르게 배포합니다.'}},
+    {kicker:'LAB', title:'랩 환경은 두 곳으로 보냅니다',
+     body:'이번 랩 환경은 <b>otelcol</b>이 받아 내보내기 전에 <b>scrub_logs</b>로 프롬프트 본문을 지우고, <b>CloudWatch와 중앙 대시보드</b>로 이중 전송합니다.',
+     facts:['otelcol, fanout 타이머 active','scrub_logs: 내보내기 전 프롬프트 본문 삭제','exporters: CloudWatch + 중앙 대시보드'],
+     zones:Z, nodes:[MS, CC, {id:'col',x:460,y:300,w:320,h:90,t:'otelcol',s:'scrub_logs로 본문 삭제',c:'warning'}, {id:'db',x:860,y:150,w:280,h:90,t:'중앙 대시보드',s:'이틀간 사용량',c:'info'}, CW], hot:['cc','col','db','cw'],
+     edges:[{f:'cc',t:'col',c:'warning',o:0},{f:'col',t:'db',c:'info',o:1},{f:'col',t:'cw',c:'info',o:1}], loop:true,
+     snip:{hd:'TASK 01에서 확인',path:'랩 환경',lines:['# settings.json의 OTEL_* 환경 변수','# otelcol, fanout 타이머 active','# scrub_logs: 프롬프트 본문 삭제 규칙','# exporters: CloudWatch + 중앙 대시보드'],hl:[],note:'프롬프트 본문을 <b>내보내기 전에 지우는</b> 규칙이 금융권 운영의 기본입니다.'}}
+  ], {legend:[['danger','관리자가 강제'],['accent','Claude Code'],['warning','수집기'],['info','보는 곳']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var inp = document.getElementById('c6-price-in');
+  function draw() {
+    var m = +inp.value;
+    document.getElementById('c6-price-m').textContent = m.toFixed(2);
+    document.getElementById('c6-price-out').textContent = '$' + (0.55 * m).toFixed(2);
+    document.getElementById('c6-price-line').textContent = '    "multiplier": ' + (+m.toFixed(2));
+  }
+  inp.addEventListener('input', draw);
+  inp.addEventListener('change', function () { inp.blur(); });
+  F.onEnter(inp, function () { inp.value = 0.9; draw(); });
+  draw();
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var DEV = {id:'dev',x:40,y:200,w:230,h:96,t:'개발자',s:'/login, 디바이스 인증',c:'accent'};
+  var ALB = {id:'alb',x:320,y:200,w:230,h:96,t:'Internal ALB',s:'IPv4 전용, idle 3600초',c:'info'};
+  var GW = {id:'gw',x:600,y:200,w:260,h:96,t:'게이트웨이',s:'ECS Fargate, RDS PostgreSQL',c:'warning'};
+  var BR = {id:'br',x:910,y:200,w:230,h:96,t:'Amazon Bedrock',s:'IAM 역할로 호출',c:'info'};
+  var IDP = {id:'idp',x:600,y:50,w:260,h:84,t:'OIDC IdP',s:'SSO, 그룹',c:'success'};
+  var OT = {id:'ot',x:600,y:360,w:260,h:84,t:'OTLP 중계',s:'텔레메트리',c:'muted'};
+  var Z = [{x:20,y:20,w:1140,h:440,l:'사설망 (PRIVATE ONLY)',tone:'info'}];
+  var N = [DEV, ALB, GW, BR, IDP, OT];
+  F.stepviz('#c6-sv-gw', [
+    {kicker:'OVERVIEW', title:'SSO, 그룹 정책, 지출 한도를 한곳에서',
+     body:'Claude Apps Gateway는 Bedrock 앞단에 <b>직접 운영하는</b> 게이트웨이로, SSO(Single Sign-On) 로그인, IdP(사내 인증 시스템) 그룹별 모델과 정책, 사용자별 지출 한도, OTLP 중계를 맡습니다.',
+     facts:['SSO 로그인','IdP 그룹별 모델과 정책','사용자별 지출 한도','OTLP 중계'],
+     zones:Z, nodes:N, hot:['dev','gw','br','idp','ot'],
+     edges:[{f:'dev',t:'gw',c:'accent',side:'b',curve:70,o:0},{f:'gw',t:'idp',c:'success',o:1},{f:'gw',t:'br',c:'info',o:2},{f:'gw',t:'ot',c:'muted',o:2}],
+     snip:{hd:'claude 바이너리에 포함',path:'게이트웨이 실행',lines:['claude gateway --config gateway.yaml'],hl:[1],note:'별도 제품 설치가 아니라 <b>claude 바이너리의 하위 명령</b>입니다.'}},
+    {kicker:'STEP 1', title:'개발자: /login으로 정책을 받습니다',
+     body:'개발자는 <b>/login</b>으로 디바이스 인증을 하고, 소속 그룹에 맞는 정책을 받습니다.',
+     facts:['/login, 디바이스 인증','그룹별 정책 수신','로그인 브라우저도 사설망 안에'],
+     zones:Z, nodes:N, hot:['dev','alb','gw','idp'],
+     edges:[{f:'dev',t:'alb',c:'accent',l:'/login',o:0},{f:'alb',t:'gw',c:'info',o:1},{f:'gw',t:'idp',c:'success',l:'OIDC',o:2}],
+     snip:{hd:'개발자 쪽',path:'Claude Code',lines:['/login','# 디바이스 인증','# 그룹별 정책 수신'],hl:[1],note:'<b>/login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만</b> 통과합니다.'}},
+    {kicker:'STEP 2', title:'Internal ALB와 사설 존',
+     body:'공식 AWS 예제는 <b>internal ALB</b>(Application Load Balancer, IPv4 전용, idle 3600초)와 <b>Route 53 사설 존</b>을 씁니다. 사설망 전용 구성입니다.',
+     facts:['IPv4 전용','idle 3600초','Route 53 사설 존'],
+     zones:Z, nodes:N, hot:['dev','alb'],
+     edges:[{f:'dev',t:'alb',c:'accent',o:0}], loop:true,
+     snip:{hd:'공식 AWS 예제',path:'사설망 전용, internal ALB, IPv4',lines:['# Internal ALB','IPv4 전용','idle timeout 3600초','# DNS','Route 53 사설 존'],hl:[2,3,5],note:'인터넷에 열지 않는 것이 전제입니다.'}},
+    {kicker:'STEP 3', title:'게이트웨이: ECS Fargate와 RDS',
+     body:'게이트웨이는 <b>ECS Fargate</b>에서 돌고, 상태는 <b>RDS PostgreSQL</b>에, 로그인은 <b>OIDC IdP</b>(OpenID Connect 표준으로 로그인하는 인증 시스템)에 맡깁니다.',
+     facts:['ECS Fargate','RDS PostgreSQL','OIDC IdP'],
+     zones:Z, nodes:N, hot:['gw','idp'],
+     edges:[{f:'gw',t:'idp',c:'success',o:0}],
+     snip:{hd:'공식 AWS 예제',path:'게이트웨이',lines:['ECS Fargate','RDS PostgreSQL','OIDC IdP'],hl:[1,2,3],note:'지출 기록과 사용자 정보가 이 DB에 쌓입니다. 뒤에서 개인정보 항목을 봅니다.'}},
+    {kicker:'STEP 4', title:'Bedrock은 공유 자격증명 하나로',
+     body:'게이트웨이가 <b>IAM 역할</b>로 Bedrock을 호출합니다. 개발자마다 AWS 자격증명을 나눠 줄 필요 없이 <b>공유 자격증명 하나</b>입니다.',
+     facts:['IAM 역할로 호출','공유 자격증명 하나','개발자 PC에 AWS 키 없음'],
+     zones:Z, nodes:N, hot:['gw','br'],
+     edges:[{f:'gw',t:'br',c:'info',o:0}], loop:true,
+     snip:{hd:'공식 AWS 예제',path:'Amazon Bedrock',lines:['# 게이트웨이의 IAM 역할로 호출','# 공유 자격증명 하나'],hl:[],note:'사용자 구분은 게이트웨이의 OIDC sub로 합니다.'}},
+    {kicker:'LAB', title:'이번 랩 전용 구성: 계정마다 VPC 안에 한 대',
+     body:'랩에서는 참가자 계정마다 VPC(AWS 안의 사설 네트워크) 안에 게이트웨이가 한 대 있습니다. 로그인 브라우저만 <b>CloudFront에서 ccb-endpoint nginx</b>로 노출하고, 게이트웨이는 VPC CIDR(그 네트워크의 IP 주소 범위)만 허용합니다. 운영 환경은 사설망 전용입니다.',
+     facts:['ccb-endpoint(참가자 실습 PC): use_gateway(모드 전환 스크립트)로 managed settings에 forceLoginGatewayUrl','gateway.workshop.internal, 자체 서명 TLS(전송 암호화 인증서)','게이트웨이 EC2: Docker, PostgreSQL, Cognito OIDC (alice, bob)','Bedrock: 인스턴스 역할, us-east-1, global 추론 프로필의 5.5 모델'],
+     zones:[{x:20,y:20,w:1140,h:440,l:'참가자 VPC',tone:'info'}],
+     nodes:[{id:'dev',x:40,y:200,w:230,h:96,t:'ccb-endpoint',s:'use_gateway',c:'accent'},{id:'alb',x:320,y:200,w:230,h:96,t:'Route 53 사설 존',s:'gateway.workshop.internal',c:'info'},{id:'gw',x:600,y:200,w:260,h:96,t:'게이트웨이 EC2',s:'Docker, PostgreSQL',c:'warning'},{id:'br',x:910,y:200,w:230,h:96,t:'Amazon Bedrock',s:'인스턴스 역할',c:'info'},{id:'idp',x:600,y:50,w:260,h:84,t:'Cognito OIDC',s:'alice, bob',c:'success'}],
+     edges:[{f:'dev',t:'alb',c:'accent',o:0},{f:'alb',t:'gw',c:'info',o:1},{f:'gw',t:'idp',c:'success',o:2},{f:'gw',t:'br',c:'info',o:2}], loop:true,
+     snip:{hd:'랩 토폴로지',path:'TASK 02, 03',lines:['use_gateway','# managed settings에 forceLoginGatewayUrl','# gateway.workshop.internal (자체 서명 TLS, trust 확인)','use_bedrock_direct   # 실습 끝나면 원복'],hl:[1,4],note:'각자 계정의 게이트웨이로 실습합니다.'}}
+  ], {legend:[['accent','개발자'],['info','네트워크와 Bedrock'],['warning','게이트웨이'],['success','IdP'],['muted','텔레메트리 중계']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var inp = document.getElementById('c6-spend-in'), bar = document.getElementById('c6-spend-bar');
+  document.querySelectorAll('#c6-spend .mk, #c6-spend .tk').forEach(function (m) { m.style.left = (m.getAttribute('style-left') / 110 * 100) + '%'; });
+  function draw() {
+    var v = +inp.value, st = document.getElementById('c6-spend-st');
+    document.getElementById('c6-spend-fill').style.width = (Math.min(v, 110) / 110 * 100) + '%';
+    bar.classList.toggle('w75', v >= 75 && v < 100); bar.classList.toggle('w100', v >= 100);
+    st.className = 'state' + (v >= 100 ? ' w100' : v >= 75 ? ' w75' : '');
+    if (v >= 100) st.innerHTML = '한도 도달. 다음 요청은 <code>429 billing_error</code>와 리셋 시각을 받습니다.';
+    else if (v >= 95) st.textContent = '95% 사전 경고. 곧 한도에 닿습니다.';
+    else if (v >= 75) st.textContent = '75% 사전 경고.';
+    else st.textContent = '한도 대비 ' + v + '%, 정상 사용 중입니다.';
+  }
+  inp.addEventListener('input', draw);
+  F.onEnter(inp, function () { inp.value = 40; draw(); });
+  var stops = [40, 75, 95, 100];
+  function idx() { var v = +inp.value, k = 0; stops.forEach(function (s, i) { if (v >= s) k = i; }); return k; }
+  F.bindKeys(inp, {
+    down: function () { var i = idx(); if (+inp.value < stops[stops.length - 1]) { inp.value = stops[+inp.value < stops[i] ? i : Math.min(i + 1, stops.length - 1)]; draw(); return true; } return false; },
+    up: function () { var i = idx(); if (+inp.value > stops[0]) { inp.value = stops[+inp.value > stops[i] ? i : Math.max(i - 1, 0)]; draw(); return true; } return false; }
+  });
+  inp.addEventListener('change', function () { inp.blur(); });
+  draw();
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  F.cycle('#c6-ops-fail', 2, function (i) {
+    document.getElementById('c6-ops-cur').textContent = i === 0 ? 'fail-open (기본값)' : 'fail_closed_on_error: true';
+    document.getElementById('c6-ops-res').textContent = i === 0 ? '저장소 장애 중에도 요청은 통과하고 경고 로그만 남습니다. 그동안의 지출은 계측되지 않을 수 있습니다.' : '저장소 장애 중에는 요청을 차단합니다. 지출은 지켜지지만 추론이 멈춥니다.';
+  });
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c6-qc-3'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c6-dd2', { start: 0 }); });
+})();
+</script>
+<script>
+
+  const presenterNotes = {
+    1: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 6 \uc870\uc9c1\uc758 \ube44\uc6a9 \ubcf4\uace0 \ud1b5\uc81c\ud558\uae30, \uc4f4 \ub9cc\ud07c \ubcf4\uace0 \ub118\uce58\uba74 \ub9c9\ub294\ub2e4\n\u2022 Claude Code v2.1.319(2026-11-08 \ub9ac\ud5c8\uc124 \uac80\uc99d)\uc640 Amazon Bedrock \uae30\uc900\n\u2022 16:50\ubd80\ud130 \uac15\uc758\uc640 \ub370\ubaa8, \uc774\uc5b4\uc11c \ub7a9 TASK 01\ubd80\ud130 03 (\uc120\ud0dd TASK 04)\n\n\ub9c8\uc9c0\ub9c9 \ucc55\ud130, \uc870\uc9c1\uc758 \ube44\uc6a9 \ubcf4\uace0 \ud1b5\uc81c\ud558\uae30\uc785\ub2c8\ub2e4.\n\ud45c\uc9c0 \ub2e4\uc74c \uc7a5\uc5d0\uc11c \uc21c\uc11c\ub97c \ubcf4\uace0 \ubc14\ub85c \uc2dc\uc791\ud558\uaca0\uc2b5\ub2c8\ub2e4.",
+    2: "[0.5min] [\uc694\uc57d]\n\u2022 16:50\ubd80\ud130 50\ubd84, \uac15\uc758\uc640 \ub370\ubaa8 \uc57d 21.5\ubd84 + \ub7a9 28\ubd84\n\u2022 OTel \uacc4\uce21, modelPricing, \uac8c\uc774\ud2b8\uc6e8\uc774 \uc9c0\ucd9c \ud55c\ub3c4\n\u2022 \ub7a9 TASK 01 6\ubd84, TASK 02\uc640 03 22\ubd84, \uc120\ud0dd TASK 04\n\n\uc21c\uc11c\uc785\ub2c8\ub2e4. Bedrock\uc5d0\uc11c \ube44\uc6a9\uc744 \uc5b4\ub5bb\uac8c \ubcf4\ub294\uc9c0, OTel \ub300\uc2dc\ubcf4\ub4dc, \uacc4\uc57d \ub2e8\uac00\uc640 AWS \ucabd \ub3c4\uad6c, \uadf8\ub9ac\uace0 Claude Apps Gateway\uc758 \uadf8\ub8f9 \uc815\ucc45\uacfc \uc9c0\ucd9c \ud55c\ub3c4\uc785\ub2c8\ub2e4.\n\uac15\uc758\uc640 \ub370\ubaa8\ub294 20\ubd84 \ub0a8\uc9d3\uc774\uace0, \ub7a9\uc740 TASK 01\uc774 6\ubd84, TASK 02\uc640 03\uc774 22\ubd84\uc785\ub2c8\ub2e4. \uc120\ud0dd TASK 04\ub294 \uc2dc\uac04\uc774 \ub0a8\uc744 \ub54c \ud574 \ubd05\ub2c8\ub2e4.",
+    3: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 6\uc740 \uc870\uc9c1\uc758 \ube44\uc6a9 \ud1b5\uc81c, \uc4f4 \ub9cc\ud07c \ubcf4\uace0 \ub118\uce58\uba74 \ub9c9\ub294\ub2e4\n\u2022 Bedrock \ube44\uc6a9 \ubcf4\uae30, OTel \ub300\uc2dc\ubcf4\ub4dc, modelPricing\uacfc AWS \ub3c4\uad6c, Claude Apps Gateway \uc2e4\uc2b5\n\n\ub2e4\uc2dc \ubaa8\uc600\uc2b5\ub2c8\ub2e4. Chapter 6, \uc870\uc9c1\uc758 \ube44\uc6a9 \ud1b5\uc81c\uc785\ub2c8\ub2e4. \uc810\uc2ec \uc9c1\ud6c4 Chapter 5\uac00 \uac1c\uc778\uc774 \ub35c \uc4f0\ub294 \ubc95\uc774\uc5c8\ub2e4\uba74, \uc9c0\uae08\uc740 \uc870\uc9c1\uc774 \uc4f4 \ub9cc\ud07c \ubcf4\uace0 \ub118\uce58\uba74 \ub9c9\ub294 \ubc95\uc785\ub2c8\ub2e4.\nBedrock\uc5d0\uc11c \ube44\uc6a9\uc744 \uc5b4\ub5bb\uac8c \ubcf4\ub294\uc9c0, OTel \ub300\uc2dc\ubcf4\ub4dc, \uacc4\uc57d \ub2e8\uac00\uc640 AWS \ucabd \ub3c4\uad6c, \uadf8\ub9ac\uace0 \ub9c8\uc9c0\ub9c9\uc73c\ub85c Claude Apps Gateway\ub97c \uc9c1\uc811 \uc2e4\uc2b5\ud569\ub2c8\ub2e4.",
+    4: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 Amazon Bedrock: AWS \uccad\uad6c \ucf58\uc194, AWS \uc608\uc0b0 \ub3c4\uad6c, \uc0ac\uc6a9\uc790\ubcc4\uc740 IAM principal\uacfc \ud0dc\uadf8(CUR 2.0), OTel, \uac8c\uc774\ud2b8\uc6e8\uc774\n\u2022 Claude Team, Enterprise: \uc870\uc9c1 Analytics, \uad00\ub9ac \ucf58\uc194 \uc9c0\ucd9c \ud55c\ub3c4, CSV\uc640 Analytics API\n\u2022 Claude Console: Console Usage, Workspace limit, Claude Code Analytics API\n\n\uc14b\uc5c5\ub9c8\ub2e4 \ube44\uc6a9\uc744 \ubcf4\ub294 \ubc29\ubc95\uc774 \ub2e4\ub985\ub2c8\ub2e4. \uc774 \uc6cc\ud06c\uc20d\uc740 \uccab \uc904, Bedrock \uc14b\uc5c5\uc785\ub2c8\ub2e4.\nBedrock\uc5d0\uc11c\ub294 \uc9c0\ucd9c\uc740 AWS \uccad\uad6c \ucf58\uc194\ub85c, \uc9c0\ucd9c \ud55c\ub3c4\ub294 AWS \uc608\uc0b0 \ub3c4\uad6c\ub85c \ubd05\ub2c8\ub2e4. \uc0ac\uc6a9\uc790\ubcc4\ub85c\ub294 IAM principal\uacfc CUR 2.0 \ud0dc\uadf8\uac00 \uc788\uc9c0\ub9cc, \uc0ac\ub78c \ub2e8\uc704\ub85c \ubcf4\ub824\uba74 OTel\uacfc \uac8c\uc774\ud2b8\uc6e8\uc774\ucc98\ub7fc \uc9c1\uc811 \uc124\uce58\ud55c \uacc4\uce21\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.\n\n\uc544\ub798 \ud654\uc0b4\ud45c\ub85c \ube44\uad50\ud574 \ubcf4\uba74, Claude Team\uc774\ub098 Enterprise\ub294 \uc870\uc9c1 Analytics\uc640 \uad00\ub9ac \ucf58\uc194 \uc9c0\ucd9c \ud55c\ub3c4\uac00 \uc788\uace0, Console\uc740 Workspace limit\uacfc Analytics API\uac00 \uc788\uc2b5\ub2c8\ub2e4. Bedrock\uc5d0\ub294 \uc774\ub7f0 \ud654\uba74\uc774 \uc5c6\ub2e4\ub294 \uac8c \ub2e4\uc74c \uc7a5\uc758 \uba54\uc2dc\uc9c0\uc785\ub2c8\ub2e4.",
+    5: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 Bedrock\uc5d0\ub294 Analytics \ub300\uc2dc\ubcf4\ub4dc\uac00 \uc5c6\uc74c\n\u2022 \uacc4\uce21\uc744 \uc124\uce58\ud574\uc57c \ubcf4\uc774\uace0, \uc124\uce58\ud558\uc9c0 \uc54a\uc740 \uc0ac\ub78c\uc740 \uc7a1\ud788\uc9c0 \uc54a\uc74c\n\n\n\ud55c \ubb38\uc7a5\uc73c\ub85c \uc815\ub9ac\ud558\uba74 \uc774\uac81\ub2c8\ub2e4. Bedrock\uc5d0\ub294 Analytics \ub300\uc2dc\ubcf4\ub4dc\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.\n\uacc4\uce21\uc744 \uc124\uce58\ud574\uc57c \ubcf4\uc774\uace0, \uc124\uce58\ud558\uc9c0 \uc54a\uc740 \uc0ac\ub78c\uc740 \uc7a1\ud788\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \uadf8\ub798\uc11c \ub2e4\uc74c \uc7a5\ucc98\ub7fc OTel\uc744 \uc815\ucc45\uc73c\ub85c, \ubaa8\ub450\uc5d0\uac8c \ucf2d\ub2c8\ub2e4.",
+    6: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 managed settings env \ud55c \ube14\ub85d\uc73c\ub85c OTel\uc744 \ubaa8\ub450\uc5d0\uac8c \ucf2c (CLAUDE_CODE_ENABLE_TELEMETRY 1)\n\u2022 OTLP http/protobuf\ub85c \uc870\uc9c1 \uc218\uc9d1\uae30 \uc5d4\ub4dc\ud3ec\uc778\ud2b8\uc5d0 \uc9c0\ud45c\uc640 \ub85c\uadf8 \uc804\uc1a1\n\u2022 \ub300\ud45c \uc9c0\ud45c: claude_code.token.usage, cost.usage, session.count, lines_of_code, commit, PR\n\u2022 OTEL_RESOURCE_ATTRIBUTES\ub85c \ud300\ubcc4 \uc9d1\uacc4\n\u2022 \ub7a9 \ud658\uacbd: otelcol, scrub_logs\ub85c \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38 \uc0ad\uc81c, CloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc \uc774\uc911 \uc804\uc1a1\n\n\n\uadf8\ub7fc OTel\uc744 \uc5b4\ub5bb\uac8c \ucf1c\ub294\uc9c0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \ub2f5\uc740 managed settings\uc758 env \ud55c \ube14\ub85d\uc785\ub2c8\ub2e4.\n\uccab\uc9f8, \uc815\ucc45\uc73c\ub85c \ucf1c\uba74 \uc0ac\uc6a9\uc790\uac00 \ub04c \uc218 \uc5c6\uace0 \ube60\uc9c0\ub294 \uc0ac\ub78c\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. \ub458\uc9f8, OTLP\ub85c \ud68c\uc0ac\uac00 \uc815\ud55c \uc218\uc9d1\uae30 \uc5d4\ub4dc\ud3ec\uc778\ud2b8\uc5d0 \ubcf4\ub0c5\ub2c8\ub2e4. \uc14b\uc9f8, \ub300\ud45c \uc9c0\ud45c\ub294 \ud1a0\ud070 \uc0ac\uc6a9\ub7c9, \ucd94\uc815 \ube44\uc6a9, \uc138\uc158 \uc218, \uadf8\ub9ac\uace0 \ucf54\ub4dc \uc904 \uc218\uc640 \ucee4\ubc0b, PR\uc785\ub2c8\ub2e4. \ub137\uc9f8, resource \uc18d\uc131\uc5d0 \ubd80\uc11c\uc640 \ud300\uc744 \ub123\uc5b4 \ud300\ubcc4\ub85c \uc9d1\uacc4\ud569\ub2c8\ub2e4.\n\ub9c8\uc9c0\ub9c9\uc740 \uc774\ubc88 \ub7a9 \ud658\uacbd\uc785\ub2c8\ub2e4. otelcol\uc774 \ubc1b\uc544\uc11c \ub0b4\ubcf4\ub0b4\uae30 \uc804\uc5d0 \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc744 \uc9c0\uc6b0\uace0, CloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc \ub450 \uacf3\uc73c\ub85c \ubcf4\ub0c5\ub2c8\ub2e4. \uc774\uac74 TASK 01\uc5d0\uc11c \uc9c1\uc811 \ud655\uc778\ud558\uc2ed\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 OTLP: OpenTelemetry Protocol",
+    7: "\ud83c\udfac [10min] [\uc694\uc57d]\n\u2022 \uac15\uc0ac \ub300\uc2dc\ubcf4\ub4dc(URL\uc740 \ud604\uc7a5 \uc548\ub0b4), \ub7a9 \ud658\uacbd\uc740 Day 1\ubd80\ud130 OTel \uc218\uc9d1 \uc911 (\ucc38\uac00 \uc548\ub0b4\ubb38\uc5d0 \uace0\uc9c0)\n\u2022 \uc804\uccb4 \ucd94\uc774\uc640 Capstone \ud53c\ud06c, \ubaa8\ub378\ubcc4\uacfc \ub3c4\uad6c\ubcc4 \ubd84\ud3ec, \uce90\uc2dc \uc801\uc911\ub960, \ub0b4 \ucc38\uac00\uc790 ID\ub85c \ucc3e\uae30\n\u2022 \uac00\uc7a5 \ube44\uc6a9\uc774 \ucef8\ub358 \ud328\ud134\uc744 Ch5\uc758 \uc6d0\ub9ac\ub85c \ud574\uc11d\n\u2022 \ud654\uba74\uc5d0\ub294 \ucc38\uac00\uc790 ID\ub9cc, \ud68c\uc0ac\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ub178\ucd9c\ud558\uc9c0 \uc54a\uc74c\n\n\ub370\ubaa8\uc785\ub2c8\ub2e4. \uc774 \ub7a9 \ud658\uacbd\uc740 \ucc38\uac00 \uc548\ub0b4\ubb38\uc5d0 \uace0\uc9c0\ud55c \ub300\ub85c Day 1\ubd80\ud130 OTel\uc744 \uc218\uc9d1\ud558\uace0 \uc788\uc2b5\ub2c8\ub2e4. \uc774\ud2c0\uac04 \uc5ec\ub7ec\ubd84\uc774 \uc4f4 \ud1a0\ud070\uc744 \uac19\uc774 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uc804\uccb4 \ucd94\uc774\uc5d0\uc11c Capstone \uad6c\uac04\uc758 \ud53c\ud06c\ub97c \ubcf4\uace0, \ubaa8\ub378\ubcc4\uacfc \ub3c4\uad6c\ubcc4 \ubd84\ud3ec, \uce90\uc2dc \uc801\uc911\ub960\uc744 \ubd05\ub2c8\ub2e4. \uadf8\ub9ac\uace0 \uac01\uc790 \ucc38\uac00\uc790 ID\ub85c \ubcf8\uc778 \uc0ac\uc6a9\ub7c9\uc744 \ucc3e\uc544\ubcf4\uc138\uc694.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c \uac00\uc7a5 \ube44\uc6a9\uc774 \ucef8\ub358 \ud328\ud134\uc744 Chapter 5\uc758 \uc6d0\ub9ac\ub85c \ud574\uc11d\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \ud654\uba74\uc5d0\ub294 \ucc38\uac00\uc790 ID\ub9cc \ub098\uc624\uace0, \ud68c\uc0ac\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ubcf4\uc5ec \ub4dc\ub9ac\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+    8: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 managed-settings.json modelPricing.multiplier\ub85c \uacc4\uc57d \ub2e8\uac00\ub97c \ud45c\uc2dc (managed settings\uc5d0\uc11c\ub9cc, v2.1.242+)\n\u2022 1\ubcf4\ub2e4 \uc791\uc73c\uba74 \ud560\uc778, \ud06c\uba74 \ud560\uc99d, \ubaa8\ub378\ubcc4 \ub2e8\uac00\ub294 overrides\n\u2022 \ud45c\uc2dc\ub9cc \ubc14\uafb8\uace0 \uccad\uad6c\ub294 \uadf8\ub300\ub85c, \uc22b\uc790\ub294 \uacc4\uc57d \ub2e8\uac00\ub85c\n\n/usage\uc640 \ub300\uc2dc\ubcf4\ub4dc\uc758 \ube44\uc6a9\uc740 \ubaa9\ub85d\uac00 \uae30\uc900 \ucd94\uc815\uce58\uc785\ub2c8\ub2e4. \uacc4\uc57d \ub2e8\uac00\uac00 \ub2e4\ub974\uba74 \uc22b\uc790\uac00 \uccad\uad6c\uc11c\uc640 \uc5b4\uae0b\ub098\uc8e0. \uadf8\ub798\uc11c modelPricing\uc774 \uc788\uc2b5\ub2c8\ub2e4.\n\n\uc2ac\ub77c\uc774\ub354\ub85c multiplier\ub97c \ubc14\uafd4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \uc6d0\ub9ac 1\uc5d0\uc11c \ubcf8 0.55\ub2ec\ub7ec \uc138\uc158\uc774 0.9\ub97c \uacf1\ud558\uba74 0.50\ub2ec\ub7ec\ub85c \ud45c\uc2dc\ub429\ub2c8\ub2e4. 1\ubcf4\ub2e4 \uc791\uc73c\uba74 \ud560\uc778, \ud06c\uba74 \ud560\uc99d\uc774\uace0, \ubaa8\ub378\ubcc4\ub85c \ub2e4\ub974\uba74 overrides\ub97c \uc501\ub2c8\ub2e4.\n\uc911\uc694\ud55c \uac74 \ud45c\uc2dc\ub9cc \ubc14\ub010\ub2e4\ub294 \uc810\uc785\ub2c8\ub2e4. \uccad\uad6c\ub294 \uadf8\ub300\ub85c\uc774\uace0, \uc2e4\uc81c \uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\ub85c \ub300\uc0ac\ud558\uc154\uc57c \ud569\ub2c8\ub2e4. managed settings\uc5d0\uc11c\ub9cc \uc720\ud6a8\ud569\ub2c8\ub2e4.",
+    9: "[0.5min] [\uc694\uc57d]\n\u2022 Application inference profile \ud0dc\uadf8: Ch2 modelOverrides\ub85c \ud300\ubcc4 \uacbd\ub85c, Cost Explorer\n\u2022 AWS Budgets: \uacc4\uc815\uacfc \ud0dc\uadf8 \ub2e8\uc704 \uc608\uc0b0 \uc54c\ub78c\n\u2022 \uc804\uc6a9 AWS \uacc4\uc815\uc73c\ub85c \ube44\uc6a9 \ubd84\ub9ac (\uacf5\uc2dd \uad8c\uc7a5)\n\u2022 TPM \ucffc\ud130: \ub3d9\uc2dc \uc0ac\uc6a9 \uae09\uc99d\uc740 \uc0ac\uc804 \uc99d\uc561\n\u2022 Claude Code \uacc4\uce21\uacfc AWS \ucabd \uc22b\uc790\ub97c \ub300\uc0ac\ud574\uc57c \uc815\ud655\n\nClaude Code \ucabd \uacc4\uce21\uacfc \ubcc4\uac1c\ub85c, AWS \uacc4\uc815\uc5d0\uc11c \ubcfc \uc218 \uc788\ub294 \uac83\ub3c4 \uc788\uc2b5\ub2c8\ub2e4. \ub458\uc744 \ub300\uc0ac\ud574\uc57c \uc815\ud655\ud569\ub2c8\ub2e4.\n\uccab\uc9f8, Ch2\uc5d0\uc11c \ubcf8 modelOverrides\ub85c \ud300\ubcc4 application inference profile\uc744 \uc4f0\uba74 \ud0dc\uadf8\ub85c Cost Explorer\uc5d0\uc11c \ub098\ub220 \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4. \ub458\uc9f8, AWS Budgets\ub85c \uacc4\uc815\uacfc \ud0dc\uadf8 \ub2e8\uc704 \uc608\uc0b0 \uc54c\ub78c\uc744 \uac81\ub2c8\ub2e4. \uc14b\uc9f8, \uacf5\uc2dd \uad8c\uc7a5\uc740 Claude Code \uc804\uc6a9 AWS \uacc4\uc815\uc73c\ub85c \uacbd\uacc4\ub97c \ub098\ub204\ub294 \uac83\uc785\ub2c8\ub2e4.\n\ub137\uc9f8, \uc774\ubc88 \uac19\uc740 \ub77c\uc774\ube0c \uad50\uc721\ucc98\ub7fc \ub3d9\uc2dc \uc0ac\uc6a9\uc774 \ubab0\ub9ac\uba74 TPM \ucffc\ud130\ub97c \ubbf8\ub9ac \ub298\ub824 \ub450\uc154\uc57c \ud569\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 TPM: Tokens Per Minute",
+    10: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 Claude Apps Gateway: Bedrock \uc55e\ub2e8\uc5d0 \uc9c1\uc811 \uc6b4\uc601, SSO \ub85c\uadf8\uc778, IdP \uadf8\ub8f9\ubcc4 \ubaa8\ub378\uacfc \uc815\ucc45, \uc0ac\uc6a9\uc790\ubcc4 \uc9c0\ucd9c \ud55c\ub3c4, OTLP \uc911\uacc4 (claude gateway --config gateway.yaml)\n\u2022 \uacf5\uc2dd AWS \uc608\uc81c: \uc0ac\uc124\ub9dd \uc804\uc6a9, internal ALB(IPv4, idle 3600\ucd08), Route 53 \uc0ac\uc124 \uc874, ECS Fargate, RDS PostgreSQL, OIDC IdP, IAM \uc5ed\ud560\ub85c Bedrock \ud638\ucd9c\n\u2022 /login\uc740 \uac8c\uc774\ud2b8\uc6e8\uc774 \ud638\uc2a4\ud2b8\uac00 \uc0ac\uc124 IP\ub85c\ub9cc resolve\ub420 \ub54c\ub9cc \ud1b5\uacfc, \ub85c\uadf8\uc778 \ube0c\ub77c\uc6b0\uc800\ub3c4 \uc0ac\uc124\ub9dd\n\u2022 \ub7a9 \uc804\uc6a9 \uad6c\uc131(\uc6b4\uc601 \ud658\uacbd\uc740 \uc0ac\uc124\ub9dd): \ucc38\uac00\uc790 \uacc4\uc815 VPC\ub9c8\ub2e4 \uac8c\uc774\ud2b8\uc6e8\uc774 EC2, Cognito OIDC alice\uc640 bob, us-east-1, global \ucd94\ub860 \ud504\ub85c\ud544\uc758 5.5 \ubaa8\ub378\n\u2022 ccb-endpoint\ub294 \ucc38\uac00\uc790 \uc2e4\uc2b5 PC, use_gateway\ub294 \ubaa8\ub4dc \uc804\ud658 \uc2a4\ud06c\ub9bd\ud2b8\n\n\n\uc774\uc81c \ub9c9\ub294 \ucabd\uc785\ub2c8\ub2e4. Claude Apps Gateway\ub294 Bedrock \uc55e\ub2e8\uc5d0 \uc9c1\uc811 \uc6b4\uc601\ud558\ub294 \uac8c\uc774\ud2b8\uc6e8\uc774\uc774\uace0, claude \ubc14\uc774\ub108\ub9ac\uc5d0 \ub4e4\uc5b4 \uc788\uc2b5\ub2c8\ub2e4.\n\uacf5\uc2dd AWS \uc608\uc81c \uad6c\uc131\uc744 \ub2e8\uacc4\ubcc4\ub85c \ubcf4\uba74, \uac1c\ubc1c\uc790\ub294 /login\uc73c\ub85c \ub514\ubc14\uc774\uc2a4 \uc778\uc99d\uc744 \ud558\uace0 \uadf8\ub8f9 \uc815\ucc45\uc744 \ubc1b\uc2b5\ub2c8\ub2e4. \uc911\uac04\uc5d0 internal ALB\uc640 Route 53 \uc0ac\uc124 \uc874\uc774 \uc788\uace0, \uac8c\uc774\ud2b8\uc6e8\uc774\ub294 ECS Fargate\uc640 RDS PostgreSQL, OIDC IdP\ub85c \ub3cc\uba70, Bedrock\uc740 IAM \uc5ed\ud560 \ud558\ub098\ub85c \ud638\ucd9c\ud569\ub2c8\ub2e4.\n\uac00\uc7a5 \uc911\uc694\ud55c \uc81c\uc57d\uc740 \uc0ac\uc124\ub9dd \uc804\uc6a9\uc774\ub77c\ub294 \uc810\uc785\ub2c8\ub2e4. /login\uc740 \uac8c\uc774\ud2b8\uc6e8\uc774 \ud638\uc2a4\ud2b8\uac00 \uc0ac\uc124 IP\ub85c\ub9cc resolve\ub420 \ub54c\ub9cc \ud1b5\uacfc\ud558\uace0, \ub85c\uadf8\uc778 \ube0c\ub77c\uc6b0\uc800\ub3c4 \uc0ac\uc124\ub9dd \uc548\uc5d0 \uc788\uc5b4\uc57c \ud569\ub2c8\ub2e4.\n\ub9c8\uc9c0\ub9c9 \ub2e8\uacc4\ub294 \uc774\ubc88 \ub7a9 \uad6c\uc131\uc785\ub2c8\ub2e4. \uc5ec\ub7ec\ubd84 \uacc4\uc815\ub9c8\ub2e4 VPC \uc548\uc5d0 \uac8c\uc774\ud2b8\uc6e8\uc774\uac00 \ud55c \ub300\uc529 \uc788\uace0, alice\uc640 bob \ub450 \uc0ac\uc6a9\uc790\ub85c \uc2e4\uc2b5\ud569\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 SSO: Single Sign-On\n\u2022 IdP: Identity Provider\n\u2022 OIDC: OpenID Connect\n\u2022 ALB: Application Load Balancer",
+    11: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 \ubc94\uc704: user(OIDC sub), rbac_group, organization, \uadf8\ub8f9\uacfc \uc870\uc9c1 \ud55c\ub3c4\ub294 1\uc778\ub2f9 \uae30\ubcf8\uac12\n\u2022 \uae30\uac04: daily, weekly, monthly, UTC \uae30\uc900 \ub9ac\uc14b\n\u2022 \ucd08\uacfc \uc2dc 429 billing_error\uc640 \ub9ac\uc14b \uc2dc\uac01, 75%\uc640 95%\uc5d0\uc11c \uc0ac\uc804 \uacbd\uace0\n\u2022 \ub2e8\uac00: pricing.overrides, \ubaa9\ub85d\uac00, \ubbf8\uc9c0 \ubaa8\ub378 $5/$25, \ucd94\uc815\uce58\uc774\uace0 \uc815\uc0b0\uc740 AWS\n\u2022 \uc124\uc815\uc740 Admin API POST /v1/organizations/spend_limits, gateway.yaml\uc774 \uc544\ub2d8\n\n\n\uac8c\uc774\ud2b8\uc6e8\uc774\uc758 \ud575\uc2ec \uae30\ub2a5, \uc0ac\uc6a9\uc790\ubcc4 \uc9c0\ucd9c \ud55c\ub3c4\uc785\ub2c8\ub2e4. \uc67c\ucabd \ub9c9\ub300\ub97c \uc544\ub798 \ud654\uc0b4\ud45c\ub85c 40%, 75%, 95%, 100% \uc21c\uc11c\ub85c \uc62c\ub824 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n75%\uc640 95%\uc5d0\uc11c \uc0ac\uc804 \uacbd\uace0\uac00 \ub098\uc624\uace0, 100%\uc5d0 \ub2ff\uc73c\uba74 \ub2e4\uc74c \uc694\uccad\uc740 429 billing_error\uc640 \ub9ac\uc14b \uc2dc\uac01\uc744 \ubc1b\uc2b5\ub2c8\ub2e4.\n\uc624\ub978\ucabd \uaddc\uce59\uc744 \ubcf4\uba74, \ubc94\uc704\ub294 \uc0ac\uc6a9\uc790, \uadf8\ub8f9, \uc870\uc9c1\uc774\uace0, \uadf8\ub8f9\uacfc \uc870\uc9c1 \ud55c\ub3c4\ub294 \uacf5\uc720 \ud480\uc774 \uc544\ub2c8\ub77c 1\uc778\ub2f9 \uae30\ubcf8\uac12\uc785\ub2c8\ub2e4. \uae30\uac04\uc740 \uc77c, \uc8fc, \uc6d4\uc774\uace0 UTC \uae30\uc900\uc73c\ub85c \ub9ac\uc14b\ub429\ub2c8\ub2e4.\n\uc124\uc815\uc740 gateway.yaml\uc774 \uc544\ub2c8\ub77c Admin API\ub85c \ud569\ub2c8\ub2e4. \uc774 \uc810\uc744 \ub9ce\uc774 \ud5f7\uac08\ub9ac\uc2ed\ub2c8\ub2e4.",
+    12: "\u2753 [1min] [\uc694\uc57d]\n\u2022 \uc800\uc7a5\uc18c \uc7a5\uc560 \uc2dc \uae30\ubcf8\uc740 fail-open(\uc694\uccad \ud1b5\uacfc, \uacbd\uace0 \ub85c\uadf8), fail_closed_on_error: true\uba74 \ucc28\ub2e8, \ucd94\ub860 \uc911\ub2e8\uacfc \ubbf8\uacc4\uce21 \uc9c0\ucd9c \uc911 \uc120\ud0dd\n\u2022 principal_emails\uc5d0 \uc774\uba54\uc77c, \uc774\ub984, \uadf8\ub8f9 \uc800\uc7a5, \uae30\ubcf8 90\uc77c \ubcf4\uc874(identity_retention_days)\n\u2022 \ud1f4\uc0ac\ub098 \uc5f4\ub78c \uc694\uccad \uc2dc \ud589 \uc0ad\uc81c, spend\uc640 audit\uc740 OIDC sub\ub9cc \ucc38\uc870\n\n\n\uc6b4\uc601 \uc804\uc5d0 \uaf2d \uc815\ud558\uc154\uc57c \ud560 \ub450 \uac00\uc9c0\uc785\ub2c8\ub2e4. \uae30\ubcf8\uac12\uc774 \uae08\uc735\uad8c\uc758 \uae30\ub300\uc640 \ub2e4\ub97c \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\uccab\uc9f8, \uc800\uc7a5\uc18c\uc5d0 \uc7a5\uc560\uac00 \ub098\uba74 \uc5b4\ub5bb\uac8c \ud560\uae4c\uc694. \ubc84\ud2bc\uc73c\ub85c \ubc14\uafd4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \uae30\ubcf8\uc740 fail-open, \uc694\uccad\uc744 \ud1b5\uacfc\uc2dc\ud0a4\uace0 \uacbd\uace0\ub9cc \ub0a8\uae41\ub2c8\ub2e4. fail_closed_on_error\ub97c \ucf1c\uba74 \ucc28\ub2e8\ud569\ub2c8\ub2e4. \ucd94\ub860\uc774 \uba48\ucd94\ub294 \uac83\uacfc \uacc4\uce21\ub418\uc9c0 \uc54a\ub294 \uc9c0\ucd9c, \ub458 \uc911 \ubb34\uc5c7\uc744 \uac10\uc218\ud560\uc9c0\uc758 \uc120\ud0dd\uc785\ub2c8\ub2e4.\n\ub458\uc9f8, \uac1c\uc778\uc815\ubcf4\uc785\ub2c8\ub2e4. \uac8c\uc774\ud2b8\uc6e8\uc774\ub294 \uc774\uba54\uc77c\uacfc \uc774\ub984, \uadf8\ub8f9\uc744 \uc800\uc7a5\ud558\uace0 \uae30\ubcf8 90\uc77c \ubcf4\uc874\ud569\ub2c8\ub2e4. \ud1f4\uc0ac\ub098 \uc5f4\ub78c \uc694\uccad \ub54c \ud574\ub2f9 \ud589\uc744 \uc9c0\uc6b0\ub294 \uc808\ucc28\ub97c \ubbf8\ub9ac \uc815\ud574 \ub450\uc138\uc694.",
+    13: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, \uc0ac\uc6a9\uc790 \ud55c\ub3c4\uac00 \uadf8\ub8f9 \uae30\ubcf8\uac12\ubcf4\ub2e4 \uc6b0\uc120\ud574 \ub2e4\uc74c \uc694\uccad\ubd80\ud130 429\n\u2022 \uc9c4\ud589 \uc911\uc778 \uc751\ub2f5\uc740 \ub05d\uae4c\uc9c0 \uac10\n\n\ud034\uc988\uc785\ub2c8\ub2e4. standard-users \uadf8\ub8f9 \ud55c\ub3c4\uac00 \ud558\ub8e8 50\ub2ec\ub7ec\uc778\ub370 bob\uc5d0\uac8c\ub9cc 1\uc13c\ud2b8 \uc0ac\uc6a9\uc790 \ud55c\ub3c4\ub97c \uac78\uba74 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 B\uc785\ub2c8\ub2e4. \uc0ac\uc6a9\uc790 \ud55c\ub3c4\uac00 \uadf8\ub8f9 \uae30\ubcf8\uac12\ubcf4\ub2e4 \uc6b0\uc120\ud574\uc11c \ub2e4\uc74c \uc694\uccad\ubd80\ud130 429\ub85c \ub9c9\ud799\ub2c8\ub2e4. \uc774\ubbf8 \uc9c4\ud589 \uc911\uc778 \uc751\ub2f5\uc740 \ub05d\uae4c\uc9c0 \uac11\ub2c8\ub2e4. \uc774\uac78 \uc7a0\uc2dc \ub4a4 \ub7a9\uc5d0\uc11c \uc9c1\uc811 \ud574 \ubcf4\uc2ed\ub2c8\ub2e4.",
+    14: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 LAB 6\ubd84, Chapter 6 TASK 01\n\u2022 OTEL_* \ud658\uacbd \ubcc0\uc218, otelcol\uacfc fanout \ud0c0\uc774\uba38, scrub_logs \uaddc\uce59, CloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc \uc774\uc911 \uc804\uc1a1 \ud655\uc778\n\n\n\uccab \ubc88\uc9f8 \ub7a9\uc740 6\ubd84\uc785\ub2c8\ub2e4. Chapter 6 TASK 01\uc744 \uc5f4\uc5b4 \uc8fc\uc138\uc694.\nsettings.json\uc758 OTEL \ud658\uacbd \ubcc0\uc218\ub97c \uc77d\uace0, otelcol\uacfc fanout \ud0c0\uc774\uba38\uac00 \ub3cc\uace0 \uc788\ub294\uc9c0 \ud655\uc778\ud55c \ub4a4, \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc744 \uc9c0\uc6b0\ub294 scrub_logs \uaddc\uce59\uacfc \ub450 \uacf3\uc73c\ub85c \ubcf4\ub0b4\ub294 exporters\ub97c \ucc3e\uc544\ubcf4\uc138\uc694. \uc544\uae4c OTel \uadf8\ub9bc\uc758 \ub9c8\uc9c0\ub9c9 \ub2e8\uacc4\ub97c \uc9c1\uc811 \ud655\uc778\ud558\ub294 \uac83\uc785\ub2c8\ub2e4.",
+    15: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 LAB 22\ubd84, Chapter 6 TASK 02\ubd80\ud130 03, \uac01\uc790 \uacc4\uc815\uc758 \uac8c\uc774\ud2b8\uc6e8\uc774\n\u2022 alice\uc640 bob\uc73c\ub85c \uadf8\ub8f9\ubcc4 \ubaa8\ub378 \uc815\ucc45 \ube44\uad50, Admin API\ub85c bob \ud55c\ub3c4 1\uc13c\ud2b8, \uac70\uc808 \ud655\uc778\n\u2022 \ub05d\ub098\uba74 \ud55c\ub3c4 DELETE, \uadf8\ub8f9 \ud55c\ub3c4 \ubcf5\uc6d0, use_bedrock_direct\ub85c \uc6d0\ubcf5\n\n\n\ub9c8\uc9c0\ub9c9 \ub7a9, 22\ubd84\uc785\ub2c8\ub2e4. \uac01\uc790 \uacc4\uc815\uc758 \uac8c\uc774\ud2b8\uc6e8\uc774\ub85c \uc9c4\ud589\ud569\ub2c8\ub2e4.\nalice\ub85c \ub85c\uadf8\uc778\ud558\uba74 /model\uc5d0 Opus\uac00 \ubcf4\uc774\uace0, bob\uc73c\ub85c \ub2e4\uc2dc \ub85c\uadf8\uc778\ud558\uba74 Opus\uac00 \uc5c6\uc2b5\ub2c8\ub2e4. \uadf8\ub8f9 \uc815\ucc45\uc785\ub2c8\ub2e4. \uadf8\ub2e4\uc74c \ub450 \ubc88\uc9f8 \ud130\ubbf8\ub110\uc5d0\uc11c Admin API\ub85c bob\uc5d0\uac8c 1\uc13c\ud2b8 \ud55c\ub3c4\ub97c \uac78\uace0, bob\uc758 \ub2e4\uc74c \uc694\uccad\uc774 \uac70\uc808\ub418\ub294 \uac78 \ubcf4\uc138\uc694. \ubc29\uae08 \ud034\uc988\uc758 \uc815\ub2f5\uc744 \uc9c1\uc811 \ud655\uc778\ud558\ub294 \uac81\ub2c8\ub2e4.\n\ub05d\ub098\uba74 \uaf2d \ud55c\ub3c4\ub97c \uc9c0\uc6b0\uace0 use_bedrock_direct\ub85c \uc6d0\ubcf5\ud574 \uc8fc\uc138\uc694. \uac8c\uc774\ud2b8\uc6e8\uc774\uc5d0 \ubb38\uc81c\uac00 \uc788\ub294 \ud300\uc740 \uc81c \ud654\uba74\uc744 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
+    16: "[0.5min] [\uc694\uc57d]\n\u2022 \uc120\ud0dd LAB 10\ubd84, Chapter 6 \uc120\ud0dd TASK 04, \uac01\uc790 Bedrock \uc9c1\uacb0\n\u2022 modelPricing.multiplier \ubcd1\ud569, /usage configured rates \ud655\uc778, \ub300\uc2dc\ubcf4\ub4dc \uc804\ud6c4 \ube44\uad50, \ubc31\uc5c5\uc73c\ub85c \uc6d0\ubcf5\n\n\uc2dc\uac04\uc774 \ub0a8\ub294 \ubd84\uc744 \uc704\ud55c \uc120\ud0dd \ub7a9\uc785\ub2c8\ub2e4. Bedrock \uc9c1\uacb0 \uc0c1\ud0dc\uc5d0\uc11c managed settings\uc5d0 modelPricing\uc744 \ub123\uace0, /usage\uc5d0 configured rates\uac00 \ud45c\uc2dc\ub418\ub294\uc9c0, \ub300\uc2dc\ubcf4\ub4dc\uc5d0\uc11c\ub294 \uc5b4\ub5bb\uac8c \ubcf4\uc774\ub294\uc9c0 \ube44\uad50\ud574 \ubcf4\uc138\uc694. \ub05d\ub098\uba74 \ubc31\uc5c5\uc73c\ub85c \uc6d0\ubcf5\ud569\ub2c8\ub2e4.",
+    17: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 OTel \uc9c0\ud45c: token.usage(type\ubcc4), cost.usage, session.count, lines_of_code.count, commit\uacfc PR, active_time.total\n\u2022 \uc774\uc0c1 \uc9d5\ud6c4: cacheRead \ub0ae\uc74c, input \uae09\uc99d, Opus \ube44\uc911, \ud2b9\uc815 \uc0ac\uc6a9\uc790 \uae09\uc99d, \ubd84\ub958\uae30 \ud638\ucd9c \ube44\uc911\uacfc \uac01 \ucc98\ubc29\n\u2022 Admin API: \uadf8\ub8f9 \uae30\ubcf8\uac12 POST, effective \uc870\ud68c, amount\ub294 US \uc13c\ud2b8 \ubb38\uc790\uc5f4, \uc0ac\uc6a9\uc790 \ud55c\ub3c4 \uc6b0\uc120, write \ud0a4\ub294 \uc18c\uc218\ub9cc\n\n\uc790\uc8fc \ubc1b\ub294 \uc9c8\ubb38\uc785\ub2c8\ub2e4. \uc2dc\uac04\uc774 \ub0a8\uac70\ub098 \uc9c8\ubb38\uc774 \ub098\uc624\uba74 \ud3bc\uce69\ub2c8\ub2e4.\n\n\uccab\uc9f8, \ub300\uc2dc\ubcf4\ub4dc\uc758 \uc22b\uc790\ub294 \uc774 \uc9c0\ud45c\ub4e4\uc5d0\uc11c \uc635\ub2c8\ub2e4. token.usage\uc758 type \uc18d\uc131\uc73c\ub85c \uce90\uc2dc \ud6a8\uc728\uc744 \ubcf4\uace0, cost.usage\ub294 \ucd94\uc815 \ube44\uc6a9\uc785\ub2c8\ub2e4.\n\ub458\uc9f8, \uc774\uc0c1 \uc9d5\ud6c4\uc785\ub2c8\ub2e4. \uc608\ub97c \ub4e4\uc5b4 cacheRead \ube44\uc728\uc774 \ub0ae\uc73c\uba74 \uae34 \ud734\uc2dd \ud6c4 \uc7ac\uac1c\ub098 \uc790\uc8fc \ubc14\ub00c\ub294 \uc811\ub450\ubd80\ub97c \uc758\uc2ec\ud558\uace0 \uc138\uc158 \uc704\uc0dd\uc73c\ub85c \ucc98\ubc29\ud569\ub2c8\ub2e4. Opus \ube44\uc911\uc774 \ub192\uc73c\uba74 \uae30\ubcf8 \ubaa8\ub378\uc774 \uace0\uc815\ub418\uc9c0 \uc54a\uc740 \uac83\uc774\uace0, \ubd84\ub958\uae30 \ud638\ucd9c \ube44\uc911\uc774 \ud06c\uba74 Ch2 Lab 2\uc5d0\uc11c \ubcf8 auto mode \ubd84\ub958\uae30 \ubaa8\ub378\uc744 \uba85\uc2dc\ud569\ub2c8\ub2e4.\n\uc14b\uc9f8, Admin API\ub85c \uadf8\ub8f9 \uae30\ubcf8\uac12\uc744 \uac78\uace0 \uc608\uc678 \uc0ac\uc6a9\uc790\ub97c \ub461\ub2c8\ub2e4. amount\ub294 US \uc13c\ud2b8 \ubb38\uc790\uc5f4\uc774\ub77c \ud558\ub8e8 50\ub2ec\ub7ec\ub294 5000\uc785\ub2c8\ub2e4.",
+    18: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \ubcf4\uae30: Bedrock\uc740 Analytics\uac00 \uc5c6\uc73c\ub2c8 OTel\uc744 \uc815\ucc45\uc73c\ub85c\n\u2022 modelPricing\uc73c\ub85c \uacc4\uc57d \ub2e8\uac00 \ud45c\uc2dc, \uc815\uc0b0\uc740 AWS\uc640 \ub300\uc0ac\n\u2022 \ub9c9\uae30: \uac8c\uc774\ud2b8\uc6e8\uc774\uc758 SSO, \uadf8\ub8f9 \uc815\ucc45, \uc9c0\ucd9c \ud55c\ub3c4, \uc0ac\uc124\ub9dd \uc804\uc6a9\n\nChapter 6\uc744 \uc138 \uc904\ub85c \uc815\ub9ac\ud569\ub2c8\ub2e4.\n\n\ubcf4\uae30\ub294 OTel\uc744 \uc815\ucc45\uc73c\ub85c \ucf1c\uace0 modelPricing\uc73c\ub85c \uccad\uad6c\uc11c\uc5d0 \uac00\uae5d\uac8c \ub9de\ucd94\ub294 \uac83, \ub9c9\uae30\ub294 \uac8c\uc774\ud2b8\uc6e8\uc774\uc758 \uadf8\ub8f9 \uc815\ucc45\uacfc \uc9c0\ucd9c \ud55c\ub3c4\uc785\ub2c8\ub2e4.\nChapter 5\uc758 \ub35c \uc4f0\uae30\uc640 \ud569\uce58\uba74, \ub35c \uc4f0\uace0, \ubcf4\uace0, \ub9c9\uae30\uc785\ub2c8\ub2e4. \uc774\uac83\uc73c\ub85c \uc774\ud2c0 \uacfc\uc815\uc758 \ub9c8\uc9c0\ub9c9 \ucc55\ud130\ub97c \ub9c8\uce69\ub2c8\ub2e4.",
+    19: "[0.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc74c\uc740 Capstone \uc1fc\ucf00\uc774\uc2a4\uc640 Closing\n\u2022 \uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi\n\n\uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774\uac83\uc73c\ub85c \uc5ec\uc12f \uac1c \ucc55\ud130\ub97c \ubaa8\ub450 \ub9c8\ucce4\uc2b5\ub2c8\ub2e4. \ub2e4\uc74c\uc740 Capstone \uc1fc\ucf00\uc774\uc2a4\uc640 Closing\uc785\ub2c8\ub2e4.\n\uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi \ucc44\ub110\uc5d0 \uc5b8\uc81c\ub4e0 \ud3b8\ud558\uac8c \ub0a8\uaca8 \uc8fc\uc138\uc694."
+  };
+  const deck = new SlideFramework({
+    logoSrc: "./image/aws-logo-white.png",
+
+    footer: "\u00a9 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.",
+
+    pagination: true,
+    sidebar: true,
+    presenterNotes: presenterNotes,
+    onSlideChange: (index, slide) => {}
+  });
+</script>
+</body>
+</html>

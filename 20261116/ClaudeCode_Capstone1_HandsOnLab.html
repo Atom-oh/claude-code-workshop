@@ -700,12 +700,12 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <p class="body">이 캡스톤은 새 기술을 가르치지 않습니다. <strong>Ch1~6에서 배운 것을 실전 배치</strong>합니다.</p>
   <table class="tbl">
     <tr><th>챕터</th><th>이 캡스톤에서 재등장하는 곳</th></tr>
-    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 설치부터 Headless까지</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
-    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Subagents</a></td><td>M2~M3: code-reviewer 서브에이전트로 물리/충돌 코드 리뷰, 레벨 설계 병행</td></tr>
-    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Admin Setup</a></td><td>배치 결정의 배경: 이 캡스톤은 Bedrock을 쓰지 않아 모델 통제선 밖에서도 완주됩니다, "AI가 필요 없는 곳엔 안 쓴다"도 설계입니다</td></tr>
-    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Settings, 훅과 스킬</a></td><td>OPT: 하네스 성숙화, 훅과 스킬을 프로젝트 자산으로 승격하는 마무리 의식</td></tr>
-    <tr><td><a href="ClaudeCode_Ch5_HandsOnLab.html" style="color:#c9a2ff">Ch5 CLI Reference</a></td><td>확장 방향: 헤드리스 패턴으로 배포 후 URL 스모크를 파이프라인화</td></tr>
-    <tr><td><a href="ClaudeCode_Ch6_HandsOnLab.html" style="color:#c9a2ff">Ch6 Agent SDK</a></td><td>확장 방향: 레벨 생성기를 코드에서 부르는 다음 단계, query 한 번이면 새 스테이지가 배열로</td></tr>
+    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 Claude Code는 어떻게 동작하는가</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
+    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>배치 결정의 배경: 이 캡스톤은 Bedrock을 쓰지 않아 모델 통제선 밖에서도 완주됩니다, "AI가 필요 없는 곳엔 안 쓴다"도 설계입니다</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Subagent로 일 나눠 맡기기</a></td><td>M2~M3: code-reviewer 서브에이전트로 물리/충돌 코드 리뷰, 레벨 설계 병행</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Headless 통합과 CI</a></td><td>확장 방향: 헤드리스 패턴으로 배포 후 URL 스모크를 파이프라인화</td></tr>
+    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Claude Code 확장하기</a></td><td>OPT: 하네스 성숙화, 훅과 스킬을 프로젝트 자산으로 승격하는 마무리 의식</td></tr>
+    <tr><td><a href="ClaudeCode_AgentSDK_HandsOnLab.html" style="color:#c9a2ff">SDK Agent SDK 자율 실습</a></td><td>확장 방향: 레벨 생성기를 코드에서 부르는 다음 단계, query 한 번이면 새 스테이지가 배열로</td></tr>
   </table>
 
   <div class="callout tip">
@@ -851,7 +851,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
 <section class="task" id="m2">
   <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 엔진</h2><span class="time-badge">30분</span></div>
   <p class="task-goal">게임 루프, 입력, 중력과 점프, 그리고 <strong>Clawd가 화면에 서 있는 것</strong>까지가 이 Phase의 전부입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 code-reviewer 서브에이전트에게 물리/충돌 코드 리뷰를 맡겨 보세요.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 code-reviewer 서브에이전트에게 물리/충돌 코드 리뷰를 맡겨 보세요.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 1(엔진)만 구현하고 멈춰줘. 640x360 캔버스, 게임 루프, 좌우 이동과 점프(코요테 타임 0.1초, 점프 버퍼 0.1초), 임시 바닥 하나, 그리고 요구사항 2)의 CLAWD 픽셀 배열 렌더(정지 시 2프레임 다리 애니메이션이면 더 좋다). 끝나면 실행 방법을 알려줘.</code></pre>
@@ -901,7 +901,7 @@ function step(dt) {
 <section class="task" id="m3">
   <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2 + 3, 레벨과 게임플레이</h2><span class="time-badge">50분</span></div>
   <p class="task-goal">타일 맵과 카메라, 그리고 코인/가시/깃발까지. <strong>게임이 게임이 되는</strong> 구간입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 병렬 감각. 레벨 배열을 설계하는 동안 코인/가시 로직 보강을 서브에이전트로 병행할 수 있습니다.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 병렬 감각. 레벨 배열을 설계하는 동안 코인/가시 로직 보강을 서브에이전트로 병행할 수 있습니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, Phase 2</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 2(레벨과 카메라)만 구현해줘. 요구사항 4)의 타일 문자열 맵(16px)과 AABB 타일 충돌, 화면 2~3배 폭 레벨, Clawd를 따라가는 카메라(레벨 경계 클램프)까지.</code></pre>
@@ -944,7 +944,7 @@ XXXX...XXXXX...XXXXXXXXXXXXXX...XXXXXXXX..XXXXXXXXXX</code></pre>
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 4, 배포와 개장</h2><span class="time-badge">30분</span></div>
   <p class="task-goal">S3 + CloudFront로 세상에 공개합니다. 이 캡스톤의 deploy는 <strong>.env 로드가 필요 없습니다</strong>(Bedrock 미사용).</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 검증 루프가 배포 스모크(curl 200)로 확장됩니다. 자동화가 궁금하면 <a href="ClaudeCode_Ch5_HandsOnLab.html" style="color:#c9a2ff">Ch5</a>의 헤드리스 패턴이 다음입니다.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 검증 루프가 배포 스모크(curl 200)로 확장됩니다. 자동화가 궁금하면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴이 다음입니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 4(배포)를 구현해줘. CDK 단일 스택: S3 버킷(비공개) + CloudFront(OAC) + BucketDeployment로 frontend/를 서빙, 리전 ap-northeast-2, RemovalPolicy DESTROY, 출력에 CloudFront URL.</code></pre>

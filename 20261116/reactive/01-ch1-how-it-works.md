@@ -6,7 +6,7 @@ block: ch1-how-it-works
 @type: cover
 @background: linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%)
 
-# Chapter 1. 작동 원리
+# Chapter 1. Claude Code는 어떻게 동작하는가
 ## 에이전트 루프부터 이틀 동안 배울 내용까지 (v2.1.319, 2026-11-08 리허설 검증)
 Choi, WooHyung
 Prin. Solutions Architect
@@ -52,7 +52,7 @@ if (!window.__fsiLoaded) {
     <div class="pick"><span class="k">PART 04 / 6분</span><span class="t">이틀 동안 배울 것</span><span class="d">관리와 활용, 두 갈래</span></div>
   </div>
   <div class="fsi-grid-2">
-    <div class="pick lab"><span class="k">LAB / 30분, Ch2 강의 뒤 11:20</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
+    <div class="pick lab"><span class="k">LAB / 30분, Ch2 강의 뒤 11:30</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
     <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">CLAUDE.md 계층, 추론 리전과 데이터 위치</span></div>
   </div>
 </div>
@@ -63,13 +63,13 @@ if (!window.__fsiLoaded) {
 {timing: 0.5min}
 [요약]
 • 강의는 네 Part, 7분 8분 9분 6분으로 총 30분
-• 실습 30분은 Ch2 강의 뒤 11:20에 시작 (Preflight + 에이전트 루프 관찰)
+• 실습 30분은 Ch2 강의 뒤 11:30에 시작 (Preflight + 에이전트 루프 관찰)
 • 더 알아보기는 시간이 남거나 질문이 나올 때 사용
 
 오늘은 네 Part로 진행합니다.
 첫째, 한 번의 요청이 처리되는 에이전트 루프를 보고, 둘째, 그 루프에 무엇이 실리고 어디에 남는지 봅니다.
 셋째, 금융권에서 가장 많이 묻는 권한과 Bedrock 데이터 경로를 정리하고, 마지막으로 이틀 동안 어떤 순서로 배우는지 지도를 드리겠습니다.
-Ch1 실습 30분은 바로 이어지지 않고, Ch2 강의가 끝난 뒤 11시 20분에 시작합니다. 뒤쪽의 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
+Ch1 실습 30분은 바로 이어지지 않고, Ch2 강의가 끝난 뒤 11시 30분에 시작합니다. 뒤쪽의 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
 :::
 
 ---
@@ -181,25 +181,25 @@ Ch1 실습 30분은 바로 이어지지 않고, Ch2 강의가 끝난 뒤 11시 2
 <div class="fsi fsi-split wide-left fsi-hub">
   <div class="hub" data-pick="hub">
     <button class="pick" data-key="input"><span class="k">INPUT / Ch1</span><span class="t">입력과 세션</span></button>
-    <button class="pick" data-key="context"><span class="k">CONTEXT / Ch1, Ch6</span><span class="t">컨텍스트</span></button>
-    <button class="pick" data-key="policy"><span class="k">POLICY / Ch2, Ch3</span><span class="t">조직 정책</span></button>
-    <button class="pick" data-key="subagents"><span class="k">SUBAGENTS / Ch4</span><span class="t">역할별 에이전트</span></button>
+    <button class="pick" data-key="context"><span class="k">CONTEXT / Ch1, Ch5</span><span class="t">컨텍스트</span></button>
+    <button class="pick" data-key="policy"><span class="k">POLICY / Ch2</span><span class="t">조직 정책</span></button>
+    <button class="pick" data-key="subagents"><span class="k">SUBAGENTS / Ch3</span><span class="t">역할별 에이전트</span></button>
     <div class="core"><span class="k">AGENT LOOP</span><span class="t">에이전트 루프</span><span class="d">수집, 수행, 검증을 반복</span></div>
-    <button class="pick" data-key="tools"><span class="k">TOOLS / Ch1, Ch6</span><span class="t">도구 실행</span></button>
-    <button class="pick" data-key="hooks"><span class="k">HOOKS / Ch3, Ch6</span><span class="t">검사와 기록</span></button>
-    <button class="pick" data-key="extend"><span class="k">EXTEND / Ch5</span><span class="t">플러그인, MCP, mod</span></button>
-    <button class="pick" data-key="output"><span class="k">OUTPUT / Ch1, Ch3</span><span class="t">결과</span></button>
+    <button class="pick" data-key="tools"><span class="k">TOOLS / Ch1, Ch5</span><span class="t">도구 실행</span></button>
+    <button class="pick" data-key="hooks"><span class="k">HOOKS / Ch2, Ch6</span><span class="t">검사와 기록</span></button>
+    <button class="pick" data-key="extend"><span class="k">EXTEND / Ch4</span><span class="t">플러그인, MCP, mod</span></button>
+    <button class="pick" data-key="output"><span class="k">OUTPUT / Ch1, Ch2</span><span class="t">결과</span></button>
   </div>
   <div class="panel" data-pick-panel="hub">
     <p class="hint">여덟 칸 중 하나를 누르거나 아래 화살표를 누르면, 그 영역이 하는 일과 다루는 챕터가 여기에 나옵니다.</p>
     <div data-for="input"><h4>입력과 세션</h4><p>CLI, IDE, <span class="rp-detail" tabindex="0" data-tip="Continuous Integration. 코드 변경마다 빌드와 테스트를 자동으로 돌리는 파이프라인">CI</span> 어디서든 같은 루프가 돕니다. 세션은 이어 갈 수 있고, 권한 모드가 확인 방식을 정합니다.</p><p><span class="tag">Ch1</span>오늘 Part 2와 Part 3</p></div>
-    <div data-for="context"><h4>컨텍스트</h4><p>CLAUDE.md, 자동 메모리, 스킬, 대화 압축. 모델에 매번 함께 보내는 내용이라 곧 비용입니다.</p><p><span class="tag">Ch1</span><span class="tag">Ch6</span>무엇이 실리는지, 어떻게 줄이는지</p></div>
-    <div data-for="policy"><h4>조직 정책</h4><p>managed settings와 권한 규칙, 모델 고정, 지출 한도. 사용자가 바꿀 수 없는 설정으로 배포합니다.</p><p><span class="tag">Ch2</span><span class="tag">Ch3</span>배포 경로와 가드레일</p></div>
-    <div data-for="subagents"><h4>역할별 에이전트</h4><p>Subagent는 각자 따로 쓰는 컨텍스트와 도구 권한을 가지고, 병렬로 실행할 수 있습니다.</p><p><span class="tag">Ch4</span>역할 정의와 디스패치</p></div>
-    <div data-for="tools"><h4>도구 실행</h4><p>파일, 검색, Bash, WebFetch. 반복해서 보내는 앞부분은 프롬프트 캐시로 비용을 줄입니다.</p><p><span class="tag">Ch1</span><span class="tag">Ch6</span>도구 종류와 캐시</p></div>
-    <div data-for="hooks"><h4>검사와 기록</h4><p>도구 실행 전후에 끼어드는 검사(<span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>), 그리고 <span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span>과 세션 로그로 남기는 기록입니다.</p><p><span class="tag">Ch3</span><span class="tag">Ch6</span>막는 훅과 보는 계측</p></div>
-    <div data-for="extend"><h4>플러그인, MCP, mod</h4><p>팀 도구를 묶어 배포하고(플러그인), 외부 시스템을 연결하고(<span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 사내 시스템을 Claude Code 도구로 붙이는 표준">MCP</span>), 화면과 동작을 바꿉니다(mod).</p><p><span class="tag">Ch5</span>팀의 플랫폼으로 확장</p></div>
-    <div data-for="output"><h4>결과</h4><p>바뀐 코드와 확인한 출력, 그리고 남는 기록(세션 <span class="rp-detail" tabindex="0" data-tip="JSON Lines. 한 줄에 JSON 객체 하나씩 적는 텍스트 형식">JSONL</span>, CloudTrail)입니다.</p><p><span class="tag">Ch1</span><span class="tag">Ch3</span>무엇이 어디에 남는가</p></div>
+    <div data-for="context"><h4>컨텍스트</h4><p>CLAUDE.md, 자동 메모리, 스킬, 대화 압축. 모델에 매번 함께 보내는 내용이라 곧 비용입니다.</p><p><span class="tag">Ch1</span><span class="tag">Ch5</span>무엇이 실리는지, 어떻게 줄이는지</p></div>
+    <div data-for="policy"><h4>조직 정책</h4><p>managed settings와 권한 규칙, 모델 고정, 지출 한도. 사용자가 바꿀 수 없는 설정으로 배포합니다.</p><p><span class="tag">Ch2</span>배포 경로와 가드레일</p></div>
+    <div data-for="subagents"><h4>역할별 에이전트</h4><p>Subagent는 각자 따로 쓰는 컨텍스트와 도구 권한을 가지고, 병렬로 실행할 수 있습니다.</p><p><span class="tag">Ch3</span>역할 정의와 디스패치</p></div>
+    <div data-for="tools"><h4>도구 실행</h4><p>파일, 검색, Bash, WebFetch. 반복해서 보내는 앞부분은 프롬프트 캐시로 비용을 줄입니다.</p><p><span class="tag">Ch1</span><span class="tag">Ch5</span>도구 종류와 캐시</p></div>
+    <div data-for="hooks"><h4>검사와 기록</h4><p>도구 실행 전후에 끼어드는 검사(<span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>), 그리고 <span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span>과 세션 로그로 남기는 기록입니다.</p><p><span class="tag">Ch2</span><span class="tag">Ch6</span>막는 훅과 보는 계측</p></div>
+    <div data-for="extend"><h4>플러그인, MCP, mod</h4><p>팀 도구를 묶어 배포하고(플러그인), 외부 시스템을 연결하고(<span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 사내 시스템을 Claude Code 도구로 붙이는 표준">MCP</span>), 화면과 동작을 바꿉니다(mod).</p><p><span class="tag">Ch4</span>팀의 플랫폼으로 확장</p></div>
+    <div data-for="output"><h4>결과</h4><p>바뀐 코드와 확인한 출력, 그리고 남는 기록(세션 <span class="rp-detail" tabindex="0" data-tip="JSON Lines. 한 줄에 JSON 객체 하나씩 적는 텍스트 형식">JSONL</span>, CloudTrail)입니다.</p><p><span class="tag">Ch1</span><span class="tag">Ch2</span>무엇이 어디에 남는가</p></div>
   </div>
 </div>
 :::
@@ -219,7 +219,7 @@ Ch1 실습 30분은 바로 이어지지 않고, Ch2 강의가 끝난 뒤 11시 2
 이 한 장이 이틀 과정의 지도입니다. 가운데에 에이전트 루프가 있고, 주변 여덟 칸이 그 루프에 붙는 것들입니다.
 {cue: demo}
 아래 화살표로 하나씩 열어 보겠습니다. 입력과 세션, 컨텍스트, 조직 정책, 역할별 에이전트, 도구 실행, 검사와 기록, 확장, 결과 순서입니다.
-칸마다 오른쪽에 담당 챕터가 나오는데요, 예를 들어 조직 정책은 Ch2와 Ch3, 확장은 Ch5에서 다룹니다.
+칸마다 오른쪽에 담당 챕터가 나오는데요, 예를 들어 조직 정책은 Ch2, 확장은 Ch4에서 다룹니다.
 오늘 Ch1은 이 중 루프와 입력, 컨텍스트, 결과를 깊게 보고, 나머지는 어디서 나오는지만 짚고 넘어가겠습니다.
 
 [약어]
@@ -352,9 +352,9 @@ Ch1 실습 30분은 바로 이어지지 않고, Ch2 강의가 끝난 뒤 11시 2
     <p class="hint">왼쪽 도구를 누르면 무엇을 하는지, 무엇을 조심해야 하는지 보여 줍니다.</p>
     <div data-for="file"><h4>파일 작업</h4><p>Read, Write, Edit 같은 도구로 파일을 읽고 고칩니다. Claude가 한 파일 편집은 체크포인트로 되돌릴 수 있습니다.</p><p><span class="tag info">Part 2</span>체크포인트가 되돌리는 범위</p></div>
     <div data-for="search"><h4>검색</h4><p>Glob으로 파일 이름 패턴을, Grep으로 내용을 찾습니다. 수집 단계에서 가장 많이 쓰이는 도구입니다.</p><p><span class="tag ok">읽기 전용</span>파일을 바꾸지 않음</p></div>
-    <div data-for="exec"><h4>실행: Bash</h4><p><b>가장 강력하고 가장 위험한 도구</b>입니다. 테스트와 빌드는 물론, 배포나 git push처럼 되돌릴 수 없는 일도 할 수 있습니다.</p><p><span class="tag no">통제 대상</span>권한 규칙과 훅으로 미리 막음 (Ch3)</p></div>
+    <div data-for="exec"><h4>실행: Bash</h4><p><b>가장 강력하고 가장 위험한 도구</b>입니다. 테스트와 빌드는 물론, 배포나 git push처럼 되돌릴 수 없는 일도 할 수 있습니다.</p><p><span class="tag no">통제 대상</span>권한 규칙과 훅으로 미리 막음 (Ch2)</p></div>
     <div data-for="web"><h4>웹: WebFetch와 WebSearch</h4><p>WebFetch는 Bedrock에서 URL을 읽는 내장 도구입니다. WebSearch는 Anthropic 내장 웹 검색이라 <b>Bedrock 경로에는 없습니다</b>.</p><p><span class="tag cond">Bedrock</span>검색이 필요하면 WebFetch에 URL 지정, 또는 MCP</p></div>
-    <div data-for="code"><h4>코드 인텔리전스</h4><p>타입 오류를 보거나 정의로 이동하는 기능은 플러그인으로 더합니다.</p><p><span class="tag info">Ch5</span>도구를 더하는 MCP, 도구를 묶어 배포하는 플러그인</p></div>
+    <div data-for="code"><h4>코드 인텔리전스</h4><p>타입 오류를 보거나 정의로 이동하는 기능은 플러그인으로 더합니다.</p><p><span class="tag info">Ch4</span>도구를 더하는 MCP, 도구를 묶어 배포하는 플러그인</p></div>
     <div class="more4">
       <div><b>Bash</b><span>가장 강력하고 가장 위험</span></div>
       <div><b>WebFetch</b><span>Bedrock에서 URL 읽기 (내장)</span></div>
@@ -374,15 +374,15 @@ Ch1 실습 30분은 바로 이어지지 않고, Ch2 강의가 끝난 뒤 11시 2
 {timing: 2min}
 [요약]
 • 다섯 종류: 파일, 검색, 실행, 웹, 코드 인텔리전스
-• Bash가 가장 강력하고 가장 위험, 통제의 중심 (Ch3)
+• Bash가 가장 강력하고 가장 위험, 통제의 중심 (Ch2)
 • Bedrock에는 WebSearch가 없고 WebFetch는 있음
-• 도구는 MCP로 더하고 플러그인으로 묶어 배포 (Ch5)
+• 도구는 MCP로 더하고 플러그인으로 묶어 배포 (Ch4)
 
 도구가 Claude Code를 에이전트로 만듭니다. 내장 도구는 크게 다섯 종류입니다.
 {cue: demo}
-하나씩 눌러 보겠습니다. 파일 작업과 검색은 수집과 수행 단계의 기본입니다. 실행, 즉 Bash는 테스트와 빌드를 돌리는 가장 강력한 도구이면서, 배포나 push처럼 되돌릴 수 없는 일도 할 수 있는 가장 위험한 도구입니다. 그래서 Ch3의 통제는 대부분 Bash를 향합니다.
+하나씩 눌러 보겠습니다. 파일 작업과 검색은 수집과 수행 단계의 기본입니다. 실행, 즉 Bash는 테스트와 빌드를 돌리는 가장 강력한 도구이면서, 배포나 push처럼 되돌릴 수 없는 일도 할 수 있는 가장 위험한 도구입니다. 그래서 Ch2의 통제는 대부분 Bash를 향합니다.
 웹은 Bedrock 경로에서 차이가 있습니다. WebFetch는 되지만 WebSearch는 없습니다. 바로 다음 퀴즈에서 확인하겠습니다.
-코드 인텔리전스는 플러그인으로 더하고, 회사 도구는 MCP로 붙여 플러그인으로 묶어 배포합니다. 이건 Ch5입니다.
+코드 인텔리전스는 플러그인으로 더하고, 회사 도구는 MCP로 붙여 플러그인으로 묶어 배포합니다. 이건 Ch4입니다.
 
 [약어]
 • MCP: Model Context Protocol, 외부 시스템을 도구로 붙이는 표준
@@ -518,7 +518,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 시스템 프롬프트, CLAUDE.md는 항상, 자동 메모리는 세션 시작에, 스킬과 MCP는 필요할 때
 • 대화와 도구 결과가 가장 빨리 커지고 자동 압축 대상
 • /context로 지금 무엇이 자리를 차지하는지 확인
-• 항목마다 줄이는 방법이 다름 (Ch6에서 실습)
+• 항목마다 줄이는 방법이 다름 (Ch5에서 실습)
 
 컨텍스트는 모델에 매번 함께 보내는 내용입니다. 많을수록 비용이 커지고, 회사 입장에서는 밖으로 나가는 데이터의 범위이기도 합니다.
 {cue: demo}
@@ -578,15 +578,15 @@ QUICK CHECK, 손을 들어 답해 주세요
      snip:{hd:'세션 안에서 되감기',path:'Claude Code 프롬프트',lines:['Esc Esc    # 복원 메뉴','/rewind    # 같은 기능','','# 메뉴에서 되돌릴 범위 선택: 코드, 대화'],hl:[1,2,4],note:'체크포인트는 실수한 <b>편집</b>을 되돌리는 안전망이지, 모든 일을 되돌리는 장치가 아닙니다.'}},
     {kicker:'STEP 5', title:'되돌릴 수 없는 일은 미리 막습니다',
      body:'DB 변경, 외부 API 호출, 배포, 전송, git push는 체크포인트 밖입니다. 이런 일은 <b>권한 규칙과 훅으로 실행 전에</b> 막습니다.',
-     facts:['사후 되돌리기가 아니라 사전 차단','권한 규칙: 허용, 확인, 거부','훅: 도구 실행 전 검사 (Ch3)'],
+     facts:['사후 되돌리기가 아니라 사전 차단','권한 규칙: 허용, 확인, 거부','훅: 도구 실행 전 검사 (Ch2)'],
      zones:[{x:20,y:40,w:560,h:410,l:'되돌릴 수 있음',tone:'success'},{x:610,y:40,w:550,h:410,l:'되돌릴 수 없음',tone:'danger'}],
      nodes:[{id:'r',x:320,y:200,w:230,h:90,t:'Esc 두 번',s:'/rewind',c:'success'},{id:'e1',x:50,y:110,w:230,h:84,t:'파일 편집',s:'Claude가 한 것',c:'success'},{id:'e2',x:50,y:300,w:230,h:84,t:'대화',s:'이전 시점으로',c:'success'},
-            {id:'gd',x:630,y:190,w:210,h:110,t:'권한 규칙',s:'훅 (Ch3)',c:'warning'},
+            {id:'gd',x:630,y:190,w:210,h:110,t:'권한 규칙',s:'훅 (Ch2)',c:'warning'},
             {id:'x1',x:880,y:70,w:250,h:62,t:'DB 변경',c:'danger'},{id:'x2',x:880,y:145,w:250,h:62,t:'외부 API 호출',c:'danger'},{id:'x3',x:880,y:220,w:250,h:62,t:'배포',c:'danger'},{id:'x4',x:880,y:295,w:250,h:62,t:'메시지, 메일 전송',c:'danger'},{id:'x5',x:880,y:370,w:250,h:62,t:'git push',c:'danger'}],
      hot:['gd','x1','x2','x3','x4','x5'],
      edges:[{f:'gd',t:'x1',c:'warning',o:0,side:'h'},{f:'gd',t:'x2',c:'warning',o:1,side:'h'},{f:'gd',t:'x3',c:'warning',o:2,side:'h'},{f:'gd',t:'x4',c:'warning',o:3,side:'h'},{f:'gd',t:'x5',c:'warning',o:4,side:'h'}],
      stagger:0.25,
-     snip:{hd:'실행 전에 막는 자리',path:'Ch3에서 실습',lines:['# 체크포인트 밖의 일','git push, 배포, 메일 전송','DB 변경, 외부 API 호출','','# 실행 전에 거는 통제','permissions.deny     # 권한 규칙','PreToolUse 훅        # 도구 실행 전 검사'],hl:[6,7],note:'Ch3에서 DLP 훅으로 이 자리를 직접 막아 봅니다.'}}
+     snip:{hd:'실행 전에 막는 자리',path:'Ch2에서 실습',lines:['# 체크포인트 밖의 일','git push, 배포, 메일 전송','DB 변경, 외부 API 호출','','# 실행 전에 거는 통제','permissions.deny     # 권한 규칙','PreToolUse 훅        # 도구 실행 전 검사'],hl:[6,7],note:'Ch2에서 DLP 훅으로 이 자리를 직접 막아 봅니다.'}}
   ], {legend:[['accent','Claude Code'],['info','파일, 명령, 추론'],['success','되돌릴 수 있음'],['danger','되돌릴 수 없음']]});
 });
 :::
@@ -598,7 +598,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • /context, /compact, /clear, /resume과 claude --continue, --resume
 • 보존 기간 cleanupPeriodDays 기본 30일, 정책으로 짧게 배포 (Ch2)
 • 체크포인트(Esc 두 번, /rewind)는 Claude가 한 편집과 대화만 되돌림, 복원 메뉴에서 범위 선택
-• DB 변경, 배포, git push 같은 일은 권한 규칙과 훅으로 사전 차단 (Ch3)
+• DB 변경, 배포, git push 같은 일은 권한 규칙과 훅으로 사전 차단 (Ch2)
 
 {cue: demo}
 세션이 어디에 남는지 단계별로 보겠습니다.
@@ -631,12 +631,12 @@ QUICK CHECK, 손을 들어 답해 주세요
 [요약]
 • CLAUDE.md는 매 요청마다 실리므로 짧게, 200줄 이하
 • 작업별 절차는 스킬로 옮겨 필요할 때만 로드
-• Ch6에서 CLAUDE.md 다이어트를 실습
+• Ch5에서 CLAUDE.md 다이어트를 실습
 
 {cue: pause}
 Part 2에서 하나만 기억하신다면 이 숫자입니다. CLAUDE.md는 200줄 이하.
 방금 본 것처럼 CLAUDE.md는 매 요청마다 실립니다. 규칙을 많이 넣을수록 모든 요청이 비싸지고, 정작 중요한 지침이 묻힙니다.
-배포 절차나 특정 작업 방법처럼 가끔 필요한 내용은 스킬로 옮겨 필요할 때만 불러오는 것이 공식 문서의 권고입니다. Ch6에서 직접 줄여 보겠습니다.
+배포 절차나 특정 작업 방법처럼 가끔 필요한 내용은 스킬로 옮겨 필요할 때만 불러오는 것이 공식 문서의 권고입니다. Ch5에서 직접 줄여 보겠습니다.
 
 [출처]
 • code.claude.com/docs/en/costs
@@ -690,7 +690,7 @@ Part 2에서 하나만 기억하신다면 이 숫자입니다. CLAUDE.md는 200�
     <p class="cap">순환 순서: auto, default(화면 표기 manual), acceptEdits, plan. 터미널 문구는 설명용 예시</p>
   </div>
   <div class="modes" id="perm-modes">
-    <div class="m" data-m="auto"><span class="n">auto</span><span class="b">분류기가 위험한 동작만 차단</span><span class="r">Bedrock 대화형 기본. deny, ask 경계와 managed 설정을 정한 뒤 허용 (Ch3)</span></div>
+    <div class="m" data-m="auto"><span class="n">auto</span><span class="b">분류기가 위험한 동작만 차단</span><span class="r">Bedrock 대화형 기본. deny, ask 경계와 managed 설정을 정한 뒤 허용 (Ch2)</span></div>
     <div class="m" data-m="default"><span class="n">default (manual)</span><span class="b">읽기만 자동, 편집과 명령은 확인</span><span class="r">처음 보는 저장소</span></div>
     <div class="m" data-m="acceptEdits"><span class="n">acceptEdits</span><span class="b">파일 편집과 mkdir, mv, cp 같은 파일 명령은 자동, 그 밖은 확인</span><span class="r">신뢰된 저장소</span></div>
     <div class="m" data-m="plan"><span class="n">plan</span><span class="b">계획 먼저 제안, 승인 전 소스 편집 보류</span><span class="r">레거시 분석, 리뷰</span></div>
@@ -727,12 +727,12 @@ Part 2에서 하나만 기억하신다면 이 숫자입니다. CLAUDE.md는 200�
 [요약]
 • Shift+Tab으로 auto, default(화면 표기 manual), acceptEdits, plan을 순환
 • default는 처음 보는 저장소, acceptEdits는 신뢰된 저장소, plan은 분석과 리뷰
-• auto는 Bedrock 대화형 기본, deny와 ask 경계, managed 설정을 정한 뒤 허용 (Ch3)
+• auto는 Bedrock 대화형 기본, deny와 ask 경계, managed 설정을 정한 뒤 허용 (Ch2)
 • dontAsk는 CI와 헤드리스, bypassPermissions는 조직이 잠금 (Ch2)
 
 {cue: demo}
 권한 모드는 Claude가 무엇을 묻지 않고 할 수 있는지를 정합니다. 왼쪽 터미널에서 Shift+Tab을 눌러 보겠습니다. 아래 화살표로도 넘어갑니다.
-auto에서는 분류기가 위험한 동작만 막고 나머지는 진행합니다. Bedrock 대화형 세션은 이 모드로 시작하고, 그 경계를 어떻게 설계하는지는 Ch3에서 봅니다.
+auto에서는 분류기가 위험한 동작만 막고 나머지는 진행합니다. Bedrock 대화형 세션은 이 모드로 시작하고, 그 경계를 어떻게 설계하는지는 Ch2 Lab 2에서 직접 해 봅니다.
 default로 바꾸면, 화면에는 manual로 표시되는데, 읽기만 자동이고 편집과 명령은 매번 묻습니다. 처음 보는 저장소에 권합니다. acceptEdits는 파일 편집과 mkdir, mv, cp 같은 파일 명령은 자동, 그 밖은 확인이라 신뢰된 저장소에 맞습니다. plan은 계획을 먼저 제안하고 승인 전까지 소스 편집을 보류해서 레거시 분석과 리뷰에 좋습니다.
 오른쪽 아래 두 모드는 순환에 없습니다. dontAsk는 CI와 헤드리스용이고, 모든 확인을 생략하는 bypassPermissions는 조직이 disableBypassPermissionsMode로 잠그는 것을 권합니다.
 :::
@@ -792,15 +792,15 @@ Bedrock 경로의 데이터 흐름과 그 밖의 통신
      zones:Z, nodes:[CC,LO,BR,CT], hot:['cc','lo','br'],
      edges:[{f:'br',t:'cc',c:'info',l:'응답, 도구 호출',o:0},{f:'cc',t:'lo',c:'accent',o:1},{f:'lo',t:'cc',c:'accent',curve:120,side:'v',o:2},{f:'cc',t:'br',c:'info',curve:-60,o:3}],
      loop:true, stagger:0.8,
-     snip:{hd:'한 바퀴',path:'예시 흐름',lines:['# Bedrock 응답','tool_use: Bash(npm test)','','# PC에서 실행','Bash(npm test)   # all passed','','# 결과를 담아 다음 요청'],hl:[2,5],note:'통제는 <b>도구 호출 지점</b>에 겁니다. Ch3의 출발점입니다.'}},
+     snip:{hd:'한 바퀴',path:'예시 흐름',lines:['# Bedrock 응답','tool_use: Bash(npm test)','','# PC에서 실행','Bash(npm test)   # all passed','','# 결과를 담아 다음 요청'],hl:[2,5],note:'통제는 <b>도구 호출 지점</b>에 겁니다. Ch2의 출발점입니다.'}},
     {kicker:'MORE', title:'추론 말고 나가는 길은 넷',
      body:'추론 외의 통신도 목적지와 기본값을 알고 통제합니다. Anthropic 텔레메트리는 <b>기본 꺼짐</b>, OTel(OpenTelemetry)은 <b>설정해야 전송</b>되고 프롬프트 본문은 기본 미수집, 자동 업데이트는 <b>기본 켜짐</b>입니다.',
-     facts:['오류 리포트, 텔레메트리: Bedrock 경로 기본 꺼짐','OpenTelemetry: 조직 수집기, 설정해야 전송, 프롬프트 본문은 기본 미수집','자동 업데이트: DISABLE_AUTOUPDATER, 사내 미러','WebFetch, MCP: 권한 규칙과 허용 목록 (Ch3)'],
+     facts:['오류 리포트, 텔레메트리: Bedrock 경로 기본 꺼짐','OpenTelemetry: 조직 수집기, 설정해야 전송, 프롬프트 본문은 기본 미수집','자동 업데이트: DISABLE_AUTOUPDATER, 사내 미러','WebFetch, MCP: 권한 규칙과 허용 목록 (Ch2)'],
      zones:[{x:20,y:40,w:440,h:410,l:'개발자 PC'},{x:540,y:40,w:620,h:410,l:'목적지'}],
      nodes:[CC,{id:'d1',x:600,y:80,w:520,h:60,t:'Amazon Bedrock (내 계정)',c:'info'},{id:'d2',x:600,y:154,w:520,h:60,t:'Anthropic: 오류 리포트, 텔레메트리',c:'muted'},{id:'d3',x:600,y:228,w:520,h:60,t:'조직 OTel 수집기 (설정해야 전송)',c:'warning'},{id:'d4',x:600,y:302,w:520,h:60,t:'배포 서버: 자동 업데이트 (기본 켜짐)',c:'accent'},{id:'d5',x:600,y:376,w:520,h:60,t:'WebFetch, MCP 대상 서버',c:'accent'}],
      hot:['cc','d1','d4','d5'],
      edges:[{f:'cc',t:'d1',c:'info',side:'h',o:0},{f:'cc',t:'d2',c:'muted',side:'h',dash:true},{f:'cc',t:'d3',c:'warning',side:'h',dash:true},{f:'cc',t:'d4',c:'accent',side:'h',o:1},{f:'cc',t:'d5',c:'accent',side:'h',o:2}],
-     snip:{hd:'경로별 통제',path:'데이터가 나가는 길 (Bedrock 경로)',lines:['추론 요청    IAM, VPC 엔드포인트, CloudTrail','텔레메트리   Bedrock 경로 기본 꺼짐','OTel         설정해야 전송, 본문 기본 미수집','자동 업데이트 DISABLE_AUTOUPDATER, 사내 미러','WebFetch/MCP 권한 규칙, 허용 목록 (Ch3)'],hl:[1,4,5],note:'점선은 기본으로 꺼져 있는 경로입니다. 자동 업데이트는 <b>기본으로 켜져</b> 있어 DISABLE_AUTOUPDATER로 끄거나 사내 미러를 씁니다.'}}
+     snip:{hd:'경로별 통제',path:'데이터가 나가는 길 (Bedrock 경로)',lines:['추론 요청    IAM, VPC 엔드포인트, CloudTrail','텔레메트리   Bedrock 경로 기본 꺼짐','OTel         설정해야 전송, 본문 기본 미수집','자동 업데이트 DISABLE_AUTOUPDATER, 사내 미러','WebFetch/MCP 권한 규칙, 허용 목록 (Ch2)'],hl:[1,4,5],note:'점선은 기본으로 꺼져 있는 경로입니다. 자동 업데이트는 <b>기본으로 켜져</b> 있어 DISABLE_AUTOUPDATER로 끄거나 사내 미러를 씁니다.'}}
   ], {legend:[['accent','PC에서 실행'],['info','추론 요청과 응답'],['warning','기록과 계측'],['muted','Bedrock 경로 기본 꺼짐']]});
 });
 :::
@@ -820,7 +820,7 @@ Bedrock 경로의 데이터 흐름과 그 밖의 통신
 첫째, 로컬 실행. 파일 읽기, 편집, 명령 실행은 전부 PC에서 일어납니다. 저장소가 통째로 올라가지 않습니다.
 둘째, 요청 전송. 프롬프트와 함께 읽은 코드와 명령 출력도 SigV4로 서명해 보냅니다. VPC 엔드포인트로 네트워크 경로도 통제할 수 있습니다.
 셋째, 추론은 내 계정에서 호출되고 CloudTrail에 남습니다. 실제 처리 리전은 추론 프로필 범위를 따르고, 이 랩은 global 프로필입니다. 뒤쪽 더 알아보기에서 다시 보겠습니다.
-넷째, 응답에 담긴 도구 호출을 PC가 실행하고 다시 요청합니다. 이 도구 호출 지점이 Ch3 통제의 자리입니다.
+넷째, 응답에 담긴 도구 호출을 PC가 실행하고 다시 요청합니다. 이 도구 호출 지점이 Ch2 통제의 자리입니다.
 마지막으로 추론 외의 통신입니다. Anthropic으로 가는 오류 리포트와 텔레메트리는 Bedrock 경로에서 기본으로 꺼져 있고, OTel은 회사가 설정해야 전송되고 프롬프트 본문은 기본으로 수집하지 않습니다.
 
 [약어]
@@ -865,7 +865,7 @@ Bedrock에서 되는 것, 안 되는 것, 조건부인 것
       <div class="rows">
         <div class="row"><span class="c">부분</span><span class="f">Auto mode, 세션 간 메시지, <span class="rp-detail" tabindex="0" data-tip="Zero Data Retention. 요청과 응답 데이터를 보존하지 않는 약정">ZDR</span><em>모델 경로, 설정, 계약 조건에 따라 일부만 동작</em></span></div>
       </div>
-      <p class="foot">조건에 따라 동작합니다. Auto mode의 경계 설계는 Ch3 Part 2에서 다룹니다.</p>
+      <p class="foot">조건에 따라 동작합니다. Auto mode의 경계 설계는 Ch2 Lab 2에서 다룹니다.</p>
     </div>
     <div data-for="tools">
       <div class="rows">
@@ -947,9 +947,9 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
   </div>
   <div class="panel" data-pick-panel="tracks">
     <p class="hint">갈래를 누르면 해당 챕터가 나옵니다.</p>
-    <div data-for="admin"><div class="chs"><div class="ch"><b>Ch2</b>Bedrock 배포와 정책 전달</div><div class="ch"><b>Ch3</b>가드레일, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span></div></div></div>
-    <div data-for="prod"><div class="chs"><div class="ch"><b>Ch4</b>Subagents</div><div class="ch"><b>Ch5</b>Plugins &amp; Mods</div></div></div>
-    <div data-for="common"><div class="chs"><div class="ch"><b>Ch6</b>토큰과 비용</div><div class="ch"><b>Capstone</b>사용량으로 마무리</div></div></div>
+    <div data-for="admin"><div class="chs"><div class="ch"><b>Ch2</b>Bedrock 위에서 안전하게 쓰기 (정책 배포, 가드레일, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>)</div></div></div>
+    <div data-for="prod"><div class="chs"><div class="ch"><b>Ch3</b>Subagent로 일 나눠 맡기기</div><div class="ch"><b>Ch4</b>Claude Code 확장하기</div></div></div>
+    <div data-for="common"><div class="chs"><div class="ch"><b>Ch5</b>비용 효율적으로 쓰기</div><div class="ch"><b>Ch6</b>조직의 비용 보고 통제하기</div><div class="ch"><b>Capstone</b>사용량으로 마무리</div></div></div>
   </div>
 </div>
 :::
@@ -962,15 +962,15 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 :::notes
 {timing: 2min}
 [요약]
-• ADMIN: Ch2 Bedrock 배포와 정책 전달, Ch3 가드레일과 DLP
-• PRODUCTIVITY: Ch4 Subagents, Ch5 Plugins & Mods
-• COMMON: Ch6 토큰과 비용, Capstone은 사용량으로 마무리
+• ADMIN: Ch2 Bedrock 위에서 안전하게 쓰기 (정책 배포, 가드레일, DLP)
+• PRODUCTIVITY: Ch3 Subagent로 일 나눠 맡기기, Ch4 Claude Code 확장하기
+• COMMON: Ch5 비용 효율적으로 쓰기, Ch6 조직의 비용 보고 통제하기, Capstone은 사용량으로 마무리
 
 마지막 Part, 이틀 동안 무엇을 배우는지입니다. 같은 기능을 관리자와 사용자 양쪽에서 보도록 두 갈래로 나눴습니다.
 {cue: demo}
-첫째, ADMIN 갈래는 정책으로 정하고 막는 쪽입니다. Ch2에서 Bedrock 배포와 정책 전달을, Ch3에서 가드레일과 DLP를 다룹니다.
-둘째, PRODUCTIVITY 갈래는 기능을 더해 잘 쓰는 쪽입니다. Ch4 Subagents와 Ch5 Plugins와 Mods입니다.
-셋째, COMMON은 양쪽 모두에게 필요한, 쓴 만큼 보고 줄이는 이야기입니다. Ch6 토큰과 비용, 그리고 Capstone은 사용량으로 마무리합니다.
+첫째, ADMIN 갈래는 정책으로 정하고 막는 쪽입니다. Ch2, Bedrock 위에서 안전하게 쓰기에서 정책 배포와 가드레일, DLP를 함께 다룹니다.
+둘째, PRODUCTIVITY 갈래는 기능을 더해 잘 쓰는 쪽입니다. Ch3에서 Subagent로 일을 나눠 맡기고, Ch4에서 플러그인과 mod로 Claude Code를 확장합니다.
+셋째, COMMON은 양쪽 모두에게 필요한, 쓴 만큼 보고 줄이는 이야기입니다. Ch5에서 비용 효율적으로 쓰는 법을, Ch6에서 조직이 비용을 보고 통제하는 법을 다루고, Capstone은 사용량으로 마무리합니다.
 :::
 
 ---
@@ -984,14 +984,14 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 :::html
 <div class="fsi fsi-split fsi-gloss">
   <div class="fsi-grid-2" data-pick="gloss">
-    <button class="pick" data-key="ctx"><span class="t">컨텍스트</span><span class="k">Ch1, Ch6</span></button>
-    <button class="pick" data-key="md"><span class="t">CLAUDE.md</span><span class="k">Ch1, Ch6</span></button>
+    <button class="pick" data-key="ctx"><span class="t">컨텍스트</span><span class="k">Ch1, Ch5</span></button>
+    <button class="pick" data-key="md"><span class="t">CLAUDE.md</span><span class="k">Ch1, Ch5</span></button>
     <button class="pick" data-key="ms"><span class="t">managed settings</span><span class="k">Ch2</span></button>
-    <button class="pick" data-key="hooks"><span class="t">훅(hooks)</span><span class="k">Ch3</span></button>
-    <button class="pick" data-key="auto"><span class="t">auto mode</span><span class="k">Ch3</span></button>
-    <button class="pick" data-key="sub"><span class="t">Subagent</span><span class="k">Ch4</span></button>
-    <button class="pick" data-key="plugin"><span class="t">플러그인, MCP</span><span class="k">Ch5</span></button>
-    <button class="pick" data-key="mod"><span class="t">mod</span><span class="k">Ch5</span></button>
+    <button class="pick" data-key="hooks"><span class="t">훅(hooks)</span><span class="k">Ch2</span></button>
+    <button class="pick" data-key="auto"><span class="t">auto mode</span><span class="k">Ch2</span></button>
+    <button class="pick" data-key="sub"><span class="t">Subagent</span><span class="k">Ch3</span></button>
+    <button class="pick" data-key="plugin"><span class="t">플러그인, MCP</span><span class="k">Ch4</span></button>
+    <button class="pick" data-key="mod"><span class="t">mod</span><span class="k">Ch4</span></button>
   </div>
   <div class="panel" data-pick-panel="gloss">
     <p class="hint">단어를 누르면 뜻이 나옵니다.</p>
@@ -1038,18 +1038,18 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
   <div class="day">
     <div class="dl"><b>DAY 1</b>개인에서 조직으로</div>
     <div class="track">
-      <div class="ev now"><span class="tm">10:10</span><span class="nm">Ch1 작동 원리, Lab</span><span class="me">지금 여기, Lab은 11:20</span></div>
-      <div class="ev"><span class="tm">10:40</span><span class="nm">Ch2 Bedrock 배포, Lab</span></div>
-      <div class="ev"><span class="tm">13:50</span><span class="nm">Ch3 가드레일, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span></span></div>
-      <div class="ev"><span class="tm">14:50</span><span class="nm">Ch4 Subagents</span></div>
+      <div class="ev now"><span class="tm">10:10</span><span class="nm">Ch1 동작 원리, Lab</span><span class="me">지금 여기, Lab은 11:30</span></div>
+      <div class="ev"><span class="tm">10:40</span><span class="nm">Ch2 Bedrock 위에서 안전하게</span></div>
+      <div class="ev"><span class="tm">13:00</span><span class="nm">Ch2 Lab 1, Lab 2 (정책, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>)</span></div>
+      <div class="ev"><span class="tm">14:50</span><span class="nm">Ch3 Subagent</span></div>
     </div>
   </div>
   <div class="day">
     <div class="dl"><b>DAY 2</b>확장에서 측정으로</div>
     <div class="track">
-      <div class="ev"><span class="tm">10:10</span><span class="nm">Ch5 Plugins &amp; Mods</span></div>
-      <div class="ev"><span class="tm">12:40</span><span class="nm">Ch6 P1 토큰</span></div>
-      <div class="ev"><span class="tm">16:50</span><span class="nm">Ch6 P2 비용</span></div>
+      <div class="ev"><span class="tm">10:10</span><span class="nm">Ch4 확장하기</span></div>
+      <div class="ev"><span class="tm">12:40</span><span class="nm">Ch5 비용 효율</span></div>
+      <div class="ev"><span class="tm">16:50</span><span class="nm">Ch6 조직의 비용</span></div>
     </div>
   </div>
   <p class="cap">세부 시간은 현장 운영에 따라 바뀔 수 있습니다. 매일 오후에는 Capstone 라운드가 이어집니다.</p>
@@ -1060,14 +1060,14 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 :::notes
 {timing: 1min}
 [요약]
-• Day 1: 10:10 Ch1 작동 원리와 Lab, 10:40 Ch2 Bedrock 배포와 Lab, 13:50 Ch3 가드레일과 DLP, 14:50 Ch4 Subagents
-• Day 2: 10:10 Ch5 Plugins와 Mods, 12:40 Ch6 P1 토큰, 16:50 Ch6 P2 비용
+• Day 1: 10:10 Ch1 (Lab 11:30), 10:40 Ch2 Bedrock 위에서 안전하게 쓰기, 13:00 Ch2 Lab 1과 Lab 2, 14:50 Ch3 Subagent
+• Day 2: 10:10 Ch4 Claude Code 확장하기, 12:40 Ch5 비용 효율적으로 쓰기, 16:50 Ch6 조직의 비용 보고 통제하기
 • 매일 오후 Capstone 라운드
 
 이틀의 흐름입니다. Day 1은 개인의 도구를 조직이 통제하는 단계까지, Day 2는 팀의 플랫폼으로 확장하고 비용을 측정하는 단계까지 갑니다.
 {cue: demo}
-왼쪽부터 보면, 오늘 지금 Ch1에 이어 Ch2 Bedrock 배포와 Lab, 오후에 Ch3 가드레일과 DLP, Ch4 Subagents가 이어집니다.
-내일은 Ch5 Plugins와 Mods로 시작해 Ch6 토큰과 비용을 두 번에 나눠 진행합니다. 매일 오후에는 Capstone 라운드가 있습니다.
+왼쪽부터 보면, 오늘 지금 Ch1에 이어 Ch2에서 Bedrock 위에서 안전하게 쓰는 법을 보고, 점심 뒤 Ch2 Lab 두 개로 정책과 DLP를 직접 해 본 다음 Ch3 Subagent가 이어집니다.
+내일은 Ch4 Claude Code 확장하기로 시작해, Ch5 비용 효율적으로 쓰기와 Ch6 조직의 비용 보고 통제하기로 이어집니다. 매일 오후에는 Capstone 라운드가 있습니다.
 
 [출처]
 • 원본 Ch1 강의자료 p25 일정 (eDM.html과 일치). 세부 시간은 현장 운영에 따라 변동 가능
@@ -1079,7 +1079,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 @fit: off
 
 ## 30분 동안 직접 확인할 다섯 가지
-LAB, Preflight + 에이전트 루프 관찰 (11:20 시작)
+LAB, Preflight + 에이전트 루프 관찰 (11:30 시작)
 
 :::html
 <div class="fsi fsi-lab">
@@ -1097,12 +1097,12 @@ LAB, Preflight + 에이전트 루프 관찰 (11:20 시작)
 :::notes
 {timing: 0.5min}
 [요약]
-• Ch1 실습 30분은 Ch2 강의 뒤 11:20에 시작
+• Ch1 실습 30분은 Ch2 강의 뒤 11:30에 시작
 • Preflight와 TASK 01부터 04까지, 오늘 본 Part 1에서 3을 직접 확인
 • Hands-on Lab 포털, Preflight, Chapter 1 순서
 
 {cue: demo}
-실습은 Ch2 강의가 끝난 뒤 11시 20분에 30분 동안 진행합니다. 오늘 그림으로 본 것을 직접 확인하는 시간입니다.
+실습은 Ch2 강의가 끝난 뒤 11시 30분에 30분 동안 진행합니다. 오늘 그림으로 본 것을 직접 확인하는 시간입니다.
 먼저 Preflight로 Workshop Studio에 접속해 code-server를 열고 게이트웨이 응답을 확인합니다.
 TASK 01은 /status로 Bedrock과 us-east-1을 확인하고 루프를 지켜보는 것, TASK 02는 /context와 CLAUDE.md, 세션 파일, TASK 03은 /rewind와 plan 모드, TASK 04는 CloudTrail에서 호출 기록을 확인하는 것입니다.
 명령은 랩 문서에서 그대로 복사해 따라 하시면 됩니다.
@@ -1329,16 +1329,16 @@ Bedrock에서는 실행은 PC, 추론은 내 계정에서 일어나고 처리 �
 <!-- Slide 27: Thank you (PDF p36) -->
 @type: thankyou
 @toc: toc.html
-@next: 02-ch2-bedrock-policy.html
+@next: 02-ch2-bedrock-safe.html
 @next-label: Chapter 2
-@message: 다음은 Chapter 2. Bedrock 배포와 정책 전달입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
+@message: 다음은 Chapter 2. Bedrock 위에서 안전하게 쓰기입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
 
 :::notes
 {timing: 0.5min}
 [요약]
-• 다음은 Chapter 2, Bedrock 배포와 정책 전달
+• 다음은 Chapter 2, Bedrock 위에서 안전하게 쓰기
 • 질문은 Slack 워크숍 채널에서 언제든
 
-감사합니다. 다음은 Chapter 2, Bedrock 배포와 정책 전달입니다.
+감사합니다. 다음은 Chapter 2, Bedrock 위에서 안전하게 쓰기입니다.
 궁금한 점은 지금 손을 드셔도 좋고, Slack 워크숍 채널에 남겨 주셔도 언제든 답해 드리겠습니다.
 :::

@@ -110,11 +110,11 @@
     <tr><td><code>/config [key=value ...]</code><br><span class="alias">별칭 /settings</span></td><td>설정 화면. key=value를 붙이면 화면 없이 즉시 변경(/config thinking=false, /config model=sonnet). /config --help가 설정 가능한 전체 키를 출력</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/model [모델]</code></td><td>모델 전환과 기본값 저장. 피커에서 s를 누르면 이 세션만 전환. 대화 이력이 있으면 캐시 재구축 비용을 확인 후 적용</td><td><span class="badge ch">Ch1</span></td></tr>
     <tr><td><code>/effort [레벨|auto|status|ultracode [on|off]]</code></td><td>추론 강도. low~xhigh, 세션 한정 max, auto, 가용 레벨은 모델별. status로 현재 값 출력. ultracode는 워크플로 자동 판단을 켜고 끔(on/off 인자는 v2.1.284+). 인자 없이 실행하면 슬라이더</td><td><span style="color:#5A6676">-</span></td></tr>
-    <tr><td><code>/permissions</code><br><span class="alias">별칭 /allowed-tools</span></td><td>도구 allow, ask, deny 규칙을 스코프별로 열람/추가/삭제. 작업 디렉토리 관리와 자동 모드 거부 이력 검토 포함</td><td><span class="badge ch">Ch3</span></td></tr>
+    <tr><td><code>/permissions</code><br><span class="alias">별칭 /allowed-tools</span></td><td>도구 allow, ask, deny 규칙을 스코프별로 열람/추가/삭제. 작업 디렉토리 관리와 자동 모드 거부 이력 검토 포함</td><td><span class="badge ch">Ch2</span></td></tr>
     <tr><td><code>/mcp [reconnect|enable|disable]</code></td><td>MCP 서버 연결과 OAuth 관리. reconnect 서버명으로 재접속, enable/disable에 서버명이나 all</td><td><span class="badge ch">Ch4</span></td></tr>
     <tr><td><code>/plugin [서브커맨드]</code></td><td>플러그인 메뉴. list, install, enable, disable을 직접 지정 가능 (market은 marketplace 축약)</td><td><span class="badge ch">Ch4, 캡스톤 M0</span></td></tr>
     <tr><td><code>/hooks</code></td><td>도구 이벤트에 걸린 훅 구성 확인. 훅 자체는 각 스코프 settings.json의 hooks 블록에 정의</td><td><span class="badge ch">Ch4</span></td></tr>
-    <tr><td><code>/agents</code></td><td>서브에이전트 안내. 최신 버전은 .claude/agents/ 또는 ~/.claude/agents/ 직접 편집을 권장</td><td><span class="badge ch">Ch2</span></td></tr>
+    <tr><td><code>/agents</code></td><td>서브에이전트 안내. 최신 버전은 .claude/agents/ 또는 ~/.claude/agents/ 직접 편집을 권장</td><td><span class="badge ch">Ch3</span></td></tr>
   </table>
 </section>
 <section class="wrap">
@@ -135,7 +135,7 @@
 </section>
 <section class="wrap">
   <h2>병렬과 백그라운드</h2>
-  <p class="sec-desc">Chapter 2의 서브에이전트 감각이 세션 단위로 확장된 영역.</p>
+  <p class="sec-desc">Ch3의 서브에이전트 감각이 세션 단위로 확장된 영역.</p>
   <table class="tbl">
     <tr><th>커맨드</th><th>하는 일</th><th>워크샵</th></tr>
     <tr><td><code>/tasks</code></td><td>현재 세션의 백그라운드 작업과 완료된 서브에이전트 목록. 응답 중에도 즉시 실행되는 조회 커맨드</td><td><span style="color:#5A6676">-</span></td></tr>
@@ -149,10 +149,10 @@
 </section>
 <section class="wrap">
   <h2>검수와 리뷰</h2>
-  <p class="sec-desc">출하 직전의 관문. Chapter 5 리뷰 봇의 내장판.</p>
+  <p class="sec-desc">출하 직전의 관문. Ch3 헤드리스 리뷰 봇의 내장판.</p>
   <table class="tbl">
     <tr><th>커맨드</th><th>하는 일</th><th>워크샵</th></tr>
-    <tr><td><span class="k s">SKILL</span><code>/code-review [레벨] [--fix] [--comment] [--max-findings n|all|default] [PR#|브랜치|경로]</code></td><td>현재 diff, 또는 지정한 PR, 브랜치, 경로의 정확성 리뷰. 레벨 low~max, --fix로 자동 반영, --comment로 GitHub PR이나 GitLab MR에 코멘트(GitLab은 v2.1.257+), --max-findings로 보고 개수 조절(v2.1.288+), ultra는 클라우드 다중 에이전트 심층(--post로 PR에 게시, v2.1.227+)</td><td><span class="badge ch">Ch5 연계</span></td></tr>
+    <tr><td><span class="k s">SKILL</span><code>/code-review [레벨] [--fix] [--comment] [--max-findings n|all|default] [PR#|브랜치|경로]</code></td><td>현재 diff, 또는 지정한 PR, 브랜치, 경로의 정확성 리뷰. 레벨 low~max, --fix로 자동 반영, --comment로 GitHub PR이나 GitLab MR에 코멘트(GitLab은 v2.1.257+), --max-findings로 보고 개수 조절(v2.1.288+), ultra는 클라우드 다중 에이전트 심층(--post로 PR에 게시, v2.1.227+)</td><td><span class="badge ch">Ch3 연계</span></td></tr>
     <tr><td><code>/review [레벨] [PR#|브랜치|경로]</code></td><td>/code-review의 별칭으로 같은 레벨과 플래그를 받음(v2.1.223+). 그 이전에는 GitHub PR을 읽기 전용 단일 패스로 보던 별개 명령이었음</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/ultrareview [PR 또는 브랜치]</code></td><td>클라우드 샌드박스의 심층 다중 에이전트 리뷰. 권장 호출은 /code-review ultra이며 /ultrareview는 별칭. Pro, Max는 3회 무료 후 사용 크레딧. 비대화형은 터미널의 claude ultrareview [대상] --json --timeout 분</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/security-review</code></td><td>현재 diff의 보안 취약점 점검</td><td><span style="color:#5A6676">-</span></td></tr>
@@ -165,7 +165,7 @@
   <p class="sec-desc">세션을 시간과 기기 너머로 옮기는 커맨드.</p>
   <table class="tbl">
     <tr><th>커맨드</th><th>하는 일</th><th>워크샵</th></tr>
-    <tr><td><code>/resume</code></td><td>이전 대화로 복귀. 헤드리스 --resume의 대화형 짝</td><td><span class="badge ch">Ch5</span></td></tr>
+    <tr><td><code>/resume</code></td><td>이전 대화로 복귀. 헤드리스 --resume의 대화형 짝</td><td><span class="badge ch">Ch1</span></td></tr>
     <tr><td><code>/rewind</code></td><td>코드와 대화를 체크포인트로 되감기, 또는 구간 요약. /clear 이전 대화도 항목으로 복구 가능</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/cd <경로></code></td><td>세션을 다른 디렉토리로 이사. 캐시를 보존하고 세션 저장소도 함께 옮겨 그 폴더에서 --resume 가능. 접근만 열려면 /add-dir</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/teleport</code></td><td>claude.ai 웹 세션을 이 터미널로 가져오기</td><td><span style="color:#5A6676">-</span></td></tr>
@@ -197,7 +197,7 @@
     <tr><td><code>/skill-doctor</code></td><td>스킬별 컨텍스트 비용과 사용 빈도를 보여 줘 끌 스킬을 찾게 함 (v2.1.252+, 기능 플래그 조회가 켜져 있어야 함)</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/reload-plugins [--force]</code></td><td>플러그인 변경 반영. MCP 도구 구성이 바뀌어 캐시가 무효화될 상황이면 경고 후 --force 요구</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><span class="k s">SKILL</span><code>/fewer-permission-prompts</code></td><td>지난 기록에서 자주 승인한 읽기 전용 명령을 찾아 프로젝트 설정에 허용 목록으로 제안</td><td><span style="color:#5A6676">-</span></td></tr>
-    <tr><td><code>/install-github-app</code></td><td>저장소에 Claude GitHub App 설치, Actions 워크플로와 시크릿 구성까지 안내</td><td><span class="badge ch">Ch5 연계</span></td></tr>
+    <tr><td><code>/install-github-app</code></td><td>저장소에 Claude GitHub App 설치, Actions 워크플로와 시크릿 구성까지 안내</td><td><span class="badge ch">Ch3 연계</span></td></tr>
     <tr><td><span class="k w">WORKFLOW</span><code>/deep-research <질문></code></td><td>웹 검색을 부채꼴로 펼쳐 교차 검증하고 출처 있는 리포트로 종합</td><td><span style="color:#5A6676">-</span></td></tr>
     <tr><td><code>/insights</code></td><td>내 세션들을 분석해 작업 영역, 사용 패턴, 마찰 지점 리포트 생성</td><td><span style="color:#5A6676">-</span></td></tr>
   </table>

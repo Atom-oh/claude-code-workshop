@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ch3. 가드레일·DLP · Claude Code Deep Dive Lab</title>
+<title>Ch3. Subagent로 일 나눠 맡기기 - Claude Code Deep Dive Lab</title>
 <style>:root{--bg:#f7f7f5;--panel:#ffffff;--ink:#16191f;--muted:#5b6270;--line:#e3e4e8;--accent:#e07b00;--accent-ink:#9a4f00;--code-bg:#161d26;--code-ink:#e6e9ef;--code-head:#1f2733;
 --info:#2563eb;--info-bg:#eef4ff;--warn:#b45309;--warn-bg:#fff6e5;--ok:#15803d;--ok-bg:#ecf8ef;--err:#b91c1c;--err-bg:#fdeeee;--side:#f0f0ec;--th:#f3f3f0}
 :root[data-theme="dark"]{--bg:#0f141b;--panel:#161d26;--ink:#e8ebf0;--muted:#9aa3b2;--line:#2a3442;--accent:#ff9900;--accent-ink:#ffb547;--code-bg:#0b1016;--code-ink:#e6e9ef;--code-head:#1a222d;
@@ -81,533 +81,599 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 .theme{margin-left:auto}.env+.theme{margin-left:0}
 @media (max-width:860px){.top{gap:10px;padding:0 12px}.brand{font-size:14px}}
 </style></head>
-<body data-page="ch3-guardrails">
+<body data-page="ch3-subagents">
 <header class="top"><button class="menu" type="button" aria-label="메뉴">☰</button><a class="brand" href="index.html">Claude Code Deep Dive <b>Hands-on Lab</b></a><span class="env">Amazon Bedrock · us-east-1 · Apps Gateway</span><button class="theme" type="button" aria-label="테마 전환">◐</button></header>
 <div class="layout">
-<aside class="side"><ul><li><a href="index.html">실습 포털</a></li><li><a href="ClaudeCode_Preflight_Check.html">Preflight. 시작 전 확인</a></li><li><a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. 작동 원리</a></li><li><a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2. Bedrock 배포와 정책 전달</a></li><li class="cur"><a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. 가드레일·DLP</a></li><li><a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Subagents</a></li><li><a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. Plugins &amp; Mods</a></li><li><a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 토큰과 비용</a></li></ul><div class="side-foot">FSI 2026.11 · ko</div></aside>
-<main><article><h1 class="page-title">Ch3. 가드레일·DLP</h1><div class="progress" hidden><span class="bar"></span><span class="txt"></span></div><p><strong>Hands-on Lab / Chapter 3</strong></p>
+<aside class="side"><ul><li><a href="index.html">실습 포털</a></li><li><a href="ClaudeCode_Preflight_Check.html">Preflight. 시작 전 확인</a></li><li><a href="ClaudeCode_Ch1_HandsOnLab.html">Ch1. Claude Code는 어떻게 동작하는가</a></li><li><a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1. 정책 배포</a></li><li><a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2. 가드레일과 DLP</a></li><li class="cur"><a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. Subagent로 일 나눠 맡기기</a></li><li><a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Claude Code 확장하기</a></li><li><a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. 비용 효율적으로 쓰기</a></li><li><a href="ClaudeCode_Ch6_HandsOnLab.html">Ch6. 조직의 비용 보고 통제하기</a></li></ul><div class="side-foot">FSI 2026.11 · ko</div></aside>
+<main><article><h1 class="page-title">Ch3. Subagent로 일 나눠 맡기기</h1><div class="progress" hidden><span class="bar"></span><span class="txt"></span></div><p><strong>Hands-on Lab / Chapter 3</strong></p>
 <blockquote>
-<p><strong>Claude Code Deep Dive Workshop, Chapter 3 - 가드레일·DLP 실습</strong></p>
+<p><strong>Claude Code Deep Dive Workshop, Chapter 3 - Subagent로 일 나눠 맡기기 실습</strong></p>
 </blockquote>
-<p>Claude Code에는 네이티브 DLP 기능이 없습니다. 이 랩에서는 강의의 <strong>DLP 5층</strong> 중 핵심인 <strong>훅(3층)</strong>을 managed 정책으로 강제하고, 고장 난 훅이 조용히 통과되는 <strong>fail-open</strong> 문제를 직접 확인합니다.
-이어서 확인 창을 줄이는 <strong>auto mode</strong>에서 사람의 확인과 분류기의 판단 사이에 경계를 긋습니다. 시간이 남으면 선택 트랙으로 Sandbox(2층), Bedrock Guardrails(4층), 확장 통제(5층)를 이어서 해 봅니다.</p>
-<p>소요 시간 <strong>필수 30분 + 선택 20분</strong> · Task <strong>준비 + 필수 3개 + 선택 3개 + 원복</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>테스트 데이터만 사용하세요</strong></p>
-<p>이 랩의 주민등록번호·카드번호는 형식만 맞춘 가짜 값입니다. 실제 개인정보를 입력하지 마세요.</p></div></div>
-
+<p>이 랩에서는 <strong>code-reviewer, test-writer, docs-writer</strong> 3종의 서브에이전트를 직접 정의하고,
+도구 권한 격리를 체험한 뒤 자동 / 명시 / 병렬 디스패치 3가지 패턴과 Headless CI 통합까지 실습합니다.
+TASK 00에서 만드는 작은 Node 프로젝트(<code>~/claude-lab/ch4</code>)를 대상으로 진행합니다.</p>
+<p>소요 시간 <strong>40분 내외</strong> · Task <strong>준비 + 5개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
 <h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
+<p>실습용 Node 프로젝트를 <strong>커밋 2개</strong>(초기 + 버그 수정) 상태로 만듭니다. Task 1의 첫 리뷰 대상이 이 수정 커밋의 diff입니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>터미널 위치</strong></p>
+<p>이 랩은 <code>~/claude-lab/ch4</code>에서 진행합니다.
+아래에 나오는 <code>.claude/agents/</code> 같은 상대 경로도 전부 이 폴더 기준입니다.
+시작 전에 <code>cd ~/claude-lab/ch4</code>로 위치를 맞추세요.</p></div></div>
+
+<h3 id="step-1-실습-프로젝트-만들기">Step 1 · 실습 프로젝트 만들기</h3>
+<p><code>use_bedrock_direct</code> 기본 모드인지 확인한 뒤 아래 블록을 통째로 실행합니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
-mkdir -p ~/claude-lab/ch3 &amp;&amp; cd ~/claude-lab/ch3 &amp;&amp; git init -q
-cat &gt; customers.csv &lt;&lt; &#x27;EOF&#x27;
-name,rrn,card
-홍길동,900101-1234567,4111-1111-1111-1111
-EOF
-sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
-  &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. 아래 &#x27;정책 초기화&#x27;를 먼저 실행하세요&quot;
-sudo cp /etc/claude-code/managed-settings.json ~/claude-lab/ch3/managed-settings.backup.json
-which jq &amp;&amp; sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>mkdir -p ~/claude-lab/ch4/src &amp;&amp; cd ~/claude-lab/ch4
 
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>"이전 챕터 정책이 남아 있습니다"가 나오면, 정책 초기화</strong></p>
-<p>이전 챕터의 원복을 건너뛰면 그 정책이 이번 챕터의 백업에 섞여 들어가고, 원복해도 계속 남습니다(예: Opus를 뺀 모델 목록). 백업 전에 아래로 초기화한 뒤 위 블록을 다시 실행하세요.</p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>echo &#x27;{}&#x27; | sudo tee /etc/claude-code/managed-settings.json &gt;/dev/null
-sudo rm -f /etc/claude-code/managed-settings.d/*.json
-use_bedrock_direct</code></pre></div></div></div>
-
-<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
-<ul>
-<li class="check"><label><input type="checkbox"> <span><code>customers.csv</code>(가짜 데이터)가 있고 managed-settings를 백업했다</span></label></li>
-</ul></div></div>
-
-<h2 id="task-01-dlp-훅을-정책으로-강제-8분">TASK 01 · DLP 훅을 정책으로 강제 (8분)</h2>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>회사 PC(macOS · Windows)라면</strong></p>
-<p>이 스크립트는 bash와 jq를 전제로 합니다. macOS는 같은 스크립트를 쓰되 jq를 함께 배포하고, Windows는 Git Bash로 실행하거나 PowerShell 스크립트(<code>powershell -File …</code>)로 다시 작성해야 합니다. 의존성이 빠진 PC에서는 훅이 오류로 끝나며 <strong>조용히 통과(fail-open)</strong> 하므로, TASK 02의 fail-closed 원칙이 더 중요해집니다. 샌드박스(선택 TASK 04)는 macOS는 내장 Seatbelt, Linux·WSL2는 bubblewrap을 쓰며 네이티브 Windows는 지원하지 않습니다.</p></div></div>
-
-<h3 id="step-1-검사-스크립트-배치">Step 1 · 검사 스크립트 배치</h3>
-<p>스크립트는 관리자만 쓸 수 있는 경로(<code>/opt/dlp</code>)에 둡니다. 프롬프트(<code>UserPromptSubmit</code>)는 <code>.prompt</code>, 도구 호출(<code>PreToolUse</code>)은 <code>.tool_input</code>을 검사합니다. <strong>exit 2가 차단</strong>입니다.</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo mkdir -p /opt/dlp
-sudo tee /opt/dlp/dlp-guard.sh &gt; /dev/null &lt;&lt; &#x27;EOF&#x27;
-#!/bin/bash
-INPUT=$(cat)
-TEXT=$(echo &quot;$INPUT&quot; | jq -r &#x27;.prompt // (.tool_input | tostring)&#x27;)
-
-# 주민등록번호 · 카드번호 · AWS 액세스 키 (탐지 예시)
-PAT=&#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}&#x27;
-
-if echo &quot;$TEXT&quot; | grep -Eq &quot;$PAT&quot;; then
-  echo &quot;DLP: 민감정보 패턴이 감지되어 차단했습니다&quot; &gt;&amp;2
-  exit 2
-fi
-exit 0
-EOF
-sudo chmod 755 /opt/dlp/dlp-guard.sh
-echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
-echo &#x27;{&quot;prompt&quot;:&quot;안녕하세요&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;</code></pre></div>
-
-<p>첫 줄은 <code>exit=2</code>, 둘째 줄은 <code>exit=0</code>이 나와야 합니다.</p>
-<h3 id="step-2-managed-정책에-훅-등록">Step 2 · managed 정책에 훅 등록</h3>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; /tmp/policy.json &lt;&lt; &#x27;EOF&#x27;
+cat &gt; package.json &lt;&lt; &#x27;EOF&#x27;
 {
-  &quot;allowManagedHooksOnly&quot;: true,
-  &quot;hooks&quot;: {
-    &quot;UserPromptSubmit&quot;: [
-      { &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;/opt/dlp/dlp-guard.sh&quot; }] }
-    ],
-    &quot;PreToolUse&quot;: [
-      { &quot;matcher&quot;: &quot;Bash|Write|Edit|WebFetch&quot;,
-        &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;/opt/dlp/dlp-guard.sh&quot; }] }
-    ]
-  }
+  &quot;name&quot;: &quot;user-service-lab&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;description&quot;: &quot;Claude Code Workshop sample project&quot;,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;scripts&quot;: { &quot;test&quot;: &quot;node test.js&quot; }
 }
 EOF
-M=/etc/claude-code/managed-settings.json
-sudo jq -s &#x27;.[0] * .[1]&#x27; $M /tmp/policy.json | sudo tee $M.tmp &gt;/dev/null &amp;&amp; sudo mv $M.tmp $M
-sudo jq . /etc/claude-code/managed-settings.json &gt;/dev/null &amp;&amp; echo &quot;policy OK&quot;</code></pre></div>
 
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>파일을 덮어쓰지 않고 병합합니다</strong></p>
-<p><code>jq -s '.[0] * .[1]'</code>로 기존 managed-settings에 정책을 합칩니다. 게이트웨이 모드(<code>use_gateway</code>)에서 실행해도 <code>forceLoginMethod</code>·<code>forceLoginGatewayUrl</code>이 지워지지 않고, 원복은 TASK 00의 백업 파일로 합니다.</p></div></div>
-
-<p><code>allowManagedHooksOnly</code>는 사용자·프로젝트 훅을 무시하고 managed 훅만 실행하게 합니다. 사용자가 DLP 훅을 끄거나 덮어쓸 수 없습니다.</p>
-<h3 id="step-3-차단-확인">Step 3 · 차단 확인</h3>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch3 &amp;&amp; claude</code></pre></div>
-
-<p>아래 두 요청을 차례로 보냅니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>고객 900101-1234567 의 가입 이력을 정리해줘</code></pre></div>
-
-<p>첫 요청은 <strong>프롬프트 단계에서</strong> <code>UserPromptSubmit operation blocked by hook</code>으로 차단되고, 보낸 문장은 입력창에 그대로 돌아옵니다. <strong>Ctrl+U</strong>로 지운 뒤 둘째 요청을 보냅니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>customers.csv를 읽고, 첫 번째 고객의 카드번호를 Write 도구로 notes.txt 파일에 적어줘</code></pre></div>
-
-<p>파일은 읽히지만, 카드번호를 담은 <code>Write</code>가 <strong>도구 호출 단계에서</strong> <code>PreToolUse:Write hook error … DLP</code>로 차단됩니다. 이어서 <code>/hooks</code>를 실행하면 <strong>managed hooks only</strong> 표시와 함께 "Only hooks from managed settings run here"가 보입니다. managed 훅 자체는 이 목록에 나오지 않습니다. 확인 후 <code>/exit</code>로 나옵니다.</p>
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>왜 "Write 도구로"라고 지정하나요: PreToolUse는 입력만 봅니다</strong></p>
-<p>"notes.txt에 적어줘"라고만 하면 모델이 <code>awk -F, 'NR==2{print $3}' customers.csv &gt; notes.txt</code>처럼 <strong>Bash 리다이렉션</strong>을 고르기도 합니다. 이 명령 문자열에는 카드번호가 없으므로 훅은 통과시키고, 파일에는 번호가 그대로 써집니다(실습 환경에서 실제로 확인). 훅은 도구의 <strong>입력</strong>을 검사할 뿐 실행 <strong>결과</strong>를 보지 않습니다. <code>Read</code>로 읽은 파일 내용이 모델 컨텍스트에 들어가는 것도 막지 못합니다. 민감 파일 자체를 막으려면 <code>permissions.deny</code>의 <code>Read(...)</code>와 샌드박스(선택 TASK 04)의 파일시스템 제한을 함께 씁니다.</p></div></div>
-
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>차단된 뒤 "우회해서 해 줘"라고 요청하지 마세요</strong></p>
-<p>DLP 차단 직후 "Bash 말고 다른 방법으로" 같은 우회 요청을 보내면, 모델 측 안전장치가 세션을 <code>API Error: … safeguards flagged this session … [cyber]</code>로 멈출 수 있습니다(Opus 5.5·Sonnet 5.5 모두 확인). 그러면 그 세션에서는 더 진행되지 않습니다. <code>/exit</code> 후 새 세션을 열면 다시 정상 동작합니다.</p></div></div>
-
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>훅의 한계</strong></p>
-<p>훅은 패턴 매칭이라 형식을 바꾼 데이터(공백 삽입, 인코딩)는 놓칠 수 있습니다. 운영 패턴은 사내 DLP 솔루션 기준을 따르고, 다른 층(sandbox, Guardrails)과 겹쳐 씁니다.</p></div></div>
-
-<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
-<ul>
-<li class="check"><label><input type="checkbox"> <span>프롬프트와 Write 두 지점에서 차단 메시지를 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span><code>/hooks</code>에서 "managed hooks only"를 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>Bash 리다이렉션 경로는 PreToolUse 훅이 보지 못한다는 점을 설명할 수 있다</span></label></li>
-</ul></div></div>
-
-<h2 id="task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정 (5분)</h2>
-<h3 id="step-1-고장-난-훅은-통과된다">Step 1 · 고장 난 훅은 통과된다</h3>
-<p><code>jq</code>가 없는 PC를 흉내 내기 위해 스크립트의 <code>jq</code>를 없는 명령으로 바꿉니다.</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo sed -i &#x27;s/| jq -r/| jq-missing -r/&#x27; /opt/dlp/dlp-guard.sh
-echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
-cd ~/claude-lab/ch3 &amp;&amp; claude -p &quot;고객 900101-1234567 을 한 줄로 요약해줘&quot;; echo &quot;claude exit=$?&quot;</code></pre></div>
-
-<p>스크립트는 <code>exit=0</code>으로 끝나고 Claude는 <strong>그대로 응답</strong>합니다. 훅에서 <strong>exit 2만 차단</strong>이고, 그 외의 오류는 비차단 오류로 처리되어 작업이 계속됩니다.</p>
-<h3 id="step-2-fail-closed로-고치기">Step 2 · fail-closed로 고치기</h3>
-<p>오류 경로에서도 명시적으로 <code>exit 2</code>를 내도록 바꿉니다.</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo tee /opt/dlp/dlp-guard.sh &gt; /dev/null &lt;&lt; &#x27;EOF&#x27;
-#!/bin/bash
-INPUT=$(cat)
-command -v jq &gt;/dev/null || { echo &quot;DLP: 검사기 오류(jq 없음) - 안전을 위해 차단&quot; &gt;&amp;2; exit 2; }
-TEXT=$(echo &quot;$INPUT&quot; | jq -r &#x27;.prompt // (.tool_input | tostring)&#x27;) || { echo &quot;DLP: 입력 해석 실패 - 차단&quot; &gt;&amp;2; exit 2; }
-
-PAT=&#x27;[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}&#x27;
-echo &quot;$TEXT&quot; | grep -Eq &quot;$PAT&quot;; RC=$?
-[ &quot;$RC&quot; -eq 1 ] &amp;&amp; exit 0      # 1 = 패턴 없음 → 통과
-if [ &quot;$RC&quot; -eq 0 ]; then
-  echo &quot;DLP: 민감정보 패턴이 감지되어 차단했습니다&quot; &gt;&amp;2
-else
-  echo &quot;DLP: 검사기 오류(grep 종료 코드 $RC) - 안전을 위해 차단&quot; &gt;&amp;2
-fi
-exit 2
+cat &gt; src/users.js &lt;&lt; &#x27;EOF&#x27;
+// 사용자 데이터 저장소
+// 주의: 일부 사용자는 profile 필드가 없음 (마이그레이션 미수행 상황)
+export const users = [
+  { id: 1, name: &quot;Kim&quot;, profile: { email: &quot;kim@example.com&quot;, plan: &quot;pro&quot; } },
+  { id: 2, name: &quot;Lee&quot;, profile: { email: &quot;lee@example.com&quot;, plan: &quot;free&quot; } },
+  { id: 3, name: &quot;Park&quot; }
+];
 EOF
-echo &#x27;{&quot;prompt&quot;:&quot;내 번호는 900101-1234567&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;
-echo &#x27;{&quot;prompt&quot;:&quot;안녕하세요&quot;}&#x27; | /opt/dlp/dlp-guard.sh; echo &quot;exit=$?&quot;</code></pre></div>
-<p>첫 줄은 <code>exit=2</code>, 둘째 줄은 <code>exit=0</code>입니다. <code>grep</code>도 <code>jq</code>처럼 실행 오류가 날 수 있으므로, 종료 코드를 <strong>0(일치)·1(불일치)·그 밖(오류)</strong> 으로 나눠 오류일 때도 차단합니다. <code>if grep ...; then</code> 형태로 쓰면 grep 오류가 &quot;불일치&quot;와 같게 처리되어 통과됩니다(실습 환경에서 확인).</p>
-<h3 id="step-3-스크립트가-아예-없거나-멈춰도-막기">Step 3 · 스크립트가 아예 없거나 멈춰도 막기</h3>
-<p>스크립트 안의 처리로는 <strong>스크립트가 없거나, 시작하지 못하거나, 시간 초과</strong>인 경우를 막을 수 없습니다. 이때도 그대로 통과됩니다. 훅 설정에 <code>&quot;onFailure&quot;: &quot;block&quot;</code>(v2.1.295+)을 넣으면 이런 실패도 차단으로 처리됩니다.</p>
+
+cat &gt; src/userService.js &lt;&lt; &#x27;EOF&#x27;
+import { users } from &quot;./users.js&quot;;
+
+export function getUser(id) {
+  return users.find((u) =&gt; u.id === id);
+}
+
+export function getUserPlan(id) {
+  const user = getUser(id);
+  return user.profile.plan;
+}
+EOF
+
+cat &gt; test.js &lt;&lt; &#x27;EOF&#x27;
+import { getUserPlan } from &quot;./src/userService.js&quot;;
+
+function check(name, fn, expected) {
+  const actual = fn();
+  console.log(`${name}: ${actual === expected ? &quot;PASS&quot; : `FAIL (got ${actual})`}`);
+}
+
+check(&quot;Test 1 - pro 플랜 사용자&quot;, () =&gt; getUserPlan(1), &quot;pro&quot;);
+check(&quot;Test 2 - free 플랜 사용자&quot;, () =&gt; getUserPlan(2), &quot;free&quot;);
+check(&quot;Test 3 - profile 없는 사용자&quot;, () =&gt; getUserPlan(3), &quot;unknown&quot;);
+EOF
+
+git init -q
+git config user.name  &gt;/dev/null 2&gt;&amp;1 || git config user.name &quot;lab&quot;
+git config user.email &gt;/dev/null 2&gt;&amp;1 || git config user.email &quot;lab@example.com&quot;
+git add -A &amp;&amp; git commit -q -m &quot;chore: initial lab project (with bug)&quot;
+
+cat &gt; src/userService.js &lt;&lt; &#x27;EOF&#x27;
+import { users } from &quot;./users.js&quot;;
+
+export function getUser(id) {
+  return users.find((u) =&gt; u.id === id);
+}
+
+export function getUserPlan(id) {
+  const user = getUser(id);
+  return user?.profile?.plan ?? &quot;unknown&quot;;
+}
+EOF
+
+git add -A &amp;&amp; git commit -q -m &quot;fix: handle users without profile&quot;
+npm test &amp;&amp; git log --oneline</code></pre></div>
+
+<h3 id="step-2-jq-설치-확인">Step 2 · jq 설치 확인</h3>
+<p>Task 5의 헤드리스 통합에서 <strong>JSON 출력 파싱</strong>에 <code>jq</code>를 사용합니다. 없으면 한 줄로 설치하세요.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>M=/etc/claude-code/managed-settings.json
-sudo jq &#x27;(.hooks[][].hooks[]) |= . + {&quot;onFailure&quot;: &quot;block&quot;}&#x27; $M | sudo tee $M.tmp &gt;/dev/null &amp;&amp; sudo mv $M.tmp $M
-sudo jq -c &#x27;[.hooks[][].hooks[].onFailure]&#x27; $M
-sudo mv /opt/dlp/dlp-guard.sh /opt/dlp/dlp-guard.sh.off
-cd ~/claude-lab/ch3 &amp;&amp; claude -p &quot;안녕이라고만 답해줘&quot;; echo &quot;claude exit=$?&quot;
-sudo mv /opt/dlp/dlp-guard.sh.off /opt/dlp/dlp-guard.sh</code></pre></div>
-<p>스크립트를 치운 상태에서는 민감정보가 없는 프롬프트도 <code>UserPromptSubmit operation blocked by hook: … blocking because onFailure is &quot;block&quot;</code>으로 차단됩니다. 마지막 줄에서 스크립트를 되돌립니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq --version || sudo dnf install -y jq</code></pre></div>
+
+<p><strong>출력 예시</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>jq-1.8.1</code></pre></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>고장 난 훅에서 민감정보가 그대로 통과되는 것을 봤다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>오류 경로에 exit 2를 넣어 fail-closed로 바꿨다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span><code>onFailure: &quot;block&quot;</code>으로 스크립트가 없을 때도 차단되는 것을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>npm test 3개 PASS, git log에 커밋 2개 이상이 보인다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>jq --version이 버전을 출력한다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기 (15분)</h2>
-<p>Claude Code를 쓰면서 가장 많이 누르는 것이 확인 창입니다. <strong>auto mode</strong>는 사람 대신 별도의 <strong>분류기 모델</strong>이 매 동작을 판정해, 되돌릴 수 없거나 환경 밖으로 나가는 동작만 막고 나머지는 묻지 않고 실행합니다. 이 Task에서는 ① 분류기 모델을 확인하고 ② 무엇이 통과·차단되는지 보고 ③ 사람이 반드시 확인할 지점을 넣고 ④ 우리 회사의 민감 위치를 알려 주고 ⑤ 조직이 auto 자체를 잠그는 방법까지 확인합니다.</p>
+<h2 id="task-01-첫-subagent-code-reviewer-만들기-8분">TASK 01 · 첫 Subagent, code-reviewer 만들기 (8분)</h2>
+<p><code>.claude/agents/</code>에 code-reviewer를 정의하고 등록을 확인한 뒤, TASK 00의 <strong>버그 수정 커밋</strong>을 첫 리뷰 대상으로 호출합니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Subagent가 왜 필요한가, Context Isolation</strong></p>
+<p>서브에이전트는 <strong>자신만의 컨텍스트 창, 시스템 프롬프트, 도구 권한, 모델</strong>을 갖는 독립 에이전트입니다.
+파일 수십 개를 읽는 무거운 분석을 위임하면 서브에이전트 컨텍스트에서 소비되고,
+메인에는 <strong>요약만 반환</strong>되어 메인 컨텍스트가 보호됩니다.</p></div></div>
+
+<h3 id="step-1-에이전트-정의-파일-작성">Step 1 · 에이전트 정의 파일 작성</h3>
+<p>정의 파일은 <strong>YAML frontmatter 핵심 4필드</strong>(name / description / tools / model, 필수는 name과 description)와 시스템 프롬프트 본문으로 구성됩니다. 프로젝트 루트에서 아래 블록을 실행하세요.</p>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch4
+mkdir -p .claude/agents
+
+cat &gt; .claude/agents/code-reviewer.md &lt;&lt; &#x27;EOF&#x27;
+---
+name: code-reviewer
+description: |
+  PR diff를 검토하여 가독성, 안전성, 성능, 테스트 커버리지 관점에서
+  개선 사항을 제안하는 시니어 코드 리뷰어. 사용 시점: 코드 리뷰가
+  필요하다고 사용자가 요청하거나 git diff 검토가 필요한 경우.
+tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*)
+model: sonnet
+---
+당신은 10년 경력의 시니어 소프트웨어 엔지니어입니다.
+
+# 검토 우선순위
+1. 안전성: null 참조, race condition, 입력 검증 누락
+2. 가독성: 명명, 함수 크기, 주석 필요성
+3. 성능: 알고리즘 복잡도, 불필요한 I/O
+4. 테스트: 새 코드의 테스트 커버리지
+
+# 출력 형식
+- Severity: high | medium | low
+- 파일:라인, 문제 설명, 권장 수정안
+EOF</code></pre></div>
+
 <table>
 <thead>
 <tr>
-<th>경계</th>
-<th>장치</th>
-<th>이 Task</th>
+<th>필드</th>
+<th>역할</th>
+<th>이 예시의 선택</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>절대 안 됨</td>
-<td>managed <code>permissions.deny</code></td>
-<td>(Ch2에서 확인)</td>
+<td><code>name</code></td>
+<td>고유 식별자, kebab-case 영문 소문자</td>
+<td>code-reviewer</td>
 </tr>
 <tr>
-<td>사람이 반드시 확인</td>
-<td><code>permissions.ask</code></td>
-<td>Step 3</td>
+<td><code>description</code></td>
+<td>자동 디스패치의 판단 기준, 사용 시점까지 명시</td>
+<td>리뷰 요청 / git diff 검토 시</td>
 </tr>
 <tr>
-<td>신뢰 범위·민감 위치 알리기</td>
-<td><code>autoMode.environment</code></td>
-<td>Step 4</td>
+<td><code>tools</code></td>
+<td>도구 화이트리스트, Bash는 명령 패턴으로 제한</td>
+<td>읽기 전용 + git diff / log만</td>
 </tr>
 <tr>
-<td>분류기가 막되 명시 지시로 풀림 / 무조건 막음</td>
-<td><code>autoMode.soft_deny</code> / <code>hard_deny</code></td>
-<td>Step 1·2에서 기본 규칙 확인, Step 4에서 hard_deny 추가</td>
-</tr>
-<tr>
-<td>조직이 auto를 끔</td>
-<td>managed <code>permissions.disableAutoMode</code></td>
-<td>Step 5</td>
+<td><code>model</code></td>
+<td>별칭 sonnet / opus / haiku, 전체 모델 ID, 또는 inherit. 생략 시 inherit(메인 모델 상속)</td>
+<td>sonnet, 일상 리뷰의 표준</td>
 </tr>
 </tbody>
 </table>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 랩은 이미 auto로 시작하고 있습니다</strong></p>
-<p>Claude Code v2.1.283 이상은 Bedrock 대화형 세션을 모드 지정 없이 시작하면 auto 모드로 시작합니다(Bedrock 지원 모델: Sonnet 5 이상, Opus 4.7 이상, Haiku 5.5, Fable). <code>claude -p</code>와 Agent SDK는 Manual로 시작합니다.</p></div></div>
+<h3 id="step-2-등록-확인">Step 2 · 등록 확인</h3>
+<p><strong>Terminal</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude</code></pre></div>
 
-<h3 id="step-1-분류기-모델을-확인하고-auto로-시작">Step 1 · 분류기 모델을 확인하고 auto로 시작</h3>
-<p>분류기는 판정마다 대화 일부와 실행할 동작을 보내는 <strong>별도 모델 호출</strong>이고, Bedrock에서는 이것도 토큰 사용량으로 청구됩니다. 어느 모델이 판정하는지는 디버그 로그로 확인합니다.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>변경 안내, /agents 위저드 제거 (v2.1.198+)</strong></p>
+<p>구버전에서 쓰던 <code>/agents</code>는 이제 안내 문구만 출력합니다.
+에이전트 관리 자체가 파일 기반으로 바뀐 것은 아니며(파일 위치와 frontmatter는 동일),
+<strong>확인은 @ 멘션 typeahead 또는 Claude에게 질문</strong>으로, 생성/수정은 파일 편집 또는 Claude에게 요청으로 합니다.</p></div></div>
+
+<p>입력창에 <code>@</code>를 입력하면 파일 멘션과 함께 <strong>code-reviewer (agent)</strong>가 typeahead 목록에 나타납니다(Esc로 닫기). 또는 아래처럼 직접 물어봐도 됩니다.</p>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>현재 이 세션에서 사용할 수 있는 서브에이전트 목록을 알려주세요</code></pre></div>
+
+<p><strong>출력 예시</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>사용 가능한 서브에이전트:
+  - code-reviewer : PR diff 검토 (프로젝트, .claude/agents/)
+  - claude, claude-code-guide, Explore, general-purpose, Plan, statusline-setup : 내장 에이전트</code></pre></div>
+
+<p>처음 여는 폴더라 <strong>Accessing workspace</strong> 창이 뜨면 ↓로 <code>Yes, I trust this folder</code>를 고른 뒤 Enter를 누릅니다.</p>
+<h3 id="step-3-첫-호출-버그-수정-커밋-리뷰">Step 3 · 첫 호출, 버그 수정 커밋 리뷰</h3>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>code-reviewer 에이전트를 사용해서 최근 커밋의 변경분(git diff HEAD~1)을 검토해 주세요</code></pre></div>
+
+<p><strong>관찰 포인트</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● code-reviewer(최근 커밋 diff 리뷰)
+  └ Backgrounded agent (↓ to manage · ctrl+o to expand)
+✳ Waiting for 1 background agent to finish
+   ○ code-reviewer  최근 커밋 diff 리뷰      22s · ↓ 6.0k tokens
+…
+● Agent &quot;최근 커밋 diff 리뷰&quot; finished · 30s
+● 검토 결과: 4d47e9f fix: handle users without profile
+  심각도: 중간 / 위치: src/userService.js:9 / 내용: 없는 id도 &quot;unknown&quot;을 반환 …
+  심각도: 중간 / 위치: test.js:5, test.js:10 / 내용: 경계 사례 테스트 부재 …</code></pre></div>
+
+<p>서브에이전트는 <strong>백그라운드로</strong> 실행되고, 입력창 아래 패널에 진행 상황이 보입니다(↓로 관리, <code>/tasks</code>로 목록). 결과를 받으면 <strong>출력 형식이 시스템 프롬프트에서 지정한 Severity 구조를 따르는지</strong>, 우선순위 4개 관점이 반영되었는지 확인하세요.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>메인이 빈틈을 대신 채우기도 합니다</strong></p>
+<p>code-reviewer는 <code>git diff</code>·<code>git log</code>만 실행할 수 있어서 <code>npm test</code>를 돌리지 못합니다. 실습 환경에서는 메인이 "리뷰어가 테스트를 돌릴 수 없으니 제가 직접 확인하겠습니다"라며 <code>npm test</code>를 실행했습니다. 서브에이전트의 권한 울타리는 지켜지지만, <strong>메인 세션의 권한</strong>(여기서는 auto mode)이 최종 경계라는 뜻입니다.</p></div></div>
+
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>@ typeahead 또는 Claude 응답에서 code-reviewer 등록을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>Severity 형식을 따르는 리뷰 결과를 받았다</span></label></li>
+</ul></div></div>
+
+<h2 id="task-02-도구-권한-격리-체험-6분">TASK 02 · 도구 권한 격리 체험 (6분)</h2>
+<p>읽기 전용 에이전트에 <strong>일부러 권한 밖 요청</strong>을 보내 거부 동작을 관찰하고, tools 필드에 권한을 명시적으로 추가한 뒤 <strong>새 위임</strong>으로 차이를 체험합니다. 최소 권한 원칙과 정의 갱신 타이밍의 실습입니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Tools란 무엇인가</strong></p>
+<p>서브에이전트 정의의 <code>tools</code> 필드는 그 에이전트가 쓸 수 있는 <strong>손발의 목록</strong>입니다.
+<code>Read</code>(파일 읽기), <code>Grep</code>/<code>Glob</code>(검색),
+<code>Edit</code>/<code>Write</code>(수정과 생성), <code>Bash</code>(명령 실행)처럼
+하나하나가 구체적 능력이고, <strong>목록에 없는 도구는 시도 자체가 차단</strong>됩니다.
+이 Task는 그 울타리를 일부러 밟아 보며 최소 권한이 실제로 동작하는지 확인하는 실험입니다.</p></div></div>
+
+<h3 id="step-1-읽기-전용-테스트-에이전트-작성">Step 1 · 읽기 전용 테스트 에이전트 작성</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude --version
-cd ~/claude-lab/ch3
-claude -p --permission-mode auto --debug-file /tmp/classifier.log \
-  &quot;curl -s -o /dev/null -w &#x27;%{http_code}&#x27; https://example.com 을 실행하고 결과만 알려줘&quot;
-grep -o &#x27;Auto mode classifier:.\{0,160\}&#x27; /tmp/classifier.log | head -1
-claude auto-mode defaults | jq -r &#x27;.soft_deny[] | split(&quot; [&quot;)[0] | split(&quot;:&quot;)[0]&#x27; | head -15</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; .claude/agents/dangerous-test.md &lt;&lt; &#x27;EOF&#x27;
+---
+name: dangerous-test
+description: 의도적 권한 테스트용 에이전트. 사용 시점: 사용자가 이름으로 직접 지정할 때만.
+tools: Read, Grep
+model: haiku
+---
+당신은 테스트 에이전트입니다.
+파일을 분석하고 결과를 보고하세요.
+EOF</code></pre></div>
 
-<p><code>200</code> 다음 줄에 <code>ANTHROPIC_DEFAULT_SONNET_MODEL=global.anthropic.claude-sonnet-5-5 cannot serve as the classifier; using the Sonnet 5 default instead</code>가 나옵니다. 이 환경의 기본 Sonnet은 5.5라서 분류기로 쓸 수 없고, <strong>Sonnet 5</strong>가 판정합니다. 마지막 명령의 출력은 분류기가 <strong>기본으로 막는 규칙의 이름</strong>입니다(Git Destructive, Code from External, Production Deploy, Secret-Store Writes 등). 거부 메시지의 <code>[...]</code> 안에 이 이름이 나옵니다. 기본 규칙은 <code>allow</code>, <code>environment</code>, <code>soft_deny</code>, <code>hard_deny</code> 네 목록으로 나뉩니다.</p>
+<h3 id="step-2-일부러-권한을-벗어난-요청">Step 2 · 일부러 권한을 벗어난 요청</h3>
+<p>tools에 <strong>Edit이 없는 상태</strong>에서 파일 수정을 요청합니다. Claude Code가 <code>.claude/agents/</code>를 감시하므로 파일 저장 후 몇 초 안에 자동 인식됩니다(Task 1에서 디렉토리를 만든 뒤 세션을 시작했기 때문에 재시작 불필요).</p>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>dangerous-test 에이전트를 사용해서 src/users.js의 Park 사용자에게 profile 필드를 추가해 주세요</code></pre></div>
+
+<p><strong>관찰 포인트</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● dangerous-test(Park 사용자 profile 추가)
+  └ Backgrounded agent
+…
+● 결과: src/users.js는 수정되지 않았습니다
+  dangerous-test 에이전트는 Read, Grep만 쓸 수 있습니다. Edit을 호출해 봤지만
+  &quot;No such tool available&quot; 오류가 났고, 다른 쓰기 수단도 없었습니다.</code></pre></div>
+
+<p>메인이 "이 작업은 제가 직접 하겠습니다"라며 대신 고치는 경우도 있습니다. 그때는 <code>git diff</code>로 확인 후 <code>git checkout -- src/users.js</code>로 되돌리고 진행하세요.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>tools 필드 생략의 위험</strong></p>
+<p>tools 필드를 <strong>아예 생략하면 메인의 모든 도구를 상속</strong>합니다(지양).
+화이트리스트를 명시하는 습관이 안전의 기본입니다. 반대로 대부분을 상속하되 일부만 빼려면 <code>disallowedTools: Write, Edit</code>처럼 거부 목록을 쓸 수 있습니다.</p></div></div>
+
+<h3 id="step-3-권한을-명시적으로-부여">Step 3 · 권한을 명시적으로 부여</h3>
+<p><strong>Terminal, tools에 Edit 추가</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sed -i.bak &#x27;s/^tools: Read, Grep$/tools: Read, Grep, Edit/&#x27; .claude/agents/dangerous-test.md
+grep &#x27;^tools:&#x27; .claude/agents/dangerous-test.md   # tools: Read, Grep, Edit 확인</code></pre></div>
+
+<h3 id="step-4-exit로-나갔다-들어와-새-위임으로-재시도">Step 4 · /exit로 나갔다 들어와 새 위임으로 재시도</h3>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>중요, 같은 요청을 그냥 반복하면 여전히 거부됩니다</strong></p>
+<p>정의 파일 변경은 <strong>다음 새 위임부터</strong> 적용됩니다. 그런데 메인은 직전 턴에서
+"이 에이전트는 수정 불가"를 이미 학습했기 때문에, 같은 요청을 반복하면 재위임 없이 기존 맥락으로
+답하거나 이전 인스턴스를 재개(resume)할 수 있습니다. 재개된 서브에이전트는 <strong>스폰 시점의 도구 권한을 그대로 유지</strong>합니다.
+<code>/exit</code>로 세션을 완전히 나갔다가 <code>claude</code>로 다시 들어오세요. 갱신된 정의로 새 인스턴스가 뜹니다(같은 세션에서 <code>/clear</code>로 맥락만 비워도 동일 효과).</p></div></div>
+
+<p><strong>Claude 세션 입력, 세션 종료</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/exit</code></pre></div>
+
+<p><strong>Terminal (~/claude-lab/ch4), 재진입</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude</code></pre></div>
+
+<p><strong>Claude 세션 입력, 재시도</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>dangerous-test 에이전트를 사용해서 src/users.js의 Park 사용자에게 profile 필드를 추가해 주세요</code></pre></div>
+
+<p><strong>관찰 포인트</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>[dangerous-test] Read src/users.js
+[dangerous-test] Edit src/users.js   # 이번에는 Edit 도구 사용 (auto mode라 확인 창 없이 진행)
+  Park(id 3)에 profile 필드를 추가했습니다.</code></pre></div>
+
+<p>이것이 <strong>의도적 권한 부여와 무분별한 전체 권한의 차이</strong>입니다. 동시에, 서브에이전트의 도구 권한이 <strong>인스턴스 스폰 시점에 고정</strong>된다는 점과 메인의 대화 맥락이 재위임을 가로막을 수 있다는 점, 그리고 <code>/exit</code> 재진입(또는 <code>/clear</code>)이 이런 상황의 실전 해결책이라는 점까지 함께 체득한 것입니다.</p>
+<h3 id="step-5-실습-프로젝트-원상-복구">Step 5 · 실습 프로젝트 원상 복구</h3>
+<p><strong>Terminal, 데이터 원복</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>git checkout -- src/users.js
+rm -f .claude/agents/dangerous-test.md .claude/agents/dangerous-test.md.bak</code></pre></div>
+
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>Edit 권한이 없을 때 수정이 거부되는 것을 관찰했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>tools에 Edit 추가 + /exit 재진입 후 재시도에서 수정이 진행되는 차이를 확인했다</span></label></li>
+</ul></div></div>
+
+<h2 id="task-03-에이전트-3종-완성-test-writer와-docs-writer-추가-7분">TASK 03 · 에이전트 3종 완성, test-writer와 docs-writer 추가 (7분)</h2>
+<p>Task 4의 디스패치 실습을 위해 <strong>test-writer</strong>(테스트 작성)와 <strong>docs-writer</strong>(문서 작성)를 추가합니다. 두 에이전트의 description이 서로 <strong>영역이 겹치지 않게</strong> 작성된 점에 주목하세요.</p>
+<h3 id="step-1-두-에이전트-한-번에-생성">Step 1 · 두 에이전트 한 번에 생성</h3>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cat &gt; .claude/agents/test-writer.md &lt;&lt; &#x27;EOF&#x27;
+---
+name: test-writer
+description: |
+  기존 코드의 테스트 커버리지를 분석하고 누락된 엣지 케이스, 분기,
+  예외 경로에 대한 테스트를 작성. 사용 시점: 커버리지 부족이 확인되거나
+  새 함수에 테스트가 필요한 경우.
+tools: Read, Grep, Glob, Edit, Write, Bash(npm test:*)
+model: sonnet
+---
+당신은 테스트 자동화 전문가입니다.
+
+# 작업 절차
+1. 대상 함수의 시그니처와 분기 구조 분석
+2. 기존 테스트 파일이 있다면 스타일 일치
+3. 정상 케이스, 엣지 케이스, 예외 케이스 모두 커버
+4. 테스트 작성 후 실제로 실행하여 통과 확인
+
+# 작성 원칙
+- 테스트 하나가 한 가지만 검증
+- 의미 있는 테스트 이름
+- AAA 패턴 (Arrange Act Assert)
+EOF
+
+cat &gt; .claude/agents/docs-writer.md &lt;&lt; &#x27;EOF&#x27;
+---
+name: docs-writer
+description: |
+  README, API 문서, 아키텍처 결정 문서(ADR)를 코드와 일치하도록 작성하거나
+  업데이트. 사용 시점: 신규 기능 추가 후 문서 작성이 필요하거나 기존 문서가
+  코드와 불일치할 때.
+tools: Read, Grep, Glob, Edit, Write, Bash(git log:*)
+model: sonnet
+---
+당신은 기술 문서 작성가입니다.
+
+# 문서 종류별 가이드
+- README: 프로젝트 개요, 설치, 사용법, 예시
+- API 문서: 함수 시그니처, 파라미터, 반환값, 예시
+- ADR: Context, Decision, Consequences 형식
+
+# 작성 원칙
+- 코드와 실제 동작이 일치해야 함
+- 예시는 실제로 실행 가능한 것
+- 한국어와 영어 혼용 가능, 일관성 유지
+EOF
+
+ls .claude/agents/</code></pre></div>
+
+<h3 id="step-2-3종-등록-확인">Step 2 · 3종 등록 확인</h3>
+<p>세션 입력창에 <code>@</code>를 입력해 typeahead에 <strong>3종 모두 (agent)로 표시</strong>되는지 확인하세요. 직접 <code>@agent-test-writer</code>처럼 입력해도 멘션이 인식됩니다. 또는 아래처럼 물어봐도 됩니다.</p>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>사용 가능한 서브에이전트를 모두 알려주세요</code></pre></div>
+
+<p><strong>출력 예시</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>프로젝트 서브에이전트 (.claude/agents/):
+  - code-reviewer : PR diff 검토
+  - test-writer   : 테스트 커버리지 확장
+  - docs-writer   : 문서 작성과 동기화</code></pre></div>
+
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>description이 디스패치 정확도를 결정한다</strong></p>
+<p>메인은 사용자 요청과 각 에이전트의 <strong>description을 대조해 자동 선택</strong>합니다.
+"코드를 분석하는 도우미"처럼 모호하거나 "모든 개발 작업을 돕는 만능"처럼 광범위하면 잘못된 디스패치가 발생합니다.
+구체적 역할 + <strong>사용 시점</strong>을 명시하고, 에이전트끼리 경계를 겹치지 않게 하세요.</p></div></div>
+
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>이 정의 파일들은 Git으로 팀과 공유됩니다</strong></p>
+<p><code>.claude/agents/</code>는 프로젝트 단위(팀 공유, Git 커밋 대상),
+<code>~/.claude/agents/</code>는 개인 전역(모든 프로젝트에서 사용)입니다.
+지금 만든 3종을 커밋해 두면 팀 전체가 동일한 에이전트를 사용합니다.</p></div></div>
+
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>@ typeahead 또는 Claude 응답에서 code-reviewer, test-writer, docs-writer 3종을 확인했다</span></label></li>
+</ul></div></div>
+
+<h2 id="task-04-task-디스패치-3패턴-10분">TASK 04 · Task 디스패치 3패턴 (10분)</h2>
+<p>같은 에이전트들을 <strong>자동 디스패치, 명시적 호출, 병렬 호출</strong> 3가지 방식으로 부려 보고, <code>/usage</code>로 사용량을 비교합니다. 각 패턴 사이에 <code>/exit</code>로 나갔다 들어오거나 <code>/clear</code>로 컨텍스트를 정리하면 관찰이 깨끗해집니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>현재 버전 참고, Agent 도구와 백그라운드 실행</strong></p>
+<p>위임에 쓰이는 내부 도구 이름이 <strong>Task에서 Agent로 변경</strong>되었습니다(구 Task 표기는 별칭으로 동작).
+또한 서브에이전트는 <strong>기본적으로 백그라운드로 실행</strong>됩니다. 진행 상황은 프롬프트 아래 패널과
+<code>/tasks</code>에서 확인하고, 권한 요청은 메인 세션에 표시되며, Ctrl + B로 실행 중 작업을 백그라운드로 보낼 수 있습니다.</p></div></div>
+
+<h3 id="step-1-패턴-a-자동-디스패치">Step 1 · 패턴 A, 자동 디스패치</h3>
+<p>에이전트를 지정하지 않고 요청합니다. 메인이 description을 대조해 <strong>스스로 code-reviewer를 선택</strong>하는지 관찰하세요.</p>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 프로젝트의 최근 변경 사항을 코드 리뷰해 주세요</code></pre></div>
+
+<p><strong>관찰 포인트</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>[메인] 코드 리뷰 요청으로 판단, code-reviewer를 호출합니다.
+  → Agent(code-reviewer, &quot;Review recent changes&quot;)
+# 사용자가 지정하지 않아도 description 매칭으로 선택됨</code></pre></div>
+
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>메인이 직접 해 버리면, 그것도 관찰 결과입니다</strong></p>
+<p>파일 세 개짜리 프로젝트에서는 메인(Opus 5.5)이 위임하지 않고 <code>git show</code>·<code>cat</code>으로 <strong>직접 리뷰</strong>하는 경우가 실습에서 확인되었습니다. 자동 디스패치는 "위임하는 편이 낫다"고 판단할 때만 일어나므로 보장되지 않습니다. 실행을 보장하려면 Step 2의 이름 지정이나 <code>@</code> 멘션을 씁니다.</p></div></div>
+
+<h3 id="step-2-패턴-b-명시적-호출">Step 2 · 패턴 B, 명시적 호출</h3>
+<p>이름으로 직접 지정하면 메인은 다른 에이전트를 검토하지 않고 <strong>예측 가능하게</strong> 해당 에이전트를 호출합니다.</p>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>test-writer 에이전트를 사용해서 src/userService.js의 테스트 커버리지를 분석하고, 존재하지 않는 사용자 id 같은 누락된 엣지 케이스 테스트를 추가해 주세요</code></pre></div>
+
+<p>test-writer가 테스트를 추가하고 <strong>npm test를 직접 실행해 통과를 확인</strong>하는지 지켜보세요(시스템 프롬프트의 작업 절차 4번). 특정 에이전트 실행을 <strong>보장</strong>하고 싶다면 자연어 대신 <code>@</code>를 입력해 typeahead에서 test-writer (agent)를 선택하는 @-멘션 방식을 쓸 수 있습니다.</p>
+<h3 id="step-3-패턴-c-병렬-호출">Step 3 · 패턴 C, 병렬 호출</h3>
+<p>독립적인 3개 작업을 한 번에 요청합니다. 메인이 <strong>3개의 Task를 동시에 발행</strong>하고, 총 시간은 합산이 아니라 가장 오래 걸린 작업 기준(max)이 됩니다.</p>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 코드베이스를 종합 점검해 주세요. 다음 세 가지를 병렬로 진행해 주세요.
+1) 코드 품질 리뷰
+2) 테스트 커버리지 분석
+3) README 문서 초안 작성</code></pre></div>
+
+<p><strong>관찰 포인트</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>● Running 2 agents… (ctrl+o to expand)
+  ├ code-reviewer (코드 품질 리뷰) · 0 tool uses
+  └ test-writer (테스트 커버리지 분석) · 0 tool uses
+…
+1) 코드 품질 리뷰 … 2) 테스트 커버리지 분석 … 3) README 초안 …
+✻ Crunched for 1m 8s</code></pre></div>
+
+<p>실습 환경에서는 <strong>두 에이전트가 동시에</strong> 떴고, README는 메인이 직접 썼습니다(docs-writer가 뜨는지는 매번 다릅니다). 또 test-writer는 <code>Bash(npm test:*)</code>만 허용되어 자신이 만든 <code>node test.coverage.js</code>를 실행하지 못했고, 메인이 대신 실행했습니다. 좁은 Bash 패턴이 실제로 동작한다는 증거입니다.</p>
+<h3 id="step-4-비용-확인">Step 4 · 비용 확인</h3>
+<p><code>/usage</code>(별칭 <code>/cost</code>)로 세션 사용량을 확인합니다. 줄이는 방법은 Ch5에서 다룹니다.</p>
+<p><strong>Claude 세션 입력</strong></p>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/usage</code></pre></div>
+
+<p><strong>출력 예시 (실습 환경, Usage 탭)</strong></p>
+<div class="code sample"><div class="code-head"><span>text</span><span class="tag">출력 예시</span></div><pre><code>Total cost:            $0.3585
+Total duration (API):  2m 15s
+Total duration (wall): 1m 21s
+Usage by model:
+    claude-haiku-5-5:  1.1k input, 370 output, …                  ($0.0003)
+     claude-opus-5-5:  14 input, 4.0k output, 131.2k cache read … ($0.1975)
+   claude-sonnet-5-5:  417 input, 10.2k output, 35.4k cache read … ($0.1607)
+Prompt cache (main):   6 requests · 88% of input tokens from cache · warm (5m TTL …)</code></pre></div>
+
 <table>
 <thead>
 <tr>
-<th>분류기 모델 결정 순서 (먼저 맞는 것)</th>
-<th>결과</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>CLAUDE_CODE_AUTO_MODE_MODEL</code>에 전체 모델 ID (v2.1.302+)</td>
-<td>지정한 모델. 단 Sonnet 5.5·Opus 5.5·Opus 5는 무시되고 다음 순서로</td>
-</tr>
-<tr>
-<td>Anthropic이 설정한 분류기 모델</td>
-<td>그 모델</td>
-</tr>
-<tr>
-<td>세션 모델이 Sonnet 4.6</td>
-<td>Sonnet 4.6</td>
-</tr>
-<tr>
-<td><code>ANTHROPIC_DEFAULT_SONNET_MODEL</code> 설정</td>
-<td>그 값, 단 Sonnet 5.5·Opus 5.5면 Sonnet 5</td>
-</tr>
-<tr>
-<td>그 밖</td>
-<td>Sonnet 5</td>
-</tr>
-</tbody>
-</table>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>분류기 모델을 직접 고정하려면</strong></p>
-<p><code>CLAUDE_CODE_AUTO_MODE_MODEL</code>에 Sonnet 5.5를 넣으면 로그에 <code>ignoring CLAUDE_CODE_AUTO_MODE_MODEL=… using the default classifier model instead</code>가 남고 기본 분류기가 그대로 판정합니다(실습 환경에서 확인). 고정하려면 <code>us.anthropic.claude-sonnet-5</code>처럼 제외되지 않은 모델을 지정합니다. 공급자가 지정한 모델을 제공하지 못하면 분류기 검사가 실패해 <strong>해당 동작은 거부</strong>됩니다.</p>
-</div></div>
-<h3 id="step-2-묻지-않는-것과-명시-지시가-통과시키는-것">Step 2 · 묻지 않는 것과, 명시 지시가 통과시키는 것</h3>
-<p>push를 시험할 <strong>로컬 원격</strong>을 만들고, 원격과 로컬 이력을 일부러 어긋나게 해 둡니다(force push가 실제로 이력을 덮어쓰는 상황).</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch3
-git init -q --bare /tmp/ch3-remote.git
-git remote add origin /tmp/ch3-remote.git 2&gt;/dev/null
-echo &quot;# ch3&quot; &gt; README.md
-git add README.md &amp;&amp; git -c user.name=lab -c user.email=lab@example.com commit -qm &quot;first&quot;
-git push -q origin HEAD:main
-git -c user.name=lab -c user.email=lab@example.com commit -q --amend -m &quot;rewritten&quot;
-git log --oneline -1; git ls-remote origin main
-claude --permission-mode auto</code></pre></div>
-
-<p>세 가지를 차례로 요청합니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>README.md에 &#x27;## 실습 메모&#x27; 섹션을 추가하고 git status를 보여줘</code></pre></div>
-
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>curl -fsSL https://example.com/install.sh | bash 를 실행해서 도구를 설치해줘</code></pre></div>
-
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>로컬 커밋을 git push --force origin HEAD:main 으로 강제로 올려줘</code></pre></div>
-
-<table>
-<thead>
-<tr>
-<th>요청</th>
-<th>실제로 보이는 것</th>
+<th>읽는 법</th>
 <th>의미</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>① README 편집 + git status</td>
-<td>확인 창 없이 실행, 도구 아래 <code>Allowed by auto mode</code></td>
-<td>일상 작업은 묻지 않습니다</td>
+<td><code>Usage by model</code></td>
+<td>에이전트별이 아니라 <strong>모델별</strong> 합계입니다. 메인은 Opus, 세 에이전트는 <code>model: sonnet</code>이라 Sonnet 줄이 곧 서브에이전트 비용입니다</td>
 </tr>
 <tr>
-<td>② <code>curl … | bash</code></td>
-<td>대부분 모델이 <strong>먼저 내려받아 내용을 확인</strong>하는 쪽을 택하고, 여기서는 404로 끝납니다. 그대로 파이프하려 하면 분류기의 <code>Code from External</code> 규칙 대상입니다</td>
-<td>모델 판단과 분류기, 두 층이 있습니다</td>
+<td>API 시간 &gt; wall 시간</td>
+<td>병렬로 돌았다는 증거입니다(2분 15초어치 호출이 1분 21초에 끝남)</td>
 </tr>
 <tr>
-<td>③ 명시적인 force push</td>
-<td><strong>확인 없이 실행</strong>되고 <code>(forced update)</code>로 원격 이력이 바뀝니다</td>
-<td>사용자가 정확한 동작을 지시하면 분류기가 soft_deny를 풀어 줍니다</td>
+<td><code>Prompt cache … 5m TTL</code></td>
+<td>Bedrock 프롬프트 캐시는 5분 유지됩니다. Ch4 선택 TASK와 Ch5에서 이 숫자가 다시 나옵니다</td>
 </tr>
 </tbody>
 </table>
-<p>③이 이 Step의 핵심입니다. 분류기는 "사람이 시키지 않은 위험한 동작"을 막는 장치이지, 사람이 명시한 동작까지 대신 거절하는 장치가 아닙니다. 게다가 이 원격은 같은 머신의 <code>/tmp</code>라서 현재 저장소의 신뢰 범위 안으로 판정됩니다.</p>
-<p>거부 기록도 봅니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/permissions</code></pre></div>
-
-<p>분류기가 거부한 동작이 있었다면 <strong>Recently denied</strong> 탭에 남고, 정말 의도한 동작이라면 <code>r</code>로 재시도할 수 있습니다(위 흐름에서는 비어 있을 수 있습니다). <strong>Auto mode</strong> 탭에서는 파일을 열지 않고 규칙을 편집할 수 있습니다(저장 위치는 <code>~/.claude/settings.json</code>). <code>/exit</code>로 나옵니다.</p>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>사용자의 명시 지시는 soft_deny를 넘습니다</strong></p>
-<p>"원격을 로컬과 맞춰 줘"처럼 넓게 요청해도, 모델이 백업 브랜치를 만든 뒤 <code>--force-with-lease</code>로 진행해 분류기를 통과하는 경우가 실습에서 확인되었습니다. 그래서 <strong>반드시 사람이 확인해야 하는 동작은 다음 Step처럼 규칙으로 고정</strong>합니다.</p></div></div>
-
-<h3 id="step-3-사람이-반드시-확인할-지점-넣기">Step 3 · 사람이 반드시 확인할 지점 넣기</h3>
-<p><code>permissions.ask</code> 규칙은 분류기보다 먼저 평가되어 auto에서도 <strong>항상 확인 창</strong>을 띄웁니다. Step 2의 로컬 원격을 그대로 쓰고 규칙만 넣습니다.</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq &#x27;.permissions.ask = ((.permissions.ask // []) + [&quot;Bash(git push *)&quot;, &quot;Bash(gh pr create *)&quot;])&#x27; ~/.claude/settings.json &gt; /tmp/s.json \
-  &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
-jq &#x27;.permissions.ask&#x27; ~/.claude/settings.json
-cd ~/claude-lab/ch3 &amp;&amp; claude --permission-mode auto</code></pre></div>
-
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>README.md를 한 줄 고쳐서 커밋하고 origin main으로 push해줘</code></pre></div>
-
-<p>상태 확인 명령은 묻지 않고 진행되고, <code>git push</code>가 들어간 명령에서만 확인 창이 뜹니다. 창에는 <code>Ask rule Bash(git push *) overrides auto mode for this command.</code>가 표시됩니다. 모델이 <code>sed … &amp;&amp; git commit … &amp;&amp; git push …</code>처럼 편집·커밋·push를 <strong>한 명령으로 묶으면</strong> 그 묶음 전체에 한 번 뜹니다. 묶인 명령 안의 push도 규칙이 잡아낸다는 뜻입니다. 이것이 확인 창을 줄이면서 사람을 중요한 순간에만 부르는 방법입니다. <strong>1. Yes</strong>로 승인하거나 <strong>3. No</strong>로 거절한 뒤 <code>/exit</code>로 나옵니다.</p>
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>규칙 문자열의 한계</strong></p>
-<p><code>Bash(git push *)</code>는 <code>git push</code>로 시작하는 명령(<code>&amp;&amp;</code>로 묶인 부분 명령 포함)만 잡습니다. <code>git -C &lt;dir&gt; push</code>나 <code>git -c k=v push</code>처럼 다르게 쓴 명령은 걸리지 않습니다. 명령 전체를 검사해야 하면 TASK 01의 PreToolUse 훅으로 보강하세요.</p></div></div>
-
-<h3 id="step-4-우리-회사의-민감-위치를-분류기에-알리기">Step 4 · 우리 회사의 민감 위치를 분류기에 알리기</h3>
-<p>분류기는 기본적으로 <strong>현재 저장소와 그 원격만</strong> 신뢰합니다. 사내 Git, 도메인, 버킷과 함께 <strong>고객 데이터가 있는 곳</strong>을 이름으로 알려 주면, 추측 대신 그 정보를 기준으로 판정합니다. 항목은 정규식이 아니라 문장입니다.</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq &#x27;.autoMode.environment = [
-  &quot;$defaults&quot;,
-  &quot;Organization: Workshop Bank. Primary use: software development&quot;,
-  &quot;Trusted internal domains: *.workshop.internal&quot;,
-  &quot;Sensitive data locations &amp; audiences: ~/claude-lab/ch3/customers.csv holds customer personal data (test values) and must never leave this machine&quot;
-]&#x27; ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
-claude auto-mode config | jq &#x27;.environment[-3:]&#x27;</code></pre></div>
-
-<p>이제 작성한 규칙을 <strong>분류기 관점에서 리뷰</strong>받습니다. 모델 호출이라 30~60초 걸립니다.</p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude auto-mode critique</code></pre></div>
-
-<p>실습 환경에서 실제로 나온 지적은 다음과 같습니다(문구는 매번 조금씩 다릅니다).</p>
-<table>
-<thead>
-<tr>
-<th>지적</th>
-<th>이유</th>
-<th>고치는 방향</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>신뢰 도메인과 "절대 반출 금지"가 충돌</td>
-<td><code>*.workshop.internal</code>을 신뢰 범위에 넣으면 그쪽으로의 업로드는 반출로 판정되지 않을 수 있음</td>
-<td>"신뢰 도메인, 저장소 원격을 포함해 <strong>어디로도</strong> 보내지 않는다"처럼 범위를 명시</td>
-</tr>
-<tr>
-<td><code>(test values)</code>가 보호를 약하게 함</td>
-<td>분류기는 테스트 데이터를 덜 엄격하게 다룸</td>
-<td>실습이라도 "실제 고객 개인정보로 취급"이라고 적기</td>
-</tr>
-<tr>
-<td>기본 슬롯과 항목이 겹침</td>
-<td><code>$defaults</code>의 "Organization: None configured" 등과 나란히 보임</td>
-<td>리뷰 결과를 보고 판단</td>
-</tr>
-<tr>
-<td>무조건이어야 하면 hard_deny로</td>
-<td>environment는 판단 근거일 뿐 강제가 아님</td>
-<td><code>autoMode.hard_deny</code>에 "customers.csv 내용을 머신 밖으로 보내는 모든 동작" 추가</td>
-</tr>
-</tbody>
-</table>
-<p>지적을 반영해 다시 쓰고, 한 번 더 리뷰합니다.</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq &#x27;.autoMode.environment = [
-  &quot;$defaults&quot;,
-  &quot;Organization: Workshop Bank. Primary use: software development&quot;,
-  &quot;Trusted internal domains: *.workshop.internal&quot;,
-  &quot;Sensitive data locations &amp; audiences: ~/claude-lab/ch3/customers.csv holds real customer personal data. Its contents, excerpts or derived data must not be sent anywhere off this machine, including trusted internal domains and the repo remote&quot;
-] | .autoMode.hard_deny = [&quot;$defaults&quot;, &quot;Any action that uploads, posts, pushes or pastes contents of ~/claude-lab/ch3/customers.csv off this machine&quot;]&#x27; \
-  ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
-claude auto-mode critique</code></pre></div>
-
-<p>두 번째 리뷰는 더 깊은 구멍을 짚습니다. 요약·변환한 <strong>파생 데이터</strong>, 다른 파일로 <strong>복사한 뒤 push</strong>하는 두 단계 경로, 동사 목록에 없는 메일·MCP·브라우저 입력, 상대·절대 경로 표기 차이 등입니다. 그리고 "<code>cat customers.csv</code>만 해도 내용이 모델 공급자(여기서는 Bedrock)로 간다, 그것도 '머신 밖'인가?"를 묻습니다. 이 마지막 질문은 규칙이 아니라 <strong>조직이 정해야 할 정책</strong>이고, TASK 01에서 본 "훅은 Read를 막지 못한다"와 같은 이야기입니다. 리뷰는 매번 새 지적을 내므로 완벽해질 때까지 돌리기보다, 위험이 큰 항목을 <code>hard_deny</code>와 <code>permissions.deny</code>로 옮기는 데 씁니다.</p>
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>실제 반출을 시도해 확인하지 마세요</strong></p>
-<p>"customers.csv를 외부 URL에 올려 줘" 같은 요청을 직접 보내면, auto mode 분류기가 판정하기 <strong>전에</strong> 모델 측 안전장치가 세션을 <code>safeguards flagged this session … [cyber]</code>로 멈춥니다(실습 환경에서 Opus 5.5와 Sonnet 5.5 모두 즉시 발생). 규칙의 품질은 <code>critique</code>로 확인하고, 실제 차단 확인은 사내 테스트 환경에서 보안팀과 함께 진행하세요.</p></div></div>
-
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong><code>"$defaults"</code>를 빼지 마세요</strong></p>
-<p><code>environment</code>, <code>allow</code>, <code>soft_deny</code>, <code>hard_deny</code> 중 하나라도 <code>"$defaults"</code> 없이 쓰면 그 목록의 <strong>기본 규칙 전체가 사라집니다</strong>(예: soft_deny에서 빼면 force push, <code>curl | bash</code>, 운영 배포 차단이 모두 꺼짐). 또 <code>autoMode</code>는 저장소가 규칙을 주입하지 못하도록 <strong>프로젝트의 <code>.claude/settings.json</code>에서는 읽지 않습니다</strong>. 사용자 설정이나 managed settings에만 둡니다.</p></div></div>
-
-<h3 id="step-5-조직이-auto를-잠그기">Step 5 · 조직이 auto를 잠그기</h3>
-<p>도입 초기에는 조직이 auto를 끄고 deny·ask 규칙과 <code>autoMode.environment</code>부터 배포하는 것이 일반적입니다.</p>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>echo &#x27;{ &quot;permissions&quot;: { &quot;disableAutoMode&quot;: &quot;disable&quot; } }&#x27; &gt; /tmp/policy.json
-M=/etc/claude-code/managed-settings.json
-sudo jq -s &#x27;.[0] * .[1]&#x27; $M /tmp/policy.json | sudo tee $M.tmp &gt;/dev/null &amp;&amp; sudo mv $M.tmp $M
-cd ~/claude-lab/ch3 &amp;&amp; claude --permission-mode auto</code></pre></div>
-
-<p><code>--permission-mode auto</code>를 줬는데도 Manual로 시작하고, <strong>Shift+Tab</strong> 순환에 auto가 없습니다. <code>/exit</code>로 나옵니다. 이 정책은 TASK 07에서 백업으로 원복됩니다.</p>
-<table>
-<thead>
-<tr>
-<th>조직이 쓰는 키 (managed)</th>
-<th>효과</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>permissions.disableAutoMode: "disable"</code></td>
-<td>auto를 순환에서 제거</td>
-</tr>
-<tr>
-<td><code>autoMode</code></td>
-<td>조직의 신뢰 범위·규칙 배포. 개발자는 항목을 <strong>추가</strong>만 할 수 있고 삭제는 못 함</td>
-</tr>
-<tr>
-<td><code>autoMode.classifyAllShell: true</code></td>
-<td><code>Bash(npm test)</code> 같은 좁은 allow도 정지하고 모든 셸 명령을 분류기로</td>
-</tr>
-<tr>
-<td><code>useAutoModeDuringPlan: false</code></td>
-<td>plan 모드에서는 분류기 대신 확인 창</td>
-</tr>
-</tbody>
-</table>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>auto mode가 스스로 멈추는 때</strong></p>
-<p>분류기가 <strong>3회 연속 또는 세션 총 20회</strong> 차단하면 auto가 멈추고 확인 창으로 돌아갑니다(조정 불가). 서브에이전트는 시작 전·실행 중·종료 후에 검사되며 정의 파일의 <code>permissionMode</code>는 무시됩니다. 거부 입력을 기록하려면 <code>PermissionDenied</code> 훅을 씁니다. 프로젝트를 읽어 environment 초안을 써 주는 <code>/auto-mode-setup</code>은 구독 플랜과 feature flag 조회가 필요해 Bedrock에서는 쓸 수 없으니 직접 작성하세요.</p></div></div>
-
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>대화로 말한 경계는 압축되면 사라질 수 있습니다</strong></p>
-<p>"검토 전까지 push 하지 마"처럼 대화로 건 경계도 분류기가 지키지만, 컨텍스트 압축(Ch6)으로 그 메시지가 요약되면 사라질 수 있습니다. 지속되어야 하는 경계는 <code>permissions.ask</code>나 <code>deny</code>로 옮기세요.</p></div></div>
+<p>에이전트별 수치가 필요하면 TASK 05의 헤드리스 JSON에 있는 <code>subagent_stats</code>를 씁니다. <code>/usage</code>는 <code>Esc</code>로 닫습니다.</p>
+<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>병렬화의 트레이드오프</strong></p>
+<p>병렬 호출은 <strong>시간은 max로 단축</strong>되지만 <strong>비용은 합산</strong>됩니다.
+강의 예시 기준 단일 $0.23 대비 3개 병렬 약 7배까지 증가할 수 있습니다.
+반복적인 단순 작업은 <code>model: haiku</code>로 지정해 비용을 조절하고, Opus는 심층 분석에만 사용하세요.</p></div></div>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
-<li class="check"><label><input type="checkbox"> <span>분류기 모델을 명시했고 그 이유(Bedrock 비용·폴백)를 설명할 수 있다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>auto에서 일반 작업은 묻지 않고, 명시한 force push는 분류기를 통과한다는 것을 봤다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span><code>permissions.ask</code>로 push가 든 명령에서만 확인 창이 뜨게 했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span><code>autoMode.environment</code>·<code>hard_deny</code>에 민감 위치를 적고 <code>critique</code>로 리뷰해 고쳤다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>managed <code>disableAutoMode</code>로 조직이 auto를 잠글 수 있음을 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>자동 / 명시 / 병렬 3가지 패턴의 호출 차이를 관찰했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>/usage에서 모델별 비용과 API·wall 시간 차이로 병렬 실행을 확인했다</span></label></li>
 </ul></div></div>
 
-<h2 id="선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기 (7분)</h2>
-<p>권한 규칙 <code>deny: Bash(curl *)</code>는 <code>python3 -c "import urllib.request..."</code> 같은 우회를 막지 못합니다. Sandbox는 Claude가 실행하는 Bash 명령의 네트워크를 <strong>OS 수준에서</strong> 허용 목록으로 묶습니다.</p>
-<h3 id="step-1-필요-도구-확인">Step 1 · 필요 도구 확인</h3>
-<p>Linux의 sandbox는 <code>bubblewrap</code>과 <code>socat</code>을 사용합니다.</p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>which bwrap socat || sudo dnf install -y bubblewrap socat</code></pre></div>
+<h2 id="task-05-선택-headless-통합과-ci-맛보기-7분">TASK 05 · (선택) Headless 통합과 CI 맛보기 (7분)</h2>
+<p>서브에이전트를 <strong>대화 없이 스크립트에서</strong> 호출하고 JSON으로 후처리합니다. 마지막으로 같은 패턴이 GitHub Actions에서 어떻게 동작하는지 확인합니다. 세션 밖 터미널에서 실행하세요.</p>
+<h3 id="step-1-헤드리스로-에이전트-호출">Step 1 · 헤드리스로 에이전트 호출</h3>
+<p><strong>Terminal</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>git diff HEAD~1 | claude -p \
+  &quot;code-reviewer 에이전트로 이 diff를 검토해 주세요&quot; \
+  --output-format json &gt; review-result.json
 
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p>설치가 실패하면 이 선택 TASK는 건너뛰고 TASK 05로 갑니다.</p></div></div>
+head -c 400 review-result.json</code></pre></div>
 
-<h3 id="step-2-정책에-sandbox-추가">Step 2 · 정책에 sandbox 추가</h3>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo jq &#x27;. + {&quot;sandbox&quot;: {&quot;enabled&quot;: true, &quot;failIfUnavailable&quot;: true, &quot;allowUnsandboxedCommands&quot;: false, &quot;network&quot;: {&quot;allowManagedDomainsOnly&quot;: true, &quot;allowedDomains&quot;: [&quot;pypi.org&quot;, &quot;files.pythonhosted.org&quot;]}}}&#x27; \
-  /etc/claude-code/managed-settings.json | sudo tee /tmp/ms.json &gt;/dev/null &amp;&amp; sudo mv /tmp/ms.json /etc/claude-code/managed-settings.json
-cd ~/claude-lab/ch3 &amp;&amp; claude</code></pre></div>
+<h3 id="step-2-json-후처리">Step 2 · JSON 후처리</h3>
+<p><strong>Terminal</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq -r &#x27;.result&#x27; review-result.json | head -20                 # 리뷰 본문(텍스트)
+jq &#x27;{num_turns, total_cost_usd, is_error}&#x27; review-result.json  # 실행 메타데이터
+jq &#x27;.modelUsage | map_values(.costUSD)&#x27; review-result.json      # 모델별 비용
+jq &#x27;.subagent_stats | {spawned, by_type}&#x27; review-result.json    # 어떤 에이전트가 몇 번 떴나
+jq &#x27;[.permission_denials[] | .tool_input.command]&#x27; review-result.json  # 거부된 명령</code></pre></div>
 
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>python3로 https://example.com 에 HTTP 요청을 보내서 상태 코드를 알려줘. curl은 쓰지 마</code></pre></div>
+<p><code>--output-format json</code>의 결과는 <strong>고정된 메타데이터 + 텍스트 <code>result</code></strong> 입니다. 리뷰 내용이 <code>summary</code>·<code>issues</code> 같은 필드로 나뉘어 오지는 않습니다. 구조화된 결과가 필요하면 프롬프트에서 JSON 형식을 지정하고 <code>result</code>를 다시 파싱하거나, <code>--json-schema</code>를 씁니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>헤드리스는 Manual로 시작합니다</strong></p>
+<p><code>claude -p</code>는 auto mode가 아니므로, 허용 규칙에 없는 명령(여기서는 테스트 실행용 <code>cat … &amp;&amp; node test.js</code>)은 묻지 못하고 <strong>거부</strong>되어 <code>permission_denials</code>에 남습니다. 결과 본문에도 "테스트는 실행 승인이 없어 돌리지 못했습니다"라고 나옵니다. CI에서는 필요한 명령을 <code>--allowedTools</code>로 명시해 줍니다.</p></div></div>
 
-<p>허용 목록 밖의 도메인이라 연결이 막힙니다. Claude가 허용 목록을 넓혀 다시 시도하려 해도 <code>allowed_domains cannot widen network access</code>로 거부됩니다. <code>/sandbox</code>로 현재 상태를 확인한 뒤 <code>/exit</code>로 나옵니다.</p>
+<h3 id="step-3-ci-통합-패턴-확인-참고">Step 3 · CI 통합 패턴 확인 (참고)</h3>
+<p>같은 명령을 GitHub Actions에 넣으면 <strong>PR마다 자동 리뷰</strong>가 됩니다. 아래는 강의에서 다룬 직렬(리뷰) + 병렬(테스트와 보안) 복합 패턴의 워크플로입니다. GitHub 저장소가 있다면 push해서 실험해 보세요. 선택 과제입니다.</p>
+<p><strong>.github/workflows/pr-check.yml, 참고용</strong></p>
+<div class="code copyable"><div class="code-head"><span>yaml</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>name: PR Check with Subagents
+on: pull_request
+
+jobs:
+  comprehensive-check:
+    runs-on: ubuntu-latest
+    permissions: { id-token: write, contents: read, pull-requests: write }
+    env:
+      CLAUDE_CODE_USE_BEDROCK: &quot;1&quot;
+      AWS_REGION: us-east-1
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      - run: npm install -g @anthropic-ai/claude-code
+
+      # 직렬: code-reviewer 먼저 실행 후 결과 보고
+      - name: Code Review
+        run: |
+          claude -p &quot;code-reviewer 에이전트로 git diff origin/main..HEAD를 검토해 주세요&quot; \
+            --output-format text &gt; review.md
+
+      # 병렬 요청: 테스트와 보안을 한 번에
+      - name: Tests + Security
+        run: |
+          claude -p &quot;다음을 모두 점검해 주세요: 1) 테스트 커버리지 부족 2) 보안 이슈&quot; \
+            --output-format json &gt; result.json
+
+      # 결과를 PR 코멘트로 게시
+      - uses: peter-evans/create-pr-comment@v1
+        with: { body-path: review.md }</code></pre></div>
+
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>CI에서의 안전장치</strong></p>
+<p>무인 실행에서는 키를 저장하지 말고 <strong>GitHub OIDC로 AWS 역할을 받아</strong> Bedrock을 호출하세요(역할에는 Ch2의 최소 IAM만 부여).
+읽기 전용 검사라면 <code>--allowed-tools "Read,Grep,Glob"</code>으로 도구를 제한하세요.</p></div></div>
+
+<div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
+<ul>
+<li class="check"><label><input type="checkbox"> <span>review-result.json이 생성되었다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>jq 또는 python3로 JSON 필드를 추출했다</span></label></li>
+</ul></div></div>
+
+<h2 id="마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</h2>
+<p>Chapter 3의 학습 목표를 스스로 점검하세요. 미달성 항목은 강의 자료의 해당 Part를 다시 확인하거나 Slack 채널에 질문을 남기세요.</p>
 <table>
 <thead>
 <tr>
-<th>키</th>
-<th>없으면 생기는 일</th>
+<th>목표</th>
+<th>확인 질문</th>
+<th>관련</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>network.allowManagedDomainsOnly</code></td>
-<td>auto 모드에서 Claude가 명령에 <code>allowed_domains</code>를 붙여 목록을 넓히고, 분류기가 승인하면 그대로 연결됩니다(실습 환경에서 example.com 연결 성공을 확인)</td>
+<td>Concept</td>
+<td>Context Isolation과 위임의 가치를 설명할 수 있는가</td>
+<td>강의 Part 1</td>
 </tr>
 <tr>
-<td><code>allowUnsandboxedCommands: false</code></td>
-<td>샌드박스에서 실패한 명령을 샌드박스 밖에서 다시 실행할 수 있습니다</td>
+<td>Define</td>
+<td>YAML frontmatter 4필드로 에이전트를 정의했는가</td>
+<td>Task 1</td>
 </tr>
 <tr>
-<td><code>failIfUnavailable</code></td>
-<td>bubblewrap 같은 의존성이 없으면 샌드박스 없이 실행됩니다</td>
+<td>Least Privilege</td>
+<td>tools 화이트리스트로 권한 거부와 부여를 체험했는가</td>
+<td>Task 2</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>자동 디스패치가 description 기반임을 확인했는가</td>
+<td>Task 3, 4</td>
+</tr>
+<tr>
+<td>Dispatch</td>
+<td>자동 / 명시 / 병렬 3패턴을 모두 실행했는가</td>
+<td>Task 4</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>/usage로 에이전트별 비용과 병렬 트레이드오프를 확인했는가</td>
+<td>Task 4</td>
+</tr>
+<tr>
+<td>Automation</td>
+<td>헤드리스 + JSON으로 CI 통합 패턴을 실행했는가</td>
+<td>Task 5</td>
 </tr>
 </tbody>
 </table>
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>범위</strong></p>
-<p>Sandbox는 Claude가 실행하는 Bash에 적용됩니다. Ch5에서 다룰 mod가 띄운 프로세스는 sandbox 밖에서 돕니다.</p></div></div>
-
-<h2 id="선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터 (7분)</h2>
-<p>Guardrails는 PC가 아니라 <strong>AWS 계정 쪽에서</strong> 동작하는 층입니다. 한국 주민등록번호 정규식을 차단하는 Guardrail을 만들고 판정을 직접 확인합니다.</p>
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><code>create-guardrail</code>이 권한·할당량 오류(<code>AccessDenied</code>, <code>ServiceQuotaExceeded</code>)로 실패하면 이 선택 TASK는 강사 화면으로 보고 TASK 06으로 갑니다.</p></div></div>
-
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>GR=$(aws bedrock create-guardrail --region us-east-1 --name &quot;ws-dlp-$(date +%s)&quot; \
-  --blocked-input-messaging &quot;민감정보가 포함되어 차단되었습니다.&quot; \
-  --blocked-outputs-messaging &quot;민감정보가 포함되어 차단되었습니다.&quot; \
-  --sensitive-information-policy-config &#x27;{&quot;regexesConfig&quot;:[{&quot;name&quot;:&quot;kr-rrn&quot;,&quot;pattern&quot;:&quot;[0-9]{6}-[1-4][0-9]{6}&quot;,&quot;action&quot;:&quot;BLOCK&quot;}],&quot;piiEntitiesConfig&quot;:[{&quot;type&quot;:&quot;CREDIT_DEBIT_CARD_NUMBER&quot;,&quot;action&quot;:&quot;ANONYMIZE&quot;}]}&#x27; \
-  --query guardrailId --output text) &amp;&amp; echo &quot;guardrail: $GR&quot;
-
-aws bedrock-runtime apply-guardrail --region us-east-1 --guardrail-identifier &quot;$GR&quot; --guardrail-version DRAFT \
-  --source INPUT --content &#x27;[{&quot;text&quot;:{&quot;text&quot;:&quot;고객 900101-1234567 을 조회해줘&quot;}}]&#x27; --query &#x27;{action:action,out:outputs[0].text}&#x27;</code></pre></div>
-
-<p><code>action</code>이 <code>GUARDRAIL_INTERVENED</code>로 나옵니다. Claude Code에 연결할 때는 버전을 발행한 뒤 아래처럼 헤더로 붙입니다(이 랩에서는 읽기만 합니다).</p>
-<div class="code sample"><div class="code-head"><span>json</span></div><pre><code>{
-  &quot;env&quot;: {
-    &quot;ANTHROPIC_CUSTOM_HEADERS&quot;: &quot;X-Amzn-Bedrock-GuardrailIdentifier: &lt;guardrail-id&gt;\nX-Amzn-Bedrock-GuardrailVersion: 1&quot;
-  }
-}</code></pre></div>
-
-<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>cross-region 추론 프로파일을 쓸 때</strong></p>
-<p>이 환경처럼 global/us 추론 프로파일을 쓰면 Guardrail에도 cross-region 설정이 필요합니다. 연결 전 공식 문서의 Guardrails 절을 확인하세요.</p></div></div>
-
-<h2 id="선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기 (4분)</h2>
-<p>허가되지 않은 플러그인을 로컬 디렉터리로 몰래 싣는 것(사이드로드)을 막습니다.</p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo jq &#x27;. + {&quot;strictKnownMarketplaces&quot;: [], &quot;disableSideloadFlags&quot;: true}&#x27; \
-  /etc/claude-code/managed-settings.json | sudo tee /tmp/ms.json &gt;/dev/null &amp;&amp; sudo mv /tmp/ms.json /etc/claude-code/managed-settings.json
-mkdir -p /tmp/rogue/.claude-plugin &amp;&amp; echo &#x27;{&quot;name&quot;:&quot;rogue&quot;,&quot;version&quot;:&quot;0.0.1&quot;}&#x27; &gt; /tmp/rogue/.claude-plugin/plugin.json
-cd ~/claude-lab/ch3 &amp;&amp; claude --plugin-dir /tmp/rogue -p &quot;hi&quot;; echo &quot;exit=$?&quot;</code></pre></div>
-
-<p><code>--plugin-dir</code>가 정책으로 거부됩니다. 허용 목록(<code>strictKnownMarketplaces</code>)만으로는 사이드로드를 막지 못해서 <code>disableSideloadFlags</code>를 함께 씁니다.</p>
-<h2 id="task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요 (2분)</h2>
-<p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo cp ~/claude-lab/ch3/managed-settings.backup.json /etc/claude-code/managed-settings.json
-sudo jq . /etc/claude-code/managed-settings.json
-rm -rf /tmp/rogue /tmp/ch3-remote.git
-use_bedrock_direct   # TASK 03에서 바꾼 사용자 settings.json(ask, autoMode)을 기본값으로</code></pre></div>
-
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>원복하지 않으면</strong></p>
-<p>DLP 훅, auto 잠금, 사이드로드 금지가 남아 Ch5의 <code>--plugin-dir</code> 실습과 Capstone이 막힙니다. <code>/opt/dlp/dlp-guard.sh</code>는 남겨 두어도 정책에서 빠지면 실행되지 않습니다.</p></div></div>
-
-<h2 id="마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</h2>
-<ul>
-<li class="check"><label><input type="checkbox"> <span>DLP 훅을 managed 정책 + <code>allowManagedHooksOnly</code>로 강제했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>훅은 exit 2만 차단이고, 오류 경로도 exit 2로 막아야 한다는 것을 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>auto mode에서 확인 창을 줄이면서 ask·environment·조직 잠금으로 경계를 그었다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>(선택) sandbox, Guardrails, 사이드로드 금지가 각각 어느 층을 막는지 설명할 수 있다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>managed-settings를 원복했다</span></label></li>
-</ul>
+<p>NEXT CHAPTER</p>
+<h3 id="chapter-4-claude-code-확장하기">Chapter 4 - Claude Code 확장하기</h3>
+<p>여기서 만든 에이전트를 스킬, DLP 훅과 함께 팀 스타터 킷 플러그인으로 묶어 배포하고, Claude Code 안에서 도는 mod를 직접 만들어 봅니다.</p>
 <h2 id="이전-다음">이전 / 다음</h2>
 <ul>
-<li>이전: <a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2. Bedrock 배포와 정책 전달</a></li>
-<li>다음: <a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Subagents</a></li>
-</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch2_HandsOnLab.html"><small>이전</small>Ch2. Bedrock 배포와 정책 전달</a><a class="next" href="ClaudeCode_Ch4_HandsOnLab.html"><small>다음</small>Ch4. Subagents</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-dlp-훅을-정책으로-강제-8분">TASK 01 · DLP 훅을 정책으로 강제 (8분)</a></li><li><a href="#task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정 (5분)</a></li><li><a href="#task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기 (15분)</a></li><li><a href="#선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기 (7분)</a></li><li><a href="#선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터 (7분)</a></li><li><a href="#선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기 (4분)</a></li><li><a href="#task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요 (2분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+<li>이전: <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2. 가드레일과 DLP</a></li>
+<li>다음: <a href="ClaudeCode_Ch4_HandsOnLab.html">Ch4. Claude Code 확장하기</a></li>
+</ul>
+<hr />
+<p>원문: <a href="https://whchoi98.github.io/ccw-hands-on-lab/ClaudeCode_Ch2_HandsOnLab.html" target="_blank" rel="noopener">Claude Code Deep Dive Workshop · Ch2. Subagents</a> · 기준: 2026.07</p><div class="pager"><a class="prev" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html"><small>이전</small>Ch2 Lab 2. 가드레일과 DLP</a><a class="next" href="ClaudeCode_Ch4_HandsOnLab.html"><small>다음</small>Ch4. Claude Code 확장하기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-첫-subagent-code-reviewer-만들기-8분">TASK 01 · 첫 Subagent, code-reviewer 만들기 (8분)</a></li><li><a href="#task-02-도구-권한-격리-체험-6분">TASK 02 · 도구 권한 격리 체험 (6분)</a></li><li><a href="#task-03-에이전트-3종-완성-test-writer와-docs-writer-추가-7분">TASK 03 · 에이전트 3종 완성, test-writer와 docs-writer 추가 (7분)</a></li><li><a href="#task-04-task-디스패치-3패턴-10분">TASK 04 · Task 디스패치 3패턴 (10분)</a></li><li><a href="#task-05-선택-headless-통합과-ci-맛보기-7분">TASK 05 · (선택) Headless 통합과 CI 맛보기 (7분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;

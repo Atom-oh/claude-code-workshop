@@ -1,12 +1,12 @@
 ---
 remarp: true
-block: ch4-subagents
+block: ch3-subagents
 ---
 <!-- Slide 1: Cover (PDF p1) -->
 @type: cover
 @background: linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%)
 
-# Chapter 4. Subagents
+# Chapter 3. Subagent로 일 나눠 맡기기
 ## 역할별 에이전트로 나누고, 병렬로 맡기기 (Claude Code v2.1.319, 2026-11-08 리허설 검증, Bedrock 기준)
 Choi, WooHyung
 Prin. Solutions Architect
@@ -19,11 +19,11 @@ AWS Korea
 :::notes
 {timing: 0.5min}
 [요약]
-• Chapter 4는 Subagents, 역할별 에이전트로 나누고 병렬로 맡기기
+• Chapter 3은 Subagent로 일 나눠 맡기기, 본 흐름은 지키고 곁가지는 맡기기
 • Claude Code v2.1.319 (2026-11-08 리허설 검증), Amazon Bedrock 기준
 • 공식 문서 code.claude.com/docs 내용을 반영
 
-Chapter 4, Subagents를 시작하겠습니다.
+Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 지금까지는 Claude Code 한 세션이 모든 일을 했다면, 이 챕터에서는 일을 역할별 에이전트에게 나눠 맡기고, 여러 개를 동시에 돌리는 방법을 봅니다.
 강의 17분, 랩 33분입니다.
 :::
@@ -80,7 +80,7 @@ Chapter 4, Subagents를 시작하겠습니다.
   <div class="split" id="c4-split">
     <div class="half"><span>강의 17분</span><span class="tr"><i data-w="17"></i></span></div>
     <div class="half"><span>랩 33분</span><span class="tr"><i class="lab" data-w="33"></i></span></div>
-    <p class="cap">막대 길이는 Chapter 4 50분 중 차지하는 비율</p>
+    <p class="cap">막대 길이는 Chapter 3 50분 중 차지하는 비율</p>
   </div>
 </div>
 :::
@@ -117,7 +117,7 @@ Chapter 4, Subagents를 시작하겠습니다.
 
 :::html
 <div class="fsi fsi-section">
-  <span class="num">CHAPTER 04 / PART 01</span>
+  <span class="num">CHAPTER 03 / PART 01</span>
   <div class="name">Subagent란</div>
   <p class="what">본 흐름을 잃지 않고 곁가지를 맡기는 공간</p>
   <ol>
@@ -293,7 +293,7 @@ tools에는 Edit, Write가 없어서 이 에이전트는 파일을 고칠 수 �
     <p class="hint">위치를 누르면 용도와 배포 방법이 나옵니다.</p>
     <div data-for="proj"><h4>프로젝트 표준 에이전트</h4><p>저장소에 커밋하면 그 저장소를 받는 팀 전체가 같은 에이전트를 씁니다.</p><p><span class="tag ok">배포</span>저장소에 커밋</p></div>
     <div data-for="user"><h4>개인 도구</h4><p>내 PC의 모든 프로젝트에서 쓰는 개인 에이전트입니다. 팀과 공유되지 않습니다.</p><p><span class="tag info">배포</span>개인</p></div>
-    <div data-for="plugin"><h4>팀 킷 배포</h4><p>플러그인 안의 agents/ 폴더에 두면, 그 플러그인을 설치한 사용자가 씁니다.</p><p><span class="tag info">Ch5</span>마켓플레이스로 배포</p></div>
+    <div data-for="plugin"><h4>팀 킷 배포</h4><p>플러그인 안의 agents/ 폴더에 두면, 그 플러그인을 설치한 사용자가 씁니다.</p><p><span class="tag info">Ch4</span>마켓플레이스로 배포</p></div>
     <div data-for="flag"><h4>실험과 CI</h4><p>--agents 플래그로 이번 세션에만 정의합니다. 실험이나 <span class="rp-detail" tabindex="0" data-tip="Continuous Integration. 코드 변경마다 빌드와 테스트를 자동으로 돌리는 파이프라인">CI</span>용입니다.</p><p><span class="tag cond">주의</span><span class="rp-detail" tabindex="0" data-tip="회사가 정한 배포 경로를 거치지 않고 정의를 직접 실어 오는 것">사이드로드</span> 금지 대상</p></div>
     <p class="foot c4-foot">/agents (v2.1.198+)는 안내 문구만 출력합니다. 확인은 @ 입력, 생성과 수정은 파일 편집이나 Claude에게 요청합니다.</p>
   </div>
@@ -309,14 +309,14 @@ tools에는 Edit, Write가 없어서 이 에이전트는 파일을 고칠 수 �
 [요약]
 • .claude/agents/: 팀 전체, 저장소에 커밋하는 프로젝트 표준
 • ~/.claude/agents/: 내 PC의 모든 프로젝트, 개인 도구
-• 플러그인 agents/: 설치자, Ch5 팀 킷 배포
+• 플러그인 agents/: 설치자, Ch4 팀 킷 배포
 • --agents 플래그: 이번 세션, 실험과 CI(사이드로드 금지 대상)
 • /agents (v2.1.198+)는 안내 문구만, 확인은 @, 생성과 수정은 파일 편집이나 Claude에게
 
 정의 파일은 어디에 두느냐가 공유 범위를 정합니다.
 {cue: demo}
 .claude/agents/에 두고 커밋하면 저장소를 받는 팀 전체가 쓰는 표준 에이전트가 됩니다. 홈 디렉터리 아래 ~/.claude/agents/는 내 PC의 모든 프로젝트에서 쓰는 개인 도구입니다.
-플러그인 안의 agents/는 플러그인 설치자에게 배포되고, 이건 Ch5에서 팀 킷으로 묶습니다. --agents 플래그는 이번 세션에만 쓰는 실험이나 CI용이고, 사이드로드 금지 대상입니다.
+플러그인 안의 agents/는 플러그인 설치자에게 배포되고, 이건 Ch4에서 팀 킷으로 묶습니다. --agents 플래그는 이번 세션에만 쓰는 실험이나 CI용이고, 사이드로드 금지 대상입니다.
 참고로 /agents 명령은 v2.1.198부터 안내 문구만 출력합니다. 목록 확인은 @ 입력으로, 만들고 고치는 건 파일 편집이나 Claude에게 요청하시면 됩니다.
 
 [약어]
@@ -367,7 +367,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 
 :::html
 <div class="fsi fsi-section">
-  <span class="num">CHAPTER 04 / PART 02</span>
+  <span class="num">CHAPTER 03 / PART 02</span>
   <div class="name">호출과 비용</div>
   <p class="what">어떻게 맡기고, 얼마나 드는가</p>
   <ol>
@@ -645,7 +645,7 @@ claude -p는 대화 없이 한 번 실행하고 끝납니다. git diff를 파이
 
 :::html
 <div class="fsi fsi-section">
-  <span class="num">CHAPTER 04 / PART 03</span>
+  <span class="num">CHAPTER 03 / PART 03</span>
   <div class="name">병렬의 확장</div>
   <p class="what">Subagent 다음 단계</p>
   <ol>
@@ -769,7 +769,7 @@ Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미�
 <div class="fsi fsi-statement">
   <span class="eyebrow">NEXT</span>
   <div class="big">정의 파일은 <em>커밋 가능한</em> 자산입니다</div>
-  <p class="lead">오늘 만든 에이전트를 Ch5에서 팀 플러그인으로 묶습니다.</p>
+  <p class="lead">오늘 만든 에이전트를 Ch4에서 팀 플러그인으로 묶습니다.</p>
 </div>
 :::
 
@@ -777,11 +777,11 @@ Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미�
 {timing: 0.5min}
 [요약]
 • 정의 파일은 커밋 가능한 자산
-• 오늘 만든 에이전트를 Ch5에서 팀 플러그인으로 묶음
+• 오늘 만든 에이전트를 Ch4에서 팀 플러그인으로 묶음
 
 {cue: pause}
 기억하실 한 문장입니다. 정의 파일은 커밋 가능한 자산입니다.
-마크다운 파일 한 장이라 리뷰하고 버전 관리할 수 있습니다. 오늘 랩에서 만든 에이전트를 Ch5에서 팀 플러그인으로 묶어 배포합니다.
+마크다운 파일 한 장이라 리뷰하고 버전 관리할 수 있습니다. 오늘 랩에서 만든 에이전트를 Ch4에서 팀 플러그인으로 묶어 배포합니다.
 :::
 
 ---
@@ -802,7 +802,7 @@ LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
     <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬)</span><em>10분, 강의 Part 2 연계</em></li>
     <li class="opt"><b>선택 05</b><span>claude -p로 대화 없이 실행</span><em>7분, 강의 Part 2 연계</em></li>
   </ol>
-  <p class="where">Hands-on Lab 포털에서 Chapter 4를 열고 TASK 00 사전 준비부터 진행합니다. 여기서 만든 파일을 Ch5에서 씁니다.</p>
+  <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 여기서 만든 파일을 Ch4에서 씁니다.</p>
 </div>
 :::
 
@@ -811,12 +811,12 @@ LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
 [요약]
 • LAB 33분, TASK 00부터 04와 선택 05
 • TASK 01 code-reviewer, TASK 02 도구 권한 격리, TASK 03 3종 완성, TASK 04 디스패치 3패턴
-• 만든 파일은 Ch5에서 다시 사용
+• 만든 파일은 Ch4에서 다시 사용
 
 {cue: demo}
-이제 33분 랩입니다. Hands-on Lab 포털에서 Chapter 4를 열고 TASK 00 사전 준비부터 시작해 주세요.
+이제 33분 랩입니다. Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 시작해 주세요.
 TASK 01에서 code-reviewer를 만들고, TASK 02에서 도구 권한 격리를 체험합니다. TASK 03에서 test-writer와 docs-writer를 더해 세 종류를 완성하고, TASK 04에서 자동, 명시, 병렬 세 가지 디스패치를 비교합니다. 시간이 남으면 선택 TASK 05에서 claude -p를 해 보세요.
-여기서 만든 파일은 Ch5에서 그대로 씁니다.
+여기서 만든 파일은 Ch4에서 그대로 씁니다.
 :::
 
 ---
@@ -826,7 +826,7 @@ TASK 01에서 code-reviewer를 만들고, TASK 02에서 도구 권한 격리를 
 
 :::html
 <div class="fsi fsi-section c4-dd">
-  <span class="num">CHAPTER 04 / DEEP DIVE</span>
+  <span class="num">CHAPTER 03 / DEEP DIVE</span>
   <div class="name">더 알아보기</div>
   <p class="what">자주 받는 질문과 세부 설정</p>
   <ol>
@@ -1081,7 +1081,7 @@ CI에서 Subagent를 쓰는 예입니다. 핵심은 키 없이 OIDC로 Bedrock�
 Agent teams는 팀원이 plan 모드일 때 일반 세션의 약 7배 토큰을 씁니다. 그래서 조사와 요약은 haiku에, 판단이 필요한 리뷰만 상위 모델에 맡기는 배분을 권합니다.
 
 [출처]
-• 원본 Ch4 강의자료 p25
+• 원본 강의자료(Ch4 PDF) p25
 :::
 
 ---
@@ -1126,7 +1126,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @fit: off
 
 ## 맡기는 기술 여섯 가지
-Chapter 4 Key Takeaways
+Chapter 3 Key Takeaways
 
 :::html
 <div class="fsi c4-recap">
@@ -1148,7 +1148,7 @@ Chapter 4 Key Takeaways
 • description이 자동 위임, tools로 읽기 전용, 규제 작업은 @ 멘션
 • 장황한 작업은 격리, 단순 작업은 haiku, Agent teams는 토큰이 큼
 
-Chapter 4를 여섯 줄로 정리합니다.
+Chapter 3을 여섯 줄로 정리합니다.
 Subagent는 자기 컨텍스트, 전용 지침, 좁힌 도구, 요약 반환 네 가지로 이뤄집니다. description이 자동 위임을 결정하고, tools 허용 목록으로 읽기 전용 에이전트를 만듭니다.
 규제 작업은 @ 멘션으로 명시 호출하시고, 장황한 작업은 격리, 단순 작업은 haiku로. Agent teams는 강력하지만 토큰이 크다는 점을 기억해 주세요.
 :::
@@ -1157,8 +1157,8 @@ Subagent는 자기 컨텍스트, 전용 지침, 좁힌 도구, 요약 반환 네
 <!-- Slide 27: Thank you (PDF p28) -->
 @type: thankyou
 @toc: toc.html
-@next: 05-ch5-plugins-mods.html
-@next-label: Chapter 5 (Capstone 이후)
+@next: 04-ch4-extending.html
+@next-label: Chapter 4 (Capstone 이후)
 @message: 다음은 Capstone Round 1입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 편하게 남겨 주세요.
 
 :::notes
@@ -1167,6 +1167,6 @@ Subagent는 자기 컨텍스트, 전용 지침, 좁힌 도구, 요약 반환 네
 • 다음은 Capstone Round 1
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 랩을 마치면 Capstone Round 1으로 이어집니다.
+감사합니다. 랩을 마치면 Capstone Round 1로 이어집니다.
 궁금한 점은 Slack 워크숍 채널에 언제든 편하게 남겨 주세요.
 :::

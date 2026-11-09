@@ -19,6 +19,29 @@ site compilation step, or automated test suite.
 | `.github/workflows/pages.yml` | Assemble and deploy the published HTML directories |
 | `docs/` | Architecture, review procedure, and decision records |
 
+## November Event Chapters (`20261116/`)
+
+The November event uses six chapters (renumbered 2026-11-09, PR #20). Use
+these numbers and titles in every deck, lab, portal, invitation, and video
+change; old numbers in PDF filenames and learner folders are legacy.
+
+| Ch | Title | Former content | Lab page(s) | Reactive deck |
+| --- | --- | --- | --- | --- |
+| 1 | Claude Code는 어떻게 동작하는가 | Ch1 | `ClaudeCode_Ch1_HandsOnLab.html` | `01-ch1-how-it-works` |
+| 2 | Bedrock 위에서 안전하게 쓰기 | Ch2 + Ch3 (one 50-min lecture) | Lab 1 `ClaudeCode_Ch2_HandsOnLab.html`, Lab 2 `ClaudeCode_Ch2_Guardrails_HandsOnLab.html` | `02-ch2-bedrock-safe` |
+| 3 | Subagent로 일 나눠 맡기기 | Ch4 | `ClaudeCode_Ch3_HandsOnLab.html` | `03-ch3-subagents` |
+| 4 | Claude Code 확장하기 | Ch5 | `ClaudeCode_Ch4_HandsOnLab.html` | `04-ch4-extending` |
+| 5 | 비용 효율적으로 쓰기 | Ch6 Part 1 | `ClaudeCode_Ch5_HandsOnLab.html` (TASK 00-04) | `05-ch5-cost-efficient` |
+| 6 | 조직의 비용 보고 통제하기 | Ch6 Part 2 | `ClaudeCode_Ch6_HandsOnLab.html` (TASK 00-04) | `06-ch6-org-cost` |
+
+- Session times live in `20261116/eDM.html` (mirrored in `eDM.txt`, the Ch1
+  deck timeline, and the intro video); change them together.
+- `slides/ClaudeCode_FSI_Ch1..6_20261116.pdf` still use the old numbering
+  until re-exported; learner folders such as `~/claude-lab/ch4` keep old names.
+- Reactive decks are Remarp sources in `20261116/reactive/*.md`; rebuild the
+  HTML with the reactive-presentation compiler instead of editing it.
+- The Agent SDK lab is a self-paced "SDK" track, not a chapter.
+
 ## Documentation
 
 - Maintain project instructions, root README/CHANGELOG, ADRs, and operational

@@ -32,7 +32,8 @@ confirmed by the organizer. If they change, update `eDM.html` and `eDM.txt`
 together. The plain-text email groups some consecutive sessions.
 
 The portal distinguishes six regular elective missions from the self-directed
-Playbook Foundry mission; Chapter 6 Agent SDK is also self-directed. Imported
+Playbook Foundry mission; the Agent SDK lab (labeled "SDK", not a chapter) is
+also self-directed. Imported
 pages contained inconsistent model versions, so the new invitation does not
 claim a single confirmed model version.
 
@@ -57,18 +58,35 @@ filenames (`ClaudeCode_Preflight_Check.html`, `ClaudeCode_Ch1_HandsOnLab.html` t
 `ClaudeCode_AgentSDK_HandsOnLab.html`.
 
 On 2026-11-08 the session descriptions in `eDM.html` and `eDM.txt` were
-rewritten from the final decks and labs. Session times are unchanged; the
-instructors fit deck and lab content to each slot. Lab lengths on the portal
-(`index.html`) are the full lab guide lengths, not session lengths. Mapping:
+rewritten from the final decks and labs. Lab lengths on the portal
+(`index.html`) are the full lab guide lengths, not session lengths.
 
-- Ch1 (10:10–10:40) is lecture only. Its 20-minute lab is linked from the
-  session card and listed as self-paced in `eDM.txt`.
-- Ch2 lab (13:00–13:40) runs TASK 00–06, ending with the Apps Gateway
-  group-policy check.
-- Ch3 (13:40–14:30) covers the DLP hook and fail-open tasks in session; the
-  auto mode task is an optional lab.
-- Ch6 Part 1 (13:00–13:40) runs lab TASK 01–04. Part 2 (16:50–17:40) runs
-  TASK 05–07 as a participant lab (gateway login, group policy, spend limit).
+On 2026-11-09 the course was renumbered and the Day 1 timetable changed. Old
+Ch2 and Ch3 merged into Ch2, old Ch4 and Ch5 became Ch3 and Ch4, and old Ch6
+was split into Ch5 (Part 1, context engineering) and Ch6 (Part 2, organization
+cost). Lab files after the renumbering:
+
+| Chapter | Lab file | Slides PDF |
+| --- | --- | --- |
+| Ch1 | `ClaudeCode_Ch1_HandsOnLab.html` | Ch1 |
+| Ch2 Lab 1 (policy) | `ClaudeCode_Ch2_HandsOnLab.html` | Ch2 |
+| Ch2 Lab 2 (guardrails and DLP, old Ch3 lab) | `ClaudeCode_Ch2_Guardrails_HandsOnLab.html` | Ch3 |
+| Ch3 (subagents, old Ch4) | `ClaudeCode_Ch3_HandsOnLab.html` | Ch4 |
+| Ch4 (extending, old Ch5) | `ClaudeCode_Ch4_HandsOnLab.html` | Ch5 |
+| Ch5 (old Ch6 TASK 00–04) | `ClaudeCode_Ch5_HandsOnLab.html` | Ch6 |
+| Ch6 (old Ch6 TASK 05–08, renumbered 01–04) | `ClaudeCode_Ch6_HandsOnLab.html` | Ch6 |
+
+The slide PDF filenames keep the previous chapter numbers.
+Session mapping:
+
+- Day 1: Ch1 lecture 10:10–10:40, Ch2 lecture 10:40–11:30 (covers the old Ch2
+  and Ch3 decks), Preflight + Ch1 lab 11:30–12:00, lunch 12:00–13:00, Ch2 Lab 1
+  13:00–13:50 (TASK 00–06, ending with the Apps Gateway group-policy check),
+  Ch2 Lab 2 13:50–14:40 (DLP hook, fail-open, and auto mode tasks; sandbox,
+  Bedrock Guardrails, and extension control are optional), Ch3 14:50–15:40.
+- Day 2 times are unchanged: Ch4 10:10–11:30, Ch5 12:40–13:40 (lab TASK
+  01–04), Ch6 16:50–17:40 (lab TASK 01–03 as a participant lab: telemetry,
+  gateway login and group policy, spend limit; TASK 04 is optional).
 
 Capstone and reference labs were imported from the archive. In the November copy of Capstone 3, the
 import removed one missing local webfont stylesheet and two browser-extension

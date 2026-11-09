@@ -711,12 +711,12 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <p class="body">이 캡스톤은 새 기술을 가르치지 않습니다. <strong>Ch1~6에서 배운 것을 실전 배치</strong>합니다.</p>
   <table class="tbl">
     <tr><th>챕터</th><th>이 캡스톤에서 재등장하는 곳</th></tr>
-    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 설치부터 Headless까지</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
-    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Subagents</a></td><td>M2~M3: code-reviewer 서브에이전트로 수집기/파생 로직 리뷰, 백엔드와 화면 병행</td></tr>
-    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Admin Setup</a></td><td>M4: Bedrock 라우팅과 자격의 배경, Bearer 키가 조직 통제선 안에서 도는 이유</td></tr>
-    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Settings, 훅과 스킬</a></td><td>OPT: 하네스 성숙화. 원작 youtube-trend의 .claude/(커맨드 3, 스킬 4)가 도달점의 표본입니다</td></tr>
-    <tr><td><a href="ClaudeCode_Ch5_HandsOnLab.html" style="color:#c9a2ff">Ch5 CLI Reference</a></td><td>확장 방향: 헤드리스 패턴으로 수집 사이클 상태를 점검하는 파이프라인</td></tr>
-    <tr><td><a href="ClaudeCode_Ch6_HandsOnLab.html" style="color:#c9a2ff">Ch6 Agent SDK</a></td><td>확장 방향: 브리핑 생성을 코드에서 부르는 상주 리포터의 다음 단계</td></tr>
+    <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 Claude Code는 어떻게 동작하는가</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
+    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: Bedrock 라우팅과 자격의 배경, Bearer 키가 조직 통제선 안에서 도는 이유</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Subagent로 일 나눠 맡기기</a></td><td>M2~M3: code-reviewer 서브에이전트로 수집기/파생 로직 리뷰, 백엔드와 화면 병행</td></tr>
+    <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Headless 통합과 CI</a></td><td>확장 방향: 헤드리스 패턴으로 수집 사이클 상태를 점검하는 파이프라인</td></tr>
+    <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Claude Code 확장하기</a></td><td>OPT: 하네스 성숙화. 원작 youtube-trend의 .claude/(커맨드 3, 스킬 4)가 도달점의 표본입니다</td></tr>
+    <tr><td><a href="ClaudeCode_AgentSDK_HandsOnLab.html" style="color:#c9a2ff">SDK Agent SDK 자율 실습</a></td><td>확장 방향: 브리핑 생성을 코드에서 부르는 상주 리포터의 다음 단계</td></tr>
   </table>
   <div class="callout tip">
     <span class="co-title">규칙, 캡스톤 공통</span>
@@ -920,7 +920,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
 <section class="task" id="m2">
   <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 수집기와 스토어</h2><span class="time-badge">35분</span></div>
   <p class="task-goal">수집 루프가 돌고, 스냅샷이 <strong>멱등하게</strong> 쌓이고, /api/trending이 delta까지 얹어 주면 이 Phase는 끝입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 code-reviewer 서브에이전트에게 수집기/스토어 리뷰를 맡겨 보세요.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 code-reviewer 서브에이전트에게 수집기/스토어 리뷰를 맡겨 보세요.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 1만 구현하고 멈춰줘. backend venv + requirements(fastapi, uvicorn, httpx, apscheduler), collector(videos.list + 기동 시 카테고리 1회 + _stat_int 격리), 스냅샷 링버퍼(멱등, 최근 48개), derive(delta/NEW/이탈/점유율), /api/trending(+?category=)와 /healthz. 수집 주기 60초(config). uvicorn 실행과 curl 검증 방법까지.</code></pre>
@@ -979,7 +979,7 @@ class SnapshotStore:
 <section class="task" id="m3">
   <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2 + 3, 레이더 화면</h2><span class="time-badge">40분</span></div>
   <p class="task-goal">30장 그리드에 <strong>▲▼와 NEW가 살아 붙고</strong>, 8칩 필터와 점유율 시계열까지 뜨면 레이더가 완성됩니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>의 병렬 감각. 화면을 그리는 동안 시계열 집계 보강을 서브에이전트로 병행할 수 있습니다.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 병렬 감각. 화면을 그리는 동안 시계열 집계 보강을 서브에이전트로 병행할 수 있습니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, Phase 2</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 2만 구현해줘. frontend/index.html 정적 SPA 한 장(빌드 없이 fetch + 렌더): 요구 7의 화면 스펙(듀얼 테마 토글 + 시스템 기본, 헤더, 통계 바 4칸, 카테고리 칩 8개, 30장 카드 그리드에 순위/▲▼ delta/NEW 배지, 축약 숫자, 클릭 시 유튜브 새 탭). FastAPI가 이 파일을 정적 서빙하게 mount까지.</code></pre>
@@ -1014,7 +1014,7 @@ class SnapshotStore:
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 4, 브리핑과 개장</h2><span class="time-badge">30분</span></div>
   <p class="task-goal">SDK 없이 <strong>REST 한 장으로 Bedrock을 불러</strong> now/daily 브리핑이 뜨면, 레이더가 말을 시작합니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 본 Bedrock 라우팅과 자격의 배경, 그 위에서 도는 REST 계약.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 라우팅과 자격의 배경, 그 위에서 도는 REST 계약.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 4(브리핑)를 구현해줘. llm 모듈: httpx로 POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse, Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), body는 system+messages+inferenceConfig(maxTokens 800), 타임아웃은 504/파싱 실패는 502로. POST /api/brief?mode=now|daily(요구 6의 내용 구성), 같은 시각 버킷 캐시. 화면 브리핑 카드에 now/daily 버튼과 결과 렌더까지.</code></pre>
@@ -1039,7 +1039,7 @@ curl -s -X POST "localhost:8000/api/brief?mode=daily" | head -c 300; echo</code>
   <p class="body">레이더 → 필터 → 시계열 → 브리핑(now/daily)까지 한 바퀴 돌리고, <strong>화면 스크린샷을 Slack에 공유</strong>하세요.
   그게 개장입니다. 원작은 여기에 DynamoDB 스냅샷과 CloudFront → ALB(prefix list + X-Origin-Verify 2중 방어) → Fargate 배포,
   Secrets Manager 주입까지 얹혀 운영 중입니다, 다음 단계가 궁금하다면 그 방향입니다.
-  <a href="ClaudeCode_Ch5_HandsOnLab.html" style="color:#c9a2ff">Ch5</a>의 헤드리스 패턴으로 수집 상태 점검을 파이프라인화하는 것도 좋은 확장입니다.</p>
+  <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴으로 수집 상태 점검을 파이프라인화하는 것도 좋은 확장입니다.</p>
   <div class="checkpoint">
     <div class="cp-title">DEFINITION OF DONE</div>
     <label class="cp-item"><input type="checkbox" data-cp="m4a"><span>now/daily 브리핑이 주제 클러스터와 추가 인사이트가 담긴 한국어 분석으로 도착합니다 (Bearer 인증)</span></label>

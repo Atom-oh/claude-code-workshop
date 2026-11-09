@@ -616,7 +616,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 <body>
 
 <header class="hero">
-  <span class="eyebrow">Capstone Hands-on Lab C / Chapter 1-5 통합</span>
+  <span class="eyebrow">Capstone Hands-on Lab C / Ch1~Ch6 통합</span>
   <h1>Mission: Grand Open, 말로 주문받는 AI 카페를 개점하라</h1>
   <div class="subtitle">Claude Code Deep Dive Workshop, Capstone C - 고객 서비스 풀스택 (135분 목표 / 150분 상한)</div>
   <p class="lede">
@@ -1593,7 +1593,7 @@ curl -s -X POST "$API/order" -H 'Content-Type: application/json' \
     <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
-    Chapter 5의 헤드리스로 <strong>손님 페르소나 주문문을 생성해 API에 밀어넣는 러시 시뮬레이터</strong>를 돌리고,
+    Ch3에서 맛본 헤드리스로 <strong>손님 페르소나 주문문을 생성해 API에 밀어넣는 러시 시뮬레이터</strong>를 돌리고,
     개점 절차 전체를 /open-cafe 스킬 하나로 접습니다. 주방 보드가 붐비는 걸 지켜보세요.
   </p>
 
@@ -1625,7 +1625,7 @@ chmod +x rush.sh
   <p class="body">
     주방 보드를 옆에 두고 실행하세요. rush-bot 손님 8명이 1초 간격으로 들이닥칩니다.
     <code class="inline">jq -n --arg</code>로 사용자 입력을 안전하게 JSON에 넣는 것,
-    헤드리스 결과를 <code class="inline">jq -r '.result'</code>로 뽑아 배열 반복하는 것, 전부 Chapter 5 Task 3의 재활용입니다.
+    헤드리스 결과를 <code class="inline">jq -r '.result'</code>로 뽑아 배열 반복하는 것, 전부 Ch3 TASK 05(헤드리스 JSON 후처리)의 재활용입니다.
   </p>
 
   <div class="step-title"><span class="step-no">2</span>/open-cafe 스킬</div>
@@ -1825,16 +1825,16 @@ claude plugin list</code></pre>
   <table class="tbl">
     <tr><th>캡스톤 C 장면</th><th>소환된 챕터</th><th>핵심 역량</th></tr>
     <tr><td>brainstorm의 스키마 명세</td><td>Ch1 + superpowers</td><td>요구사항이 곧 설계 품질</td></tr>
-    <tr><td>2뷰 병렬 빌드</td><td>Ch2</td><td>서브에이전트 2개 동시 위임</td></tr>
-    <tr><td>Bedrock IAM 2종, 모델 컨텍스트 교체</td><td>Ch3</td><td>최소 권한, Global CRIS</td></tr>
+    <tr><td>2뷰 병렬 빌드</td><td>Ch3</td><td>서브에이전트 2개 동시 위임</td></tr>
+    <tr><td>Bedrock IAM 2종, 모델 컨텍스트 교체</td><td>Ch2</td><td>최소 권한, Global CRIS</td></tr>
     <tr><td>/open-cafe 원커맨드</td><td>Ch4</td><td>운영 절차의 스킬화</td></tr>
-    <tr><td>rush.sh 손님 합성</td><td>Ch5</td><td>헤드리스 생성 + jq -n 안전 주입</td></tr>
+    <tr><td>rush.sh 손님 합성</td><td>Ch3</td><td>헤드리스 생성 + jq -n 안전 주입</td></tr>
   </table>
 
   <div class="next-box">
     <div>
       <div class="nx-label">NEXT</div>
-      <h3>Chapter 6 - Agent SDK</h3>
+      <h3>SDK - Agent SDK 자율 실습</h3>
       <p>변화구 5번("아까 시킨 거 취소")에서 접수원의 한계가 드러났습니다. 주문 맥락을 기억하는 멀티턴, 재고를 조회하는 커스텀 도구, 취소와 변경이 되는 진짜 점원은 Agent SDK의 영역입니다. 오늘의 카페가 그대로 다음 장의 무대입니다.</p>
     </div>
   </div>

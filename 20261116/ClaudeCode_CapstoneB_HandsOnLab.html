@@ -616,7 +616,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 <body>
 
 <header class="hero">
-  <span class="eyebrow">Capstone Hands-on Lab B / Chapter 1-5 통합</span>
+  <span class="eyebrow">Capstone Hands-on Lab B / Ch1~Ch6 통합</span>
   <h1>Mission: Self-Heal, 무인 운영실을 세워라</h1>
   <div class="subtitle">Claude Code Deep Dive Workshop, Capstone B - 자율 복구 SRE 에이전트 (135분 목표 / 150분 상한)</div>
   <p class="lede">
@@ -930,7 +930,7 @@ export const handler = async (event) =&gt; {
     <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
-    <strong>서브에이전트가 런북을 쓰는 동안</strong>(Chapter 2), 여러분은 카오스 스크립트를 배치하고
+    <strong>서브에이전트가 런북을 쓰는 동안</strong>(Ch3), 여러분은 카오스 스크립트를 배치하고
     장애 1종을 <strong>수동으로 주입과 처방</strong>해 봅니다. 메딕에게 시키기 전에 사람이 먼저 한 번 고쳐 봐야 합니다.
   </p>
 
@@ -1038,7 +1038,7 @@ ENV_BREAK 처방은 함수 설정 반영에 수 초가 걸릴 수 있다.</code>
     <span class="time-badge">30분</span>
   </div>
   <p class="task-goal">
-    Chapter 5의 헤드리스 문법이 전부 들어간 <strong>medic.sh</strong>를 배치하고,
+    Ch3에서 맛본 헤드리스 문법이 전부 들어간 <strong>medic.sh</strong>를 배치하고,
     장애를 주입한 뒤 <strong>메딕 혼자 고치는 것</strong>을 지켜봅니다.
   </p>
 
@@ -1121,11 +1121,11 @@ chmod +x medic.sh
 bash -n medic.sh &amp;&amp; echo "문법 OK"</code></pre>
   </div>
   <div class="callout tip">
-    <span class="co-title">메딕의 3중 잠금과 손발 제한 (Ch5 + Ch3)</span>
+    <span class="co-title">메딕의 3중 잠금과 손발 제한 (Ch3 + Ch2)</span>
     <code class="inline">--max-turns 15</code>와 <code class="inline">--max-budget-usd 1.00</code>이 폭주와 지출을 막고,
     <code class="inline">--allowed-tools</code>는 공백 구분 다중 인자로 aws logs / dynamodb / lambda / curl / Read만 허용합니다.
     이 계정은 Admin이므로 실무 전환 시에는 메딕 전용 IAM 정책(로그 읽기 + 해당 테이블 UpdateItem + 해당 함수 설정 변경)으로
-    이중 방어하는 것이 Chapter 3의 정석입니다. Claude Code가 Bedrock 라우팅이면
+    이중 방어하는 것이 Ch2의 정석입니다. Claude Code가 Bedrock 라우팅이면
     <code class="inline">ANTHROPIC_MODEL='global.anthropic.claude-sonnet-4-6'</code> 한 줄로 메딕의 두뇌를 지정합니다.
   </div>
 
@@ -1169,7 +1169,7 @@ ROOT_CAUSE: CONFIG_POISON
   </div>
   <p class="task-goal">
     자율 에이전트에게 가장 먼저 줄 것은 자유가 아니라 <strong>브레이크</strong>입니다.
-    PreToolUse 인터록(Chapter 4)으로 파괴적 명령을 차단하고, 메딕을 30초 주기 무인 데몬으로 올립니다.
+    PreToolUse 인터록(Ch2 Lab 2)으로 파괴적 명령을 차단하고, 메딕을 30초 주기 무인 데몬으로 올립니다.
   </p>
 
   <div class="step-title"><span class="step-no">1</span>인터록 배치와 등록</div>
@@ -1238,7 +1238,7 @@ sleep 2 &amp;&amp; tail -2 medic.log</code></pre>
   <div class="callout tip">
     <span class="co-title">상시 운영이라면 systemd (참고)</span>
     랩에서는 nohup으로 충분합니다. 상시 운영은 systemd 서비스 + 타이머로 승격하고,
-    Environment=OPS_TARGET_API/OPS_OUTPUTS를 유닛에 명시하며, 로그는 Chapter 3의 OTel 파이프라인에 합류시키는 것이 정석입니다.
+    Environment=OPS_TARGET_API/OPS_OUTPUTS를 유닛에 명시하며, 로그는 Ch6의 OTel 파이프라인에 합류시키는 것이 정석입니다.
     데몬 종료는 <code class="inline">pkill -f medic-daemon</code> 입니다.
   </div>
 
@@ -1438,17 +1438,17 @@ claude plugin list</code></pre>
   <table class="tbl">
     <tr><th>캡스톤 장면</th><th>소환된 챕터</th><th>핵심 역량</th></tr>
     <tr><td>brainstorm → 4-Phase 계획</td><td>Ch1 + superpowers</td><td>계획 우선, 요구사항으로 워크플로 조종</td></tr>
-    <tr><td>런북 병렬 작성</td><td>Ch2</td><td>서브에이전트 위임, 문서도 병렬로</td></tr>
-    <tr><td>메딕 도구 제한, IAM 이중화 원칙</td><td>Ch3</td><td>최소 권한 사고, Bedrock 모델 지정</td></tr>
-    <tr><td>PreToolUse 인터록, /drill 스킬</td><td>Ch4</td><td>훅은 가드레일이다, exit 2의 힘</td></tr>
-    <tr><td>medic.sh 전체</td><td>Ch5</td><td>헤드리스 3중 잠금, JSON 파싱, exit 게이트, 정기 실행</td></tr>
+    <tr><td>런북 병렬 작성</td><td>Ch3</td><td>서브에이전트 위임, 문서도 병렬로</td></tr>
+    <tr><td>메딕 도구 제한, IAM 이중화 원칙</td><td>Ch2</td><td>최소 권한 사고, Bedrock 모델 지정</td></tr>
+    <tr><td>PreToolUse 인터록, /drill 스킬</td><td>Ch2, Ch4</td><td>훅은 가드레일이다, exit 2의 힘</td></tr>
+    <tr><td>medic.sh 전체</td><td>Ch3</td><td>헤드리스 3중 잠금, JSON 파싱, exit 게이트, 정기 실행</td></tr>
   </table>
 
   <div class="next-box">
     <div>
       <div class="nx-label">NEXT</div>
-      <h3>Chapter 6 - Agent SDK</h3>
-      <p>오늘 메딕은 60초마다 깨어나는 셸 루프였습니다. Chapter 6에서는 같은 메딕을 Agent SDK 상주 서비스로 승격해, 이벤트 구독과 커스텀 도구, 멀티 인시던트 병렬 처리까지 확장합니다. 셸이 프로토타입이었다면 SDK가 프로덕션입니다.</p>
+      <h3>SDK - Agent SDK 자율 실습</h3>
+      <p>오늘 메딕은 60초마다 깨어나는 셸 루프였습니다. SDK 자율 실습에서는 같은 메딕을 Agent SDK 상주 서비스로 승격해, 이벤트 구독과 커스텀 도구, 멀티 인시던트 병렬 처리까지 확장합니다. 셸이 프로토타입이었다면 SDK가 프로덕션입니다.</p>
     </div>
   </div>
 </section>

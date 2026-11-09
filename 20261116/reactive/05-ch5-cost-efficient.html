@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Deep Dive Workshop, FSI Edition</title>
+  <meta name="generator" content="remarp">
+  <meta name="remarp-version" content="1">
+  <meta name="remarp-source" content="05-ch5-cost-efficient.md">
+  <meta name="remarp-block" content="05-ch5-cost-efficient">
+  <link rel="stylesheet" href="./common/theme.css">
+  <link rel="stylesheet" href="./common/deck-overlay.css">
+  <link rel="stylesheet" href="./common/deck-detail.css">
+  <link rel="stylesheet" href="./common/deck-nav.css">
+  <link rel="stylesheet" href="./common/deck-pen.css">
+
+  <style>:root { --slide-ratio-w: 16; --slide-ratio-h: 9; } :root { --slide-width: 960px; --slide-height: 540px; }</style>
+
+  <script>window.__remarpTheme = {"colors": {}, "footer": "\u00a9 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.", "pagination": true, "fonts": {}};</script>
+</head>
+<body>
+<div class="slide-deck theme-dark">
+<div class="slide theme-dark" data-remarp-id="s0" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기" style="background:linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%); padding:0; overflow:hidden;">
+  <h1 style="position:absolute; left:5%; top:48%; font-size:2.8rem; color:#fff; font-weight:300; line-height:1.2; width:53%; margin:0;">Chapter 5. 비용 효율적으로 쓰기</h1>
+  <p style="position:absolute; left:5%; top:62%; font-size:1.3rem; color:rgba(255,255,255,0.8); width:53%; margin:0;">같은 일을 더 적은 토큰으로 (Claude Code v2.1.319, 2026-11-08 리허설 검증)</p>
+  <div style="position:absolute; left:5%; top:76%;">
+    <p style="font-size:1.05rem; color:#fff; font-weight:600; margin:0;">Choi, WooHyung</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:6px 0 0 0;">Prin. Solutions Architect</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:2px 0 0 0;">AWS Korea</p>
+  </div>
+
+</div>
+
+<div class="slide" data-remarp-id="s1" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s1-header"><h2>강의와 데모 20분, 랩 38분</h2></div>
+  <div class="slide-body" data-remarp-id="s1-body">
+    <p><!-- Slide 2: Agenda --></p>
+<p>여덟 가지 원리, 그리고 랩 TASK 01부터 04까지</p>
+<div class="c6 c6-agenda fsi">
+  <div class="fsi-grid-2">
+    <div class="pick"><span class="k">CHAPTER 05 / 60분</span><span class="t">컨텍스트 엔지니어링</span><span class="d">먼저 보기, 지침 줄이기, 출력 필터, 캐시와 압축, 모델과 사고량</span><span class="when">12:40 시작</span></div>
+    <div class="pick lab"><span class="k">LAB / Ch5 Lab</span><span class="t">TASK 01부터 04</span><span class="d">기준선 재기, 출력 필터 훅, CLAUDE.md 다이어트, 압축 시점</span><span class="when">강의 뒤 바로</span></div>
+  </div>
+  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 둡니다</span></div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s2" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+
+  <div class="slide-body" data-remarp-id="s2-body">
+    <p><!-- Slide 3: Part 01 divider --></p>
+<div class="fsi fsi-section c6-sec">
+  <span class="num">CHAPTER 05 / 12:40</span>
+  <div class="name">컨텍스트 엔지니어링</div>
+  <p class="what">같은 일을 더 적은 토큰으로</p>
+  <ol>
+    <li><b>01</b>먼저 본다</li>
+    <li><b>02</b>항상 실리는 지침 줄이기</li>
+    <li><b>03</b>구조 정보, 출력 필터, 도구 지연 로드</li>
+    <li><b>04</b>캐시와 압축(compaction)</li>
+    <li><b>05</b>모델과 사고량</li>
+  </ol>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s3" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s3-header"><h2>하루 13달러가 출발점이다</h2></div>
+  <div class="slide-body" data-remarp-id="s3-body">
+    <p><!-- Slide 4: Baseline --></p>
+<p>엔터프라이즈 배포의 개발자 1인당 평균 비용</p>
+<div class="c6-base">
+  <div>
+    <span class="eyebrow">BASELINE</span>
+    <div class="num">$<span id="c6-base-num">13</span></div>
+    <p class="unit">활성일 하루, 개발자 1인당 평균</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><b>월 $150에서 $250</b><span>엔터프라이즈 배포에서 개발자 1인당 평균</span></div>
+    <div class="fact"><b>90%는 활성일 $30 미만</b><span>대부분의 사용자는 하루 30달러를 넘지 않습니다</span></div>
+    <div class="fact"><b>우리 팀의 기준선은 직접 측정</b><span>파일럿에서 Ch6의 계측으로 잽니다</span></div>
+    <p class="src">출처: code.claude.com/docs/en/costs</p>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s4" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s4-header"><h2>원리 1, 먼저 본다</h2></div>
+  <div class="slide-body" data-remarp-id="s4-body">
+    <p><!-- Slide 5: Principle 1 --></p>
+<p>/context와 /usage로 무엇이 자리를 차지하는지</p>
+<div class="c6-usage fsi">
+  <div class="left">
+    <p class="c6-code-hd">/usage, Session (예시 출력)</p>
+    <pre class="c6-code" id="c6-usage-pre"><span class="ln" data-l="cost">Total cost:            $0.55</span><span class="ln" data-l="dur">Total duration (API):  6m 20s</span><span class="ln" data-l="model">Usage by model:</span><span class="ln" data-l="model">  claude-sonnet-5-5:  1.2k input, 5.3k output,</span><span class="ln" data-l="model">                      940.0k cache read, 50.0k cache write</span><span class="ln" data-l="cache">Prompt cache (main):   14 requests, 91% of input tokens</span><span class="ln" data-l="cache miss">                       from cache, 2 misses, warm (1h TTL)</span></pre>
+  </div>
+  <div class="fsi-stack">
+    <div class="fsi-stack" data-pick="c6-usage">
+      <button class="pick" data-key="context"><span class="k">/context</span><span class="t">항목별 컨텍스트 점유</span></button>
+      <button class="pick" data-key="cache"><span class="k">/usage</span><span class="t">세션 비용과 캐시 적중률</span></button>
+      <button class="pick" data-key="miss"><span class="k">miss</span><span class="t">캐시 미스에는 추정 원인이 표시됨</span></button>
+      <button class="pick" data-key="cost"><span class="k">금액</span><span class="t">금액은 추정치, 정산은 AWS 청구서</span></button>
+    </div>
+    <div class="panel" data-pick-panel="c6-usage">
+      <p class="hint">읽는 법을 누르면 설명이 나오고, /usage 항목은 왼쪽 출력에서 해당 줄이 강조됩니다.</p>
+      <div data-for="context"><p>/context는 시스템 프롬프트, CLAUDE.md, 도구 정의, 대화가 각각 얼마나 차지하는지 보여 줍니다. 무엇을 줄일지 고르는 첫 화면입니다.</p></div>
+      <div data-for="cache"><p>이 예시는 14번의 요청 중 입력 토큰의 91%를 캐시에서 읽었습니다. 캐시 적중률이 높을수록 같은 대화가 싸집니다.</p></div>
+      <div data-for="miss"><p>캐시 미스가 나면 /usage가 추정 원인을 함께 보여 줍니다. 원리 6에서 무엇이 캐시를 깨는지 봅니다.</p></div>
+      <div data-for="cost"><p>Total cost는 추정치입니다. 실제 정산은 AWS 청구서이고, Ch6에서 계약 단가로 맞추는 법을 봅니다.</p></div>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s5" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s5-header"><h2>같은 일을 더 적게, 여덟 가지 원리</h2></div>
+  <div class="slide-body" data-remarp-id="s5-body">
+    <p><!-- Slide 6: Eight principles --></p>
+<p>본론은 공식 기능, 커뮤니티 도구는 사례로만</p>
+<div class="c6-eight fsi">
+  <div class="grid" data-pick="c6-eight">
+    <button class="pick" data-key="p1"><span class="k">원리 1</span><span class="t">먼저 본다</span></button>
+    <button class="pick" data-key="p2"><span class="k">원리 2</span><span class="t">항상 실리는 지침은 짧게</span></button>
+    <button class="pick" data-key="p3"><span class="k">원리 3</span><span class="t">탐색 대신 구조 정보</span></button>
+    <button class="pick" data-key="p4"><span class="k">원리 4</span><span class="t">큰 출력은 들어오기 전에</span></button>
+    <button class="pick" data-key="p5"><span class="k">원리 5</span><span class="t">도구는 필요할 때만</span></button>
+    <button class="pick" data-key="p6"><span class="k">원리 6</span><span class="t">캐시를 깨지 않는다</span></button>
+    <button class="pick" data-key="p7"><span class="k">원리 7</span><span class="t">압축은 내가 정한 때에</span></button>
+    <button class="pick" data-key="p8"><span class="k">원리 8</span><span class="t">작업에 맞는 모델, 사고량</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c6-eight">
+    <p class="hint">원리를 누르면 그 원리를 받치는 공식 기능과 커뮤니티 사례가 나옵니다.</p>
+    <div data-for="p1"><h4>먼저 본다</h4><div class="row"><span class="lb">공식 기능</span><span class="vl">/context, /usage, 스피너 토큰 수</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">없음</span></div></div>
+    <div data-for="p2"><h4>항상 실리는 지침은 짧게</h4><div class="row"><span class="lb">공식 기능</span><span class="vl">CLAUDE.md 200줄, 스킬, SessionStart 훅</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">Ponytail</span></div></div>
+    <div data-for="p3"><h4>탐색 대신 구조 정보</h4><div class="row"><span class="lb">공식 기능</span><span class="vl">code intelligence 플러그인, 개요 스킬</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">Graphify</span></div></div>
+    <div data-for="p4"><h4>큰 출력은 들어오기 전에</h4><div class="row"><span class="lb">공식 기능</span><span class="vl">PreToolUse 필터 훅, Subagent 격리</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">Headroom</span></div></div>
+    <div data-for="p5"><h4>도구는 필요할 때만</h4><div class="row"><span class="lb">공식 기능</span><span class="vl"><span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 도구로 붙이는 표준">MCP</span> 지연 로드, 서버 끄기, CLI 우선</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">REA</span></div></div>
+    <div data-for="p6"><h4>캐시를 깨지 않는다</h4><div class="row"><span class="lb">공식 기능</span><span class="vl">prompt caching, <span class="rp-detail" tabindex="0" data-tip="Time To Live. 캐시가 유지되는 시간">TTL</span>, /clear와 /compact의 차이</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">없음</span></div></div>
+    <div data-for="p7"><h4>압축은 내가 정한 때에</h4><div class="row"><span class="lb">공식 기능</span><span class="vl">/compact 지시, autoCompactWindow, idle compaction</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">없음</span></div></div>
+    <div data-for="p8"><h4>작업에 맞는 모델, 사고량</h4><div class="row"><span class="lb">공식 기능</span><span class="vl">/model, /effort, Subagent model</span></div><div class="row"><span class="lb">커뮤니티</span><span class="vl">없음</span></div></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s6" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s6-header"><h2>원리 2, 항상 실리는 지침은 짧게</h2></div>
+  <div class="slide-body" data-remarp-id="s6-body">
+    <p><!-- Slide 7: Principle 2 --></p>
+<p>매 요청에 실리는 것과 필요할 때 오는 것</p>
+<div id="c6-sv-always"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s7" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s7-header"><h2>원리 3, 탐색 대신 구조 정보</h2></div>
+  <div class="slide-body" data-remarp-id="s7-body">
+    <p><!-- Slide 8: Principle 3 --></p>
+<p>grep과 파일 여러 개 읽기를 한 번의 질의로</p>
+<div class="c6">
+  <div class="c6-cards">
+    <div class="c6-card"><span class="k">OFFICIAL</span><span class="t">Code intelligence 플러그인</span><span class="d">언어 서버로 정의로 이동합니다.</span><span class="d">편집 후 타입 오류를 자동으로 보고해, 불필요한 파일 읽기가 줄어듭니다.</span></div>
+    <div class="c6-card"><span class="k">OFFICIAL</span><span class="t">코드베이스 개요 스킬</span><span class="d">아키텍처, 디렉터리, 명명 규칙을 스킬로 둡니다.</span><span class="d">탐색에 쓰는 토큰을 줄입니다.</span></div>
+    <div class="c6-card warn"><span class="k">COMMUNITY / 비공식</span><span class="t">Graphify</span><span class="d">코드를 로컬 <span class="rp-detail" tabindex="0" data-tip="Abstract Syntax Tree. 코드를 문법 구조로 나타낸 트리">AST</span>로 파싱해 지식 그래프로 만들고 스킬, <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 도구로 붙이는 표준">MCP</span>로 제공합니다.</span><span class="d">작은 저장소에서는 효과가 거의 없습니다.</span></div>
+  </div>
+  <p class="c6-note"><span class="lbl">커뮤니티 사례</span>효과 수치는 제작자 자체 보고입니다. 같은 효과를 공식 기능으로 낼 수 있는지 먼저 봅니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s8" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s8-header"><h2>원리 4, 큰 출력은 들어오기 전에</h2></div>
+  <div class="slide-body" data-remarp-id="s8-body">
+    <p><!-- Slide 9: Principle 4, output filter 훅 --></p>
+<p>공식 예제 기반: 테스트 출력을 실패 줄만 남기기</p>
+<pre class="c6-src" id="c6-filter-src">#!/bin/bash
+input=$(cat)
+cmd=$(echo "$input" | jq -r '.tool_input.command')
+pattern='^(npm test|pytest|go test)( [^;&amp;|&lt;&gt;`$#\\[:cntrl:]]*)?$'
+if [[ "$cmd" =~ $pattern ]]; then
+  filtered_cmd="log=\$(mktemp); $cmd &gt;\"\$log\" 2&gt;&amp;1; rc=\$?
+grep -A 5 -E '(FAIL|ERROR|error:)' \"\$log\" | head -100; exit \$rc"
+  echo "$input" | jq --arg filtered "$filtered_cmd" \
+    '{hookSpecificOutput: {hookEventName: "PreToolUse",
+      updatedInput: (.tool_input + {command: $filtered})}}'
+else
+  echo "{}"
+fi</pre>
+<div id="c6-sv-filter"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s9" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s9-header"><h2>훅 하나로 컨텍스트가 줄어든다</h2></div>
+  <div class="slide-body" data-remarp-id="s9-body">
+    <p><!-- Slide 10: Demo, output filter --></p>
+<p>DEMO 7분, 출력 필터 훅 적용 전후 비교</p>
+<div class="fsi fsi-lab c6-lab">
+  <div class="head"><span class="tag">DEMO / 7분</span></div>
+  <ol class="steps">
+    <li><b>1</b><span>실패 테스트가 섞인 저장소에서 "npm test 돌려서 실패 원인 찾아줘"</span></li>
+    <li><b>2</b><span>/context와 /usage 기록</span></li>
+    <li><b>3</b><span>filter-test-output.sh 등록 후 /clear, 같은 요청 반복</span></li>
+    <li><b>4</b><span>두 번의 컨텍스트 크기와 비용 비교</span></li>
+  </ol>
+  <p class="where">강사 데모입니다. 참가자는 Lab 포털의 같은 스크립트로 따라 해 볼 수 있습니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s10" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s10-header"><h2>원리 5, 도구는 필요할 때만</h2></div>
+  <div class="slide-body" data-remarp-id="s10-body">
+    <p><!-- Slide 11: Principle 5 --></p>
+<p>MCP 서버는 공짜가 아닙니다</p>
+<div class="c6">
+  <div class="c6-cards">
+    <div class="c6-card"><span class="k">DEFERRED</span><span class="t">도구 정의 지연 로드</span><span class="d">기본값은 도구 이름과 서버 지침만 싣고, 쓸 때 스키마를 tool search로 로드합니다.</span><span class="d">게이트웨이 뒤에서도 기본 켜짐 (v2.1.304+).</span></div>
+    <div class="c6-card"><span class="k">TRIM</span><span class="t">안 쓰는 서버 끄기</span><span class="d">/mcp로 서버 목록을 확인합니다.</span><span class="d">쓰지 않는 서버는 비활성화합니다.</span></div>
+    <div class="c6-card"><span class="k">CLI FIRST</span><span class="t">CLI 우선</span><span class="d">gh, aws 같은 CLI는 도구 목록을 미리 싣지 않습니다.</span></div>
+  </div>
+  <p class="c6-note"><span class="lbl">커뮤니티 사례 / 비공식</span><b>REA</b>(Reverse Engineer Anything)는 170여 개 <span class="rp-detail" tabindex="0" data-tip="Model Context Protocol. 외부 시스템을 도구로 붙이는 표준">MCP</span> 도구를 가진 역공학 도구입니다. 도구 목록이 거대해 지연 로드가 왜 기본값인지 보여 주는 사례입니다. 비신뢰 바이너리는 <span class="rp-detail" tabindex="0" data-tip="Virtual Machine. 격리된 가상 환경">VM</span>과 법무 검토를 거칩니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s11" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s11-header"><h2>한 시간 비운 뒤 첫 메시지는?</h2></div>
+  <div class="slide-body" data-remarp-id="s11-body">
+    <p><!-- Slide 12: Quick check 1 --></p>
+<p>QUICK CHECK, 손을 들어 답해 주세요</p>
+<div class="fsi qc" id="c6-qc-1">
+  <p class="q">1시간 넘게 자리를 비운 뒤 보내는 첫 메시지는?</p>
+  <div class="opts three">
+    <button class="opt"><b>A</b>캐시에서 읽어 저렴하다</button>
+    <button class="opt right"><b>B</b>캐시 미스로 전체 컨텍스트를 다시 처리한다</button>
+    <button class="opt"><b>C</b>자동으로 /clear 된다</button>
+  </div>
+  <p class="ans">정답 B. 기본 캐시 수명은 5분입니다. 긴 세션일수록 비용이 큽니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s12" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s12-header"><h2>원리 6, 캐시를 깨지 않는다</h2></div>
+  <div class="slide-body" data-remarp-id="s12-body">
+    <p><!-- Slide 13: Principle 6 --></p>
+<p>/clear와 /compact는 비용이 다릅니다</p>
+<div class="c6">
+  <div class="c6-two">
+    <div class="c6-col good"><h4>/clear</h4><ul><li>새 세션 시작, 비용 0</li><li>관련 없는 작업으로 넘어갈 때</li><li>/rename 후 /resume으로 돌아오기</li></ul></div>
+    <div class="c6-col bad"><h4>/compact</h4><ul><li>대화를 읽어 요약하는 것 자체가 큰 요청</li><li>이어서 작업해야 할 때만</li><li>보존할 것을 지시: /compact Focus on …</li><li>CLAUDE.md에 압축 지침을 둘 수 있음</li></ul></div>
+  </div>
+  <div class="c6-chips">
+    <div class="c6-chip"><b>5분</b><span>기본 캐시 수명</span></div>
+    <div class="c6-chip"><b>1시간</b><span>1시간 옵션, 더 비쌈</span></div>
+    <div class="c6-chip"><b>미스 원인</b><span>/usage에 표시</span></div>
+    <div class="c6-chip"><b>Bedrock</b><span>모델, 리전별 지원 확인</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s13" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s13-header"><h2>원리 7, 압축은 내가 정한 때에</h2></div>
+  <div class="slide-body" data-remarp-id="s13-body">
+    <p><!-- Slide 14: Principle 7, compaction methods --></p>
+<p>대화가 차면 Claude Code는 오래된 기록을 요약합니다</p>
+<div class="c6-pickset fsi">
+  <div class="fsi-stack" data-pick="c6-ways">
+    <button class="pick" data-key="auto"><span class="k">자동</span><span class="t">자동 압축</span></button>
+    <button class="pick" data-key="manual"><span class="k">수동</span><span class="t">/compact [지시]</span></button>
+    <button class="pick" data-key="rewind"><span class="k">부분</span><span class="t">/rewind 부분 요약</span></button>
+    <button class="pick" data-key="idle"><span class="k">자리 비움</span><span class="t">Idle compaction</span></button>
+    <button class="pick" data-key="clear"><span class="k">전환</span><span class="t">/clear</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c6-ways">
+    <p class="hint">방식을 누르면 언제 일어나고 무엇으로 바꾸는지 나옵니다.</p>
+    <div data-for="auto"><h4>자동 압축</h4><div class="kv"><span class="lb">언제</span><span class="vl">auto-compact window에 닿을 때</span></div><div class="kv"><span class="lb">바꾸는 설정</span><span class="vl">1M 모델 기본 약 967K, /autocompact 400k, autoCompactWindow</span></div></div>
+    <div data-for="manual"><h4>/compact [지시]</h4><div class="kv"><span class="lb">언제</span><span class="vl">내가 원할 때</span></div><div class="kv"><span class="lb">바꾸는 설정</span><span class="vl">/compact focus on …, CLAUDE.md의 # Compact instructions</span></div></div>
+    <div data-for="rewind"><h4>/rewind 부분 요약</h4><div class="kv"><span class="lb">언제</span><span class="vl">특정 메시지부터, 또는 특정 메시지까지</span></div><div class="kv"><span class="lb">바꾸는 설정</span><span class="vl">Summarize from here, Summarize up to here</span></div></div>
+    <div data-for="idle"><h4>Idle compaction</h4><div class="kv"><span class="lb">언제</span><span class="vl">1시간 <span class="rp-detail" tabindex="0" data-tip="Time To Live. 캐시가 유지되는 시간">TTL</span> 세션을 오래 비웠을 때, 캐시 만료 직전</span></div><div class="kv"><span class="lb">바꾸는 설정</span><span class="vl">v2.1.290+, idleCompaction: false로 끔</span></div></div>
+    <div data-for="clear"><h4>/clear</h4><div class="kv"><span class="lb">언제</span><span class="vl">관련 없는 작업으로 전환</span></div><div class="kv"><span class="lb">결과</span><span class="vl">비용 0, 연속성 없음</span></div></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s14" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s14-header"><h2>다 차기 전에 미리 압축한다</h2></div>
+  <div class="slide-body" data-remarp-id="s14-body">
+    <p><!-- Slide 15: auto-compact window --></p>
+<p>auto-compact window 조정과 설정 우선순위</p>
+<div class="c6-acw fsi">
+  <div class="left">
+    <p class="c6-code-hd">Claude Code 세션, Terminal</p>
+    <pre class="c6-code"><span class="ln c"># 현재 값과 출처 확인</span><span class="ln k">/autocompact</span><span class="ln c"># 400K에서 압축 (모델별로 사용자 설정에 저장, v2.1.288+)</span><span class="ln k">/autocompact 400k</span><span class="ln c"># 모델 기본값으로 복귀</span><span class="ln k">/autocompact auto</span><span class="ln c"># 이번 세션만</span><span class="ln k">claude --autocompact 500k</span><span class="ln c"># 조직 기본값 (managed-settings.json)</span><span class="ln k">{ "autoCompactWindow": 400000 }</span></pre>
+    <p class="c6-note">같은 파일에서는 modelSettings.&lt;model&gt; 값이 우선합니다.<br>범위는 100K에서 1M 또는 "auto", 실제 시점은 설정값과 모델 최대 컨텍스트 중 작은 쪽입니다.</p>
+      </div>
+  <div class="right">
+    <div class="prio">
+      <div><b>1</b>환경 변수 (최우선)<br><code>CLAUDE_CODE_AUTO_COMPACT_WINDOW</code></div>
+      <div><b>2</b>--autocompact 실행 플래그</div>
+      <div><b>3</b>settings: managed가 사용자 /autocompact를 덮음</div>
+    </div>
+    <div class="c6-gauge" id="c6-acw">
+      <div class="hd"><span>1M 모델 대화 길이, 회색 선은 기본값 약 967K (예시)</span><span id="c6-acw-val">400K</span></div>
+      <div class="bar"><i id="c6-acw-fill"></i><span class="mk" id="c6-acw-mk"></span><span class="mk auto" id="c6-acw-auto"></span></div>
+      <input type="range" min="100" max="1000" step="50" value="400" id="c6-acw-in" aria-label="auto-compact window 크기">
+      <p class="out" id="c6-acw-out"></p>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s15" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s15-header"><h2>창을 줄이면 항상 쌀까?</h2></div>
+  <div class="slide-body" data-remarp-id="s15-body">
+    <p><!-- Slide 16: Trade-off --></p>
+<p>Claude Code도 기본값 "auto"를 권하는 이유</p>
+<div class="c6">
+  <div class="c6-two">
+    <div class="c6-col good"><h4>줄어드는 것</h4><ul><li>압축 전까지 매 요청의 입력 토큰</li><li>캐시가 식은 뒤 다시 읽는 양</li><li>1M 모델의 긴 세션에서 효과가 큼</li></ul></div>
+    <div class="c6-col bad"><h4>늘어나는 것, 잃는 것</h4><ul><li>압축 횟수: 한 번이 대화 전체를 읽는 요청</li><li>압축 직후 캐시 재구축</li><li>손실 요약: 초반 제약, 정확한 오류가 빠질 수 있음</li><li>기본값을 바꾸면 긴 세션 재개 시 사용량이 늘 수 있다는 공식 경고</li></ul></div>
+  </div>
+  <div class="c6-prio3">
+    <div><b>1순위</b><span>작업 단위 끝에 캐시가 따뜻할 때 /compact</span></div>
+    <div><b>2순위</b><span>긴 세션 팀만 창을 400K에서 500K로</span></div>
+    <div><b>검증</b><span><span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span> token.usage로 전후 비교</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s16" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s16-header"><h2>압축 후에 무엇이 남나</h2></div>
+  <div class="slide-body" data-remarp-id="s16-body">
+    <p><!-- Slide 17: What survives compaction --></p>
+<p>공식 문서의 What survives compaction</p>
+<div class="c6-surv fsi" id="c6-surv">
+  <div class="ctl"><button class="btn btn-primary" data-cycle>/compact 실행해 보기</button><span class="st" id="c6-surv-st">압축 전</span></div>
+  <div class="rows">
+    <div class="row keep"><span class="it">시스템 프롬프트, 출력 스타일</span><span class="res"><span class="tag ok">유지</span>그대로 적용</span></div>
+    <div class="row re"><span class="it">루트 CLAUDE.md, auto memory, plan 모드의 계획</span><span class="res"><span class="tag info">재주입</span>디스크에서 다시 주입</span></div>
+    <div class="row re"><span class="it">최근 읽거나 고친 파일</span><span class="res"><span class="tag info">재주입</span>최근 수정 순으로 최대 5개 다시 읽음 (5,000 토큰 넘으면 경로만)</span></div>
+    <div class="row re"><span class="it">사용한 스킬 본문</span><span class="res"><span class="tag info">재주입</span>스킬당 5,000, 합계 25,000 토큰, 오래된 것부터 제외</span></div>
+    <div class="row lost"><span class="it">paths: 규칙, 하위 폴더 CLAUDE.md</span><span class="res"><span class="tag cond">사라짐</span>요약되어 사라지고, 해당 파일을 다시 읽을 때 재로드</span></div>
+    <div class="row re"><span class="it">SessionStart 훅 (matcher: compact)</span><span class="res"><span class="tag info">재실행</span>다시 실행되어 결과가 추가됨</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s17" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s17-header"><h2>자리 비우기 전에 /compact</h2></div>
+  <div class="slide-body" data-remarp-id="s17-body">
+    <p><!-- Slide 18: Cost of compaction, warm vs cold --></p>
+<p>/compact도 대화 전체를 읽는 요청, 캐시가 따뜻할 때와 식었을 때</p>
+<div id="c6-sv-compact"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s18" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s18-header"><h2>같은 기능도 접속 방식마다 다르다</h2></div>
+  <div class="slide-body" data-remarp-id="s18-body">
+    <p><!-- Slide 19: Cache TTL by connection --></p>
+<p>Bedrock에서 캐시 수명과 idle compaction</p>
+<div class="c6-ttl fsi">
+  <div class="fsi-stack" data-pick="c6-ttl">
+    <button class="pick" data-key="sub"><span class="k">구독</span><span class="t">Claude 구독 (플랜 사용량 안)</span></button>
+    <button class="pick" data-key="br"><span class="k">기본</span><span class="t">API 키, Amazon Bedrock</span></button>
+    <button class="pick" data-key="br1h"><span class="k">옵션</span><span class="t">Bedrock + 1시간 캐시 옵션</span></button>
+    <button class="pick" data-key="gw"><span class="k">게이트웨이</span><span class="t">Claude Apps Gateway 경유</span></button>
+  </div>
+  <div class="sim">
+    <div class="kv"><span class="lb">메인 대화 기본 <span class="rp-detail" tabindex="0" data-tip="Time To Live. 캐시가 유지되는 시간">TTL</span></span><span class="vl" id="c6-ttl-v">접속 방식을 고르세요</span></div>
+    <div class="kv"><span class="lb">Idle compaction</span><span class="vl" id="c6-ttl-i"></span></div>
+    <div class="kv"><span class="lb">자리 비운 시간</span><span class="vl"><span id="c6-ttl-m">30</span>분 (예시)</span></div>
+    <input type="range" min="0" max="120" step="5" value="30" id="c6-ttl-in" aria-label="자리 비운 시간(분)">
+    <div class="state" id="c6-ttl-s">왼쪽에서 접속 방식을 고르면 돌아왔을 때 캐시 상태를 보여 줍니다.</div>
+    <p class="cap">1시간 옵션은 더 비쌉니다. 자리 비운 시간은 설명용 예시입니다.</p>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s19" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s19-header"><h2>압축 설계를 조직 기본값으로</h2></div>
+  <div class="slide-body" data-remarp-id="s19-body">
+    <p><!-- Slide 20: Org defaults for compaction --></p>
+<p>managed settings로 창 크기, 캐시 수명, 압축 후 규칙을 고정</p>
+<div id="c6-sv-org"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s20" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s20-header"><h2>압축을 내가 정한 때에, 15분</h2></div>
+  <div class="slide-body" data-remarp-id="s20-body">
+    <p><!-- Slide 21: Lab TASK 04 --></p>
+<p>LAB, Chapter 5 TASK 04</p>
+<div class="fsi fsi-lab c6-lab">
+  <ol class="steps">
+    <li><b>1</b><span>/context, /usage로 압축 전 기록</span></li>
+    <li><b>2</b><span>/compact 테스트 실패 원인과 남은 할 일만 남겨줘</span></li>
+    <li><b>3</b><span>CLAUDE.md에 # Compact instructions 추가</span></li>
+    <li><b>4</b><span>SessionStart compact 훅으로 사내 규정 재주입 확인</span></li>
+    <li><b>5</b><span>/autocompact 400k로 창 조정, 저장 위치 확인, auto로 복귀</span></li>
+    <li><b>6</b><span>/config에서 Idle compaction 항목과 Bedrock TTL 확인</span></li>
+  </ol>
+  <p class="where">Ch5 랩: TASK 01 기준선 5분, 02 출력 필터 훅 10분, 03 CLAUDE.md와 모델 8분, 04 압축 15분. Hands-on Lab 포털에서 Chapter 5를 엽니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s21" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s21-header"><h2>원리 8, 작업에 맞는 모델과 사고량</h2></div>
+  <div class="slide-body" data-remarp-id="s21-body">
+    <p><!-- Slide 22: Principle 8 --></p>
+<p>사고 토큰은 출력 단가로 청구됩니다</p>
+<div class="c6">
+  <div class="c6-cards">
+    <div class="c6-card"><span class="k">MODEL</span><span class="t">/model</span><span class="d">대부분의 코딩은 Sonnet</span><span class="d">복잡한 설계만 Opus</span></div>
+    <div class="c6-card"><span class="k">EFFORT</span><span class="t">/effort</span><span class="d">단순 작업은 effort를 낮춤</span><span class="d">5.5 세대와 Fable은 thinking을 끌 수 없음</span></div>
+    <div class="c6-card"><span class="k">SUBAGENT</span><span class="t">model: haiku</span><span class="d">단순 Subagent는 작은 모델</span><span class="d">고정 예산 모델은 MAX_THINKING_TOKENS</span></div>
+  </div>
+  <p class="c6-note">사고(thinking) 토큰은 <b>출력 단가</b>로 청구됩니다. 모델과 사고량을 작업 크기에 맞추는 것이 마지막 원리입니다.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s22" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s22-header"><h2>커뮤니티 도구 앞의 세 가지 질문</h2></div>
+  <div class="slide-body" data-remarp-id="s22-body">
+    <p><!-- Slide 23: Three questions for community tools --></p>
+<p>도입 전 5분 검토</p>
+<div class="c6">
+  <div class="c6-cards">
+    <div class="c6-card"><span class="k">QUESTION 1</span><span class="t">어느 원리를 쓰는가</span><span class="d">여덟 가지 원리 중 무엇이고, 어느 확장 지점(훅, 스킬, MCP, 프록시)에 붙는가</span></div>
+    <div class="c6-card"><span class="k">QUESTION 2</span><span class="t">공식 기능으로 되는가</span><span class="d">CLAUDE.md, 스킬, 필터 훅, code intelligence로 같은 효과를 낼 수 있는가</span></div>
+    <div class="c6-card warn"><span class="k">QUESTION 3</span><span class="t">데이터는 어디로 가는가</span><span class="d">로컬 처리인지, 제3자로 가는지. 도입한다면 사내 마켓플레이스에 고정 버전으로 (Ch2, Ch4)</span></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s23" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s23-header"><h2>덜 쓰는 세 가지</h2></div>
+  <div class="slide-body" data-remarp-id="s23-body">
+    <p><!-- Slide 24: Key Takeaways --></p>
+<p>Chapter 5 Key Takeaways, 16:50 Chapter 6으로 이어짐</p>
+<div class="c6-recap">
+  <div class="grid">
+    <div class="rc"><b>01</b><span>먼저 본다: /context, /usage, 캐시 적중률<br>캐시를 지키고, 압축 시점과 effort는 내가 정한다</span></div>
+    <div class="rc"><b>02</b><span>항상 실리는 지침은 짧게, 큰 출력은 들어오기 전에</span></div>
+    <div class="rc"><b>03</b><span>커뮤니티 도구는 원리로 읽고 공식 기능으로 대체 가능한지 본다</span></div>
+  </div>
+  <p class="next">Chapter 6은 16:50, 조직이 보고 막는 법입니다. 그 전 Capstone 시간에도 /usage를 한 번씩 확인해 보세요.</p>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s24" data-fit="off" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="slide-header" data-remarp-id="s24-header"><h2>자주 받는 질문</h2></div>
+  <div class="slide-body" data-remarp-id="s24-body">
+    <p><!-- Slide 25: Deep dive FAQ --></p>
+<p>더 알아보기, MCP 비용, 세션 위생, 모델 배분</p>
+<div class="c6-pickset c6-dd fsi">
+  <div class="fsi-stack" data-pick="c6-dd1">
+    <button class="pick" data-key="mcp"><span class="k">1</span><span class="t">MCP 도구 정의 비용</span></button>
+    <button class="pick" data-key="hyg"><span class="k">2</span><span class="t">세션 위생</span></button>
+    <button class="pick" data-key="alloc"><span class="k">3</span><span class="t">모델 배분 예시</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c6-dd1">
+    <div data-for="mcp"><h4>연결만 해도 컨텍스트를 씁니다</h4>
+      <div class="c6-tbl">
+        <div class="tr h"><span>상황</span><span>영향</span><span>대응</span></div>
+        <div class="tr"><span>MCP 서버 다수 연결</span><span>도구 스키마가 매 요청에 실림</span><span>/mcp에서 쓰지 않는 서버 끄기</span></div>
+        <div class="tr"><span>도구가 많은 서버</span><span>정의만으로 수천 토큰</span><span>도구 지연 로드 (필요 시 검색)</span></div>
+        <div class="tr"><span>같은 기능 중복</span><span>선택 혼란, 재시도 증가</span><span>서버 하나로 정리</span></div>
+        <div class="tr"><span>프로젝트별 차이</span><span>쓰지 않는 서버가 계속 연결됨</span><span>.mcp.json을 프로젝트 단위로</span></div>
+      </div></div>
+    <div data-for="hyg"><h4>같은 일을 더 적은 토큰으로</h4>
+      <div class="kv"><span class="lb">/clear</span><span class="vl">작업이 바뀌면 새 컨텍스트. 이전 대화는 비용만 남깁니다.</span></div>
+      <div class="kv"><span class="lb">/compact 지시</span><span class="vl">남길 것을 지정해 요약. 예: 결정 사항과 남은 할 일만</span></div>
+      <div class="kv"><span class="lb">자리 비운 뒤</span><span class="vl">5분 넘으면 캐시 미스. 긴 휴식 후엔 /clear 고려</span></div></div>
+    <div data-for="alloc"><h4>역할별로 모델을 고정</h4>
+      <pre class="c6-code"><span class="ln c"># .claude/agents/log-summarizer.md</span><span class="ln">---</span><span class="ln k">name: log-summarizer</span><span class="ln">description: 긴 테스트, 빌드 로그를 실패 원인 중심으로 5줄 요약한다. 로그 분석 요청 시 사용.</span><span class="ln">tools: Read, Grep</span><span class="ln k">model: haiku</span><span class="ln">---</span><span class="ln">실패한 테스트 이름, 첫 오류 메시지, 의심 파일만 보고한다.</span></pre>
+      <p>장황한 로그는 작은 모델이 읽고, 메인에는 5줄만 돌아옵니다. 메인 모델은 판단에 집중합니다. Bedrock 계정에 Haiku가 활성화되어 있는지 확인하세요.</p></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s25" data-block="05-ch5-cost-efficient" data-block-title="Chapter 5. 비용 효율적으로 쓰기">
+  <div class="center-content" style="height:100%; gap:1.5rem;">
+    <h1 style="font-family:var(--font-display); letter-spacing:var(--tracking-tight, -0.02em); font-size:3rem; color:var(--text-primary);">Thank You</h1>
+    <p style="color:var(--text-secondary); font-size:1.1rem;">다음은 Capstone Round 2이고, 16:50에 Chapter 6. 조직의 비용 보고 통제하기로 이어집니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.</p>
+
+    <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+            <a href="toc.html" class="btn btn-sm" style="text-decoration:none;">← 목차로 돌아가기</a>
+      <a href="06-ch6-org-cost.html" class="btn btn-primary btn-sm" style="text-decoration:none;">Chapter 6 (16:50) →</a>
+    </div>
+  </div>
+</div>
+</div>
+<script src="./common/animation-utils.js"></script>
+<script src="./common/deck-overlay.js"></script>
+<script src="./common/deck-detail.js"></script>
+<script src="./common/deck-nav.js"></script>
+<script src="./common/deck-pen.js"></script>
+<script src="./common/slide-framework.js"></script>
+<script src="./common/quiz-component.js"></script>
+<script src="./common/presenter-view.js"></script>
+<script>
+(function(){
+(function(){function css(h){var has=[].some.call(document.querySelectorAll('link'),function(x){return x.getAttribute('href')===h;});if(has)return;var l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l);}css('assets/fsi.css');css('assets/ch6.css');if(!window.__fsiLoaded){window.__fsiLoaded=true;var s=document.createElement('script');s.src='assets/stepviz.js';document.head.appendChild(s);}})();
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.countUp('#c6-base-num', 13, { decimals: 0, suffix: '' }); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var lines = Array.prototype.slice.call(document.querySelectorAll('#c6-usage-pre .ln'));
+  F.pick('c6-usage', { onShow: function (key) {
+    lines.forEach(function (l) { l.classList.toggle('on', !!key && (' ' + l.dataset.l + ' ').indexOf(' ' + key + ' ') >= 0); });
+  }});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c6-eight'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var MD = {id:'md',x:50,y:60,w:440,h:80,t:'CLAUDE.md',s:'세션 시작마다 로드, 매 요청에 포함',c:'accent'};
+  var SK = {id:'sk',x:50,y:160,w:440,h:80,t:'스킬 목록',s:'평소에는 설명만 실림',c:'info'};
+  var BD = {id:'bd',x:50,y:260,w:440,h:80,t:'스킬 본문',s:'호출될 때 로드',c:'info'};
+  var SS = {id:'ss',x:50,y:360,w:440,h:80,t:'SessionStart 훅',s:'짧은 규칙만 주입',c:'warning'};
+  var RQ = {id:'rq',x:780,y:190,w:340,h:110,t:'요청 컨텍스트',s:'모델에 보내는 내용',c:'ink'};
+  var Z = [{x:20,y:30,w:500,h:430,l:'지침이 들어오는 곳'},{x:740,y:30,w:420,h:430,l:'매 요청'}];
+  function N() { return [MD, SK, BD, SS, RQ]; }
+  F.stepviz('#c6-sv-always', [
+    {kicker:'STEP 1', title:'CLAUDE.md는 매 요청에 실립니다',
+     body:'CLAUDE.md는 세션 시작마다 로드되고 <b>매 요청에 포함</b>됩니다. 목표는 <b>200줄 이하, 필수만</b>입니다.',
+     facts:['세션 시작마다 로드','매 요청에 포함','목표: 200줄 이하, 필수만'],
+     zones:Z, nodes:N(), hot:['md','rq'],
+     edges:[{f:'md',t:'rq',c:'accent',side:'h',l:'매번',o:0}], loop:true,
+     snip:{hd:'CLAUDE.md에 두지 않을 것',path:'항상 실리는 파일',lines:['# 남길 것: 빌드 명령, 핵심 규칙','# 두지 않을 것','PR 리뷰 절차','DB 마이그레이션 절차'],hl:[3,4],note:'작업별 절차는 <b>스킬로 이동</b>합니다.'}},
+    {kicker:'STEP 2', title:'스킬은 평소에 설명만 실립니다',
+     body:'스킬은 평소에 <b>이름과 설명만</b> 컨텍스트에 있습니다. 절차가 아무리 길어도 쓰지 않는 동안에는 짧습니다.',
+     facts:['평소: 설명만','본문은 아직 없음','설명을 짧고 구체적으로'],
+     zones:Z, nodes:N(), hot:['md','sk','rq'],
+     edges:[{f:'md',t:'rq',c:'accent',side:'h',o:0},{f:'sk',t:'rq',c:'info',side:'h',l:'설명만',o:1}], loop:true,
+     snip:{hd:'스킬 (요청 시)',path:'평소 컨텍스트',lines:['# 항상: 이름과 설명','pr-review: PR 리뷰 절차','db-migration: 마이그레이션 절차','# 본문은 호출될 때'],hl:[2,3],note:'예시 스킬 이름입니다.'}},
+    {kicker:'STEP 3', title:'호출될 때 본문이 들어옵니다',
+     body:'그 작업이 필요해 스킬이 호출되면 그때 <b>본문이 로드</b>됩니다. 작업별 절차는 이렇게 필요할 때만 비용이 됩니다.',
+     facts:['호출될 때 본문 로드','작업별 절차는 스킬로 이동','필요한 요청에만 비용'],
+     zones:Z, nodes:N(), hot:['bd','rq'],
+     edges:[{f:'bd',t:'rq',c:'info',side:'h',l:'필요할 때',o:0}], loop:true,
+     snip:{hd:'스킬 호출',path:'예시 흐름',lines:['> 이 PR 리뷰해 줘','','# pr-review 스킬 본문 로드','# 리뷰 절차대로 진행'],hl:[1,3],note:'CLAUDE.md에 두면 모든 요청이 이 절차를 싣고 다닙니다.'}},
+    {kicker:'STEP 4', title:'SessionStart 훅으로 짧은 규칙만',
+     body:'꼭 항상 알아야 하는 짧은 규칙은 <b>SessionStart 훅</b>으로 세션 시작에 주입할 수 있습니다.',
+     facts:['세션 시작에 짧은 규칙 주입','길게 쓰면 CLAUDE.md와 같은 비용','커뮤니티 사례: Ponytail (비공식)'],
+     zones:Z, nodes:N(), hot:['ss','rq'],
+     edges:[{f:'ss',t:'rq',c:'warning',side:'h',l:'세션 시작',o:0}],
+     snip:{hd:'커뮤니티 사례, 비공식',path:'효과 수치는 제작자 자체 보고',lines:['Ponytail','# SessionStart 훅으로','# 약 100줄의 YAGNI(지금 필요 없는 것은 만들지 않기) 규칙을','# 주입하는 플러그인','# 제작자 자체 보고 수치로 비용 약 10% 감소'],hl:[1],note:'사례는 원리를 보여 주는 용도입니다. 도입 판단은 Part 1 끝의 세 가지 질문으로 합니다.'}}
+  ], {legend:[['accent','항상 실림'],['info','요청 시'],['warning','세션 시작 훅']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var L = document.getElementById('c6-filter-src').textContent.split('\n');
+  var P = '~/.claude/hooks/filter-test-output.sh';
+  var CC = {id:'cc',x:50,y:70,w:290,h:90,t:'Claude Code',s:'Bash(npm test) 호출',c:'accent'};
+  var HK = {id:'hk',x:445,y:70,w:290,h:90,t:'PreToolUse 훅',s:'matcher: Bash',c:'warning'};
+  var SH = {id:'sh',x:840,y:70,w:290,h:90,t:'셸 실행',s:'테스트 명령',c:'accent'};
+  var OUT = {id:'out',x:840,y:330,w:290,h:90,t:'명령 출력',s:'실패 줄만',c:'success'};
+  var CX = {id:'cx',x:50,y:330,w:290,h:90,t:'컨텍스트',s:'모델이 읽는 내용',c:'info'};
+  var SUB = {id:'sub',x:445,y:330,w:290,h:90,t:'Subagent',s:'장황한 작업 격리',c:'info'};
+  var Z = [{x:20,y:30,w:1140,h:430,l:'한 번의 Bash 호출'}];
+  function N() { return [CC, HK, SH, OUT, CX, SUB]; }
+  F.stepviz('#c6-sv-filter', [
+    {kicker:'STEP 1', title:'훅이 없으면 로그 전체가 들어옵니다',
+     body:'테스트를 돌리면 통과한 줄까지 <b>수만 토큰의 로그</b>가 그대로 컨텍스트에 들어옵니다. 다음 요청부터 계속 실려 다닙니다.',
+     facts:['출력 전체가 도구 결과로','다음 요청마다 다시 실림','대화와 도구 결과가 가장 빨리 커짐 (Ch1)'],
+     zones:Z, nodes:N(), hot:['cc','sh','cx'],
+     edges:[{f:'cc',t:'sh',c:'accent',side:'t',curve:40,o:0},{f:'sh',t:'cx',c:'danger',side:'h',curve:0,l:'수만 토큰 로그',o:1}],
+     snip:{hd:'훅이 없을 때',path:'예시 흐름',lines:['Bash(npm test)','','# 통과한 줄까지 전부','# 도구 결과로 컨텍스트에 들어감'],hl:[1],note:'문제는 실행이 아니라 <b>결과가 들어오는 양</b>입니다.'}},
+    {kicker:'STEP 2', title:'PreToolUse가 명령을 가로챕니다',
+     body:'<b>PreToolUse</b> 훅은 도구가 실행되기 <b>전에</b> 호출 내용을 받습니다. 명령을 읽어 테스트 명령인지 확인합니다.',
+     facts:['settings.json PreToolUse','matcher: Bash','테스트 명령만 골라냄'],
+     zones:Z, nodes:N(), hot:['cc','hk'],
+     edges:[{f:'cc',t:'hk',c:'warning',o:0}],
+     snip:{hd:'공식 예제 기반',path:P,lines:L.slice(0,5).concat(['  # (STEP 3) 명령을 다시 씀']).concat(L.slice(10,13)),hl:[3,4,5,7,8,9],note:'허용하는 명령 모양을 정규식으로 좁혀 둡니다. 테스트 명령이 아니면 <code>{}</code>를 돌려 그대로 실행합니다.'}},
+    {kicker:'STEP 3', title:'실패 줄만 남기도록 다시 씁니다',
+     body:'훅이 명령을 다시 써서 출력은 <b>임시 로그 파일(mktemp)</b>에 저장하고, <b>실패 줄 앞뒤만</b> 최대 100줄 남깁니다. 원래 <b>종료 코드(rc)</b>를 그대로 돌려주고, 바뀐 명령은 <b>updatedInput</b>으로 반환합니다.',
+     facts:['출력은 로그 파일로, 종료 코드 rc 유지','실패 줄 앞뒤만, 최대 100줄','updatedInput으로 반환'],
+     zones:Z, nodes:N(), hot:['hk','sh'],
+     edges:[{f:'hk',t:'sh',c:'warning',o:0}],
+     snip:{hd:'공식 예제 기반',path:P,lines:L.slice(5,10),hl:[1,2,3,4,5],note:'종료 코드를 지켜야 Claude가 <b>테스트 실패를 실패로</b> 읽습니다.'}},
+    {kicker:'STEP 4', title:'수백 토큰만 컨텍스트로 갑니다',
+     body:'같은 테스트를 돌려도 컨텍스트에 들어오는 것은 <b>실패 줄 몇 개</b>입니다. 수만 토큰 로그가 <b>수백 토큰</b>이 됩니다.',
+     facts:['수만 토큰 로그를 수백 토큰으로','실패 원인을 찾는 데 필요한 줄만','데모에서 /context로 전후 비교'],
+     zones:Z, nodes:N(), hot:['sh','out','cx'],
+     edges:[{f:'sh',t:'out',c:'success',o:0},{f:'out',t:'cx',c:'success',side:'b',curve:35,l:'수백 토큰',o:1}], loop:true, stagger:0.9,
+     snip:{hd:'등록 (요약)',path:'settings.json PreToolUse',lines:['# hooks.PreToolUse','matcher: Bash','command: ~/.claude/hooks/filter-test-output.sh'],hl:[2,3],note:'데모와 랩에서 같은 스크립트를 씁니다.'}},
+    {kicker:'STEP 5', title:'장황한 작업은 Subagent로 격리합니다',
+     body:'출력을 줄이기 어려운 장황한 작업은 <b>Subagent</b>에 맡깁니다. Subagent가 읽고, 메인 컨텍스트에는 <b>요약만</b> 돌아옵니다.',
+     facts:['Subagent가 긴 출력을 대신 읽음','메인에는 요약만','커뮤니티 Headroom: 프록시가 모든 프롬프트를 지나감, 주의'],
+     zones:Z, nodes:N(), hot:['cc','sub','cx'],
+     edges:[{f:'cc',t:'sub',c:'info',o:0},{f:'sub',t:'cx',c:'info',side:'h',l:'요약만',o:1}],
+     snip:{hd:'커뮤니티 사례, 비공식',path:'효과 수치는 제작자 자체 보고',lines:['Headroom','# 요청 경로에 프록시를 두고','# 도구 출력과 로그를 압축','# 주의: 프록시가 모든 프롬프트를 지나감'],hl:[4],note:'금융권에서는 <b>프롬프트가 어디를 지나가는지</b>가 먼저입니다.'}}
+  ], {legend:[['accent','Claude Code와 셸'],['warning','훅'],['danger','큰 출력'],['success','줄어든 출력'],['info','컨텍스트와 Subagent']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c6-qc-1'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c6-ways'); });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var inp = document.getElementById('c6-acw-in');
+  function draw() {
+    var v = +inp.value;
+    document.getElementById('c6-acw-val').textContent = v >= 1000 ? '1M' : v + 'K';
+    document.getElementById('c6-acw-fill').style.width = (v / 1000 * 100) + '%';
+    document.getElementById('c6-acw-mk').style.left = (v / 1000 * 100) + '%';
+    document.getElementById('c6-acw-auto').style.left = '96.7%';
+    document.getElementById('c6-acw-out').textContent = '대화가 ' + (v >= 1000 ? '1M' : v + 'K') + '에 닿으면 자동 압축이 시작됩니다.';
+  }
+  inp.addEventListener('input', draw);
+  inp.addEventListener('change', function () { inp.blur(); });
+  F.onEnter(inp, function () { inp.value = 400; draw(); });
+  draw();
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var el = document.getElementById('c6-surv');
+  F.cycle('#c6-surv', 2, function (i) {
+    el.classList.toggle('after', i === 1);
+    document.getElementById('c6-surv-st').textContent = i === 1 ? '압축 후' : '압축 전';
+  });
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var H = {id:'h',x:50,y:190,w:300,h:100,t:'대화 기록',s:'긴 접두부',c:'ink'};
+  var C = {id:'c',x:450,y:60,w:300,h:90,t:'프롬프트 캐시',s:'접두부 저장',c:'success'};
+  var Cc = {id:'c',x:450,y:60,w:300,h:90,t:'프롬프트 캐시',s:'TTL 지나 만료',c:'muted'};
+  var S = {id:'s',x:450,y:330,w:300,h:90,t:'/compact 요청',s:'요약을 만드는 요청',c:'accent'};
+  var R = {id:'r',x:850,y:190,w:280,h:100,t:'요약',s:'이어서 작업',c:'info'};
+  var Z = [{x:20,y:30,w:1140,h:430,l:'/compact 한 번'}];
+  F.stepviz('#c6-sv-compact', [
+    {kicker:'STEP 1', title:'캐시가 따뜻할 때: 접두부를 캐시에서',
+     body:'캐시가 살아 있으면 요약 요청이 <b>접두부를 캐시에서 읽습니다</b>. 비용은 컨텍스트 크기의 <b>일부</b>입니다.',
+     facts:['요약 요청이 접두부를 캐시에서 읽음','비용은 컨텍스트 크기의 일부','작업 사이에 직접 /compact'],
+     zones:Z, nodes:[H,C,S,R],
+     edges:[{f:'h',t:'c',c:'success',l:'캐시됨',o:0},{f:'c',t:'s',c:'success',l:'캐시에서 읽음',o:1},{f:'s',t:'r',c:'info',o:2}],
+     loop:true, stagger:0.9,
+     snip:{hd:'작업 단위 끝, 캐시가 따뜻할 때',path:'Claude Code 프롬프트',lines:['/compact 테스트 실패 원인과 남은 할 일만 남겨줘'],hl:[1],note:'/rewind와 /recap은 캐시를 <b>그대로 둡니다</b>.'}},
+    {kicker:'STEP 2', title:'TTL이 지난 뒤: 전체를 다시 처리',
+     body:'캐시 유지 시간(TTL)이 지나 캐시가 만료되면 <b>전체 기록을 비캐시 입력으로</b> 다시 처리합니다. 오래된 세션을 재개한 직후의 /compact가 <b>가장 비쌉니다</b>.',
+     facts:['전체 기록을 비캐시 입력으로 다시 처리','재개 직후의 /compact가 가장 비쌈','Bedrock 기본 TTL은 5분'],
+     zones:Z, nodes:[H,Cc,S,R], hot:['h','s','r'],
+     edges:[{f:'h',t:'c',c:'muted',dash:true},{f:'h',t:'s',c:'danger',l:'비캐시 입력, 전체',o:0},{f:'s',t:'r',c:'info',o:1}],
+     loop:true, stagger:0.9,
+     snip:{hd:'1시간 자리 비운 뒤',path:'Bedrock 기본 TTL 5분',lines:['/compact','','# 접두부가 캐시에 없음','# 전체 기록을 비캐시 입력으로 다시 처리'],hl:[1],note:'그래서 <b>자리 비우기 전에</b> /compact 또는 /clear입니다.'}},
+    {kicker:'STEP 3', title:'떠나기 전에 정리합니다',
+     body:'추천은 <b>Compact before you step away</b>입니다. 이어서 할 일이면 /compact, 관련 없는 일이면 /clear, 이미 캐시된 지점으로는 /rewind로 돌아갑니다.',
+     facts:['자리 비우기 전에 /compact 또는 /clear','/usage는 expected rebuild로 따로 집계','/rewind: 이미 캐시된 지점으로 복귀'],
+     zones:Z, nodes:[H,C,S,R],
+     edges:[{f:'h',t:'c',c:'success',o:0},{f:'c',t:'s',c:'success',o:1},{f:'s',t:'r',c:'info',o:2}],
+     snip:{hd:'추천',path:'Compact before you step away',lines:['/compact   # 이어서 할 일이면','/clear     # 관련 없는 일이면','/rewind    # 이미 캐시된 지점으로 복귀','/usage     # expected rebuild 따로 집계'],hl:[1,2],note:'회의나 점심 전에 습관처럼 한 줄.'}}
+  ], {legend:[['success','캐시 적중'],['danger','비캐시 재처리'],['muted','만료된 캐시'],['accent','요약 요청']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var D = {
+    sub: { ttl: 60, v: '1시간', i: '동작' },
+    br: { ttl: 5, v: '5분', i: '기본으로는 해당 없음' },
+    br1h: { ttl: 60, v: '1시간 (ENABLE_PROMPT_CACHING_1H=1 또는 promptCacheTtl "1h", 모델별 지원 확인)', i: '조건 충족 시 동작: 대화형 세션, autoCompactEnabled, 20만 토큰 이상, 약 1시간 유휴' },
+    gw: { ttl: 5, v: '5분, 정책으로 1시간 옵트인 (서빙하는 모든 업스트림 모델이 지원해야 함)', i: '1시간 옵트인 시 같은 조건' }
+  };
+  var cur = null, inp = document.getElementById('c6-ttl-in');
+  function draw() {
+    var m = +inp.value; document.getElementById('c6-ttl-m').textContent = m;
+    var s = document.getElementById('c6-ttl-s'); s.className = 'state';
+    if (!cur) {
+      document.getElementById('c6-ttl-v').textContent = '접속 방식을 고르세요';
+      document.getElementById('c6-ttl-i').textContent = '';
+      s.textContent = '왼쪽에서 접속 방식을 고르면 돌아왔을 때 캐시 상태를 보여 줍니다.';
+      return;
+    }
+    var d = D[cur];
+    document.getElementById('c6-ttl-v').textContent = d.v;
+    document.getElementById('c6-ttl-i').textContent = d.i;
+    if (m <= d.ttl) { s.classList.add('warm'); s.textContent = '캐시가 따뜻합니다. 돌아온 첫 요청도 캐시에서 읽습니다.'; }
+    else { s.classList.add('cold'); s.textContent = (cur === 'sub' || cur === 'br1h') ? '캐시가 만료됐습니다. idle compaction 조건이 맞았다면 만료 직전 요약본만, 아니면 전체 컨텍스트를 다시 처리합니다.' : '캐시가 만료됐습니다. 첫 요청은 전체 컨텍스트를 다시 처리합니다.'; }
+  }
+  inp.addEventListener('input', draw);
+  inp.addEventListener('change', function () { inp.blur(); });
+  F.pick('c6-ttl', { onShow: function (key) { cur = key; draw(); } });
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var MS = {id:'ms',x:50,y:190,w:300,h:100,t:'managed-settings.json',s:'조직이 배포하는 기본값',c:'danger'};
+  var A = {id:'a',x:480,y:50,w:640,h:76,t:'autoCompactWindow: 400000',s:'100K에서 1M, 일찍 압축하면 요청당 입력이 작아짐',c:'info'};
+  var B = {id:'b',x:480,y:146,w:640,h:76,t:'promptCacheTtl: "1h"',s:'자리 비움이 잦은 팀에만',c:'info'};
+  var C = {id:'c',x:480,y:242,w:640,h:76,t:'SessionStart (matcher: compact)',s:'압축 뒤 DLP 규칙 재주입',c:'warning'};
+  var D = {id:'d',x:480,y:338,w:640,h:76,t:'PreCompact 훅',s:'exit 2로 압축 차단, 감사용 보관',c:'warning'};
+  var Z = [{x:20,y:20,w:1140,h:440,l:'조직 기본값'}];
+  var N = [MS, A, B, C, D];
+  function e(t, c, o) { return {f:'ms',t:t,c:c,side:'h',o:o}; }
+  F.stepviz('#c6-sv-org', [
+    {kicker:'OVERVIEW', title:'네 가지를 한 파일로 고정합니다',
+     body:'창 크기, 캐시 수명, 압축 뒤 규칙 재주입, 압축 전 감사를 <b>managed settings 한 파일</b>로 배포합니다.',
+     facts:['autoCompactWindow','promptCacheTtl','SessionStart compact, PreCompact'],
+     zones:Z, nodes:N, edges:[e('a','info',0),e('b','info',1),e('c','warning',2),e('d','warning',3)], stagger:0.3,
+     snip:{hd:'managed-settings.json',path:'전체 구조',lines:['{','  "autoCompactWindow": 400000,','  "promptCacheTtl": "1h",','  "hooks": {','    "SessionStart": [ ... ],','    "PreCompact": [ ... ]','  }','}'],hl:[2,3,5,6],note:'배포 경로는 Ch2의 managed settings와 같습니다.'}},
+    {kicker:'STEP 1', title:'창 크기: 일찍 압축해 입력을 작게',
+     body:'<b>autoCompactWindow</b>는 100K에서 1M 사이입니다. 일찍 압축하면 요청당 입력이 작아집니다.',
+     facts:['범위 100K에서 1M','일찍 압축하면 요청당 입력이 작아짐','Haiku 5.5는 100K 넘는 프롬프트 단가가 더 높음'],
+     zones:Z, nodes:N, hot:['ms','a'], edges:[e('a','info',0)],
+     snip:{hd:'창 크기',path:'managed-settings.json',lines:['{','  "autoCompactWindow": 400000','}'],hl:[2],note:'원리 7의 장단점을 함께 보고 정합니다.'}},
+    {kicker:'STEP 2', title:'캐시 수명: 1h는 필요한 팀에만',
+     body:'<b>promptCacheTtl "1h"</b>는 자리 비움이 잦은 팀에만 씁니다. idle compaction은 <b>1시간 TTL에서만</b> 동작하므로, 5분이면 떠나기 전 /compact입니다.',
+     facts:['1시간 옵션은 더 비쌈','자리 비움이 잦은 팀에만','idle compaction은 1시간 TTL에서만'],
+     zones:Z, nodes:N, hot:['ms','b'], edges:[e('b','info',0)],
+     snip:{hd:'캐시 수명',path:'managed-settings.json',lines:['{','  "promptCacheTtl": "1h"','}'],hl:[2],note:'모델별 지원은 앞 장의 표에서 확인합니다.'}},
+    {kicker:'STEP 3', title:'압축 뒤에는 규칙을 다시 넣습니다',
+     body:'압축하면 일부 규칙이 요약되어 사라질 수 있습니다. <b>SessionStart 훅의 matcher compact</b>로 DLP 규칙을 다시 주입합니다.',
+     facts:['matcher: compact','압축 직후 다시 실행','DLP(민감 정보 유출 방지) 규칙 재주입'],
+     zones:Z, nodes:N, hot:['ms','c'], edges:[e('c','warning',0)],
+     snip:{hd:'압축 뒤 재주입',path:'managed-settings.json, hooks',lines:['"SessionStart": [','  { "matcher": "compact",','    "hooks": [{ "type": "command",','      "command": "cat /etc/claude-code/dlp-reminder.md" }] }',']'],hl:[2,4],note:'압축 후에 무엇이 남는지는 앞의 표와 연결됩니다.'}},
+    {kicker:'STEP 4', title:'압축 전에 감사 기록을 남깁니다',
+     body:'<b>PreCompact</b> 훅은 압축 직전에 실행됩니다. <b>exit 2</b>로 압축을 막을 수 있고, 감사용으로 대화를 보관합니다.',
+     facts:['압축 직전 실행','exit 2로 압축 차단','감사용 보관'],
+     zones:Z, nodes:N, hot:['ms','d'], edges:[e('d','warning',0)],
+     snip:{hd:'압축 전 감사',path:'managed-settings.json, hooks',lines:['"PreCompact": [','  { "hooks": [{ "type": "command",','      "command": "/opt/audit/save-transcript.sh" }] }',']'],hl:[3],note:'요약되기 전의 원문을 회사 정책에 따라 보관합니다.'}}
+  ], {legend:[['danger','관리자가 강제'],['info','비용 설정'],['warning','훅']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c6-dd1', { start: 0 }); });
+})();
+</script>
+<script>
+
+  const presenterNotes = {
+    1: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 5 \ube44\uc6a9 \ud6a8\uc728\uc801\uc73c\ub85c \uc4f0\uae30, \uac19\uc740 \uc77c\uc744 \ub354 \uc801\uc740 \ud1a0\ud070\uc73c\ub85c\n\u2022 Claude Code v2.1.319(2026-11-08 \ub9ac\ud5c8\uc124 \uac80\uc99d)\uc640 Amazon Bedrock \uae30\uc900\n\u2022 12:40\ubd80\ud130 \uac15\uc758\uc640 \ub370\ubaa8, \uc774\uc5b4\uc11c \ub7a9 TASK 01\ubd80\ud130 04\n\nChapter 5, \ube44\uc6a9 \ud6a8\uc728\uc801\uc73c\ub85c \uc4f0\uae30\uc785\ub2c8\ub2e4. \uac1c\uc778\uc774 \uac19\uc740 \uc77c\uc744 \ub354 \uc801\uc740 \ud1a0\ud070\uc73c\ub85c \ud558\ub294 \ubc95\uc744 \ub2e4\ub8f9\ub2c8\ub2e4.\n\uc870\uc9c1\uc774 \ube44\uc6a9\uc744 \ubcf4\uace0 \ub9c9\ub294 \ubc95\uc740 \uc624\ud6c4 4\uc2dc 50\ubd84 Chapter 6\uc5d0\uc11c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.",
+    2: "[0.5min] [\uc694\uc57d]\n\u2022 12:40\ubd80\ud130 60\ubd84, \uac15\uc758\uc640 \ub370\ubaa8 \uc57d 21\ubd84 + \ub7a9 38\ubd84\n\u2022 \uc5ec\ub35f \uac00\uc9c0 \uc6d0\ub9ac\uc640 \ub7a9 TASK 01\ubd80\ud130 04\n\u2022 \uc870\uc9c1\uc758 \ube44\uc6a9 \ud1b5\uc81c\ub294 16:50 Chapter 6\n\n\uc21c\uc11c\ub97c \uba3c\uc800 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \uac19\uc740 \uc77c\uc744 \ub354 \uc801\uc740 \ud1a0\ud070\uc73c\ub85c \ud558\ub294 \uc5ec\ub35f \uac00\uc9c0 \uc6d0\ub9ac\ub97c \ubcf4\uace0, \ub7a9 TASK 01\ubd80\ud130 04\uae4c\uc9c0 \uc9c1\uc811 \ud574 \ubd05\ub2c8\ub2e4.\n\uac15\uc758\uc640 \ub370\ubaa8\ub294 20\ubd84 \ub0a8\uc9d3\uc73c\ub85c \uc9e7\uac8c \ud558\uace0 \ub098\uba38\uc9c0\ub294 \ub7a9\uc785\ub2c8\ub2e4. \uc870\uc9c1\uc774 \ube44\uc6a9\uc744 \ubcf4\uace0 \ub9c9\ub294 \ubc95\uc740 \uc624\ud6c4 4\uc2dc 50\ubd84 Chapter 6\uc5d0\uc11c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.",
+    3: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 5\ub294 \uac19\uc740 \uc77c\uc744 \ub354 \uc801\uc740 \ud1a0\ud070\uc73c\ub85c\n\u2022 \ubcf4\uae30, \uc9c0\uce68 \uc904\uc774\uae30, \uad6c\uc870 \uc815\ubcf4\uc640 \ud544\ud130\uc640 \uc9c0\uc5f0 \ub85c\ub4dc, \uce90\uc2dc\uc640 \uc555\ucd95, \ubaa8\ub378\uacfc \uc0ac\uace0\ub7c9 \uc21c\uc11c\n\n\ucee8\ud14d\uc2a4\ud2b8 \uc5d4\uc9c0\ub2c8\uc5b4\ub9c1\uc785\ub2c8\ub2e4. \ubaa9\ud45c\ub294 \uac19\uc740 \uc77c\uc744 \ub354 \uc801\uc740 \ud1a0\ud070\uc73c\ub85c \ud558\ub294 \uac83\uc785\ub2c8\ub2e4.\n\uba3c\uc800 \ubb34\uc5c7\uc774 \uc790\ub9ac\ub97c \ucc28\uc9c0\ud558\ub294\uc9c0 \ubcf4\uace0, \ud56d\uc0c1 \uc2e4\ub9ac\ub294 \uc9c0\uce68\uc744 \uc904\uc774\uace0, \uad6c\uc870 \uc815\ubcf4\uc640 \ucd9c\ub825 \ud544\ud130\uc640 \ub3c4\uad6c \uc9c0\uc5f0 \ub85c\ub4dc\ub97c \ubcf8 \ub4a4, \uce90\uc2dc\uc640 \uc555\ucd95, \ub9c8\uc9c0\ub9c9\uc73c\ub85c \ubaa8\ub378\uacfc \uc0ac\uace0\ub7c9\uc744 \uc815\ub9ac\ud569\ub2c8\ub2e4.",
+    4: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 \uacf5\uc2dd \ubb38\uc11c \uae30\uc900 \ud65c\uc131\uc77c \ud558\ub8e8 \uac1c\ubc1c\uc790 1\uc778\ub2f9 \ud3c9\uade0 $13\n\u2022 \uc6d4 $150\uc5d0\uc11c $250, 90%\ub294 \ud65c\uc131\uc77c $30 \ubbf8\ub9cc\n\u2022 \uc6b0\ub9ac \ud300 \uae30\uc900\uc120\uc740 \ud30c\uc77c\ub7ff\uc5d0\uc11c \uc9c1\uc811 \uce21\uc815\n\n\n\ube44\uc6a9 \uc774\uc57c\uae30\uc758 \ucd9c\ubc1c\uc810\uc785\ub2c8\ub2e4. \uacf5\uc2dd \ubb38\uc11c\uc5d0 \ub530\ub974\uba74 \uc5d4\ud130\ud504\ub77c\uc774\uc988 \ubc30\ud3ec\uc5d0\uc11c \uac1c\ubc1c\uc790 \ud55c \uba85\uc774 \ud65c\uc131\uc77c \ud558\ub8e8\uc5d0 \uc4f0\ub294 \ud3c9\uade0\uc740 13\ub2ec\ub7ec, \uc6d4\ub85c\ub294 150\uc5d0\uc11c 250\ub2ec\ub7ec\uc785\ub2c8\ub2e4. \uadf8\ub9ac\uace0 90%\ub294 \ud558\ub8e8 30\ub2ec\ub7ec\ub97c \ub118\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\ub2e4\ub9cc \uc774\uac74 \ub0a8\uc758 \ud3c9\uade0\uc785\ub2c8\ub2e4. \uc6b0\ub9ac \ud300\uc758 \uae30\uc900\uc120\uc740 \ud30c\uc77c\ub7ff\uc5d0\uc11c Ch6\uc758 \uacc4\uce21\uc73c\ub85c \uc9c1\uc811 \uc7ac\uc154\uc57c \ud569\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/costs",
+    5: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 \uc6d0\ub9ac 1: \uc904\uc774\uae30 \uc804\uc5d0 \uba3c\uc800 \ubcf8\ub2e4\n\u2022 /context\ub294 \ud56d\ubaa9\ubcc4 \ucee8\ud14d\uc2a4\ud2b8 \uc810\uc720, /usage\ub294 \uc138\uc158 \ube44\uc6a9\uacfc \uce90\uc2dc \uc801\uc911\ub960\n\u2022 \uce90\uc2dc \ubbf8\uc2a4\uc5d0\ub294 \ucd94\uc815 \uc6d0\uc778\uc774 \ud45c\uc2dc\ub418\uace0, \uae08\uc561\uc740 \ucd94\uc815\uce58\uc774\uba70 \uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\n\n\n\uccab \ubc88\uc9f8 \uc6d0\ub9ac\ub294 \uba3c\uc800 \ubcf4\ub294 \uac83\uc785\ub2c8\ub2e4. \uc67c\ucabd\uc740 /usage \uc608\uc2dc \ucd9c\ub825\uc785\ub2c8\ub2e4. \uc624\ub978\ucabd \uc77d\ub294 \ubc95\uc744 \ub204\ub974\uba74 \uc124\uba85\uc774 \ub098\uc624\uace0, /usage \ud56d\ubaa9\uc740 \ud574\ub2f9 \uc904\uc774 \uac15\uc870\ub429\ub2c8\ub2e4.\n/context\ub294 \ud56d\ubaa9\ubcc4\ub85c \ucee8\ud14d\uc2a4\ud2b8\ub97c \uc5bc\ub9c8\ub098 \ucc28\uc9c0\ud558\ub294\uc9c0 \ubcf4\uc5ec \uc8fc\uace0, /usage\ub294 \uc138\uc158 \ube44\uc6a9\uacfc \uce90\uc2dc \uc801\uc911\ub960\uc744 \ubcf4\uc5ec \uc90d\ub2c8\ub2e4. \uc774 \uc608\uc2dc\ub294 \uc785\ub825 \ud1a0\ud070\uc758 91%\uac00 \uce90\uc2dc\uc5d0\uc11c \uc654\uc2b5\ub2c8\ub2e4.\n\uce90\uc2dc \ubbf8\uc2a4\uac00 \ub098\uba74 \ucd94\uc815 \uc6d0\uc778\uc774 \ud45c\uc2dc\ub418\uace0, \uae08\uc561\uc740 \uc5b4\ub514\uae4c\uc9c0\ub098 \ucd94\uc815\uce58\uc785\ub2c8\ub2e4. \uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\ub85c \ud569\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 \uc6d0\ubcf8 Ch6 \uac15\uc758\uc790\ub8cc p6 /usage \ucd9c\ub825 \uc608\uc2dc",
+    6: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 \uc5ec\ub35f \uac00\uc9c0 \uc6d0\ub9ac, \ubcf8\ub860\uc740 \uacf5\uc2dd \uae30\ub2a5\uc774\uace0 \ucee4\ubba4\ub2c8\ud2f0 \ub3c4\uad6c\ub294 \uc0ac\ub840\ub85c\ub9cc\n\u2022 \uc6d0\ub9ac\ub9c8\ub2e4 \ubc1b\uce58\ub294 \uacf5\uc2dd \uae30\ub2a5\uc774 \uc788\uc74c (\uc608: \uc6d0\ub9ac 4\ub294 PreToolUse \ud544\ud130 \ud6c5)\n\u2022 \ucee4\ubba4\ub2c8\ud2f0 \uc0ac\ub840: Ponytail, Graphify, Headroom, REA\n\n\uc774\ubc88 Part\uc758 \uc9c0\ub3c4\uc785\ub2c8\ub2e4. \uc5ec\ub35f \uac00\uc9c0 \uc6d0\ub9ac\uac00 \uc788\uace0, \uac01 \uc6d0\ub9ac\ub97c \uacf5\uc2dd \uae30\ub2a5\uc73c\ub85c \uc124\uba85\ud569\ub2c8\ub2e4. \ucee4\ubba4\ub2c8\ud2f0 \ub3c4\uad6c\ub294 \uc6d0\ub9ac\ub97c \ubcf4\uc5ec \uc8fc\ub294 \uc0ac\ub840\ub85c\ub9cc \uc501\ub2c8\ub2e4.\n\n\uc544\ub798 \ud654\uc0b4\ud45c\ub85c \ud558\ub098\uc529 \uc5f4\uaca0\uc2b5\ub2c8\ub2e4. \uba3c\uc800 \ubcf4\uae30, \uc9c0\uce68 \uc9e7\uac8c, \uad6c\uc870 \uc815\ubcf4, \ud070 \ucd9c\ub825 \ub9c9\uae30, \ub3c4\uad6c \uc9c0\uc5f0 \ub85c\ub4dc, \uce90\uc2dc \uc9c0\ud0a4\uae30, \uc555\ucd95 \uc2dc\uc810 \uc815\ud558\uae30, \ubaa8\ub378\uacfc \uc0ac\uace0\ub7c9\uc785\ub2c8\ub2e4.\n\ucee4\ubba4\ub2c8\ud2f0 \uc0ac\ub840\uac00 \ubd99\uc740 \uac83\uc740 Ponytail, Graphify, Headroom, REA \ub124 \uac00\uc9c0\uc778\ub370, \ud6a8\uacfc \uc218\uce58\ub294 \uc81c\uc791\uc790 \uc790\uccb4 \ubcf4\uace0\ub77c\ub294 \uc810\uc744 \uae30\uc5b5\ud574 \uc8fc\uc138\uc694.\n\n[\uc57d\uc5b4]\n\u2022 TTL: Time To Live, \uce90\uc2dc\uac00 \uc720\uc9c0\ub418\ub294 \uc2dc\uac04",
+    7: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 CLAUDE.md\ub294 \uc138\uc158 \uc2dc\uc791\ub9c8\ub2e4 \ub85c\ub4dc\ub418\uace0 \ub9e4 \uc694\uccad\uc5d0 \ud3ec\ud568, 200\uc904 \uc774\ud558\ub85c \ud544\uc218\ub9cc\n\u2022 \uc2a4\ud0ac\uc740 \ud3c9\uc18c \uc124\uba85\ub9cc, \ud638\ucd9c\ub420 \ub54c \ubcf8\ubb38 \ub85c\ub4dc, \uc791\uc5c5\ubcc4 \uc808\ucc28\ub294 \uc2a4\ud0ac\ub85c\n\u2022 SessionStart \ud6c5\uc73c\ub85c \uc9e7\uc740 \uaddc\uce59\ub9cc \uc8fc\uc785\n\u2022 \ucee4\ubba4\ub2c8\ud2f0 \uc0ac\ub840 Ponytail: \uc57d 100\uc904 YAGNI \uaddc\uce59, \uc81c\uc791\uc790 \uc790\uccb4 \ubcf4\uace0 \uc218\uce58\ub85c \ube44\uc6a9 \uc57d 10% \uac10\uc18c\n\n\n\ub450 \ubc88\uc9f8 \uc6d0\ub9ac, \ud56d\uc0c1 \uc2e4\ub9ac\ub294 \uc9c0\uce68\uc740 \uc9e7\uac8c\uc785\ub2c8\ub2e4. \ub2e8\uacc4\ubcc4\ub85c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uccab\uc9f8, CLAUDE.md\ub294 \ub9e4 \uc694\uccad\uc5d0 \uc2e4\ub9bd\ub2c8\ub2e4. \uadf8\ub798\uc11c PR \ub9ac\ubdf0\ub098 DB \ub9c8\uc774\uadf8\ub808\uc774\uc158 \uac19\uc740 \uc808\ucc28\ub294 \uc5ec\uae30\uc5d0 \ub450\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\ub458\uc9f8, \uc2a4\ud0ac\uc740 \ud3c9\uc18c\uc5d0 \uc124\uba85\ub9cc \uc2e4\ub9ac\uace0, \uc14b\uc9f8, \ud638\ucd9c\ub420 \ub54c \ube44\ub85c\uc18c \ubcf8\ubb38\uc774 \ub4e4\uc5b4\uc635\ub2c8\ub2e4. \uc791\uc5c5\ubcc4 \uc808\ucc28\ub97c \uc2a4\ud0ac\ub85c \uc62e\uae30\uba74 \ud544\uc694\ud55c \uc694\uccad\uc5d0\uc11c\ub9cc \ube44\uc6a9\uc774 \ub429\ub2c8\ub2e4.\n\ub137\uc9f8, \uaf2d \ud544\uc694\ud55c \uc9e7\uc740 \uaddc\uce59\uc740 SessionStart \ud6c5\uc73c\ub85c \uc8fc\uc785\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \ucee4\ubba4\ub2c8\ud2f0\uc758 Ponytail\uc774 \uc774 \ubc29\uc2dd\uc778\ub370, \ud6a8\uacfc \uc218\uce58\ub294 \uc81c\uc791\uc790 \uc790\uccb4 \ubcf4\uace0\ub77c\ub294 \uc810\uc740 \uac10\uc548\ud574 \uc8fc\uc138\uc694.\n\n[\uc57d\uc5b4]\n\u2022 YAGNI: You Aren't Gonna Need It, \uc9c0\uae08 \ud544\uc694 \uc5c6\ub294 \uac83\uc740 \ub9cc\ub4e4\uc9c0 \ub9d0\ub77c\ub294 \uc6d0\uce59",
+    8: "[0.5min] [\uc694\uc57d]\n\u2022 \uc6d0\ub9ac 3: \uc5ec\ub7ec \ubc88\uc758 grep\uacfc \ud30c\uc77c \uc77d\uae30\ub97c \ud55c \ubc88\uc758 \uc9c8\uc758\ub85c\n\u2022 \uacf5\uc2dd: code intelligence \ud50c\ub7ec\uadf8\uc778(\uc815\uc758\ub85c \uc774\ub3d9, \ud3b8\uc9d1 \ud6c4 \ud0c0\uc785 \uc624\ub958 \ubcf4\uace0), \ucf54\ub4dc\ubca0\uc774\uc2a4 \uac1c\uc694 \uc2a4\ud0ac\n\u2022 \ucee4\ubba4\ub2c8\ud2f0 Graphify: \ub85c\uceec AST\ub85c \uc9c0\uc2dd \uadf8\ub798\ud504, \uc791\uc740 \uc800\uc7a5\uc18c\uc5d0\uc11c\ub294 \ud6a8\uacfc \uac70\uc758 \uc5c6\uc74c\n\n\uc138 \ubc88\uc9f8 \uc6d0\ub9ac\ub294 \ud0d0\uc0c9 \ub300\uc2e0 \uad6c\uc870 \uc815\ubcf4\uc785\ub2c8\ub2e4. Claude\uac00 grep\uc744 \uc5ec\ub7ec \ubc88 \ub3cc\ub9ac\uace0 \ud30c\uc77c\uc744 \uc5ec\ub7ec \uac1c \uc77d\ub294 \ub300\uc2e0, \uad6c\uc870 \uc815\ubcf4\ub97c \ud55c \ubc88\uc5d0 \uc5bb\uac8c \ud558\ub294 \uac83\uc785\ub2c8\ub2e4.\n\uacf5\uc2dd \uae30\ub2a5\uc740 \ub450 \uac00\uc9c0\uc785\ub2c8\ub2e4. code intelligence \ud50c\ub7ec\uadf8\uc778\uc740 \uc5b8\uc5b4 \uc11c\ubc84\ub85c \uc815\uc758\ub85c \uc774\ub3d9\ud558\uace0, \ud3b8\uc9d1 \ud6c4 \ud0c0\uc785 \uc624\ub958\ub97c \uc790\ub3d9\uc73c\ub85c \uc54c\ub824 \uc918\uc11c \ubd88\ud544\uc694\ud55c \ud30c\uc77c \uc77d\uae30\ub97c \uc904\uc785\ub2c8\ub2e4. \uadf8\ub9ac\uace0 \uc544\ud0a4\ud14d\ucc98\uc640 \ub514\ub809\ud130\ub9ac, \uba85\uba85 \uaddc\uce59\uc744 \ub2f4\uc740 \ucf54\ub4dc\ubca0\uc774\uc2a4 \uac1c\uc694 \uc2a4\ud0ac\uc785\ub2c8\ub2e4.\n\ucee4\ubba4\ub2c8\ud2f0 \uc0ac\ub840\uc778 Graphify\ub294 \ucf54\ub4dc\ub97c \uc9c0\uc2dd \uadf8\ub798\ud504\ub85c \ub9cc\ub4e4\uc5b4 \uc8fc\ub294\ub370, \uc791\uc740 \uc800\uc7a5\uc18c\uc5d0\uc11c\ub294 \ud6a8\uacfc\uac00 \uac70\uc758 \uc5c6\uc2b5\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 AST: Abstract Syntax Tree\n\u2022 MCP: Model Context Protocol",
+    9: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 \uc6d0\ub9ac 4: \ud070 \ucd9c\ub825\uc740 \ucee8\ud14d\uc2a4\ud2b8\uc5d0 \ub4e4\uc5b4\uc624\uae30 \uc804\uc5d0 \uc904\uc778\ub2e4\n\u2022 \uacf5\uc2dd \uc608\uc81c \uae30\ubc18 filter-test-output.sh: PreToolUse \ud6c5\uc774 \ucd9c\ub825\uc744 \ub85c\uadf8 \ud30c\uc77c\uc5d0 \uc800\uc7a5\ud558\uace0 \uc2e4\ud328 \uc904\ub9cc \ub0a8\uae30\uba70 \uc885\ub8cc \ucf54\ub4dc rc\ub97c \uc720\uc9c0\n\u2022 \uc218\ub9cc \ud1a0\ud070 \ub85c\uadf8\uac00 \uc218\ubc31 \ud1a0\ud070\uc73c\ub85c, settings.json PreToolUse matcher Bash\ub85c \ub4f1\ub85d\n\u2022 \uc7a5\ud669\ud55c \uc791\uc5c5\uc740 Subagent\ub85c \uaca9\ub9ac, \ucee4\ubba4\ub2c8\ud2f0 Headroom\uc740 \ud504\ub85d\uc2dc\uac00 \ubaa8\ub4e0 \ud504\ub86c\ud504\ud2b8\ub97c \uc9c0\ub098\uac00\ubbc0\ub85c \uc8fc\uc758\n\n\n\ub124 \ubc88\uc9f8 \uc6d0\ub9ac, \ud070 \ucd9c\ub825\uc740 \ub4e4\uc5b4\uc624\uae30 \uc804\uc5d0\uc785\ub2c8\ub2e4. \uacf5\uc2dd \ubb38\uc11c \uc608\uc81c\ub97c \ub2e8\uacc4\ubcc4\ub85c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uccab\uc9f8, \ud6c5\uc774 \uc5c6\uc73c\uba74 \ud14c\uc2a4\ud2b8 \ub85c\uadf8 \uc804\uccb4\uac00 \ucee8\ud14d\uc2a4\ud2b8\uc5d0 \ub4e4\uc5b4\uc635\ub2c8\ub2e4. \uc218\ub9cc \ud1a0\ud070\uc785\ub2c8\ub2e4.\n\ub458\uc9f8, PreToolUse \ud6c5\uc774 \uc2e4\ud589 \uc804\uc5d0 \uba85\ub839\uc744 \ubc1b\uc544 \ud14c\uc2a4\ud2b8 \uba85\ub839\uc778\uc9c0 \ud655\uc778\ud569\ub2c8\ub2e4.\n\uc14b\uc9f8, \ucd9c\ub825\uc740 \uc784\uc2dc \ub85c\uadf8 \ud30c\uc77c\uc5d0 \uc800\uc7a5\ud558\uace0 \uc2e4\ud328 \uc904 \uc55e\ub4a4\ub9cc \ub0a8\uae30\ub418, \uc6d0\ub798 \uc885\ub8cc \ucf54\ub4dc\ub294 \uadf8\ub300\ub85c \ub3cc\ub824\uc90d\ub2c8\ub2e4. \uadf8\ub798\uc11c \uc2e4\ud328\ud55c \ud14c\uc2a4\ud2b8\uac00 \uc131\uacf5\ucc98\ub7fc \ubcf4\uc774\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\ub137\uc9f8, \uacb0\uacfc\uc801\uc73c\ub85c \uc2e4\ud328 \uc904 \uba87 \uac1c, \uc218\ubc31 \ud1a0\ud070\ub9cc \ub4e4\uc5b4\uc635\ub2c8\ub2e4.\n\ub2e4\uc12f\uc9f8, \uc904\uc774\uae30 \uc5b4\ub824\uc6b4 \uc7a5\ud669\ud55c \uc791\uc5c5\uc740 Subagent\ub85c \uaca9\ub9ac\ud569\ub2c8\ub2e4. \ucee4\ubba4\ub2c8\ud2f0\uc758 Headroom\uc740 \ud504\ub85d\uc2dc\ub85c \uc555\ucd95\ud558\ub294\ub370, \ubaa8\ub4e0 \ud504\ub86c\ud504\ud2b8\uac00 \uadf8 \ud504\ub85d\uc2dc\ub97c \uc9c0\ub098\uac04\ub2e4\ub294 \uc810\uc744 \uae08\uc735\uad8c\uc5d0\uc11c\ub294 \uaf2d \ub530\uc838 \ubcf4\uc154\uc57c \ud569\ub2c8\ub2e4.\n\n\n\ubc14\ub85c \ub370\ubaa8\ub85c \uc804\ud6c4\ub97c \ube44\uad50\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs, \ucd9c\ub825 \ud544\ud130 \ud6c5 \uacf5\uc2dd \uc608\uc81c (\uc6d0\ubcf8 Ch6 \uac15\uc758\uc790\ub8cc p10)",
+    10: "\ud83c\udfac [7min] [\uc694\uc57d]\n\u2022 \uc2e4\ud328 \ud14c\uc2a4\ud2b8\uac00 \uc11e\uc778 \uc800\uc7a5\uc18c\uc5d0\uc11c \uac19\uc740 \uc694\uccad\uc744 \ud6c5 \uc804\ud6c4\ub85c \ub450 \ubc88 \uc2e4\ud589\n\u2022 /context\uc640 /usage\ub85c \ucee8\ud14d\uc2a4\ud2b8 \ud06c\uae30\uc640 \ube44\uc6a9\uc744 \ube44\uad50\n\u2022 \ucc38\uac00\uc790\ub294 Lab \ud3ec\ud138\uc758 \uac19\uc740 \uc2a4\ud06c\ub9bd\ud2b8\ub85c \ub530\ub77c \ud560 \uc218 \uc788\uc74c\n\n\ub370\ubaa8\uc785\ub2c8\ub2e4. \uc2e4\ud328 \ud14c\uc2a4\ud2b8\uac00 \uc11e\uc778 \uc800\uc7a5\uc18c\uc5d0\uc11c \"npm test \ub3cc\ub824\uc11c \uc2e4\ud328 \uc6d0\uc778 \ucc3e\uc544\uc918\"\ub77c\uace0 \uc694\uccad\ud558\uace0, /context\uc640 /usage\ub97c \uae30\ub85d\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\uadf8\ub2e4\uc74c filter-test-output.sh\ub97c \ub4f1\ub85d\ud558\uace0 /clear\ub85c \uc0c8\ub85c \uc2dc\uc791\ud574 \uac19\uc740 \uc694\uccad\uc744 \ubc18\ubcf5\ud569\ub2c8\ub2e4. \ub450 \ubc88\uc758 \ucee8\ud14d\uc2a4\ud2b8 \ud06c\uae30\uc640 \ube44\uc6a9\uc744 \ub098\ub780\ud788 \ube44\uad50\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\ucc38\uac00\uc790 \uc5ec\ub7ec\ubd84\uc740 Lab \ud3ec\ud138\uc5d0 \uc788\ub294 \uac19\uc740 \uc2a4\ud06c\ub9bd\ud2b8\ub85c \ub530\ub77c \ud574 \ubcf4\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+    11: "[0.5min] [\uc694\uc57d]\n\u2022 \uc6d0\ub9ac 5: MCP \uc11c\ubc84\ub294 \uacf5\uc9dc\uac00 \uc544\ub2c8\ubbc0\ub85c \ub3c4\uad6c\ub294 \ud544\uc694\ud560 \ub54c\ub9cc\n\u2022 \uc9c0\uc5f0 \ub85c\ub4dc\uac00 \uae30\ubcf8\uac12: \ub3c4\uad6c \uc774\ub984\uacfc \uc11c\ubc84 \uc9c0\uce68\ub9cc, \uc2a4\ud0a4\ub9c8\ub294 \uc4f8 \ub54c tool search\ub85c, \uac8c\uc774\ud2b8\uc6e8\uc774 \ub4a4\uc5d0\uc11c\ub3c4 \uae30\ubcf8 \ucf1c\uc9d0 (v2.1.304+)\n\u2022 /mcp\ub85c \uc548 \uc4f0\ub294 \uc11c\ubc84 \ub044\uae30, gh\uc640 aws \uac19\uc740 CLI \uc6b0\uc120\n\u2022 \ucee4\ubba4\ub2c8\ud2f0 REA: 170\uc5ec \uac1c \ub3c4\uad6c, \ube44\uc2e0\ub8b0 \ubc14\uc774\ub108\ub9ac\ub294 VM\uacfc \ubc95\ubb34 \uac80\ud1a0\n\n\ub2e4\uc12f \ubc88\uc9f8 \uc6d0\ub9ac, \ub3c4\uad6c\ub294 \ud544\uc694\ud560 \ub54c\ub9cc\uc785\ub2c8\ub2e4. MCP \uc11c\ubc84\ub294 \uc5f0\uacb0\ub9cc \ud574\ub3c4 \uacf5\uc9dc\uac00 \uc544\ub2d9\ub2c8\ub2e4.\n\ub2e4\ud589\ud788 \uae30\ubcf8\uac12\uc774 \uc9c0\uc5f0 \ub85c\ub4dc\uc785\ub2c8\ub2e4. \ub3c4\uad6c \uc774\ub984\uacfc \uc11c\ubc84 \uc9c0\uce68\ub9cc \uc2e3\uace0, \uc2e4\uc81c\ub85c \uc4f8 \ub54c \uc2a4\ud0a4\ub9c8\ub97c tool search\ub85c \ubd88\ub7ec\uc635\ub2c8\ub2e4. v2.1.304\ubd80\ud130\ub294 \uac8c\uc774\ud2b8\uc6e8\uc774 \ub4a4\uc5d0\uc11c\ub3c4 \uae30\ubcf8\uc73c\ub85c \ucf1c\uc838 \uc788\uc2b5\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 /mcp\ub85c \uc548 \uc4f0\ub294 \uc11c\ubc84\ub97c \ub044\uace0, gh\ub098 aws\ucc98\ub7fc CLI\ub85c \ub418\ub294 \uc77c\uc740 CLI\ub97c \uc6b0\uc120\ud569\ub2c8\ub2e4. CLI\ub294 \ub3c4\uad6c \ubaa9\ub85d\uc744 \ubbf8\ub9ac \uc2e3\uc9c0 \uc54a\uae30 \ub54c\ubb38\uc785\ub2c8\ub2e4.\nREA\ub77c\ub294 \ub3c4\uad6c\ub294 MCP \ub3c4\uad6c\uac00 170\uc5ec \uac1c\ub77c\uc11c \uc65c \uc9c0\uc5f0 \ub85c\ub4dc\uac00 \uae30\ubcf8\uac12\uc778\uc9c0 \uc798 \ubcf4\uc5ec \uc90d\ub2c8\ub2e4.",
+    12: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, \uce90\uc2dc \ubbf8\uc2a4\ub85c \uc804\uccb4 \ucee8\ud14d\uc2a4\ud2b8\ub97c \ub2e4\uc2dc \ucc98\ub9ac\n\u2022 \uae30\ubcf8 \uce90\uc2dc \uc218\uba85\uc740 5\ubd84, \uae34 \uc138\uc158\uc77c\uc218\ub85d \ube44\uc6a9\uc774 \ud07c\n\n\ud034\uc988\uc785\ub2c8\ub2e4. \ud55c \uc2dc\uac04 \ub118\uac8c \uc790\ub9ac\ub97c \ube44\uc6e0\ub2e4\uac00 \ub3cc\uc544\uc640\uc11c \ubcf4\ub0b4\ub294 \uccab \uba54\uc2dc\uc9c0\ub294 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 B\uc785\ub2c8\ub2e4. \uae30\ubcf8 \uce90\uc2dc \uc218\uba85\uc740 5\ubd84\uc774\ub77c, \ub3cc\uc544\uc628 \uccab \uba54\uc2dc\uc9c0\ub294 \uce90\uc2dc \ubbf8\uc2a4\ub85c \uc804\uccb4 \ucee8\ud14d\uc2a4\ud2b8\ub97c \ub2e4\uc2dc \ucc98\ub9ac\ud569\ub2c8\ub2e4. \uc138\uc158\uc774 \uae38\uc218\ub85d \uc774 \ud55c \ubc88\uc774 \ube44\uc309\ub2c8\ub2e4.",
+    13: "[1min] [\uc694\uc57d]\n\u2022 /clear\ub294 \uc0c8 \uc138\uc158, \ube44\uc6a9 0, \uad00\ub828 \uc5c6\ub294 \uc791\uc5c5\uc73c\ub85c \ub118\uc5b4\uac08 \ub54c (/rename \ud6c4 /resume\uc73c\ub85c \ubcf5\uadc0)\n\u2022 /compact\ub294 \ub300\ud654\ub97c \uc77d\uc5b4 \uc694\uc57d\ud558\ub294 \ud070 \uc694\uccad, \uc774\uc5b4\uc11c \uc791\uc5c5\ud560 \ub54c\ub9cc, \ubcf4\uc874\ud560 \uac83\uc744 \uc9c0\uc2dc\n\u2022 \uae30\ubcf8 \uce90\uc2dc \uc218\uba85 5\ubd84, 1\uc2dc\uac04 \uc635\uc158\uc740 \ub354 \ube44\uc308, \ubbf8\uc2a4 \uc6d0\uc778\uc740 /usage, Bedrock\uc740 \ubaa8\ub378\uacfc \ub9ac\uc804\ubcc4 \uc9c0\uc6d0 \ud655\uc778\n\n\uc5ec\uc12f \ubc88\uc9f8 \uc6d0\ub9ac, \uce90\uc2dc\ub97c \uae68\uc9c0 \uc54a\ub294\ub2e4\uc785\ub2c8\ub2e4. \ub9ce\uc774 \ud5f7\uac08\ub9ac\uc2dc\ub294 \uac8c /clear\uc640 /compact\uc785\ub2c8\ub2e4.\n/clear\ub294 \uc0c8 \uc138\uc158\uc785\ub2c8\ub2e4. \ube44\uc6a9 0\uc5d0\uc11c \uc2dc\uc791\ud558\uace0, \uad00\ub828 \uc5c6\ub294 \uc791\uc5c5\uc73c\ub85c \ub118\uc5b4\uac08 \ub54c \uc501\ub2c8\ub2e4. \ub098\uc911\uc5d0 \ub3cc\uc544\uc624\uace0 \uc2f6\uc73c\uba74 /rename\ud574 \ub450\uace0 /resume\uc73c\ub85c \ub3cc\uc544\uc624\uba74 \ub429\ub2c8\ub2e4.\n\ubc18\uba74 /compact\ub294 \ub300\ud654 \uc804\uccb4\ub97c \uc77d\uc5b4\uc11c \uc694\uc57d\ud558\ub294 \uac83\uc774\ub77c \uadf8 \uc790\uccb4\uac00 \ud070 \uc694\uccad\uc785\ub2c8\ub2e4. \uc774\uc5b4\uc11c \uc791\uc5c5\ud574\uc57c \ud560 \ub54c\ub9cc \uc4f0\uace0, \ubb34\uc5c7\uc744 \ub0a8\uae38\uc9c0 \uc9c0\uc2dc\ud558\uc138\uc694.\n\uc544\ub798 \uc22b\uc790\ub3c4 \uae30\uc5b5\ud574 \uc8fc\uc138\uc694. \uae30\ubcf8 \uce90\uc2dc \uc218\uba85\uc740 5\ubd84\uc774\uace0, 1\uc2dc\uac04 \uc635\uc158\uc740 \ub354 \ube44\uc309\ub2c8\ub2e4.",
+    14: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 \uc790\ub3d9 \uc555\ucd95: auto-compact window\uc5d0 \ub2ff\uc744 \ub54c, 1M \ubaa8\ub378 \uae30\ubcf8 \uc57d 967K, autoCompactWindow\ub85c \uc870\uc815\n\u2022 /compact [\uc9c0\uc2dc]: \ub0b4\uac00 \uc6d0\ud560 \ub54c, CLAUDE.md # Compact instructions\n\u2022 /rewind \ubd80\ubd84 \uc694\uc57d: Summarize from here, up to here\n\u2022 Idle compaction: 1\uc2dc\uac04 TTL \uc138\uc158\uc744 \uc624\ub798 \ube44\uc6e0\uc744 \ub54c (v2.1.290+, idleCompaction: false\ub85c \ub054)\n\u2022 /clear: \ube44\uc6a9 0, \uc5f0\uc18d\uc131 \uc5c6\uc74c\n\n\uc77c\uacf1 \ubc88\uc9f8 \uc6d0\ub9ac, \uc555\ucd95\uc740 \ub0b4\uac00 \uc815\ud55c \ub54c\uc5d0\uc785\ub2c8\ub2e4. \ub300\ud654\uac00 \ucc28\uba74 Claude Code\ub294 \uc624\ub798\ub41c \uae30\ub85d\uc744 \uc694\uc57d\ud558\ub294\ub370, \uadf8 \ubc29\uc2dd\uc774 \ub2e4\uc12f \uac00\uc9c0\uc785\ub2c8\ub2e4.\n\n\ud558\ub098\uc529 \uc5f4\uc5b4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \uc790\ub3d9 \uc555\ucd95\uc740 auto-compact window\uc5d0 \ub2ff\uc744 \ub54c \uc77c\uc5b4\ub098\uace0, 1M \ubaa8\ub378 \uae30\ubcf8\uac12\uc740 \uc57d 967K\uc785\ub2c8\ub2e4. /compact\ub294 \ub0b4\uac00 \uc6d0\ud560 \ub54c \uc9c0\uc2dc\uc640 \ud568\uaed8 \ud558\uace0, /rewind\ub85c\ub294 \ud2b9\uc815 \uba54\uc2dc\uc9c0\ubd80\ud130, \ub610\ub294 \ud2b9\uc815 \uba54\uc2dc\uc9c0\uae4c\uc9c0 \uace8\ub77c \ubd80\ubd84 \uc694\uc57d\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\nIdle compaction\uc740 1\uc2dc\uac04 TTL \uc138\uc158\uc744 \uc624\ub798 \ube44\uc6e0\uc744 \ub54c \uce90\uc2dc \ub9cc\ub8cc \uc9c1\uc804\uc5d0 \uc77c\uc5b4\ub0a9\ub2c8\ub2e4. Bedrock\uc5d0\uc11c\ub294 1\uc2dc\uac04 \uce90\uc2dc\ub97c \ucf1c\uc57c \uc870\uac74\uc774 \ub9de\ub294\ub370, \uc7a0\uc2dc \ub4a4\uc5d0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. /clear\ub294 \uc555\ucd95\uc774 \uc544\ub2c8\ub77c \uc0c8 \ucd9c\ubc1c\uc785\ub2c8\ub2e4.",
+    15: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 /autocompact\ub85c \ud604\uc7ac \uac12\uacfc \ucd9c\ucc98 \ud655\uc778, /autocompact 400k\ub85c \uc870\uc815 (\ubaa8\ub378\ubcc4 \uc0ac\uc6a9\uc790 \uc124\uc815, v2.1.288+), auto\ub85c \ubcf5\uadc0\n\u2022 \uc774\ubc88 \uc138\uc158\ub9cc\uc740 claude --autocompact 500k, \uc870\uc9c1 \uae30\ubcf8\uac12\uc740 managed-settings.json autoCompactWindow\n\u2022 \uc6b0\uc120\uc21c\uc704: \ud658\uacbd \ubcc0\uc218 CLAUDE_CODE_AUTO_COMPACT_WINDOW, \uc2e4\ud589 \ud50c\ub798\uadf8, settings(managed\uac00 \uc0ac\uc6a9\uc790 /autocompact\ub97c \ub36e\uc74c)\n\u2022 \uac19\uc740 \ud30c\uc77c\uc5d0\uc11c\ub294 modelSettings.\u003cmodel> \uc6b0\uc120, \ubc94\uc704 100K\uc5d0\uc11c 1M \ub610\ub294 auto, \uc2e4\uc81c \uc2dc\uc810\uc740 \uc124\uc815\uac12\uacfc \ubaa8\ub378 \ucd5c\ub300 \ucee8\ud14d\uc2a4\ud2b8 \uc911 \uc791\uc740 \ucabd\n\n\uc790\ub3d9 \uc555\ucd95 \uc2dc\uc810\uc740 \ubc14\uafc0 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \ub2e4 \ucc28\uae30 \uc804\uc5d0 \ubbf8\ub9ac \uc555\ucd95\ud558\uba74 \uc555\ucd95 \uc804\uae4c\uc9c0 \uc694\uccad\ub9c8\ub2e4 \ubcf4\ub0b4\ub294 \uc785\ub825\uc774 \uc791\uc544\uc9d1\ub2c8\ub2e4.\n\uc67c\ucabd \uba85\ub839\uc744 \ubcf4\uc2dc\uba74, /autocompact\ub85c \uc9c0\uae08 \uac12\uacfc \ucd9c\ucc98\ub97c \ud655\uc778\ud558\uace0, /autocompact 400k\ub85c 400K\uc5d0\uc11c \uc555\ucd95\ud558\uac8c \ud558\uace0, auto\ub85c \ub418\ub3cc\ub9bd\ub2c8\ub2e4. \uc774\ubc88 \uc138\uc158\ub9cc\uc740 \uc2e4\ud589 \ud50c\ub798\uadf8\ub85c, \uc870\uc9c1 \uae30\ubcf8\uac12\uc740 managed settings\ub85c \uc815\ud569\ub2c8\ub2e4.\n\n\uc544\ub798 \ub9c9\ub300\ub294 \uc124\uba85\uc6a9 \uadf8\ub9bc\uc785\ub2c8\ub2e4. \uc2ac\ub77c\uc774\ub354\ub97c \uc6c0\uc9c1\uc774\uba74 \uc555\ucd95\uc774 \uc2dc\uc791\ub418\ub294 \uc9c0\uc810\uc774 \uc62e\uaca8 \uac11\ub2c8\ub2e4.\n\uc624\ub978\ucabd \uc6b0\uc120\uc21c\uc704\ub294 \ud658\uacbd \ubcc0\uc218\uac00 \ucd5c\uc6b0\uc120\uc774\uace0, \uadf8\ub2e4\uc74c \uc2e4\ud589 \ud50c\ub798\uadf8, \uadf8\ub2e4\uc74c settings\uc778\ub370 managed\uac00 \uc0ac\uc6a9\uc790\uc758 /autocompact\ub97c \ub36e\uc2b5\ub2c8\ub2e4.",
+    16: "\u2753 [0.5min] [\uc694\uc57d]\n\u2022 \uc904\uc5b4\ub4dc\ub294 \uac83: \uc555\ucd95 \uc804 \uc694\uccad\ub2f9 \uc785\ub825, \uce90\uc2dc\uac00 \uc2dd\uc740 \ub4a4 \ub2e4\uc2dc \uc77d\ub294 \uc591, 1M \ubaa8\ub378 \uae34 \uc138\uc158\uc5d0\uc11c \ud6a8\uacfc\n\u2022 \ub298\uc5b4\ub098\ub294 \uac83: \uc555\ucd95 \ud69f\uc218(\ub9e4\ubc88 \ub300\ud654 \uc804\uccb4\ub97c \uc77d\ub294 \uc694\uccad), \uc555\ucd95 \uc9c1\ud6c4 \uce90\uc2dc \uc7ac\uad6c\ucd95, \uc190\uc2e4 \uc694\uc57d\n\u2022 \uae30\ubcf8\uac12\uc744 \ubc14\uafb8\uba74 \uae34 \uc138\uc158 \uc7ac\uac1c \uc2dc \uc0ac\uc6a9\ub7c9\uc774 \ub298 \uc218 \uc788\ub2e4\ub294 \uacf5\uc2dd \uacbd\uace0\n\u2022 1\uc21c\uc704 \uc791\uc5c5 \ub05d /compact, 2\uc21c\uc704 \uae34 \uc138\uc158 \ud300\ub9cc 400K\uc5d0\uc11c 500K, OTel token.usage\ub85c \uac80\uc99d\n\n\n\uadf8\ub7fc \ucc3d\uc744 \uc904\uc774\uba74 \ud56d\uc0c1 \uc300\uae4c\uc694? \uc544\ub2d9\ub2c8\ub2e4. Claude Code\ub3c4 \uae30\ubcf8\uac12 auto\ub97c \uad8c\ud569\ub2c8\ub2e4.\n\uc904\uc5b4\ub4dc\ub294 \uac83\uc740 \uc555\ucd95 \uc804\uae4c\uc9c0\uc758 \uc694\uccad\ub2f9 \uc785\ub825\uacfc \uce90\uc2dc\uac00 \uc2dd\uc740 \ub4a4 \ub2e4\uc2dc \uc77d\ub294 \uc591\uc785\ub2c8\ub2e4. 1M \ubaa8\ub378\ub85c \uae34 \uc138\uc158\uc744 \ud558\uba74 \ud6a8\uacfc\uac00 \ud07d\ub2c8\ub2e4.\n\ub300\uc2e0 \uc555\ucd95\uc774 \uc7a6\uc544\uc9d1\ub2c8\ub2e4. \uc555\ucd95 \ud55c \ubc88\uc774 \ub300\ud654 \uc804\uccb4\ub97c \uc77d\ub294 \uc694\uccad\uc774\uace0, \uc9c1\ud6c4\uc5d0\ub294 \uce90\uc2dc\ub97c \ub2e4\uc2dc \uc313\uc544\uc57c \ud558\uba70, \uc694\uc57d \uacfc\uc815\uc5d0\uc11c \ucd08\ubc18 \uc81c\uc57d\uc774\ub098 \uc815\ud655\ud55c \uc624\ub958 \uba54\uc2dc\uc9c0\uac00 \ube60\uc9c8 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\uadf8\ub798\uc11c \uc21c\uc11c\ub294 \uc774\ub807\uc2b5\ub2c8\ub2e4. \uba3c\uc800 \uc791\uc5c5 \ub2e8\uc704 \ub05d\uc5d0 \uce90\uc2dc\uac00 \ub530\ub73b\ud560 \ub54c \uc9c1\uc811 /compact, \uadf8\ub2e4\uc74c \uae34 \uc138\uc158\uc744 \ud558\ub294 \ud300\ub9cc \ucc3d\uc744 400K\uc5d0\uc11c 500K\ub85c, \uadf8\ub9ac\uace0 Ch6\uc758 OTel token.usage\ub85c \uc804\ud6c4\ub97c \ube44\uad50\ud569\ub2c8\ub2e4.",
+    17: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 \uc2dc\uc2a4\ud15c \ud504\ub86c\ud504\ud2b8\uc640 \ucd9c\ub825 \uc2a4\ud0c0\uc77c\uc740 \uadf8\ub300\ub85c\n\u2022 \ub8e8\ud2b8 CLAUDE.md, auto memory, plan \uacc4\ud68d\uc740 \ub514\uc2a4\ud06c\uc5d0\uc11c \uc7ac\uc8fc\uc785, \ucd5c\uadfc \ud30c\uc77c \ucd5c\ub300 5\uac1c, \uc2a4\ud0ac \ubcf8\ubb38 \uc2a4\ud0ac\ub2f9 5,000 \ud569\uacc4 25,000 \ud1a0\ud070\n\u2022 paths: \uaddc\uce59\uacfc \ud558\uc704 \ud3f4\ub354 CLAUDE.md\ub294 \uc694\uc57d\ub418\uc5b4 \uc0ac\ub77c\uc9c0\uace0 \ud30c\uc77c\uc744 \ub2e4\uc2dc \uc77d\uc744 \ub54c \uc7ac\ub85c\ub4dc\n\u2022 SessionStart \ud6c5(matcher: compact)\uc740 \ub2e4\uc2dc \uc2e4\ud589\n\n\n\uc555\ucd95\ud558\uba74 \ubb34\uc5c7\uc774 \ub0a8\uc744\uae4c\uc694? \ubc84\ud2bc\uc744 \ub204\ub974\uac70\ub098 \uc544\ub798 \ud654\uc0b4\ud45c\ub85c \uc555\ucd95\uc744 \uc2e4\ud589\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uc2dc\uc2a4\ud15c \ud504\ub86c\ud504\ud2b8\uc640 \ucd9c\ub825 \uc2a4\ud0c0\uc77c\uc740 \uadf8\ub300\ub85c\uc785\ub2c8\ub2e4. \ub8e8\ud2b8 CLAUDE.md\uc640 auto memory, plan \ubaa8\ub4dc\uc758 \uacc4\ud68d\uc740 \ub514\uc2a4\ud06c\uc5d0\uc11c \ub2e4\uc2dc \uc8fc\uc785\ub429\ub2c8\ub2e4. \ucd5c\uadfc\uc5d0 \uc77d\uac70\ub098 \uace0\uce5c \ud30c\uc77c\uc740 \ucd5c\ub300 5\uac1c\ub97c \ub2e4\uc2dc \uc77d\uace0, \uc0ac\uc6a9\ud55c \uc2a4\ud0ac \ubcf8\ubb38\ub3c4 \ud55c\ub3c4 \uc548\uc5d0\uc11c \ub2e4\uc2dc \ub4e4\uc5b4\uc635\ub2c8\ub2e4.\n\uc8fc\uc758\ud560 \uac83\uc740 \ub178\ub780\uc0c9\uc785\ub2c8\ub2e4. paths \uaddc\uce59\uacfc \ud558\uc704 \ud3f4\ub354 CLAUDE.md\ub294 \uc694\uc57d\ub418\uc5b4 \uc0ac\ub77c\uc84c\ub2e4\uac00 \ud574\ub2f9 \ud30c\uc77c\uc744 \ub2e4\uc2dc \uc77d\uc744 \ub54c \ub3cc\uc544\uc635\ub2c8\ub2e4.\n\uadf8\ub798\uc11c \uc555\ucd95 \ub4a4\uc5d0\ub3c4 \uaf2d \uc9c0\ucf1c\uc57c \ud558\ub294 \uaddc\uce59\uc740 SessionStart \ud6c5\uc758 compact matcher\ub85c \ub2e4\uc2dc \ub123\uc2b5\ub2c8\ub2e4. \uc774\uac74 \uc870\uae08 \ub4a4 \uc870\uc9c1 \uc124\uacc4\uc5d0\uc11c \ub2e4\uc2dc \ub098\uc635\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs, What survives compaction (\uc6d0\ubcf8 Ch6 \uac15\uc758\uc790\ub8cc p18)",
+    18: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 \uce90\uc2dc\uac00 \ub530\ub73b\ud558\uba74 \uc694\uc57d \uc694\uccad\uc774 \uc811\ub450\ubd80\ub97c \uce90\uc2dc\uc5d0\uc11c \uc77d\uc5b4 \ube44\uc6a9\uc740 \ucee8\ud14d\uc2a4\ud2b8 \ud06c\uae30\uc758 \uc77c\ubd80\n\u2022 TTL\uc774 \uc9c0\ub098\uba74 \uc804\uccb4 \uae30\ub85d\uc744 \ube44\uce90\uc2dc \uc785\ub825\uc73c\ub85c \ub2e4\uc2dc \ucc98\ub9ac, \uc7ac\uac1c \uc9c1\ud6c4 /compact\uac00 \uac00\uc7a5 \ube44\uc308\n\u2022 Bedrock \uae30\ubcf8 TTL 5\ubd84, \uadf8\ub798\uc11c \uc790\ub9ac \ube44\uc6b0\uae30 \uc804\uc5d0 /compact \ub610\ub294 /clear\n\u2022 /usage\ub294 expected rebuild\ub85c \ub530\ub85c \uc9d1\uacc4, /rewind\uc640 /recap\uc740 \uce90\uc2dc\ub97c \uadf8\ub300\ub85c \ub460\n\n\n/compact\ub3c4 \ub300\ud654 \uc804\uccb4\ub97c \uc77d\ub294 \uc694\uccad\uc774\ub77c\ub294 \uc810\uc744 \uadf8\ub9bc\uc73c\ub85c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uccab\uc9f8, \uce90\uc2dc\uac00 \ub530\ub73b\ud560 \ub54c\ub294 \uc694\uc57d \uc694\uccad\uc774 \uc55e\ubd80\ubd84\uc744 \uce90\uc2dc\uc5d0\uc11c \uc77d\uc2b5\ub2c8\ub2e4. \ube44\uc6a9\uc740 \ucee8\ud14d\uc2a4\ud2b8 \ud06c\uae30\uc758 \uc77c\ubd80\uc785\ub2c8\ub2e4.\n\ub458\uc9f8, TTL\uc774 \uc9c0\ub098\uba74 \uce90\uc2dc\uac00 \uc5c6\uc73c\ub2c8 \uc804\uccb4 \uae30\ub85d\uc744 \ube44\uce90\uc2dc \uc785\ub825\uc73c\ub85c \ub2e4\uc2dc \ucc98\ub9ac\ud569\ub2c8\ub2e4. \uc624\ub798\ub41c \uc138\uc158\uc744 \uc7ac\uac1c\ud558\uc790\ub9c8\uc790 /compact\ub97c \uce58\ub294 \uac8c \uac00\uc7a5 \ube44\uc309\ub2c8\ub2e4. Bedrock \uae30\ubcf8 TTL\uc740 5\ubd84\uc785\ub2c8\ub2e4.\n\uc14b\uc9f8, \uadf8\ub798\uc11c \ucd94\ucc9c\uc740 \ub5a0\ub098\uae30 \uc804\uc5d0 \uc815\ub9ac\ud558\ub294 \uac83\uc785\ub2c8\ub2e4. \uc774\uc5b4\uc11c \ud560 \uc77c\uc774\uba74 /compact, \uad00\ub828 \uc5c6\ub294 \uc77c\uc774\uba74 /clear\uc785\ub2c8\ub2e4.",
+    19: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 Claude \uad6c\ub3c5(\ud50c\ub79c \uc0ac\uc6a9\ub7c9 \uc548): \uba54\uc778 \ub300\ud654 \uae30\ubcf8 TTL 1\uc2dc\uac04, idle compaction \ub3d9\uc791\n\u2022 API \ud0a4\uc640 Amazon Bedrock: 5\ubd84, idle compaction \uae30\ubcf8\uc73c\ub85c\ub294 \ud574\ub2f9 \uc5c6\uc74c\n\u2022 Bedrock + ENABLE_PROMPT_CACHING_1H=1(\ub610\ub294 promptCacheTtl \"1h\"): 1\uc2dc\uac04(\ubaa8\ub378\ubcc4 \uc9c0\uc6d0 \ud655\uc778), idle compaction\uc740 \uc870\uac74 \ucda9\uc871 \uc2dc \ub3d9\uc791(\ub300\ud654\ud615 \uc138\uc158, autoCompactEnabled, 20\ub9cc \ud1a0\ud070 \uc774\uc0c1, \uc57d 1\uc2dc\uac04 \uc720\ud734)\n\u2022 Claude Apps Gateway \uacbd\uc720: 5\ubd84, \uc815\ucc45\uc73c\ub85c 1\uc2dc\uac04 \uc635\ud2b8\uc778(\uc11c\ube59\ud558\ub294 \ubaa8\ub4e0 \uc5c5\uc2a4\ud2b8\ub9bc \ubaa8\ub378\uc774 \uc9c0\uc6d0\ud574\uc57c \ud568), \uc635\ud2b8\uc778 \uc2dc \uac19\uc740 \uc870\uac74\n\n\uac19\uc740 \uae30\ub2a5\uc774\ub77c\ub3c4 \uc5b4\ub5bb\uac8c \uc811\uc18d\ud558\ub290\ub0d0\uc5d0 \ub530\ub77c \ub3d9\uc791\uc774 \ub2e4\ub985\ub2c8\ub2e4. \ub9ce\uc774 \uc624\ud574\ud558\uc2dc\ub294 \ubd80\ubd84\uc774\ub77c \uc2dc\ubbac\ub808\uc774\ud130\ub85c \uc900\ube44\ud588\uc2b5\ub2c8\ub2e4.\n\n\uc544\ub798 \ud654\uc0b4\ud45c\ub85c \uc704\uc5d0\uc11c\ubd80\ud130 \ud558\ub098\uc529 \uc5f4\uaca0\uc2b5\ub2c8\ub2e4. \uad6c\ub3c5\uc740 1\uc2dc\uac04\uc785\ub2c8\ub2e4. Bedrock \uae30\ubcf8\uc740 5\ubd84\uc774\ub77c, \uc790\ub9ac \ube44\uc6b4 \uc2dc\uac04\uc744 30\ubd84\uc73c\ub85c \ub450\uba74 \ub3cc\uc544\uc628 \uccab \uc694\uccad\uc740 \uce90\uc2dc \ubbf8\uc2a4\uc785\ub2c8\ub2e4. \uc2ac\ub77c\uc774\ub354\ub97c 5\ubd84 \uc544\ub798\ub85c \ub0b4\ub9ac\uba74 \ub530\ub73b\ud558\uac8c \ubc14\ub01d\ub2c8\ub2e4.\nENABLE_PROMPT_CACHING_1H\ub97c \ucf1c\uac70\ub098 promptCacheTtl\uc744 1h\ub85c \uc8fc\uba74 1\uc2dc\uac04\uae4c\uc9c0 \ubc84\ud2f0\uc9c0\ub9cc, \ubaa8\ub378\ubcc4 \uc9c0\uc6d0\uc744 \ud655\uc778\ud558\uc154\uc57c \ud558\uace0 \ube44\uc6a9\uc774 \ub354 \ub4ed\ub2c8\ub2e4. \uc774\ub54c idle compaction\uc740 \ub300\ud654\ud615 \uc138\uc158, autoCompactEnabled, 20\ub9cc \ud1a0\ud070 \uc774\uc0c1, \uc57d 1\uc2dc\uac04 \uc720\ud734\ub77c\ub294 \uc870\uac74\uc774 \ub9de\uc73c\uba74 \ub3d9\uc791\ud569\ub2c8\ub2e4.\nClaude Apps Gateway\ub97c \uacbd\uc720\ud558\uba74 \uae30\ubcf8 5\ubd84\uc774\uace0, \uc815\ucc45\uc73c\ub85c 1\uc2dc\uac04\uc744 \uc635\ud2b8\uc778\ud560 \uc218 \uc788\ub294\ub370 \uc11c\ube59\ud558\ub294 \ubaa8\ub4e0 \uc5c5\uc2a4\ud2b8\ub9bc \ubaa8\ub378\uc774 \uc9c0\uc6d0\ud574\uc57c \ud569\ub2c8\ub2e4. 5\ubd84 \uce90\uc2dc\ub77c\uba74 \ub5a0\ub098\uae30 \uc804 /compact\uac00 \ub2f5\uc785\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 \uc6d0\ubcf8 Ch6 \uac15\uc758\uc790\ub8cc p14, p20",
+    20: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 managed-settings.json \ud55c \ud30c\uc77c\ub85c autoCompactWindow, promptCacheTtl, SessionStart compact, PreCompact\ub97c \uace0\uc815\n\u2022 autoCompactWindow 100K\uc5d0\uc11c 1M, \uc77c\ucc0d \uc555\ucd95\ud558\uba74 \uc694\uccad\ub2f9 \uc785\ub825\uc774 \uc791\uc544\uc9d0, Haiku 5.5\ub294 100K \ub118\ub294 \ud504\ub86c\ud504\ud2b8 \ub2e8\uac00\uac00 \ub354 \ub192\uc74c\n\u2022 promptCacheTtl 1h\ub294 \uc790\ub9ac \ube44\uc6c0\uc774 \uc7a6\uc740 \ud300\uc5d0\ub9cc, idle compaction\uc740 1\uc2dc\uac04 TTL\uc5d0\uc11c\ub9cc, 5\ubd84\uc774\uba74 \ub5a0\ub098\uae30 \uc804 /compact\n\u2022 SessionStart matcher compact\ub85c DLP \uaddc\uce59 \uc7ac\uc8fc\uc785, PreCompact\ub294 exit 2\ub85c \uc555\ucd95 \ucc28\ub2e8, \uac10\uc0ac\uc6a9 \ubcf4\uad00\n\n\n\uc9c0\uae08\uae4c\uc9c0\uc758 \uc6d0\ub9ac\ub97c \uc870\uc9c1 \uae30\ubcf8\uac12\uc73c\ub85c \ubb36\uc5b4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \ud55c \ud30c\uc77c, managed settings\uc785\ub2c8\ub2e4.\n\uccab\uc9f8, \ucc3d \ud06c\uae30. \uc77c\ucc0d \uc555\ucd95\ud558\uba74 \uc694\uccad\ub2f9 \uc785\ub825\uc774 \uc791\uc544\uc9d1\ub2c8\ub2e4. \ucc38\uace0\ub85c Haiku 5.5\ub294 100K\ub97c \ub118\ub294 \ud504\ub86c\ud504\ud2b8\uc758 \ub2e8\uac00\uac00 \ub354 \ub192\uc2b5\ub2c8\ub2e4.\n\ub458\uc9f8, \uce90\uc2dc \uc218\uba85 1\uc2dc\uac04\uc740 \uc790\ub9ac \ube44\uc6c0\uc774 \uc7a6\uc740 \ud300\uc5d0\ub9cc \uc501\ub2c8\ub2e4.\n\uc14b\uc9f8, \uc555\ucd95 \ub4a4\uc5d0\ub294 SessionStart \ud6c5\uc758 compact matcher\ub85c DLP \uaddc\uce59\uc744 \ub2e4\uc2dc \ub123\uc2b5\ub2c8\ub2e4. Ch2\uc5d0\uc11c \ub9cc\ub4e0 \uaddc\uce59\uc774 \uc555\ucd95 \ub54c\ubb38\uc5d0 \ube60\uc9c0\uc9c0 \uc54a\uac8c \ud558\ub294 \uc7a5\uce58\uc785\ub2c8\ub2e4.\n\ub137\uc9f8, PreCompact \ud6c5\uc740 \uc555\ucd95 \uc9c1\uc804\uc5d0 \uc2e4\ud589\ub418\uc5b4 exit 2\ub85c \uc555\ucd95\uc744 \ub9c9\uac70\ub098 \uac10\uc0ac\uc6a9\uc73c\ub85c \uc6d0\ubb38\uc744 \ub0a8\uae41\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 DLP: Data Loss Prevention",
+    21: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 LAB 15\ubd84, Chapter 5 TASK 04\n\u2022 Ch5 \ub7a9 \uc804\uccb4\ub294 TASK 01 \uae30\uc900\uc120 5\ubd84, 02 \ucd9c\ub825 \ud544\ud130 \ud6c5 10\ubd84, 03 CLAUDE.md\uc640 \ubaa8\ub378 8\ubd84, 04 \uc555\ucd95 15\ubd84, \ud569\uacc4 38\ubd84\n\u2022 \uc555\ucd95 \uc804 \uae30\ub85d, \uc9c0\uc2dc\uc640 \ud568\uaed8 /compact, Compact instructions, SessionStart compact \ud6c5, /autocompact 400k \uc870\uc815\uacfc \ubcf5\uadc0, /config \ud655\uc778\n\n\nCh5 \ub7a9\uc740 \uc774 \uc138\uc158 \uc548\uc5d0\uc11c \ubaa8\ub450 38\ubd84\uc785\ub2c8\ub2e4. TASK 01 \uae30\uc900\uc120 5\ubd84, 02 \ucd9c\ub825 \ud544\ud130 \ud6c5 10\ubd84, 03 CLAUDE.md\uc640 \ubaa8\ub378 8\ubd84, \uadf8\ub9ac\uace0 \uc9c0\uae08 \ubcf4\ub294 TASK 04 \uc555\ucd95\uc774 15\ubd84\uc785\ub2c8\ub2e4. Hands-on Lab \ud3ec\ud138\uc5d0\uc11c Chapter 5\ub97c \uc5f4\uc5b4 \uc8fc\uc138\uc694.\n\uc555\ucd95 \uc804 \uae30\ub85d\uc744 \ub0a8\uae30\uace0, \uc9c0\uc2dc\uc640 \ud568\uaed8 /compact\ub97c \ud574 \ubcf4\uace0, CLAUDE.md\uc5d0 \uc555\ucd95 \uc9c0\uce68\uc744 \ub123\uace0, SessionStart compact \ud6c5\uc73c\ub85c \uc0ac\ub0b4 \uaddc\uc815\uc774 \ub2e4\uc2dc \ub4e4\uc5b4\uc624\ub294\uc9c0 \ud655\uc778\ud569\ub2c8\ub2e4. \ub9c8\uc9c0\ub9c9\uc73c\ub85c /autocompact\ub97c 400k\ub85c \ubc14\uafe8\ub2e4\uac00 auto\ub85c \ub418\ub3cc\ub9ac\uace0, /config\uc5d0\uc11c Bedrock TTL\uc744 \ud655\uc778\ud569\ub2c8\ub2e4.",
+    22: "[0.5min] [\uc694\uc57d]\n\u2022 \uc0ac\uace0 \ud1a0\ud070\uc740 \ucd9c\ub825 \ub2e8\uac00\ub85c \uccad\uad6c\n\u2022 /model: \ub300\ubd80\ubd84\uc758 \ucf54\ub529\uc740 Sonnet, \ubcf5\uc7a1\ud55c \uc124\uacc4\ub9cc Opus\n\u2022 /effort: \ub2e8\uc21c \uc791\uc5c5\uc740 \ub0ae\ucda4, 5.5 \uc138\ub300\uc640 Fable\uc740 thinking\uc744 \ub04c \uc218 \uc5c6\uc74c\n\u2022 Subagent\ub294 model: haiku, \uace0\uc815 \uc608\uc0b0 \ubaa8\ub378\uc740 MAX_THINKING_TOKENS\n\n\ub9c8\uc9c0\ub9c9 \uc5ec\ub35f \ubc88\uc9f8 \uc6d0\ub9ac, \uc791\uc5c5\uc5d0 \ub9de\ub294 \ubaa8\ub378\uacfc \uc0ac\uace0\ub7c9\uc785\ub2c8\ub2e4. \uc0ac\uace0 \ud1a0\ud070\uc740 \ucd9c\ub825 \ub2e8\uac00\ub85c \uccad\uad6c\ub41c\ub2e4\ub294 \uc810\uc774 \ud575\uc2ec\uc785\ub2c8\ub2e4.\n\ub300\ubd80\ubd84\uc758 \ucf54\ub529\uc740 Sonnet\uc73c\ub85c \ucda9\ubd84\ud558\uace0, \ubcf5\uc7a1\ud55c \uc124\uacc4\ub9cc Opus\ub97c \uc501\ub2c8\ub2e4. \ub2e8\uc21c\ud55c \uc791\uc5c5\uc740 /effort\ub97c \ub0ae\ucd94\uc138\uc694. \ub2e4\ub9cc 5.5 \uc138\ub300\uc640 Fable\uc740 thinking\uc744 \ub04c \uc218\ub294 \uc5c6\uc2b5\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 \ub2e8\uc21c\ud55c Subagent\uc5d0\ub294 model: haiku\ucc98\ub7fc \uc791\uc740 \ubaa8\ub378\uc744 \uc9c0\uc815\ud569\ub2c8\ub2e4. Ch3\uc5d0\uc11c \ubcf8 \ub0b4\uc6a9\uacfc \uc774\uc5b4\uc9d1\ub2c8\ub2e4.",
+    23: "[0.5min] [\uc694\uc57d]\n\u2022 \uc5b4\ub290 \uc6d0\ub9ac\ub97c \uc4f0\uace0 \uc5b4\ub290 \ud655\uc7a5 \uc9c0\uc810(\ud6c5, \uc2a4\ud0ac, MCP, \ud504\ub85d\uc2dc)\uc5d0 \ubd99\ub294\uac00\n\u2022 \uacf5\uc2dd \uae30\ub2a5(CLAUDE.md, \uc2a4\ud0ac, \ud544\ud130 \ud6c5, code intelligence)\uc73c\ub85c \uac19\uc740 \ud6a8\uacfc\uac00 \ub098\ub294\uac00\n\u2022 \ub370\uc774\ud130\ub294 \ub85c\uceec\uc778\uac00 \uc81c3\uc790\uc778\uac00, \ub3c4\uc785\ud55c\ub2e4\uba74 \uc0ac\ub0b4 \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4\uc5d0 \uace0\uc815 \ubc84\uc804\uc73c\ub85c\n\n\ucee4\ubba4\ub2c8\ud2f0 \ub3c4\uad6c\uac00 \uacc4\uc18d \ub098\uc62c \ud150\ub370, \ub3c4\uc785 \uc804\uc5d0 5\ubd84\ub9cc \uc774 \uc138 \uac00\uc9c0\ub97c \ubb3c\uc5b4 \ubcf4\uc138\uc694.\n\uccab\uc9f8, \uc5ec\ub35f \uac00\uc9c0 \uc6d0\ub9ac \uc911 \uc5b4\ub290 \uac83\uc744 \uc4f0\uace0 \uc5b4\ub514\uc5d0 \ubd99\ub294\uac00. \ub458\uc9f8, \uacf5\uc2dd \uae30\ub2a5\uc73c\ub85c \uac19\uc740 \ud6a8\uacfc\ub97c \ub0bc \uc218 \uc788\ub294\uac00. \ub300\ubd80\ubd84\uc740 \ub429\ub2c8\ub2e4.\n\uc14b\uc9f8\uac00 \uae08\uc735\uad8c\uc5d0\uc11c \uac00\uc7a5 \uc911\uc694\ud569\ub2c8\ub2e4. \ub370\uc774\ud130\uac00 \ub85c\uceec\uc5d0\uc11c \ucc98\ub9ac\ub418\ub294\uc9c0 \uc81c3\uc790\ub85c \uac00\ub294\uc9c0\uc785\ub2c8\ub2e4. \ub3c4\uc785\ud55c\ub2e4\uba74 Ch2\uc640 Ch4\uc5d0\uc11c \ubcf8 \uac83\ucc98\ub7fc \uc0ac\ub0b4 \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4\uc5d0 \uace0\uc815 \ubc84\uc804\uc73c\ub85c \uc62c\ub9bd\ub2c8\ub2e4.",
+    24: "[0.5min] [\uc694\uc57d]\n\u2022 \uba3c\uc800 \ubcf8\ub2e4: /context, /usage, \uce90\uc2dc \uc801\uc911\ub960, \uce90\uc2dc\ub97c \uc9c0\ud0a4\uace0 \uc555\ucd95 \uc2dc\uc810\uacfc effort\ub294 \ub0b4\uac00 \uc815\ud55c\ub2e4\n\u2022 \ud56d\uc0c1 \uc2e4\ub9ac\ub294 \uc9c0\uce68\uc740 \uc9e7\uac8c, \ud070 \ucd9c\ub825\uc740 \ub4e4\uc5b4\uc624\uae30 \uc804\uc5d0\n\u2022 \ucee4\ubba4\ub2c8\ud2f0 \ub3c4\uad6c\ub294 \uc6d0\ub9ac\ub85c \uc77d\uace0 \uacf5\uc2dd \uae30\ub2a5\uc73c\ub85c \ub300\uccb4 \uac00\ub2a5\ud55c\uc9c0\n\u2022 Chapter 6\uc740 16:50\n\nChapter 5\ub97c \uc138 \uc904\ub85c \uc815\ub9ac\ud569\ub2c8\ub2e4. \uba3c\uc800 \ubcf4\uace0, \uce90\uc2dc\ub97c \uc9c0\ud0a4\uba74\uc11c \uc555\ucd95 \uc2dc\uc810\uacfc effort\ub294 \ub0b4\uac00 \uc815\ud558\uace0, \ud56d\uc0c1 \uc2e4\ub9ac\ub294 \uc9c0\uce68\uc740 \uc9e7\uac8c \ud558\uace0 \ud070 \ucd9c\ub825\uc740 \ub4e4\uc5b4\uc624\uae30 \uc804\uc5d0 \ub9c9\uace0, \ucee4\ubba4\ub2c8\ud2f0 \ub3c4\uad6c\ub294 \uc6d0\ub9ac\ub85c \uc77d\uc5b4 \uacf5\uc2dd \uae30\ub2a5\uc73c\ub85c \ub300\uccb4\ud560 \uc218 \uc788\ub294\uc9c0 \ubd05\ub2c8\ub2e4.\nChapter 6\uc740 \uc624\ud6c4 4\uc2dc 50\ubd84\uc5d0 \uc774\uc5b4\uc9d1\ub2c8\ub2e4. \uadf8 \uc0ac\uc774 Capstone\uc744 \ud558\uc2dc\uba74\uc11c /usage\ub97c \ud55c \ubc88\uc529 \ud655\uc778\ud574 \ubcf4\uc2dc\uba74, \uc624\ud6c4\uc5d0 \ub300\uc2dc\ubcf4\ub4dc\uc5d0\uc11c \uc5ec\ub7ec\ubd84\uc758 \uc22b\uc790\ub97c \ub2e4\uc2dc \ub9cc\ub098\uac8c \ub429\ub2c8\ub2e4.",
+    25: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 MCP: \uc11c\ubc84 \ub2e4\uc218 \uc5f0\uacb0 \uc2dc \uc2a4\ud0a4\ub9c8\uac00 \ub9e4 \uc694\uccad\uc5d0, \ub3c4\uad6c \ub9ce\uc73c\uba74 \uc815\uc758\ub9cc \uc218\ucc9c \ud1a0\ud070, \uc911\ubcf5 \uc815\ub9ac, .mcp.json \ud504\ub85c\uc81d\ud2b8 \ub2e8\uc704\n\u2022 \uc138\uc158 \uc704\uc0dd: \uc791\uc5c5\uc774 \ubc14\ub00c\uba74 /clear, /compact\ub294 \ub0a8\uae38 \uac83 \uc9c0\uc815, 5\ubd84 \ub118\uac8c \ube44\uc6b0\uba74 \uce90\uc2dc \ubbf8\uc2a4\n\u2022 \ubaa8\ub378 \ubc30\ubd84: log-summarizer Subagent\uc5d0 model: haiku, \uba54\uc778\uc5d0\ub294 5\uc904\ub9cc, Bedrock\uc5d0 Haiku \ud65c\uc131\ud654 \ud655\uc778\n\n\uc790\uc8fc \ubc1b\ub294 \uc9c8\ubb38\uc785\ub2c8\ub2e4. \uc2dc\uac04\uc774 \ub0a8\uac70\ub098 \uc9c8\ubb38\uc774 \ub098\uc624\uba74 \ud3bc\uce69\ub2c8\ub2e4.\n\n\uccab\uc9f8, MCP \ub3c4\uad6c \uc815\uc758 \ube44\uc6a9\uc785\ub2c8\ub2e4. \uc11c\ubc84\ub97c \ub9ce\uc774 \uc5f0\uacb0\ud558\uba74 \uc2a4\ud0a4\ub9c8\uac00 \ub9e4 \uc694\uccad\uc5d0 \uc2e4\ub9ac\uace0, \ub3c4\uad6c\uac00 \ub9ce\uc740 \uc11c\ubc84\ub294 \uc815\uc758\ub9cc\uc73c\ub85c \uc218\ucc9c \ud1a0\ud070\uc774 \ub429\ub2c8\ub2e4. \ud504\ub85c\uc81d\ud2b8\ub9c8\ub2e4 .mcp.json\uc744 \ub530\ub85c \ub450\uba74 \uc4f0\uc9c0 \uc54a\ub294 \uc11c\ubc84\uac00 \uacc4\uc18d \ubd99\uc5b4 \uc788\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\ub458\uc9f8, \uc138\uc158 \uc704\uc0dd\uc740 /clear, \uc9c0\uc2dc\uac00 \uc788\ub294 /compact, \uadf8\ub9ac\uace0 \uc790\ub9ac \ube44\uc6b4 \ub4a4\uc758 \uce90\uc2dc\uc785\ub2c8\ub2e4.\n\uc14b\uc9f8, \ubaa8\ub378 \ubc30\ubd84 \uc608\uc2dc\ub85c \ub85c\uadf8 \uc694\uc57d Subagent\uc5d0 haiku\ub97c \uc9c0\uc815\ud588\uc2b5\ub2c8\ub2e4. \uc7a5\ud669\ud55c \ub85c\uadf8\ub294 \uc791\uc740 \ubaa8\ub378\uc774 \uc77d\uace0 \uba54\uc778\uc5d0\ub294 5\uc904\ub9cc \ub3cc\uc544\uc635\ub2c8\ub2e4.",
+    26: "[0.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc74c\uc740 Capstone Round 2, 16:50 Chapter 6\n\u2022 \uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi\n\n\uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774\uc5b4\uc11c Capstone Round 2\ub97c \ud558\uace0, \uc624\ud6c4 4\uc2dc 50\ubd84\uc5d0 Chapter 6, \uc870\uc9c1\uc758 \ube44\uc6a9 \ubcf4\uace0 \ud1b5\uc81c\ud558\uae30\ub85c \ub2e4\uc2dc \ubaa8\uc785\ub2c8\ub2e4.\nCapstone \ud558\uc2dc\uba74\uc11c /usage\ub97c \ud55c \ubc88\uc529 \ud655\uc778\ud574 \ubcf4\uc2dc\uba74, \uc624\ud6c4\uc5d0 \ub300\uc2dc\ubcf4\ub4dc\uc5d0\uc11c \uc5ec\ub7ec\ubd84\uc758 \uc22b\uc790\ub97c \ub2e4\uc2dc \ub9cc\ub0a9\ub2c8\ub2e4."
+  };
+  const deck = new SlideFramework({
+    logoSrc: "./image/aws-logo-white.png",
+
+    footer: "\u00a9 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.",
+
+    pagination: true,
+    sidebar: true,
+    presenterNotes: presenterNotes,
+    onSlideChange: (index, slide) => {}
+  });
+</script>
+</body>
+</html>
