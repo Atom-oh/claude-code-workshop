@@ -266,7 +266,7 @@ def text_of(el):
 
 def check_r1a_restore(root, trees):
     """R1-A step 00 must let a learner without the MyData kit get it back."""
-    name = R1_PAGES[0]
+    name = "ClaudeCode_Capstone_R1A_HandsOnLab.html"
     tree = trees.get(name)
     if tree is None:
         return []
@@ -275,7 +275,7 @@ def check_r1a_restore(root, trees):
     blob = "".join(text_of(e) for e in pres)
     msgs = []
     if step is None:
-        msgs.append(f'r1a_restore: {name} has no id="task-00" step')
+        return [f'r1a_restore: {name} has no id="task-00" step']
     if "~/claude-lab/mydata/pseudo" not in blob:
         msgs.append(f"r1a_restore: {name} step 00 <pre> does not check ~/claude-lab/mydata/pseudo")
     if "mydata-kit.zip" not in blob:

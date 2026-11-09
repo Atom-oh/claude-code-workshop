@@ -877,7 +877,7 @@ echo '{"prompt":"안녕하세요"}' | .claude/hooks/dlp-guard.sh; echo "exit=$?"
   </div>
   <p class="body">다섯 줄 중 raw 두 줄과 주민번호 줄은 <code class="inline">exit=2</code>, <code class="inline">pseudo/</code> 경로와 "안녕하세요"는 <code class="inline">exit=0</code>이 나와야 합니다. 이 훅은 도구 입력의 <strong>문자열 패턴</strong>만 봅니다. 경로를 돌려 쓰는 명령(예: 글로브)이나 실행 <strong>결과</strong>는 보지 못한다는 점은 Ch2 Lab 2에서 확인한 한계와 같습니다.</p>
   <div class="step-title"><span class="step-no">2</span>프로젝트 설정에 훅과 deny 규칙 등록</div>
-  <p class="body">작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 프롬프트는 <code class="inline">UserPromptSubmit</code>, 도구 호출은 <code class="inline">PreToolUse</code>가 검사합니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(Ch2 Lab 2 TASK 02 Step 3, v2.1.295+). <code class="inline">permissions.deny</code>는 훅과 별개의 한 겹으로 <code class="inline">raw/</code> 읽기를 막습니다.</p>
+  <p class="body">작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 프롬프트는 <code class="inline">UserPromptSubmit</code>, 도구 호출은 <code class="inline">PreToolUse</code>가 검사합니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(v2.1.295+, 어느 설정 파일의 command 훅에서나 쓸 수 있음, <a href='https://code.claude.com/docs/en/hooks'>공식 훅 문서</a>, Ch2 Lab 2 TASK 02 Step 3). <code class="inline">permissions.deny</code>는 훅과 별개의 한 겹으로 <code class="inline">raw/</code> 읽기를 막습니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -936,34 +936,34 @@ jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></p
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>pseudo/customers.csv 연령대 분포를 요약해줘</code></pre>
   </div>
-  <p class="body">정상 요청은 그대로 통과해야 합니다. 이어서 agent를 거치는 경로에서도 같은 일이 일어나는지 봅니다. 막히면 그 장면이 곧 증거이고, 막히지 않으면 03으로 돌아가 패턴을 고칩니다.</p>
+  <p class="body">정상 요청은 그대로 통과해야 합니다. 이어서 agent를 거치는 경로를 봅니다. 설정에 등록한 PreToolUse 훅은 subagent의 도구 호출에도 실행되므로(공식 훅 문서) 여기서도 막혀야 합니다. 막히지 않으면 03으로 돌아가 패턴을 고칩니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>consult-prep 에이전트로 ~/claude-lab/mydata/raw 아래 파일에서 고객 한 명의 상담 준비 노트를 만들어 줘</code></pre>
   </div>
   <div class="step-title"><span class="step-no">3</span>고장 난 훅도 막는지 (fail-closed)</div>
-  <p class="body">세션을 <code class="inline">/exit</code>로 나온 뒤, 검사 스크립트를 잠깐 치우고 무해한 프롬프트를 보냅니다. 스크립트가 없어도 요청이 막히면 fail-closed입니다. 마지막 줄에서 반드시 되돌립니다.</p>
+  <p class="body">세션을 <code class="inline">/exit</code>로 나온 뒤, raw-guard.sh를 잠깐 치우고, <strong>도구 호출이 필요한</strong> 무해한 프롬프트를 보냅니다. raw-guard.sh는 PreToolUse에만 등록돼 있어서 도구 호출이 없는 프롬프트에서는 실행되지 않기 때문입니다. 스크립트가 없는데도 도구 호출이 막히면 fail-closed입니다. 마지막 줄에서 반드시 되돌립니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
 mv .claude/hooks/raw-guard.sh .claude/hooks/raw-guard.sh.off
-claude -p "안녕이라고만 답해줘"; echo "claude exit=$?"
+claude -p "pseudo/customers.csv 첫 줄을 읽어줘"; echo "claude exit=$?"
 mv .claude/hooks/raw-guard.sh.off .claude/hooks/raw-guard.sh
 ls .claude/hooks</code></pre>
   </div>
-  <p class="body">훅 오류가 차단으로 처리됐다는 메시지(<code class="inline">blocking because onFailure is "block"</code> 계열)가 나와야 합니다. 이 판단은 Ch2 Lab 2에서 확인한 동작에 근거합니다. 프로젝트 설정에서 다른 메시지가 나오면 그대로 기록하고, 요청이 통과해 버렸다면 <code class="inline">onFailure</code> 줄과 Claude Code 버전(<code class="inline">claude --version</code>)을 확인합니다.</p>
+  <p class="body">Read 도구 호출이 훅 오류로 차단되어 파일 내용이 나오지 않고, <code class="inline">PreToolUse:Read</code> 훅 오류와 <code class="inline">onFailure</code> 차단을 알리는 메시지가 보여야 합니다. 메시지 문구는 버전에 따라 다를 수 있으니 실제로 나온 문구를 기록해 둡니다. 첫 줄이 그대로 출력됐다면 <code class="inline">onFailure</code> 줄과 Claude Code 버전(<code class="inline">claude --version</code>)을 확인합니다.</p>
   <table class="tbl"><thead><tr><th>증상</th><th>점검</th></tr></thead><tbody>
     <tr><td>주민번호 요청이 통과한다</td><td><code class="inline">settings.json</code>의 <code class="inline">UserPromptSubmit</code> 등록과 <code class="inline">dlp-guard.sh</code> 실행 권한(<code class="inline">chmod +x</code>)</td></tr>
     <tr><td>raw/ 읽기가 통과한다</td><td><code class="inline">raw-guard.sh</code>를 <code class="inline">echo ... | .claude/hooks/raw-guard.sh</code>로 직접 시험, matcher에 <code class="inline">Read</code>가 있는지</td></tr>
     <tr><td>정상 요청까지 막힌다</td><td>패턴이 너무 넓은지. <code class="inline">PAT</code>를 시험 입력으로 좁힌다</td></tr>
-    <tr><td>훅이 아예 안 돈다</td><td>세션을 다시 열었는지, 폴더 신뢰(Yes, I trust this folder)를 눌렀는지</td></tr>
+    <tr><td>훅이 아예 안 돈다</td><td>세션을 다시 열었는지, 폴더 신뢰(Yes, I trust this folder)를 눌렀는지. Ch2 Lab 2에서 managed 정책에 넣은 <code class="inline">allowManagedHooksOnly</code>가 남아 있으면 사용자, 프로젝트, 플러그인 훅이 모두 무시됩니다. <code class="inline">sudo jq '.allowManagedHooksOnly' /etc/claude-code/managed-settings.json</code>이 <code class="inline">true</code>면 Ch2 Lab 2 TASK 07(전체 원복)을 먼저 합니다</td></tr>
   </tbody></table>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox"><span>주민번호 요청이 막혔고 어느 메시지인지 안다</span></label>
     <label class="cp-item"><input type="checkbox"><span><code>raw/</code> 읽기 시도가 막혔다</span></label>
     <label class="cp-item"><input type="checkbox"><span>정상 요청은 통과했다</span></label>
-    <label class="cp-item"><input type="checkbox"><span>스크립트를 치웠을 때도 요청이 막혔고, 스크립트를 되돌렸다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>스크립트를 치웠을 때도 도구 호출이 막혔고, 스크립트를 되돌렸다</span></label>
   </div>
 </section>
 
