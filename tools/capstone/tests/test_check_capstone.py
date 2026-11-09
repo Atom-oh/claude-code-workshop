@@ -1,0 +1,153 @@
+import tempfile
+import unittest
+from pathlib import Path
+
+from tools.capstone.check_capstone import (
+    ARCHIVE_PAGES,
+    NEW_PAGES,
+    R1_PAGES,
+    R2_PAGES,
+    check,
+)
+
+OVERVIEW = "ClaudeCode_Capstone_Overview.html"
+PACKAGE = "ClaudeCode_Capstone_R2_Package_HandsOnLab.html"
+
+
+def page(round_=None, minutes=(), body=""):
+    parts = ["<html><body>"]
+    if round_:
+        parts.append(f'<p class="round" data-round="{round_}">{round_}</p>')
+    for i, m in enumerate(minutes):
+        parts.append(f'<section class="task" id="t{i}" data-min="{m}">step</section>')
+    parts.append(body)
+    parts.append("</body></html>")
+    return "".join(parts)
+
+
+def make_site(tmp, r1a_minutes=(50, 50), r2_minutes=None, extra=None, drop=(),
+              overview_checks=7, with_submit=True, with_note=True,
+              archive_note=True, portal_archive=True, portal_new=True):
+    """Build a minimal site that passes every rule; overrides break one spot."""
+    root = Path(tmp) / "site"
+    root.mkdir(parents=True)
+    r2_minutes = r2_minutes or {}
+    files = {}
+    checks = "".join(f'<li data-check="{i}">c</li>' for i in range(1, overview_checks + 1))
+    submit = '<section id="submit">제출</section>' if with_submit else ""
+    files[OVERVIEW] = page(body=f"<ul>{checks}</ul>{submit}")
+    for name in R1_PAGES:
+        short = name.split("_")[2]
+        mins = r1a_minutes if short == "R1A" else (40, 40)
+        files[name] = page("R1", mins)
+    for name in R2_PAGES:
+        mins = r2_minutes.get(name, (30, 30))
+        body = '<p data-note="managed-enforce">managed</p>' if (name == PACKAGE and with_note) else ""
+        files[name] = page("R2", mins, body)
+    new_links = "".join(f'<a href="{n}">x</a>' for n in NEW_PAGES) if portal_new else ""
+    arch_links = "".join(f'<a href="{n}">x</a>' for n in ARCHIVE_PAGES) if portal_archive else ""
+    files["index.html"] = (
+        f'<html><body><section id="capstones">{new_links}'
+        f'<div id="capstone-archive">{arch_links}</div></section></body></html>'
+    )
+    files["ClaudeCode_Capstone_Setup.html"] = page(body=f'<a href="{OVERVIEW}">o</a>')
+    note = f'<div class="archive-note"><a href="{OVERVIEW}">new</a></div>' if archive_note else ""
+    for name in ARCHIVE_PAGES:
+        files[name] = page(body=note)
+    for name in drop:
+        files.pop(name, None)
+    files.update(extra or {})
+    for rel, text in files.items():
+        p = root / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(text, encoding="utf-8")
+    return root
+
+
+def rule(msgs, name):
+    return [m for m in msgs if m.startswith(name)]
+
+
+class CheckCapstoneTest(unittest.TestCase):
+    def setUp(self):
+        self._td = tempfile.TemporaryDirectory()
+        self.tmp = self._td.name
+        self.addCleanup(self._td.cleanup)
+
+    def test_clean_site_passes(self):
+        self.assertEqual(check(make_site(self.tmp)), [])
+
+    def test_exists_fails_when_page_missing(self):
+        root = make_site(self.tmp, drop=[R1_PAGES[1]])
+        self.assertTrue(any(m.startswith("exists") and R1_PAGES[1] in m for m in check(root)))
+
+    def test_links_fails_on_missing_file_and_anchor(self):
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), '<a href="nope.html">x</a>')})
+        self.assertTrue(rule(check(root), "links"))
+        root2 = Path(self.tmp) / "site"
+        (root2 / R1_PAGES[0]).write_text(
+            page("R1", (50, 50), f'<a href="{OVERVIEW}#nothing">x</a>'), encoding="utf-8")
+        self.assertTrue(rule(check(root2), "links"))
+
+    def test_links_passes_for_external_inpage_and_valid_anchor(self):
+        body = (f'<a href="https://example.com/x">e</a><a href="#t0">i</a>'
+                f'<a href="{OVERVIEW}#submit">o</a><a href="mailto:a@b.c">m</a>')
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), body)})
+        self.assertFalse(rule(check(root), "links"))
+
+    def test_links_fails_on_missing_inpage_anchor(self):
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), '<a href="#zzz">x</a>')})
+        self.assertTrue(rule(check(root), "links"))
+
+    def test_overview_checklist_fails_with_six_items_or_no_submit(self):
+        self.assertTrue(rule(check(make_site(self.tmp, overview_checks=6)), "overview_checklist"))
+        with tempfile.TemporaryDirectory() as t2:
+            self.assertTrue(rule(check(make_site(t2, with_submit=False)), "overview_checklist"))
+
+    def test_time_budget_fails_when_r1_over_110(self):
+        root = make_site(self.tmp, r1a_minutes=[60, 55])
+        msgs = check(root)
+        self.assertTrue(any(m.startswith("time_budget") and "R1A" in m for m in msgs))
+
+    def test_time_budget_r1_exactly_110_passes(self):
+        self.assertFalse(rule(check(make_site(self.tmp, r1a_minutes=[60, 50])), "time_budget"))
+
+    def test_time_budget_r2_uses_package_plus_two_largest(self):
+        # package 60, missions 70/60/20 -> 60+70+60 = 190 > 180
+        mins = {PACKAGE: (60,), R2_PAGES[1]: (70,), R2_PAGES[2]: (60,), R2_PAGES[3]: (20,)}
+        msgs = check(make_site(self.tmp, r2_minutes=mins))
+        self.assertTrue(any(m.startswith("time_budget") and "R2" in m for m in msgs))
+
+    def test_time_budget_r2_third_mission_ignored(self):
+        # 60 + 60 + 60 = 180 passes even though a third 60 exists
+        mins = {PACKAGE: (60,), R2_PAGES[1]: (60,), R2_PAGES[2]: (60,), R2_PAGES[3]: (60,)}
+        self.assertFalse(rule(check(make_site(self.tmp, r2_minutes=mins)), "time_budget"))
+
+    def test_archive_fails_without_note(self):
+        self.assertTrue(rule(check(make_site(self.tmp, archive_note=False)), "archive"))
+
+    def test_portal_fails_when_links_missing(self):
+        self.assertTrue(rule(check(make_site(self.tmp, portal_new=False)), "portal"))
+        with tempfile.TemporaryDirectory() as t2:
+            self.assertTrue(rule(check(make_site(t2, portal_archive=False)), "portal"))
+
+    def test_guardrail_note_fails_without_marker(self):
+        self.assertTrue(rule(check(make_site(self.tmp, with_note=False)), "guardrail_note"))
+
+    def test_secret_scan_flags_hex_key_but_not_placeholder(self):
+        root = make_site(self.tmp, extra={"capstone/x/README.md": "SEOUL_API_KEY=YOUR_KEY\n"})
+        self.assertFalse(rule(check(root), "secret_scan"))
+        (root / "capstone/x/README.md").write_text("SEOUL_API_KEY=4a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d\n")
+        self.assertTrue(rule(check(root), "secret_scan"))
+
+    def test_secret_scan_flags_aws_key_in_page(self):
+        root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 50), "<p>AKIAABCDEFGHIJKLMNOP</p>")})
+        self.assertTrue(rule(check(root), "secret_scan"))
+
+    def test_secret_scan_allows_angle_and_sample(self):
+        root = make_site(self.tmp, extra={"capstone/y.txt": "api_key: <your key>\nkey=sample\n"})
+        self.assertFalse(rule(check(root), "secret_scan"))
+
+
+if __name__ == "__main__":
+    unittest.main()
