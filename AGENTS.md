@@ -14,6 +14,7 @@ site compilation step, or automated test suite.
 | `20261116/` | November event site, labs, invitation, brochure, and image assets |
 | `workshop-v2/` | Draft redesigned two-day workshop (shared core, role tracks, seed projects) for team review; published at `/workshop-v2/` |
 | `20261123/` | One-day Hanwha Financial workshop invitation (`eDM.html`) and its logo, published at `/20261123/eDM.html` |
+| `tools/mydata/` | Synthetic MyData generator, validator, kit builder, and November lab guard; not published |
 | `Script/workshop-code/` | Archived slide examples and Korean speaker notes |
 | `tech_doc/` | Supplementary PDFs |
 | `.github/workflows/pages.yml` | Assemble and deploy the published HTML directories |
@@ -87,6 +88,7 @@ change; old numbers in PDF filenames and learner folders are legacy.
 - For site changes, check local links/assets and preview the affected pages at
   the published paths. Test changed browser behavior; use
   `node --check ccw-hands-on-lab/assets/theme.js` when changing that script.
+- When changing November lab pages or `tools/mydata/`, run `python3 -m unittest discover -s tools/mydata/tests -t .` and `python3 tools/mydata/build.py --version <v> && python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip`.
 - No `npm test` or application build exists here; deployment is limited to
   Pages. Workshop commands may require separate learner environments; do not
   run them as repository checks.
