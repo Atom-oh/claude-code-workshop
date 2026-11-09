@@ -572,14 +572,14 @@ code.inline { white-space: normal; overflow-wrap: anywhere; }
 </style>
 <style id="hol-theme">
 html[data-theme="light"]{
-  --bg:#F3F4F7; --bg-card:#FFFFFF; --bg-code:#EEF1F5; --bg-inline:#E4E9EF; --line:#D7DDE5;
-  --orange:#B45309; --orange-dim:rgba(180,83,9,.12);
+  --bg:#F3F4F7; --bg-card:#FFFFFF; --bg-code:#EEF1F5; --bg-inline:#E4E9EF; --line:#8A95A3;
+  --orange:#9A4300; --orange-dim:rgba(180,83,9,.12);
   --green:#1F883D; --green-dim:rgba(31,136,61,.12);
-  --text:#1B2430; --muted:#5B6472; --dim:#75808F;
+  --text:#1B2430; --muted:#3D4654; --dim:#4A5462;
   background:#F3F4F7;
 }
 html[data-theme="light"] [style*="#c9a2ff"]{color:#6b46c1 !important}
-html[data-theme="light"] [style*="#A6ABBE"]{color:#5B6472 !important}
+html[data-theme="light"] [style*="#A6ABBE"]{color:#3D4654 !important}
 #themeToggle{position:fixed;right:16px;bottom:16px;z-index:9999;
 background:var(--bg-card,var(--card,#1B242E));color:var(--orange,#FF9900);
 border:1px solid var(--line,#2A3542);border-radius:999px;padding:9px 16px;
@@ -1118,21 +1118,21 @@ curl -s "https://$DOMAIN/healthz" &amp;&amp; echo " &lt;- 열렸습니다, 이 U
   }
 })();
 </script>
-<button id="themeToggle" type="button" aria-label="테마 전환">라이트 모드</button>
+<button id="themeToggle" type="button" aria-label="프로젝터 모드(라이트)로 전환">프로젝터 모드</button>
 <script>
 (function(){
   var KEY='hol-theme', root=document.documentElement, btn=document.getElementById('themeToggle');
-  function label(){ btn.textContent = root.getAttribute('data-theme')==='light' ? '다크 모드' : '라이트 모드'; }
-  var saved=null; try{saved=localStorage.getItem(KEY);}catch(e){}
-  if(saved==='light'){ root.setAttribute('data-theme','light'); }
-  else if(saved==='dark'){ root.removeAttribute('data-theme'); }
-  label();
+  function label(){ var l=root.getAttribute('data-theme')==='light'; btn.textContent = l ? '다크 모드' : '프로젝터 모드'; btn.setAttribute('aria-label', l ? '다크 모드로 전환' : '프로젝터 모드(라이트)로 전환'); btn.setAttribute('aria-pressed', String(l)); }
+  // One switch for the whole event site: fsi-theme is shared by eDM, portal, labs and decks.
+  function fsiTheme(legacy){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}if(q==='light'||q==='dark'){try{localStorage.setItem('fsi-theme',q)}catch(e){}return q}var s=null;try{s=localStorage.getItem('fsi-theme')||localStorage.getItem(legacy)}catch(e){}return s==='light'?'light':'dark'}
+  function set(l){ if(l){ root.setAttribute('data-theme','light'); } else { root.removeAttribute('data-theme'); } label(); }
+  set(fsiTheme(KEY)==='light');
   btn.addEventListener('click',function(){
-    var light = root.getAttribute('data-theme')==='light';
-    if(light){ root.removeAttribute('data-theme'); } else { root.setAttribute('data-theme','light'); }
-    try{ localStorage.setItem(KEY, light ? 'dark' : 'light'); }catch(e){}
-    label();
+    var light = root.getAttribute('data-theme')!=='light';
+    set(light);
+    try{ localStorage.setItem('fsi-theme', light ? 'light' : 'dark'); localStorage.setItem(KEY, light ? 'light' : 'dark'); }catch(e){}
   });
+  window.addEventListener('storage',function(e){ if(e.key==='fsi-theme'&&(e.newValue==='light'||e.newValue==='dark')) set(e.newValue==='light'); });
 })();
 </script>
 </body>

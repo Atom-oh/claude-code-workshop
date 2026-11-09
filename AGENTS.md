@@ -47,6 +47,11 @@ change; old numbers in learner folders are legacy.
   HTML with the reactive-presentation compiler instead of editing it, then
   strip trailing whitespace from the generated HTML before committing.
 - The Agent SDK lab is a self-paced "SDK" track, not a chapter.
+- Every November page (eDM, portal, labs, capstones, references, reactive
+  decks) opens dark. Light is the projector mode, for rooms where dark slides
+  wash out: one shared `localStorage` key, `fsi-theme`, or `?theme=light` on
+  any URL switches every page. Keep light text at 7:1 or more, accent text at
+  4.5:1 or more, and borders near 3:1; check new light colours against that.
 
 ## Documentation
 

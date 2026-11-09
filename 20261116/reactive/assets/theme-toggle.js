@@ -1,9 +1,11 @@
-/* FSI decks: dark/light theme switch.
+/* FSI decks: dark/light theme switch. Dark is the default; light is the projector
+ * mode (higher contrast), shared with the eDM, portal and labs through fsi-theme.
  * The decks are built dark (`theme.mode: dark`), and every FSI style uses theme
  * tokens, so switching only swaps the framework's `.theme-dark` / `.theme-light`
  * classes on the deck and on slides that carry one (the covers).
  * - Button (top right) or the T key toggles. Slide thumbnails follow too.
- * - ?theme=light|dark in the URL wins, then the last choice (localStorage), then dark.
+ * - ?theme=light|dark in the URL wins (and is saved), then the site-wide choice
+ *   (fsi-theme), then this deck's older key, then dark.
  * - An open presenter view is repainted; other tabs of the deck follow through
  *   the storage event.
  * Loaded once by assets/stepviz.js.
@@ -13,11 +15,12 @@
   if (window.__fsiTheme) return;
   window.__fsiTheme = true;
 
-  var KEY = 'fsi-deck-theme';
+  var KEY = 'fsi-theme';           // shared by every page of the event site
+  var LEGACY = 'fsi-deck-theme';   // read once for choices saved before the shared key
   var btn = null;
 
   function read() {
-    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+    try { return localStorage.getItem(KEY) || localStorage.getItem(LEGACY); } catch (e) { return null; }
   }
   function save(mode) {
     try { localStorage.setItem(KEY, mode); } catch (e) { /* private mode: keep it per page */ }
@@ -26,7 +29,7 @@
   function initial() {
     var q = null;
     try { q = new URLSearchParams(location.search).get('theme'); } catch (e) { /* old browsers */ }
-    if (valid(q)) return q;
+    if (valid(q)) { save(q); return q; }
     var s = read();
     return valid(s) ? s : 'dark';
   }
@@ -44,10 +47,10 @@
     });
     document.documentElement.setAttribute('data-deck-theme', mode);
     if (btn) {
-      var next = mode === 'dark' ? '라이트' : '다크';
+      var next = mode === 'dark' ? '프로젝터 모드(라이트)로 전환' : '다크 모드로 전환';
       btn.textContent = mode === 'dark' ? '☀' : '☾';
-      btn.setAttribute('aria-label', next + ' 테마로 바꾸기 (T)');
-      btn.title = next + ' 테마로 바꾸기 (T)';
+      btn.setAttribute('aria-label', next + ' (T)');
+      btn.title = next + ' (T)';
     }
     repaintPresenter();
   }

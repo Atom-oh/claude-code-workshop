@@ -201,13 +201,13 @@
 
 
 html[data-theme="light"]{
-  --page:#E9EBEF; --mail:#FFFFFF; --card:#F7F8FA; --code:#EEF1F5; --line:#D7DDE5;
-  --text:#1B2430; --muted:#5B6472; --charcoal:#3A4453;
-  --orange:#B45309; --lavender:#6b46c1; --green:#1F883D;
+  --page:#E9EBEF; --mail:#FFFFFF; --card:#F7F8FA; --code:#EEF1F5; --line:#8A95A3;
+  --text:#1B2430; --muted:#3D4654; --charcoal:#2B3440;
+  --orange:#9A4300; --lavender:#6b46c1; --green:#1F883D;
   background:#E9EBEF;
 }
 html[data-theme="light"] [style*="#c9a2ff"]{color:#6b46c1 !important}
-html[data-theme="light"] [style*="#A6ABBE"]{color:#5B6472 !important}
+html[data-theme="light"] [style*="#A6ABBE"]{color:#3D4654 !important}
 #themeToggle{position:fixed;right:16px;bottom:16px;z-index:9999;
 background:var(--bg-card,var(--card,#1B242E));color:var(--orange,#FF9900);
 border:1px solid var(--line,#2A3542);border-radius:999px;padding:9px 16px;
@@ -428,7 +428,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
   <footer class="foot"><div class="who">Claude Code Deep Dive Workshop</div><div>금융 서비스 산업 고객 대상 / 2026.11.16 – 17 / 센터필드 18층 300·301·400·401호</div><div>실습 환경: Amazon EC2 + code-server (Claude Code 사전 설치)</div><div><a href="https://github.com/Atom-oh/claude-code-workshop/tree/main/20261116/slides">강의자료 PDF</a> / <a href="https://github.com/whchoi98/claude-code-workshop/tree/main/tech_doc">기타 Tech Doc</a> / <a href="AWS_CCB_Program_Brochure.pdf">CCB 프로그램 브로셔</a> / <a href="ClaudeCode_Preflight_Check.html">실습 시작 전 확인</a></div></footer>
 </main>
 <div class="sign">Claude Code Deep Dive Workshop · 11월 세션 소개</div>
-<button id="themeToggle" type="button" aria-label="라이트 모드 전환" aria-pressed="false" hidden>라이트 모드</button>
+<button id="themeToggle" type="button" aria-label="프로젝터 모드(라이트)로 전환" aria-pressed="false" hidden>프로젝터 모드</button>
 <script>
 (function () {
   var key = 'hol-theme', root = document.documentElement;
@@ -437,17 +437,20 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
   function apply(light) {
     if (light) root.setAttribute('data-theme', 'light');
     else root.removeAttribute('data-theme');
-    button.textContent = light ? '다크 모드' : '라이트 모드';
+    button.textContent = light ? '다크 모드' : '프로젝터 모드';
     button.setAttribute('aria-pressed', String(light));
-    button.setAttribute('aria-label', light ? '다크 모드 전환' : '라이트 모드 전환');
+    button.setAttribute('aria-label', light ? '다크 모드로 전환' : '프로젝터 모드(라이트)로 전환');
   }
-  var saved = null;
-  try { saved = localStorage.getItem(key); } catch (error) {}
-  apply(saved === 'light');
+  // One switch for the whole event site: fsi-theme is shared by eDM, portal, labs and decks.
+  function fsiTheme(legacy){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}if(q==='light'||q==='dark'){try{localStorage.setItem('fsi-theme',q)}catch(e){}return q}var s=null;try{s=localStorage.getItem('fsi-theme')||localStorage.getItem(legacy)}catch(e){}return s==='light'?'light':'dark'}
+  apply(fsiTheme(key) === 'light');
   button.addEventListener('click', function () {
     var light = root.getAttribute('data-theme') !== 'light';
     apply(light);
-    try { localStorage.setItem(key, light ? 'light' : 'dark'); } catch (error) {}
+    try { localStorage.setItem('fsi-theme', light ? 'light' : 'dark'); localStorage.setItem(key, light ? 'light' : 'dark'); } catch (error) {}
+  });
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'fsi-theme' && (e.newValue === 'light' || e.newValue === 'dark')) apply(e.newValue === 'light');
   });
 })();
 </script>
