@@ -658,6 +658,134 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 .backlinks { margin-top: 14px; font-size: 14px; color: var(--muted); }
 .backlinks a { margin-right: 14px; }
 .cp-item-wrap { margin-top: 6px; }
+/* ==== VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim) ==== */
+/* Paste badges, "어디에 붙여 넣나요?" guide, glossary tips and step-through flow visuals.
+   Markup and data contract: see the comment at the top of the VIZ COMPONENT script. */
+:root {
+  --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF;
+  --viz-bad: #FF6B8B; --viz-chip-bg: #FF9900; --viz-chip-fg: #12181F;
+}
+html.light {
+  --pt-term: #08615A; --pt-claude: #8C3A12; --pt-file: #1A549C; --pt-slack: #5F37B0; --pt-web: #5F37B0;
+  --viz-bad: #B3264A; --viz-chip-bg: #9A4300; --viz-chip-fg: #FFFFFF;
+}
+/* Code blocks stay dark in both themes, so their badges keep the dark palette. */
+.code-wrap { --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF; }
+.code-head { flex-wrap: wrap; gap: 6px 10px; }
+.pbadge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; line-height: 1.3;
+  padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pbadge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.code-head .pbadge { margin-right: auto; }
+.code-head .copy-btn { margin-left: auto; }
+.pbadge.t-term { color: var(--pt-term); } .pbadge.t-claude { color: var(--pt-claude); }
+.pbadge.t-file { color: var(--pt-file); } .pbadge.t-slack { color: var(--pt-slack); } .pbadge.t-web { color: var(--pt-web); }
+.pb-strip { padding: 6px 14px; font-size: 12.5px; color: #A6ABBE; border-bottom: 1px solid #2A3542; background: rgba(125, 183, 255, 0.06); }
+.pb-strip code { font-family: var(--font-code); color: #7DB7FF; overflow-wrap: anywhere; }
+
+.pg { margin: 0 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); }
+.pg > summary { cursor: pointer; padding: 14px 18px; font-weight: 800; font-size: 15px; color: var(--text); list-style: none; }
+.pg > summary::-webkit-details-marker { display: none; }
+.pg > summary::before { content: "▸ "; color: var(--orange); }
+.pg[open] > summary::before { content: "▾ "; }
+.pg > summary span { font-weight: 400; font-size: 13.5px; color: var(--muted); margin-left: 6px; }
+.pg-body { padding: 0 18px 18px; }
+.pg-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.pg-legend button { font-family: var(--font-body); background: transparent; cursor: pointer; }
+.pg-legend button[aria-pressed="true"] { background: var(--bg-inline); box-shadow: 0 0 0 2px currentColor inset; }
+.pg-map { display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 3fr); gap: 10px; align-items: start; font-size: 13px; }
+.pg-box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--muted); min-width: 0; }
+.pg-box b { display: block; color: var(--text); font-size: 13.5px; }
+.pg-arrow { align-self: center; text-align: center; color: var(--dim); font-weight: 800; }
+.pg-ide { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px; margin-top: 8px; }
+.pg-term .pg-box { margin-top: 8px; }
+.pg-zone.on { border-color: var(--hl, var(--orange)); box-shadow: 0 0 0 3px var(--orange-dim); }
+.pg-zone.on > b { color: var(--hl, var(--orange)); }
+.pg-cap { margin-top: 12px; color: var(--text); font-size: 14px; min-height: 1.75em; }
+@media (max-width: 620px) {
+  .pg-map { grid-template-columns: minmax(0, 1fr); }
+  .pg-arrow { transform: rotate(90deg); }
+  .pg-ide { grid-template-columns: minmax(0, 1fr); }
+}
+
+.gl { border-bottom: 1px dotted var(--orange); cursor: help; position: relative; }
+.gl:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
+.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: 300px;
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--orange); border-radius: 8px; padding: 8px 12px;
+  font-size: 13px; font-weight: 400; line-height: 1.6; white-space: normal; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+.gl:hover .gl-tip, .gl:focus .gl-tip, .gl:focus-within .gl-tip { display: block; }
+@media (max-width: 900px) {
+  .gl-tip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
+}
+details.gl-more { margin: 0 0 40px; color: var(--muted); font-size: 14px; }
+details.gl-more summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+details.gl-more dl { margin-top: 8px; }
+details.gl-more dt { color: var(--text); font-weight: 800; margin-top: 8px; }
+details.gl-more dd { margin: 0; }
+
+.viz { margin: 18px 0 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); padding: 16px 18px; }
+.viz-title { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; color: var(--orange); }
+.viz-row { display: flex; align-items: stretch; margin: 14px 0 10px; }
+.viz-node { flex: 1 1 0; min-width: 0; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 8px;
+  text-align: center; background: var(--bg); color: var(--muted); transition: border-color 0.2s, box-shadow 0.2s; }
+.viz-node .ic { display: block; width: 40px; height: 40px; margin: 0 auto 6px; }
+.viz-node img.ic { border-radius: 6px; }
+.viz-node img.ic.tile { background: #FFFFFF; padding: 4px; }
+.viz-node .lb { display: block; font-weight: 800; font-size: 13.5px; color: var(--text); line-height: 1.35; }
+.viz-node .sb { display: block; font-size: 12px; color: var(--muted); font-family: var(--font-code); overflow-wrap: anywhere; line-height: 1.45; margin-top: 3px; }
+.viz-node .lk { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 10px; margin-top: 6px; font-size: 12.5px; font-weight: 700; }
+.viz-node.on { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); color: var(--orange); }
+.viz-node.ok { border-color: var(--green); color: var(--green); }
+.viz-node.bad { border-color: var(--viz-bad); color: var(--viz-bad); }
+.viz-node.ok .sb, .viz-node.bad .sb { color: inherit; }
+.viz-arrow { flex: 0 1 72px; min-width: 44px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
+.viz-arrow .el { font-size: 11px; line-height: 1.3; text-align: center; color: var(--dim); font-family: var(--font-code); overflow-wrap: anywhere; min-height: 1.3em; }
+.viz-arrow .ln { position: relative; height: 24px; }
+.viz-arrow .ln::before { content: ""; position: absolute; left: 0; right: 7px; top: 11px; border-top: 2px dashed var(--line); }
+.viz-arrow .ln::after { content: ""; position: absolute; right: 0; top: 6px; border: 6px solid transparent; border-left: 8px solid var(--line); border-right: 0; }
+.viz-arrow.done .ln::before { border-top-style: solid; }
+.viz-arrow.on .ln::before { border-top: 2px solid var(--orange); }
+.viz-arrow.on .ln::after { border-left-color: var(--orange); }
+.viz-arrow.on .el { color: var(--orange); font-weight: 700; }
+.viz-chip { position: absolute; top: 1px; left: 100%; transform: translateX(-100%); z-index: 2; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; font-family: var(--font-code); font-size: 11px; font-weight: 800; line-height: 20px; padding: 0 7px;
+  border-radius: 5px; background: var(--viz-chip-bg); color: var(--viz-chip-fg); animation: viz-mx 1.4s ease-in-out both; }
+@keyframes viz-mx { from { left: 0; transform: translateX(0); opacity: 0.3; } to { left: 100%; transform: translateX(-100%); opacity: 1; } }
+@keyframes viz-my { from { top: 0; transform: translateY(0); opacity: 0.3; } to { top: 100%; transform: translateY(-100%); opacity: 1; } }
+.viz-side { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.viz-side .viz-node { flex: 1 1 160px; display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 10px; }
+.viz-side .viz-node .ic { width: 28px; height: 28px; margin: 0; flex: none; }
+.viz-cap { border-left: 3px solid var(--orange); background: var(--orange-dim); border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 4px 0 12px; font-size: 14.5px; color: var(--text); }
+.viz-cap .q { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; color: var(--orange); margin-bottom: 2px; }
+.viz-cap code, .viz-all code { font-family: var(--font-code); font-size: 0.88em; background: var(--bg-inline); color: var(--orange); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+.viz-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.viz-ctl button { font-family: var(--font-body); font-size: 13px; font-weight: 700; color: var(--text); background: var(--bg-inline);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; min-height: 32px; }
+.viz-ctl button:hover { border-color: var(--orange); color: var(--orange); }
+.viz-ctl button:disabled { opacity: 0.45; cursor: default; }
+.viz-ctl .dots { display: flex; flex-wrap: wrap; gap: 6px; }
+.viz-ctl .dots button { min-width: 32px; padding: 5px 0; }
+.viz-ctl .dots button[aria-current="step"] { background: var(--orange); border-color: var(--orange); color: var(--viz-chip-fg); }
+html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
+.viz-all { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+.viz-all summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+.viz-all ol { padding-left: 20px; margin-top: 6px; }
+.viz-all li { margin: 4px 0; }
+/* Narrow diagrams: the script adds .vert when the box is too narrow for one row. */
+.viz.vert .viz-row { flex-direction: column; }
+.viz.vert .viz-arrow { flex: 0 0 auto; max-width: none; height: 48px; padding: 0; }
+.viz.vert .viz-arrow .ln { position: absolute; left: 50%; top: 0; bottom: 0; width: 24px; height: auto; margin-left: -12px; }
+.viz.vert .viz-arrow .ln::before { left: 11px; right: auto; top: 0; bottom: 7px; border-top: 0; border-left: 2px dashed var(--line); }
+.viz.vert .viz-arrow .ln::after { right: auto; left: 6px; top: auto; bottom: 0; border: 6px solid transparent; border-top: 8px solid var(--line); border-bottom: 0; }
+.viz.vert .viz-arrow.done .ln::before { border-left-style: solid; }
+.viz.vert .viz-arrow.on .ln::before { border-left: 2px solid var(--orange); }
+.viz.vert .viz-arrow.on .ln::after { border-top-color: var(--orange); }
+.viz.vert .viz-arrow .el { position: absolute; left: calc(50% + 18px); right: 0; top: 50%; transform: translateY(-50%); text-align: left; }
+.viz.vert .viz-chip { top: 100%; left: auto; right: calc(50% + 10px); transform: translateY(-100%); max-width: calc(50% - 14px); animation-name: viz-my; }
+@media (prefers-reduced-motion: reduce) {
+  .viz-chip { animation: none !important; }
+  .viz-node, .pg-zone { transition: none !important; }
+}
+/* ==== VIZ COMPONENT v1 END ==== */
 </style>
 </head>
 <body>
@@ -668,7 +796,7 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
   <h1>R1-B 서울 부동산 시세: 공공데이터 MCP와 에이전트, 가드레일 만들기</h1>
   <div class="subtitle">서울 열린데이터광장의 실거래가 API를 내 MCP 서버로 감싸고, 그 위에 agent 2개와 키를 지키는 가드레일을 세운다</div>
   <p class="lede">
-    서울시 부동산 실거래가 정보를 다루는 <strong>MCP 서버</strong>(골격 제공), 시세를 정리하고 이상 거래를 찾는 <strong>자기 Subagent 2개</strong>,
+    서울시 부동산 실거래가 정보를 다루는 <strong><span class="gl" data-gl="mcp">MCP</span> 서버</strong>(골격 제공), 시세를 정리하고 이상 거래를 찾는 <strong>자기 Subagent 2개</strong>,
     API 키가 파일이나 커밋에 들어가지 않게 하고 호출 대상을 <code class="inline">openapi.seoul.go.kr</code>로 묶는 <strong>가드레일</strong>을 <code class="inline">~/claude-lab/capstone/</code>에 만듭니다.
     키는 직접 신청하고, 나오기 전까지는 합성 샘플 데이터(mock 모드)로 끝까지 진행할 수 있습니다.
   </p>
@@ -691,11 +819,11 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
     <span class="timeline-label">R1-B</span>
     <div class="segments" id="segments">
       <button class="seg" data-task="task-00" style="flex:5" title="키 발급 신청"><span class="fill"></span><span class="seg-txt">00 키 신청</span></button>
-      <button class="seg" data-task="task-01" style="flex:20" title="골격 받기와 mock 연결"><span class="fill"></span><span class="seg-txt">01 골격과 mock 연결</span></button>
-      <button class="seg" data-task="task-02" style="flex:25" title="자기 agent 2개"><span class="fill"></span><span class="seg-txt">02 자기 agent 2개</span></button>
+      <button class="seg" data-task="task-01" style="flex:15" title="골격 받기와 mock 연결"><span class="fill"></span><span class="seg-txt">01 골격과 mock 연결</span></button>
+      <button class="seg" data-task="task-02" style="flex:20" title="자기 agent 2개"><span class="fill"></span><span class="seg-txt">02 자기 agent 2개</span></button>
       <button class="seg" data-task="task-03" style="flex:25" title="가드레일"><span class="fill"></span><span class="seg-txt">03 가드레일</span></button>
       <button class="seg" data-task="task-04" style="flex:15" title="막히는 것 확인"><span class="fill"></span><span class="seg-txt">04 막히는 것 확인</span></button>
-      <button class="seg" data-task="task-05" style="flex:10" title="실호출로 전환"><span class="fill"></span><span class="seg-txt">05 실호출</span></button>
+      <button class="seg" data-task="task-05" style="flex:5" title="실호출로 전환"><span class="fill"></span><span class="seg-txt">05 실호출</span></button>
       <button class="seg" data-task="task-06" style="flex:10" title="R1 정리"><span class="fill"></span><span class="seg-txt">06 R1 정리</span></button>
     </div>
   </div>
@@ -715,6 +843,9 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
 </aside>
 
 <main>
+
+<div class="paste-guide"></div>
+<div class="gl-list"></div>
 
 <section class="task" id="task-00" data-min="5">
   <div class="task-head"><span class="task-num">00</span><h2>키 발급 신청</h2><span class="time-badge">5분</span></div>
@@ -741,6 +872,8 @@ html.light p.round { color: #6B3FC4; border-color: #C9B5EE; }
   <p class="task-goal">MCP 서버 골격 세 파일을 받고, 가상환경에 <code class="inline">mcp</code>를 설치한 뒤 mock 모드로 Claude Code에 연결합니다.</p>
   <p class="body">골격은 <code class="inline">server.py</code>(MCP 서버, 도구 <code class="inline">search_trades</code> 하나), <code class="inline">sample.json</code>(합성 데이터 90행, 자치구 5개, 2026년 9월과 10월), <code class="inline">README.md</code>(API 명세 요약과 출처)입니다. 샘플의 필드 이름은 실제 API 응답과 같으므로 mock에서 만든 agent가 실호출에서도 그대로 동작합니다. 금액은 지어낸 값이고 건물명은 모두 "샘플"로 시작합니다.</p>
   <div class="step-title"><span class="step-no">1</span>골격 받기</div>
+  <p class="body"><strong>이 단계에서 하는 일:</strong> 내 MCP 서버의 재료 세 파일을 내 EC2로 받습니다. <strong>왜:</strong> 서버 코드를 처음부터 쓰지 않고, 받은 골격을 등록해 agent와 가드레일 만들기에 시간을 씁니다.</p>
+  <div class="viz" data-viz="skeleton-download"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/claude-lab/capstone/seoul-realestate ~/claude-lab/capstone/.claude/agents ~/claude-lab/capstone/.claude/hooks
@@ -750,7 +883,8 @@ for f in server.py sample.json README.md; do curl -fsSL "$BASE/$f" -o "$f" || ec
 ls -l</code></pre>
   </div>
   <div class="step-title"><span class="step-no">2</span>가상환경과 mcp 설치, mock 시험</div>
-  <p class="body"><code class="inline">mcp</code> 패키지는 Python 3.10 이상이 필요합니다. 시스템 <code class="inline">python3</code>가 더 낮거나 가상환경을 만들지 못하면 두 번째 줄이 uv를 설치하고 Python 3.12 가상환경을 대신 만듭니다.</p>
+  <p class="body"><code class="inline">mcp</code> 패키지는 Python 3.10 이상이 필요합니다. 시스템 <code class="inline">python3</code>가 더 낮거나 가상환경을 만들지 못하면 두 번째 줄이 uv를 설치하고 Python 3.12 가상환경을 대신 만듭니다. 이 블록도 인터넷에서 내려받는 단계라 그림으로 먼저 봅니다.</p>
+  <div class="viz" data-viz="venv-install"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone/seoul-realestate
@@ -767,7 +901,7 @@ SEOUL_MOCK=1 .venv/bin/python -c 'import server, json; print(json.dumps(server.s
     <tr><td>키 있음</td><td><code class="inline">openapi.seoul.go.kr</code> 실호출. 1000건씩 최대 5번(호출 횟수 상한), 키는 반환값과 오류 메시지에 넣지 않는다</td></tr>
   </tbody></table>
   <div class="step-title"><span class="step-no">3</span>MCP 서버 등록 (mock)</div>
-  <p class="body">등록은 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더에서 합니다. 범위를 주지 않으면 local(이 폴더에서만 쓰고 <code class="inline">~/.claude.json</code>에 저장)입니다. stdio 서버는 <code class="inline">--</code> 뒤에 실행 명령을 씁니다. <code class="inline">--env</code> 바로 뒤에 서버 이름을 두면 이름이 또 하나의 환경 변수로 읽힐 수 있어서 <code class="inline">--env</code>와 이름 사이에 <code class="inline">--transport stdio</code>를 둡니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
+  <p class="body">등록은 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더에서 합니다. 범위를 주지 않으면 <span class="gl" data-gl="local">local</span>(이 폴더에서만 쓰고 <code class="inline">~/.claude.json</code>에 저장)입니다. stdio 서버는 <code class="inline">--</code> 뒤에 실행 명령을 씁니다. <code class="inline">--env</code> 바로 뒤에 서버 이름을 두면 이름이 또 하나의 환경 변수로 읽힐 수 있어서 <code class="inline">--env</code>와 이름 사이에 <code class="inline">--transport stdio</code>를 둡니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -881,8 +1015,10 @@ EOF</code></pre>
 
 <section class="task" id="task-03" data-min="25">
   <div class="task-head"><span class="task-num">03</span><h2>가드레일</h2><span class="time-badge">25분</span></div>
-  <p class="task-goal">API 키가 파일, 명령, 커밋, 프롬프트에 들어가는 것을 막는 훅과, Claude의 호출 대상을 <code class="inline">openapi.seoul.go.kr</code>로 묶는 훅을 fail-closed로 등록합니다.</p>
+  <p class="task-goal">API 키가 파일, 명령, 커밋, 프롬프트에 들어가는 것을 막는 <span class="gl" data-gl="hook">훅</span>과, Claude의 호출 대상을 <code class="inline">openapi.seoul.go.kr</code>로 묶는 훅을 <span class="gl" data-gl="failclosed">fail-closed</span>로 등록합니다.</p>
   <p class="body">원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일과 DLP</a>와 같습니다. 훅에서 <strong>exit 2가 차단</strong>이고, 오류 경로(jq 없음, 입력 해석 실패, grep 오류)에서도 exit 2를 내야 fail-closed입니다. 키는 05 단계에서 <code class="inline">claude mcp add --env</code>로 사용자 설정(<code class="inline">~/.claude.json</code>, 작업 폴더 밖)에만 넣습니다. 그래서 키 훅은 그 파일에서 등록된 키 값을 읽어 와 같은 값이 보이면 막고, 그 파일 자체를 열려는 요청도 막습니다.</p>
+  <p class="body">아래 그림은 01에서 연결한 MCP 서버, 05에서 넣을 키, 이 단계에서 만드는 두 훅이 어디에 있고 무엇을 막는지 한 장으로 보여 줍니다.</p>
+  <div class="viz" data-viz="mcp-flow"></div>
   <div class="step-title"><span class="step-no">1</span>키 차단 훅: key-guard.sh</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -988,7 +1124,7 @@ jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></p
   </div>
   <div class="callout tip">
     <span class="co-title">R2에서 쓰입니다</span>
-    이 폴더의 <code class="inline">.claude/agents/</code>, <code class="inline">.claude/hooks/</code>, <code class="inline">.claude/settings.json</code>, <code class="inline">seoul-realestate/</code>가 R2에서 plugin으로 묶을 재료입니다. 키는 plugin 저장소에 들어가지 않고 각 사용자의 MCP 등록에만 있습니다.
+    이 폴더의 <code class="inline">.claude/agents/</code>, <code class="inline">.claude/hooks/</code>, <code class="inline">.claude/settings.json</code>, <code class="inline">seoul-realestate/</code>가 R2에서 <span class="gl" data-gl="plugin">plugin</span>으로 묶을 재료입니다. 키는 plugin 저장소에 들어가지 않고 각 사용자의 MCP 등록에만 있습니다.
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
@@ -1209,5 +1345,534 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
   });
 })();
 </script>
+<script type="application/json" id="viz-data">
+{
+ "skeleton-download": {
+  "title": "TASK 01 골격 받기: 워크숍 웹 사이트에서 내 EC2로 (S3가 아닙니다)",
+  "nodes": [
+   {
+    "id": "site",
+    "ic": "globe",
+    "lb": "워크숍 웹 사이트",
+    "sb": "www.atomai.click (GitHub Pages)"
+   },
+   {
+    "id": "ec2",
+    "img": "images/aws-icons/Arch_Amazon-EC2_48.svg",
+    "lb": "내 실습 EC2",
+    "sb": "~/claude-lab/capstone/seoul-realestate/"
+   }
+  ],
+  "edges": [
+   "curl -fsSL (HTTPS)"
+  ],
+  "side": [
+   {
+    "id": "f1",
+    "ic": "doc",
+    "lb": "server.py",
+    "sb": "MCP 서버, 도구 search_trades"
+   },
+   {
+    "id": "f2",
+    "ic": "doc",
+    "lb": "sample.json",
+    "sb": "합성 데이터 90행"
+   },
+   {
+    "id": "f3",
+    "ic": "doc",
+    "lb": "README.md",
+    "sb": "API 명세 요약과 출처"
+   }
+  ],
+  "steps": [
+   {
+    "t": "폴더 만들기",
+    "on": [
+     "ec2"
+    ],
+    "cap": "`mkdir -p`로 작업 폴더 안에 `seoul-realestate/`와 `.claude/agents`, `.claude/hooks`를 만들고 `seoul-realestate/`로 들어갑니다."
+   },
+   {
+    "t": "server.py 받기",
+    "on": [
+     "site",
+     "ec2",
+     "f1"
+    ],
+    "edge": 0,
+    "chip": "server.py",
+    "cap": "`for` 반복문이 세 파일을 차례로 받습니다. `curl -fsSL`은 `BASE` 주소(이 워크숍 페이지가 올라가 있는 웹 사이트)에서 HTTPS로 파일을 받아 같은 이름으로 저장합니다. S3 버킷이 아니라 공개 웹 페이지라서 AWS 명령이나 자격 증명이 필요 없습니다."
+   },
+   {
+    "t": "sample.json 받기",
+    "on": [
+     "site",
+     "ec2",
+     "f2"
+    ],
+    "ok": [
+     "f1"
+    ],
+    "edge": 0,
+    "chip": "sample.json",
+    "cap": "`sample.json`은 mock 모드에서 쓰는 합성 데이터 90행입니다. 필드 이름은 실제 API 응답과 같고, 금액은 지어낸 값이며 건물명은 모두 \"샘플\"로 시작합니다."
+   },
+   {
+    "t": "README.md 받기",
+    "on": [
+     "site",
+     "ec2",
+     "f3"
+    ],
+    "ok": [
+     "f1",
+     "f2"
+    ],
+    "edge": 0,
+    "chip": "README.md",
+    "cap": "`README.md`에는 API 명세 요약과 출처가 있습니다. 받기에 실패한 파일이 있으면 `받기 실패: 파일이름`이 출력되니 그 줄만 다시 실행합니다."
+   },
+   {
+    "t": "확인",
+    "on": [
+     "ec2"
+    ],
+    "ok": [
+     "f1",
+     "f2",
+     "f3"
+    ],
+    "cap": "`ls -l`에 세 파일이 보이면 됩니다. 다음 블록에서 이 폴더에 Python 가상환경(`.venv`)을 만들고 mcp 패키지를 설치합니다."
+   }
+  ]
+ },
+ "venv-install": {
+  "title": "TASK 01 Step 2: 가상환경에 mcp 설치 (인터넷에서 내려받기)",
+  "nodes": [
+   {
+    "id": "pypi",
+    "ic": "globe",
+    "lb": "Python 패키지 저장소",
+    "sb": "PyPI (pip 기본 저장소)"
+   },
+   {
+    "id": "venv",
+    "img": "images/aws-icons/Arch_Amazon-EC2_48.svg",
+    "lb": "내 EC2의 .venv",
+    "sb": "seoul-realestate/.venv"
+   },
+   {
+    "id": "srv",
+    "ic": "plug",
+    "lb": "server.py (mock)",
+    "sb": "SEOUL_MOCK=1"
+   }
+  ],
+  "edges": [
+   "pip install mcp",
+   "import server"
+  ],
+  "side": [
+   {
+    "id": "uv",
+    "ic": "globe",
+    "lb": "uv 설치 스크립트",
+    "sb": "astral.sh, Python이 3.10 미만일 때만"
+   }
+  ],
+  "steps": [
+   {
+    "t": "가상환경 만들기",
+    "on": [
+     "venv"
+    ],
+    "cap": "`python3 -m venv .venv`가 이 폴더 전용 Python 환경을 만들고, 버전이 3.10 이상인지 검사합니다. `mcp` 패키지가 Python 3.10 이상을 요구하기 때문입니다."
+   },
+   {
+    "t": "3.10 미만이면 uv로",
+    "on": [
+     "uv",
+     "venv"
+    ],
+    "cap": "검사에 실패하면 `.venv`를 지우고, `curl`로 astral.sh의 설치 스크립트를 받아 uv를 `~/.local/bin`에 설치한 뒤 `uv venv -p 3.12`로 Python 3.12 가상환경을 다시 만듭니다. 3.10 이상이면 이 부분은 실행되지 않습니다."
+   },
+   {
+    "t": "mcp 내려받기",
+    "on": [
+     "pypi",
+     "venv"
+    ],
+    "edge": 0,
+    "chip": "mcp>=1.2,<2.4",
+    "cap": "`.venv/bin/pip install`이 `mcp` 패키지를 내려받아 시스템이 아닌 `.venv` 안에만 설치합니다. 버전 범위 `>=1.2,<2.4`는 시험한 1.30.0과 2.3.0을 포함합니다."
+   },
+   {
+    "t": "mock 시험",
+    "on": [
+     "venv"
+    ],
+    "ok": [
+     "srv"
+    ],
+    "edge": 1,
+    "cap": "`SEOUL_MOCK=1`로 `server.search_trades(\"강남구\", \"202609\", 2)`를 직접 불러 `sample.json`의 거래 2건이 나오는지 봅니다. 아직 Claude Code는 끼지 않았습니다. Step 3에서 이 서버를 Claude Code에 등록합니다."
+   }
+  ]
+ },
+ "mcp-flow": {
+  "title": "R1-B 전체 흐름: Claude, 내 MCP 서버, 서울 API, 그리고 키의 자리",
+  "nodes": [
+   {
+    "id": "cl",
+    "ic": "bot",
+    "lb": "Claude",
+    "sb": "price-summarizer, anomaly-checker"
+   },
+   {
+    "id": "mcp",
+    "ic": "plug",
+    "lb": "내 MCP 서버",
+    "sb": "server.py, search_trades"
+   },
+   {
+    "id": "src",
+    "ic": "doc",
+    "lb": "sample.json",
+    "sb": "mock 합성 데이터"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "결과",
+    "sb": "시세 표, 이상 거래 후보"
+   }
+  ],
+  "edges": [
+   "도구 호출",
+   "키 없으면 mock",
+   "거래 목록"
+  ],
+  "side": [
+   {
+    "id": "kj",
+    "ic": "key",
+    "lb": "~/.claude.json",
+    "sb": "SEOUL_API_KEY (claude mcp add --env)"
+   },
+   {
+    "id": "kg",
+    "ic": "shield",
+    "lb": "key-guard.sh",
+    "sb": "키 값, 키 파일, 환경 변수 엿보기 차단"
+   },
+   {
+    "id": "ng",
+    "ic": "shield",
+    "lb": "net-guard.sh",
+    "sb": "openapi.seoul.go.kr 밖 호출 차단"
+   }
+  ],
+  "steps": [
+   {
+    "t": "mock으로 도구 호출",
+    "on": [
+     "cl",
+     "mcp",
+     "src"
+    ],
+    "edge": [
+     0,
+     1
+    ],
+    "chip": "search_trades",
+    "cap": "agent가 `search_trades`를 부르면 Claude Code가 등록된 MCP 서버(`server.py`)에 요청을 넘깁니다. 키가 없거나 `SEOUL_MOCK=1`이면 서버는 `sample.json`에서 찾습니다(01 단계)."
+   },
+   {
+    "t": "결과가 돌아옴",
+    "on": [
+     "src",
+     "res",
+     "cl"
+    ],
+    "edge": 2,
+    "chip": "거래 목록",
+    "cap": "찾은 거래가 서버를 거쳐 Claude에게 돌아오고, agent가 시세 표나 이상 거래 후보로 정리합니다. 샘플과 실제 API의 필드 이름이 같아서 실호출로 바꿔도 agent는 그대로입니다."
+   },
+   {
+    "t": "키는 어디에?",
+    "on": [
+     "kj",
+     "mcp"
+    ],
+    "cap": "05에서 `claude mcp add --env`로 넣은 키는 사용자 설정 `~/.claude.json`(작업 폴더 밖)에만 저장되고, MCP 서버가 뜰 때 `SEOUL_API_KEY` 환경 변수로 넘어갑니다. 파일, 프롬프트, 커밋에는 쓰지 않습니다."
+   },
+   {
+    "t": "실호출 (05 단계)",
+    "on": [
+     "cl",
+     "mcp",
+     "src",
+     "kj"
+    ],
+    "edge": 1,
+    "chip": "키가 든 URL",
+    "set": {
+     "src": {
+      "ic": "globe",
+      "lb": "서울 열린데이터광장 API",
+      "sb": "http://openapi.seoul.go.kr:8088"
+     }
+    },
+    "cap": "키가 있으면 서버가 `BASE_URL` 한 곳(`openapi.seoul.go.kr`)만 부릅니다. 이 API는 평문 HTTP이고 키가 URL 경로에 들어가므로 믿을 수 없는 네트워크에서는 실호출하지 않습니다. 서버는 키를 반환값과 오류 메시지에 넣지 않습니다."
+   },
+   {
+    "t": "키를 새게 하려는 요청",
+    "on": [
+     "cl"
+    ],
+    "bad": [
+     "kg",
+     "res"
+    ],
+    "set": {
+     "res": {
+      "lb": "차단 (exit 2)",
+      "sb": "KEY: ..."
+     }
+    },
+    "cap": "키를 파일에 적게 하거나, `~/.claude.json`을 열거나, `ps e`로 환경 변수를 엿보는 요청은 `key-guard.sh`가 프롬프트 단계(`UserPromptSubmit`)나 도구 호출 직전(`PreToolUse`)에 `exit 2`로 막습니다. deny 규칙도 `Read(~/.claude.json)`을 따로 막습니다."
+   },
+   {
+    "t": "다른 호스트 호출",
+    "on": [
+     "cl"
+    ],
+    "bad": [
+     "ng",
+     "res"
+    ],
+    "set": {
+     "res": {
+      "lb": "차단 (exit 2)",
+      "sb": "NET: 허용되지 않은 호출 대상"
+     }
+    },
+    "cap": "Bash나 WebFetch로 `openapi.seoul.go.kr`이 아닌 곳을 부르면 `net-guard.sh`가 막습니다. MCP 서버가 직접 보내는 요청은 훅이 보지 않아서 `server.py`의 `BASE_URL`로 따로 묶어 둡니다."
+   }
+  ]
+ }
+}
+</script>
+<!-- VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim, page data lives in #viz-data) -->
+<script>
+/* VIZ COMPONENT v1: how a page uses it
+   1) Paste badges: automatic. Every .code-wrap (except .output) gets a badge from its .code-label text:
+      "Terminal..." -> 터미널, "Claude 세션..." -> Claude 세션, "Slack..." -> Slack, a label with 파일 -> 파일 내용,
+      a label with 브라우저 or 설치 창 -> 브라우저. Override with <div class="code-wrap" data-paste="term|claude|file|slack|web"
+      data-paste-path="~/x/y.md">. Terminal blocks that run cat > PATH << get a strip naming the file they create.
+   2) Paste guide: <div class="paste-guide" data-types="term claude file"></div> (data-types optional; default = badge
+      types found on the page). Renders the 노트북 브라우저 -> code-server(EC2) -> 편집기/터미널/Claude 세션 schematic.
+   3) Glossary: <span class="gl" data-gl="hook">훅</span> shows the GL definition on hover, focus or tap.
+      <div class="gl-list"></div> renders a "더 알아보기" list of the terms used on the page.
+   4) Flow and copy visuals: <div class="viz" data-viz="NAME"></div> plus one page-level
+      JSON block (script type="application/json" id="viz-data") holding {"NAME": {...}}, where a diagram is
+      { "title": "...", "nodes": [{"id","lb","sb","ic": shape | "img": "images/aws-icons/x.svg", "tile": true, "links": [["text","href"]]}],
+        "edges": ["label between node 1 and 2", ...], "side": [nodes shown under the row, no arrows],
+        "steps": [{"t": "short title", "cap": "caption, `code` allowed", "on": [ids], "ok": [ids], "bad": [ids],
+                   "edge": 0 | [0, 1], "chip": "file moving along that edge (copy mode)", "set": {"id": {"lb","sb"}}}] }
+      Shapes: browser server folder doc terminal chat plug globe shield key lock user bot result.
+      Buttons: 이전, 재생 (one pass, no loop), 다음, numbered steps. prefers-reduced-motion: opens on the last step, no 재생. */
+(function () {
+  "use strict";
+  var TYPES = {
+    term: { lb: "터미널", zone: "term", cap: "code-server 아래쪽 Terminal 창(내 EC2의 리눅스 셸)에 붙여 넣고 Enter를 누릅니다. 여러 줄 블록도 통째로 붙여 넣으면 됩니다." },
+    claude: { lb: "Claude 세션", zone: "claude", cap: "터미널에서 claude를 실행한 뒤 나오는 프롬프트 칸에 붙여 넣습니다. 셸 명령이 아니라 Claude에게 보내는 요청입니다." },
+    file: { lb: "파일 내용", zone: "editor", cap: "code-server 편집기에서 블록 위에 적힌 경로의 파일을 열고, 이 내용을 넣어 저장합니다." },
+    slack: { lb: "Slack 메시지", zone: "browser", cap: "내 노트북 브라우저의 Slack 워크숍 채널 메시지 칸에 붙여 넣습니다. 실습 EC2에는 들어가지 않습니다." },
+    web: { lb: "브라우저", zone: "browser", cap: "내 노트북 브라우저의 다른 탭이나 창(예: 설치 창)에 넣습니다. 터미널에 붙여 넣는 명령이 아닙니다." }
+  };
+  var GL = {
+    hook: ["훅", "Claude Code가 프롬프트를 받을 때나 도구를 쓰기 직전 같은 정해진 순간에 자동으로 실행하는 내 스크립트입니다. exit 2로 끝나면 그 동작을 막습니다."],
+    mcp: ["MCP", "Model Context Protocol. Claude Code에 외부 데이터와 도구를 붙이는 연결 방식입니다. MCP 서버가 도구(예: search_trades)를 내놓으면 Claude가 그 도구를 부릅니다."],
+    plugin: ["plugin", "agents, skills, 훅, MCP 설정을 한 폴더에 묶어 설치 한 줄로 나눠 주는 단위입니다."],
+    marketplace: ["marketplace", "설치할 수 있는 plugin 목록(marketplace.json)을 담은 폴더나 git 저장소입니다. 추가한 뒤 plugin이름@마켓플레이스이름으로 설치합니다."],
+    userConfig: ["userConfig", "plugin을 설치할 때 키 같은 값을 묻는 칸입니다. sensitive로 둔 값은 설정 파일이 아닌 비밀 저장소에 들어갑니다."],
+    failclosed: ["fail-closed", "검사기가 오류를 내거나 아예 실행되지 못해도 통과가 아니라 차단으로 끝나게 하는 설계입니다. 이 실습에서는 오류 경로의 exit 2와 onFailure: block이 맡습니다."],
+    local: ["local 범위", "claude mcp add에 범위를 주지 않을 때의 기본값입니다. 등록한 폴더에서만 보이고, 설정은 ~/.claude.json에 저장됩니다."],
+    harness: ["AgentCore harness", "모델, 시스템 프롬프트, 도구를 설정 파일로 정하면 AgentCore가 에이전트 루프를 돌려 주는 방식입니다."]
+  };
+  var P = {
+    browser: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M6 6.5h.01M8.5 6.5h.01"/>',
+    server: '<rect x="4" y="3" width="16" height="7" rx="1.5"/><rect x="4" y="14" width="16" height="7" rx="1.5"/><path d="M8 6.5h.01M8 17.5h.01"/>',
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+    terminal: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+    plug: '<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+    shield: '<path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    key: '<circle cx="8" cy="14" r="4"/><path d="M11 11l9-9M16 6l3 3M14 8l2 2"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    bot: '<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 13h.01M15 13h.01"/>',
+    result: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+  };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function md(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function shape(name) { return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[name] || P.result) + "</svg>"; }
+
+  /* 1) paste badges */
+  var found = {};
+  document.querySelectorAll(".code-wrap").forEach(function (w) {
+    if (w.classList.contains("output")) return;
+    var head = w.querySelector(".code-head"), label = w.querySelector(".code-label");
+    if (!head) return;
+    var t = w.getAttribute("data-paste"), txt = label ? label.textContent : "";
+    if (!t) t = /^\s*terminal/i.test(txt) ? "term" : /^\s*Claude 세션/.test(txt) ? "claude" : /^\s*Slack/i.test(txt) ? "slack" : /파일/.test(txt) ? "file" : /브라우저|설치 창/.test(txt) ? "web" : "";
+    if (!TYPES[t]) return;
+    found[t] = true;
+    var b = el("span", "pbadge t-" + t, "붙여 넣을 곳: " + TYPES[t].lb);
+    b.title = TYPES[t].cap;
+    if (label && label.nextSibling) head.insertBefore(b, label.nextSibling); else head.insertBefore(b, head.firstChild);
+    var pre = w.querySelector("pre"), paths = [];
+    if (w.getAttribute("data-paste-path")) paths.push(w.getAttribute("data-paste-path"));
+    else if (t === "term" && pre) pre.textContent.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) { paths.push(p); });
+    if (paths.length) {
+      var strip = el("div", "pb-strip", (t === "file" ? "저장할 파일: " : "붙여 넣으면 이 파일이 만들어집니다: ") + paths.map(function (p) { return "<code>" + esc(p) + "</code>"; }).join(", "));
+      head.parentNode.insertBefore(strip, head.nextSibling);
+    }
+  });
+
+  /* 2) paste guide */
+  document.querySelectorAll(".paste-guide").forEach(function (host) {
+    var list = (host.getAttribute("data-types") || Object.keys(found).join(" ") || "term claude").split(/\s+/).filter(function (k) { return TYPES[k]; });
+    var d = el("details", "pg");
+    var seen = false;
+    try { seen = localStorage.getItem("fsi-paste-guide") === "seen"; localStorage.setItem("fsi-paste-guide", "seen"); } catch (e) {}
+    d.open = !seen;
+    d.innerHTML = '<summary>어디에 붙여 넣나요?<span>코드 블록 위의 색 배지가 붙여 넣을 곳입니다. 배지를 눌러 보세요.</span></summary>' +
+      '<div class="pg-body"><div class="pg-legend" role="group" aria-label="붙여 넣을 곳 종류"></div>' +
+      '<div class="pg-map"><div class="pg-box pg-zone" data-zone="browser"><b>내 노트북 브라우저</b>실습 화면과 Slack을 여는 곳</div>' +
+      '<div class="pg-arrow" aria-hidden="true">→</div>' +
+      '<div class="pg-box"><b>code-server (내 실습 EC2)</b>1인 1대의 EC2를 브라우저로 엽니다' +
+      '<div class="pg-ide"><div class="pg-box pg-zone" data-zone="editor"><b>파일 편집기</b>파일을 열어 고치고 저장</div>' +
+      '<div class="pg-box pg-zone pg-term" data-zone="term"><b>터미널 (Terminal 창)</b>리눅스 셸 명령' +
+      '<div class="pg-box pg-zone" data-zone="claude"><b>Claude 세션</b>터미널에서 <code>claude</code>를 실행한 뒤의 프롬프트 칸</div></div></div></div></div>' +
+      '<p class="pg-cap" aria-live="polite">배지를 누르면 그 텍스트가 들어갈 곳이 밝게 표시됩니다.</p></div>';
+    var legend = d.querySelector(".pg-legend"), cap = d.querySelector(".pg-cap");
+    list.forEach(function (k) {
+      var b = el("button", "pbadge t-" + k, TYPES[k].lb);
+      b.type = "button"; b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        legend.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        d.querySelectorAll(".pg-zone").forEach(function (z) { z.classList.toggle("on", z.getAttribute("data-zone") === TYPES[k].zone); });
+        d.style.setProperty("--hl", "var(--pt-" + k + ")");
+        cap.innerHTML = "<strong>" + esc(TYPES[k].lb) + ":</strong> " + esc(TYPES[k].cap);
+      });
+      legend.appendChild(b);
+    });
+    host.appendChild(d);
+  });
+
+  /* 3) glossary */
+  var used = [];
+  document.querySelectorAll(".gl[data-gl]").forEach(function (g, i) {
+    var k = g.getAttribute("data-gl"); if (!GL[k]) return;
+    if (used.indexOf(k) < 0) used.push(k);
+    g.tabIndex = 0;
+    var tip = el("span", "gl-tip", "<strong>" + esc(GL[k][0]) + "</strong>: " + esc(GL[k][1]));
+    tip.id = "gl-tip-" + i; tip.setAttribute("role", "tooltip");
+    g.setAttribute("aria-describedby", tip.id);
+    g.appendChild(tip);
+  });
+  document.querySelectorAll(".gl-list").forEach(function (host) {
+    if (!used.length) return;
+    var d = el("details", "gl-more", "<summary>더 알아보기: 이 페이지의 용어</summary><dl>" +
+      used.map(function (k) { return "<dt>" + esc(GL[k][0]) + "</dt><dd>" + esc(GL[k][1]) + "</dd>"; }).join("") + "</dl>");
+    host.appendChild(d);
+  });
+
+  /* 4) flow and copy visuals */
+  var data = {};
+  try { var src = document.getElementById("viz-data"); if (src) data = JSON.parse(src.textContent); } catch (e) { data = {}; }
+  function nodeHtml(n) {
+    var ic = n.img ? '<img class="ic' + (n.tile ? " tile" : "") + '" src="' + esc(n.img) + '" alt="">' : shape(n.ic);
+    var links = (n.links || []).map(function (l) { return '<a href="' + esc(l[1]) + '">' + esc(l[0]) + "</a>"; }).join("");
+    return ic + '<span><span class="lb">' + esc(n.lb) + "</span>" + (n.sb ? '<span class="sb">' + esc(n.sb) + "</span>" : "") +
+      (links ? '<span class="lk">' + links + "</span>" : "") + "</span>";
+  }
+  document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
+    var v = data[host.getAttribute("data-viz")];
+    if (!v || !v.steps || !v.steps.length) return;
+    var cur = 0, timer = null, all = (v.nodes || []).concat(v.side || []);
+    host.classList.add("n" + v.nodes.length);
+    host.setAttribute("role", "group");
+    host.setAttribute("aria-label", v.title || "흐름 그림");
+    var row = el("div", "viz-row"), side = el("div", "viz-side"), nodeEls = {}, arrows = [];
+    v.nodes.forEach(function (n, i) {
+      if (i > 0) {
+        var a = el("div", "viz-arrow", '<span class="el">' + esc((v.edges || [])[i - 1] || "") + '</span><span class="ln"></span>');
+        a.setAttribute("aria-hidden", "true"); arrows.push(a); row.appendChild(a);
+      }
+      nodeEls[n.id] = el("div", "viz-node"); row.appendChild(nodeEls[n.id]);
+    });
+    (v.side || []).forEach(function (n) { nodeEls[n.id] = el("div", "viz-node"); side.appendChild(nodeEls[n.id]); });
+    var cap = el("div", "viz-cap"); cap.setAttribute("aria-live", "polite");
+    var ctl = el("div", "viz-ctl"), dots = el("div", "dots");
+    var prev = el("button", "", "◀ 이전"), play = el("button", "", "▶ 재생"), next = el("button", "", "다음 ▶");
+    [prev, play, next].forEach(function (b) { b.type = "button"; });
+    v.steps.forEach(function (s, i) {
+      var b = el("button", "", String(i + 1)); b.type = "button";
+      b.setAttribute("aria-label", (i + 1) + "단계: " + (s.t || ""));
+      b.addEventListener("click", function () { stop(); show(i); });
+      dots.appendChild(b);
+    });
+    ctl.appendChild(prev); if (!reduce) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
+    var allTxt = el("details", "viz-all", "<summary>모든 단계 글로 보기</summary><ol>" +
+      v.steps.map(function (s) { return "<li>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap) + "</li>"; }).join("") + "</ol>");
+    host.appendChild(el("div", "viz-title", esc(v.title || "무슨 일이 일어나나요?")));
+    host.appendChild(row); if (v.side && v.side.length) host.appendChild(side);
+    host.appendChild(cap); host.appendChild(ctl); host.appendChild(allTxt);
+    function edges(s) { return s.edge == null ? [] : [].concat(s.edge); }
+    function show(k) {
+      cur = k; var s = v.steps[k], set = s.set || {};
+      all.forEach(function (n) {
+        var e = nodeEls[n.id], o = set[n.id] || {};
+        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: n.img, tile: n.tile, links: n.links });
+        e.className = "viz-node" + ((s.bad || []).indexOf(n.id) >= 0 ? " bad" : (s.ok || []).indexOf(n.id) >= 0 ? " ok" : (s.on || []).indexOf(n.id) >= 0 ? " on" : "");
+      });
+      var done = [];
+      for (var j = 0; j < k; j++) done = done.concat(edges(v.steps[j]));
+      arrows.forEach(function (a, i) {
+        var on = edges(s).indexOf(i) >= 0;
+        a.className = "viz-arrow" + (on ? " on" : done.indexOf(i) >= 0 ? " done" : "");
+        var old = a.querySelector(".viz-chip"); if (old) old.remove();
+        if (on && s.chip) a.querySelector(".ln").appendChild(el("span", "viz-chip", esc(s.chip)));
+      });
+      cap.innerHTML = '<span class="q">지금 무슨 일이? (' + (k + 1) + "/" + v.steps.length + ")</span>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap);
+      dots.querySelectorAll("button").forEach(function (b, i) { if (i === k) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+      prev.disabled = k === 0; next.disabled = k === v.steps.length - 1;
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; play.textContent = "▶ 재생"; } }
+    prev.addEventListener("click", function () { stop(); if (cur > 0) show(cur - 1); });
+    next.addEventListener("click", function () { stop(); if (cur < v.steps.length - 1) show(cur + 1); });
+    play.addEventListener("click", function () {
+      if (timer) { stop(); return; }
+      show(cur >= v.steps.length - 1 ? 0 : cur);
+      play.textContent = "❚❚ 멈춤";
+      timer = setInterval(function () { if (cur < v.steps.length - 1) show(cur + 1); if (cur >= v.steps.length - 1) stop(); }, 2600);
+    });
+    function fit() { host.classList.toggle("vert", host.clientWidth < (v.nodes.length >= 5 ? 760 : 560)); }
+    fit();
+    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(host); else window.addEventListener("resize", fit);
+    show(reduce ? v.steps.length - 1 : 0);
+  });
+})();
+</script>
+<!-- VIZ COMPONENT v1 END -->
 </body>
 </html>
