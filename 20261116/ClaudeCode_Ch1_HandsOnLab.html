@@ -90,6 +90,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <p><strong>Claude Code Deep Dive Workshop, Chapter 1 - Claude Code는 어떻게 동작하는가 실습</strong></p>
 </blockquote>
 <p>강의에서 본 <strong>에이전트 루프, 컨텍스트, 세션, 권한, 데이터 경로</strong>를 이 환경에서 직접 눈으로 확인합니다.
+오늘 시나리오는 <strong>고객자산 분석 담당자의 첫 세션</strong>입니다. 아침에 Claude Code를 처음 열고, 마이데이터 고객 파일로 작은 분석을 맡겨 보면서 동작 원리를 확인합니다.
 이 랩의 ccb-endpoint는 기본적으로 <strong>Amazon Bedrock을 인스턴스 역할(SigV4)로 직접 호출</strong>합니다. 키를 입력할 필요가 없습니다.</p>
 <p>소요 시간 <strong>20분 내외</strong> · Task <strong>준비 + 4개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
 <h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
@@ -114,24 +115,22 @@ cat /etc/claude-code/managed-settings.json</code></pre></div>
 <p><code>forceLoginMethod</code>가 들어 있다면 이전에 게이트웨이 모드로 바꾼 상태입니다. <code>use_bedrock_direct</code>를 실행해 기본 모드로 되돌리세요.</p></div></div>
 
 <h3 id="step-2-실습-폴더-만들기">Step 2 · 실습 폴더 만들기</h3>
+<p>분석 담당자는 가명처리된 <code>pseudo/</code> 데이터만 씁니다. 실습 폴더에서 <code>data</code>라는 이름으로 연결해 두면, 이후 프롬프트에서 <code>data/customers.csv</code>처럼 짧게 부를 수 있습니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>git config --global user.name  &gt;/dev/null || git config --global user.name  &quot;Workshop Participant&quot;
 git config --global user.email &gt;/dev/null || git config --global user.email &quot;participant@example.com&quot;
+KIT=s3://ws-assets-us-east-1/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 mkdir -p ~/claude-lab/ch1-loop &amp;&amp; cd ~/claude-lab/ch1-loop &amp;&amp; git init -q
-cat &gt; calc.py &lt;&lt; &#x27;EOF&#x27;
-def average(nums):
-    return sum(nums) / len(nums)
+ln -sfn ~/claude-lab/mydata/pseudo data
+git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;&amp; head -2 data/customers.csv data/pensions.csv</code></pre></div>
 
-if __name__ == &quot;__main__&quot;:
-    print(average([10, 20, 30]))
-    print(average([]))
-EOF
-git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls</code></pre></div>
+<p>Preflight CHECK 06에서 데이터를 이미 내려받았다면 첫 번째 <code>[ -d ... ]</code> 줄은 아무 일도 하지 않습니다. 폴더가 없을 때만 키트를 다시 내려받습니다.</p>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span><code>CLAUDE_CODE_USE_BEDROCK=1</code>, <code>AWS_REGION=us-east-1</code>을 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span><code>~/claude-lab/ch1-loop/calc.py</code>가 준비되었다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>~/claude-lab/ch1-loop/data</code>가 <code>pseudo/</code>를 가리키고, 고객 이름이 <code>고객0001</code> 형태로 보인다</span></label></li>
 </ul></div></div>
 
 <h2 id="task-01-에이전트-루프-관찰-5분">TASK 01 · 에이전트 루프 관찰 (5분)</h2>
@@ -145,9 +144,9 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls</code></pre><
 
 <p><strong>API provider</strong>가 <code>Amazon Bedrock</code>, 리전이 <code>us-east-1</code>인지 확인합니다. 시작 화면 로고 옆에도 <code>Opus 5.5 · Amazon Bedrock</code>이 보입니다. 이 값이 "추론이 어느 계정·리전에서 일어나는가"에 대한 답입니다.</p>
 <h3 id="step-2-수집-수행-검증을-지켜보기">Step 2 · 수집 → 수행 → 검증을 지켜보기</h3>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>calc.py를 실행해서 에러가 나는지 확인하고, 원인을 고친 뒤 다시 실행해서 검증해줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>data/customers.csv와 data/pensions.csv로 연령대(20대~70대 이상)별 고객 수와 퇴직연금(DB, DC, IRP) 보유율을 표로 만들어줘. 한 고객이 연금을 여러 개 가질 수 있으니 고객 단위로 세고, 끝나면 숫자를 다른 방법으로 다시 계산해서 검증해줘</code></pre></div>
 
-<p>작업이 끝나기 전에 <code>/context</code> 같은 슬래시 명령을 입력하면 다음 프롬프트에 섞여 들어가니, <strong>응답이 끝난 뒤</strong> 입력하세요. Claude가 도구를 고르는 순서를 지켜보세요. 보통 <strong>파일 읽기(수집) → Bash로 실행(검증) → 편집(수행) → 다시 실행(검증)</strong> 순서입니다. 확인 창이 거의 뜨지 않는다면 정상입니다. Claude Code v2.1.283 이상은 Bedrock 대화형 세션을 모드 지정 없이 시작하면 <strong>auto 모드</strong>로 시작합니다. auto에서는 별도 분류기 모델이 위험한 동작만 막고 나머지는 묻지 않고 실행합니다. 입력창 아래 모드 표시를 확인해 보세요. auto의 경계 설정은 Ch2 Lab 2의 TASK 03에서 다룹니다.</p>
+<p>작업이 끝나기 전에 <code>/context</code> 같은 슬래시 명령을 입력하면 다음 프롬프트에 섞여 들어가니, <strong>응답이 끝난 뒤</strong> 입력하세요. Claude가 도구를 고르는 순서를 지켜보세요. 보통 <strong>파일 헤더 읽기(수집) → Python으로 집계(수행) → 합계·중복 확인(검증)</strong> 순서입니다. 검증에서 숫자가 어긋나면 집계 방식을 고치고 다시 계산하는 <strong>수행 → 검증 반복</strong>도 볼 수 있습니다. 1,000행이 넘는 파일을 눈으로 읽는 대신 코드를 짜서 계산하는 점에도 주목하세요. 확인 창이 거의 뜨지 않는다면 정상입니다. Claude Code v2.1.283 이상은 Bedrock 대화형 세션을 모드 지정 없이 시작하면 <strong>auto 모드</strong>로 시작합니다. auto에서는 별도 분류기 모델이 위험한 동작만 막고 나머지는 묻지 않고 실행합니다. 입력창 아래 모드 표시를 확인해 보세요. auto의 경계 설정은 Ch2 Lab 2의 TASK 03에서 다룹니다.</p>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span><code>/status</code>에서 Amazon Bedrock과 us-east-1을 확인했다</span></label></li>
@@ -161,7 +160,7 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls</code></pre><
 
 <p>시스템 프롬프트, 도구 정의, 메모리 파일, 대화가 각각 얼마나 차지하는지 보입니다. Ch5에서 이 숫자를 줄이는 방법을 다룹니다.</p>
 <h3 id="step-2-claude-md는-매-요청에-실린다">Step 2 · CLAUDE.md는 매 요청에 실린다</h3>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 프로젝트용 CLAUDE.md를 10줄 이내로 만들어줘. Python 3, 테스트는 python -m pytest, 함수에는 타입 힌트를 쓴다는 규칙을 넣어줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 프로젝트용 CLAUDE.md를 10줄 이내로 만들어줘. data/는 가명처리된 읽기 전용 데이터다, 분석은 Python 3 표준 라이브러리로 한다, 집계 결과는 반드시 다른 방법으로 한 번 더 검증한다는 규칙을 넣어줘</code></pre></div>
 
 <p>CLAUDE.md는 <strong>세션을 시작할 때</strong> 읽히므로, 같은 세션에서 바로 <code>/context</code>를 실행하면 아직 보이지 않습니다. <code>/exit</code>로 나온 뒤 <code>claude -c</code>로 이어서 열고 <code>/context</code>를 실행해 <strong>Memory files</strong> 항목이 생긴 것을 확인합니다. 짧게 유지해야 하는 이유가 이 숫자입니다(공식 권장 200줄 이하). <code>/context</code>에는 <code>Auto-compact window: 1m tokens</code>도 보이는데, Ch5에서 이 값을 조정합니다.</p>
 <h3 id="step-3-세션은-로컬-평문-파일">Step 3 · 세션은 로컬 평문 파일</h3>
@@ -171,26 +170,31 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls</code></pre><
 F=$(ls -t ~/.claude/projects/*ch1-loop*/*.jsonl | head -1)
 wc -l &quot;$F&quot; &amp;&amp; grep -o &#x27;&quot;type&quot;:&quot;[a-z_]*&quot;&#x27; &quot;$F&quot; | sort | uniq -c | head</code></pre></div>
 
-<p>대화와 도구 결과가 이 PC(ccb-endpoint)에 JSONL로 남아 있습니다. 고객 데이터를 Claude에게 읽혔다면 그 내용도 여기에 남습니다. 보존 기간은 Ch2 Lab 1에서 <code>cleanupPeriodDays</code> 정책으로 정합니다.</p>
+<p>대화와 도구 결과가 이 PC(ccb-endpoint)에 JSONL로 남아 있습니다. 방금 읽힌 고객 데이터가 세션 파일에 그대로 들어 있는지 세어 봅니다.</p>
+<p><strong>Terminal, 전체 복사</strong></p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>F=$(ls -t ~/.claude/projects/*ch1-loop*/*.jsonl | head -1)
+grep -o &#x27;고객0&#x27; &quot;$F&quot; | wc -l</code></pre></div>
+
+<p>0이 아닌 숫자가 나오면 고객 행(<code>고객0001</code> 같은 이름)이 세션 파일에 <strong>원문 그대로</strong> 저장된 것입니다. 이번 데이터는 가명처리본이라 괜찮지만, 실제 고객 데이터라면 같은 방식으로 PC에 평문이 남습니다. 세션 파일의 보존 기간(<code>cleanupPeriodDays</code>)과 DLP 정책은 Ch2 Lab 1·2에서 다룹니다.</p>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span><code>/context</code>에서 CLAUDE.md가 추가된 것을 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>세션 JSONL 파일 위치를 확인했다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>세션 JSONL 파일 위치를 확인하고, <code>고객0</code> 건수가 0이 아님을 확인했다</span></label></li>
 </ul></div></div>
 
 <h2 id="task-03-체크포인트와-권한-모드-5분">TASK 03 · 체크포인트와 권한 모드 (5분)</h2>
 <h3 id="step-1-되돌릴-수-있는-것">Step 1 · 되돌릴 수 있는 것</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch1-loop &amp;&amp; claude --continue</code></pre></div>
 
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>calc.py에 median 함수를 추가해줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>방금 만든 연령대별 표를 summary.md 파일로 저장해줘</code></pre></div>
 
-<p>편집이 끝나면 <strong>Esc를 두 번</strong> 눌러(또는 <code>/rewind</code>) 편집 이전 시점을 골라 되돌립니다. <code>cat calc.py</code>로 원래대로 돌아왔는지 확인합니다.</p>
+<p>편집이 끝나면 <strong>Esc를 두 번</strong> 눌러(또는 <code>/rewind</code>) 편집 이전 시점을 골라 되돌립니다. <code>ls</code>로 <code>summary.md</code>가 사라졌는지 확인합니다. 파일을 새로 만든 편집도 체크포인트로 되돌아갑니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>체크포인트가 되돌리지 못하는 것</strong></p>
 <p>DB 변경, 외부 API 호출, 배포, <code>git push</code>는 되돌릴 수 없습니다. 이런 작업은 실행 전에 막아야 하고, 그 방법이 Ch2 Lab 2의 가드레일입니다.</p></div></div>
 
 <h3 id="step-2-권한-모드-전환">Step 2 · 권한 모드 전환</h3>
 <p><strong>Shift+Tab</strong>을 눌러 모드가 바뀌는 순서를 확인합니다. auto에서 시작했다면 <code>default</code>(Manual) → <code>accept edits</code> → <code>plan</code> 순으로 돕니다. <code>default</code>에서는 편집과 명령 실행 전에 확인을 묻습니다. <code>plan</code> 모드에서 아래를 요청하면 파일을 고치지 않고 계획만 내놓습니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>calc.py에 입력 검증과 단위 테스트를 추가하는 계획을 세워줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>연령대별 표에 소득구간(income_band)별 퇴직연금 보유율을 추가하고, 결과를 summary.md로 저장하는 계획을 세워줘</code></pre></div>
 
 <p>계획만 확인하고 승인하지 않은 채 <code>/exit</code>로 나옵니다.</p>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
