@@ -67,7 +67,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 @fit: off
 
 ## 가장 듣고 싶은 주제 1위
-사전 설문 기대 주제, 그래서 57분 중 40분을 랩으로
+사전 설문 기대 주제, 그래서 강의 17분 + 필수 랩 40분
 
 :::html
 <div class="fsi c4-survey">
@@ -75,12 +75,12 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
     <span class="eyebrow">PRE-SURVEY #1</span>
     <div class="num"><span id="c4-survey-num">84</span><small>표</small></div>
     <p class="lead">기대 주제 1위는 <b>Subagent</b>였습니다.</p>
-    <p class="why">가장 많이 듣고 싶어 한 주제라 57분 중 <b>40분을 랩</b>으로 잡았습니다.</p>
+    <p class="why">가장 많이 듣고 싶어 한 주제라 강의는 17분으로 줄이고 <b>필수 랩 40분</b>을 잡았습니다.</p>
   </div>
   <div class="split" id="c4-split">
     <div class="half"><span>강의 17분</span><span class="tr"><i data-w="17"></i></span></div>
-    <div class="half"><span>랩 40분</span><span class="tr"><i class="lab" data-w="40"></i></span></div>
-    <p class="cap">막대 길이는 Chapter 3 57분 중 차지하는 비율</p>
+    <div class="half"><span>필수 랩 40분</span><span class="tr"><i class="lab" data-w="40"></i></span></div>
+    <p class="cap">막대 길이는 필수 랩 40분을 기준으로 한 상대 길이</p>
   </div>
 </div>
 :::
@@ -90,7 +90,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
   F.countUp('#c4-survey-num', 84, { decimals: 0 });
   var host = document.getElementById('c4-split');
   var bars = Array.prototype.slice.call(host.querySelectorAll('i'));
-  function grow(on) { bars.forEach(function (b) { b.style.width = on ? (b.dataset.w / 57 * 100) + '%' : '0'; }); }
+  function grow(on) { bars.forEach(function (b) { b.style.width = on ? (b.dataset.w / 40 * 100) + '%' : '0'; }); }
   F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 80); });
   grow(true);
 });
@@ -100,11 +100,11 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 {timing: 0.5min}
 [요약]
 • 사전 설문 기대 주제 1위가 Subagent, 84표
-• 그래서 이 챕터 57분 중 40분을 랩으로 배정
+• 그래서 강의 17분 + 필수 랩 40분으로 배정
 • 주제는 격리, 위임, 병렬, 비용
 
 사전 설문에서 가장 듣고 싶은 주제를 여쭤봤는데, 1위가 Subagent로 84표였습니다.
-그래서 이 챕터는 57분 중 40분을 랩으로 잡았습니다. 오늘 이야기는 격리, 위임, 병렬, 비용 네 단어로 정리됩니다.
+그래서 이 챕터는 강의를 17분으로 줄이고 필수 랩을 40분으로 잡았습니다. 오늘 이야기는 격리, 위임, 병렬, 비용 네 단어로 정리됩니다.
 
 [출처]
 • 이번 워크숍 사전 설문, 기대 주제 문항

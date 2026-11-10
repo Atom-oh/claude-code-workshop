@@ -105,6 +105,10 @@ Session mapping:
   so facilitators choose which TASKs run in the session; the Ch2 Lab 1 and Lab 2
   restore TASKs must still run. The Ch3 deck is paced for a 17-minute lecture
   and a 40-minute lab (the lab page's required TASKs).
+- Ch4 (10:10–11:30, 80 minutes) pairs a 35-minute lecture with a Super Lab of
+  about 60 required minutes (about 95 minutes, plus an optional 12-minute
+  TASK 06), within the agreed ±30-minute tolerance. If time runs short,
+  facilitators move the TASK 05–08 mod exercises into Capstone time.
 - Day 2 times are unchanged: Ch4 10:10–11:30, Ch5 12:40–13:40 (lab TASK
   01–04), Ch6 16:50–17:40 (lab TASK 01–03 as a participant lab: telemetry,
   gateway login and group policy, spend limit; TASK 04 is optional).
