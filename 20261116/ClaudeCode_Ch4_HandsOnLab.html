@@ -924,13 +924,13 @@ cd ~/claude-lab/ch5/colleague &amp;&amp; claude --plugin-dir ~/claude-lab/ch5/fi
 <h3 id="step-2-원복">Step 2 · 원복</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo cp ~/claude-lab/ch5/managed-settings.backup.json /etc/claude-code/managed-settings.json &amp;&amp; sudo jq . /etc/claude-code/managed-settings.json
 use_bedrock_direct &gt;/dev/null
-claude plugin disable asset-team-kit@fsi-local --scope user
+claude plugin disable asset-team-kit@fsi-local --scope user 2&gt;/dev/null || true
 claude plugin list</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
 <li data-lines="1">백업해 둔 정책 파일로 managed-settings.json을 되돌리고, <code>jq .</code>로 내용을 출력해 원복을 확인합니다.</li>
 <li data-lines="2">사용자 설정의 모드 키를 기본 모드로 맞춥니다. 플러그인 켜기 상태와 상태줄은 그대로 둡니다.</li>
-<li data-lines="3">user 범위로 설치한 asset-team-kit을 끕니다. 지우지 않고 끄기만 하므로 나중에 다시 켤 수 있습니다.</li>
+<li data-lines="3">user 범위로 설치한 asset-team-kit을 끕니다. 지우지 않고 끄기만 하므로 나중에 다시 켤 수 있습니다. 이미 꺼져 있거나 설치하지 않았으면 <code>already disabled</code> 같은 실패 메시지가 나오는데, <code>2&gt;/dev/null || true</code>가 그 메시지를 숨기고 다음 줄로 넘어가게 합니다. 꺼져 있으면 된 것입니다.</li>
 <li data-lines="4">설치된 플러그인 목록과 상태를 봅니다. asset-team-kit이 <code>disabled</code>로 보여야 합니다.</li>
 </ol></details>
 

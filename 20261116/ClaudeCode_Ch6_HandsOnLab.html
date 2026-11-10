@@ -254,10 +254,11 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <li>터미널에 표시된 URL을 브라우저에서 열고 코드를 확인한 뒤 <code>alice@workshop.example</code>로 로그인합니다.</li>
 <li>터미널로 돌아와 로그인 완료를 확인합니다.</li>
 </ol>
+<p>로그인하기 전에는 시작 화면과 상태줄에 <code>Opus 4.7 · Cloud gateway</code>처럼 게이트웨이와 무관한 기본 모델 이름이 보일 수 있습니다. 로그인하면 Claude Code가 조직 설정을 받으려고 스스로 다시 시작하고, <code>Using … 5.5 (from managed settings)</code> 줄과 함께 게이트웨이가 그룹별로 정한 5.5 모델로 바뀝니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/status</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
-<li data-lines="1"><code>/status</code>는 지금 어떤 계정과 연결 방식으로 로그인했는지 보여 줍니다. 게이트웨이로 로그인한 alice가 보여야 합니다.</li>
+<li data-lines="1"><code>/status</code>는 지금 연결 방식을 보여 줍니다. <code>API provider</code>가 <code>Cloud gateway</code>, <code>Gateway URL</code>이 <code>https://gateway.workshop.internal</code>이어야 합니다. 로그인한 계정의 이메일은 여기에 나오지 않으므로, alice인지 bob인지는 다음 <code>/model</code> 목록(alice만 Opus가 있음)으로 구분합니다. <code>Esc</code>로 닫습니다.</li>
 </ol></details>
 
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/model</code></pre></div>
@@ -277,12 +278,20 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/logout</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
-<li data-lines="1">현재 계정에서 로그아웃합니다. 로그아웃하면 Claude Code가 끝나고 터미널로 돌아옵니다. 다시 <code>claude</code>를 열고 bob@workshop.example로 로그인합니다.</li>
+<li data-lines="1">현재 계정에서 로그아웃합니다. 로그아웃하면 Claude Code가 끝나고 터미널로 돌아옵니다.</li>
 </ol></details>
 
-<div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>두 번째 계정은 시크릿 창에서 승인합니다</strong></p>
-<p>브라우저에는 alice로 로그인한 상태가 남아 있어서, 같은 창에서 승인 페이지를 열면 비밀번호를 묻지 않고 alice로 다시 승인됩니다. bob 차례에는 code-server가 묻는 외부 사이트 열기 창을 <strong>Cancel</strong>로 닫고, 터미널에 나온 <code>https://…cloudfront.net/device</code> 주소를 Chrome 시크릿 창(⌘+Shift+N 또는 Ctrl+Shift+N)에서 열어 코드를 확인한 뒤 bob으로 로그인합니다. 외부 사이트 열기 창에 터미널과 다른 이전 코드가 보일 때도 같은 방법을 씁니다.</p></div></div>
-<p>다시 <code>claude</code>를 실행하고 같은 절차로 <code>bob@workshop.example</code>에 로그인합니다. 로그인 화면 대신 alice 세션이 그대로 열리면 <code>use_bedrock_direct &amp;&amp; use_gateway</code>를 실행해 로그인 정보를 지운 뒤 다시 <code>claude</code>를 실행합니다.</p>
+<p>Claude Code의 로그인은 지워졌지만, 승인 페이지를 연 <strong>브라우저</strong>에는 alice의 로그인이 남아 있습니다. 그대로 두면 다음 승인 때 비밀번호를 묻지 않고 alice로 다시 들어갑니다. 터미널에서 브라우저 쪽 로그인도 지웁니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>gateway_logout</code></pre></div>
+<details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
+<ol>
+<li data-lines="1">실습 환경에 준비된 명령입니다. Claude Code의 게이트웨이 로그인을 한 번 더 지우고, 브라우저에 남은 로그인을 지우는 로그아웃 주소(<code>https://….auth.us-east-1.amazoncognito.com/logout?…</code>)를 출력합니다.</li>
+</ol></details>
+
+<p>출력된 <code>https://…amazoncognito.com/logout?…</code> 주소를 승인 페이지를 열었던 <strong>같은 브라우저</strong>에서 엽니다. 빈 로그인 화면이 나오면 브라우저 쪽 로그인이 지워진 것입니다. 그 탭은 닫아도 됩니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>대안: 시크릿 창에서 승인하기</strong></p>
+<p>로그아웃 주소를 열 수 없으면, 다음 로그인 때 code-server가 묻는 외부 사이트 열기 창을 <strong>Cancel</strong>로 닫고 터미널에 나온 <code>https://…cloudfront.net/device</code> 주소를 Chrome 시크릿 창(⌘+Shift+N 또는 Ctrl+Shift+N)에서 열어 bob으로 로그인합니다. 외부 사이트 열기 창에 터미널과 다른 이전 코드가 보일 때도 같은 방법을 씁니다.</p></div></div>
+<p>다시 <code>claude</code>를 실행하고 같은 절차로 <code>bob@workshop.example</code>에 로그인합니다. 승인 페이지에서 비밀번호를 묻지 않고 바로 승인되면 브라우저 쪽 로그인이 남아 있는 것입니다. <code>/model</code>에 Opus가 보이면 아직 alice이므로, <code>/logout</code> 뒤 <code>gateway_logout</code>부터 다시 합니다.</p>
 <p><code>/model</code>에서 <strong>Opus가 없는 것</strong>을 확인한 뒤, 지출 기록이 생기도록 질문을 하나 보냅니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 폴더의 pseudo 디렉터리에 어떤 파일이 있는지 이름만 알려줘</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
