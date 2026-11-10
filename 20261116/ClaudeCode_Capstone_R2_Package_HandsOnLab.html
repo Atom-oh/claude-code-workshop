@@ -1201,7 +1201,7 @@ jq -n --arg mg "$G/mcp-guard.sh\" plugin_${KIT}_${SRV}" --arg ng "$G/net-guard.s
 cat $K/.mcp.json $K/hooks/hooks.json
 claude plugin validate $K | tail -1</code></pre>
   </div>
-      <p class="body"><code class="inline">r1c-choice.env</code>의 허용 목록 항목에서 서버 설정을 만듭니다. 원격 서버는 <code class="inline">url</code>, 로컬 서버는 <code class="inline">command</code>와 <code class="inline">args</code>입니다. alphavantage는 키를 <code class="inline">ALPHA_VANTAGE_API_KEY</code> 환경 변수로, github는 토큰을 <code class="inline">Authorization</code> 헤더로 넘기고, 둘 다 값은 설치 창에서 받습니다(<code class="inline">userConfig</code>, 가려서 입력). 키가 없는 서버는 <code class="inline">userConfig</code>를 만들지 않습니다.</p>
+      <p class="body"><code class="inline">r1c-choice.env</code>의 허용 목록 항목에서 서버 설정을 만듭니다. 원격 서버는 <code class="inline">url</code>, 로컬 서버는 <code class="inline">command</code>와 <code class="inline">args</code>입니다. alphavantage는 키를 <code class="inline">ALPHA_VANTAGE_API_KEY</code> 환경 변수로, github는 토큰을 <code class="inline">Authorization</code> 헤더로 넘기고, 둘 다 값은 설치 창에서 받습니다(<code class="inline">userConfig</code>, 가려서 입력). R1-C에서 <code class="inline">gh</code>로 로그인했다면 다른 터미널에서 <code class="inline">gh auth token</code>을 실행해 나온 값을 github 칸에 붙여 넣어도 됩니다. 8시간 뒤 만료되므로 그 뒤에는 plugin 설정에서 값을 다시 넣습니다. 키가 없는 서버는 <code class="inline">userConfig</code>를 만들지 않습니다.</p>
       <p class="body"><code class="inline">mcp-guard.sh</code>의 인자가 <code class="inline">plugin_my-kit_서버</code>로 바뀐 것을 봅니다. plugin이 내놓는 서버의 도구 이름 앞부분이 <code class="inline">mcp__plugin_my-kit_서버__</code>이므로, 이 plugin의 서버 도구만 통과하고 다른 MCP 서버의 도구는 막힙니다.</p>
     </div>
   </details>
