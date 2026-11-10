@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css">
+<title>캡스톤 개요 - Claude Code Deep Dive Workshop</title>
+<style>
+:root {
+  --bg: #12181F;
+  --bg-card: #1B242E;
+  --bg-code: #0C1117;
+  --bg-inline: #232E3A;
+  --line: #2A3542;
+  --orange: #FF9900;
+  --orange-dim: rgba(255, 153, 0, 0.14);
+  --crimson: #B6002E;
+  --green: #3FB950;
+  --green-dim: rgba(63, 185, 80, 0.12);
+  --text: #E2E4EC;
+  --muted: #A6ABBE;
+  --dim: #7B8198;
+  --font-body: "NanumSquareOTF", "나눔스퀘어OTF", "NanumSquare", "나눔스퀘어", "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-code: "D2Coding", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(255, 153, 0, 0.3); }
+a { color: var(--orange); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* ============ Hero ============ */
+.hero {
+  position: relative;
+  padding: 64px 32px 44px;
+  max-width: 1160px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -140px; right: -180px;
+  width: 460px; height: 460px;
+  background: radial-gradient(closest-side, rgba(182, 0, 46, 0.28), rgba(255, 153, 0, 0.10) 55%, transparent 75%);
+  pointer-events: none;
+}
+.eyebrow {
+  display: inline-block;
+  background: var(--crimson);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 5px 12px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: clamp(28px, 4.4vw, 42px);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+  max-width: 780px;
+}
+.hero .subtitle {
+  margin-top: 14px;
+  color: var(--orange);
+  font-size: clamp(16px, 2.2vw, 19px);
+  font-weight: 700;
+}
+.hero .lede {
+  margin-top: 18px;
+  color: var(--muted);
+  max-width: 720px;
+  font-size: 15.5px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin-top: 26px;
+  color: var(--dim);
+  font-size: 13px;
+}
+.hero-meta strong { color: var(--text); font-weight: 700; }
+
+/* ============ Sticky timeline ============ */
+.timeline {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(12, 17, 23, 0.92);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.timeline-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.timeline-label {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.timeline-label strong { color: var(--orange); font-size: 13px; }
+.segments {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  height: 26px;
+}
+.seg {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-card);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  padding: 0;
+  font-family: var(--font-body);
+}
+.seg:hover { border-color: var(--orange); }
+.seg .fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 153, 0, 0.85), rgba(255, 153, 0, 0.65));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.seg.done .fill { transform: scaleX(1); }
+.seg .seg-txt {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.seg.done .seg-txt { color: #12181F; }
+.seg.active { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange) inset; }
+
+/* ============ Layout ============ */
+.layout {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 44px 32px 80px;
+  display: grid;
+  grid-template-columns: 216px minmax(0, 1fr);
+  gap: 52px;
+  align-items: start;
+}
+.sidenav {
+  position: sticky;
+  top: 66px;
+  font-size: 13.5px;
+}
+.sidenav .nav-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.14em;
+  margin-bottom: 14px;
+}
+.sidenav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  padding: 7px 10px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+}
+.sidenav a:hover { color: var(--text); background: var(--bg-card); text-decoration: none; }
+.sidenav a.active { color: var(--orange); border-left-color: var(--orange); background: var(--bg-card); }
+.sidenav .dot {
+  flex: none;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dim);
+}
+.sidenav a.done .dot { background: var(--green); border-color: var(--green); }
+.sidenav .nav-time { margin-left: auto; font-size: 11px; color: var(--dim); }
+
+/* ============ Task sections ============ */
+.task { margin-bottom: 72px; }
+.task-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 26px;
+}
+.task-num {
+  font-family: var(--font-code);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 0.1em;
+}
+.task-head h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.time-badge {
+  margin-left: auto;
+  flex: none;
+  background: var(--orange-dim);
+  color: var(--orange);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.task-goal {
+  color: var(--muted);
+  margin-bottom: 24px;
+  max-width: 760px;
+}
+.task-goal strong { color: var(--text); }
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16.5px;
+  font-weight: 800;
+  margin: 34px 0 12px;
+}
+.step-title .step-no {
+  flex: none;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #12181F;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+p.body { color: var(--muted); margin: 10px 0 14px; max-width: 760px; }
+p.body strong, li strong { color: var(--text); }
+code.inline {
+  font-family: var(--font-code);
+  font-size: 0.88em;
+  background: var(--bg-inline);
+  color: #FFC466;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+kbd {
+  font-family: var(--font-code);
+  font-size: 0.82em;
+  background: var(--bg-inline);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 2px 8px;
+  color: var(--text);
+}
+
+/* ============ Code blocks ============ */
+.code-wrap {
+  background: var(--bg-code);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 14px 0 20px;
+  overflow: hidden;
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+}
+.code-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.copy-btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg-inline);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.copy-btn:hover { color: var(--orange); border-color: var(--orange); }
+.copy-btn.copied { color: var(--green); border-color: var(--green); }
+.code-wrap pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.code-wrap code { font-family: inherit; color: #D8DEE9; }
+.code-wrap.output pre { color: var(--dim); }
+.code-wrap .cmt { color: #5E6B7E; }
+.code-wrap .hl { color: #FFC466; }
+.code-wrap .ok { color: var(--green); }
+
+/* ============ Callouts ============ */
+.callout {
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 14px 18px;
+  margin: 18px 0;
+  font-size: 14.5px;
+  color: var(--muted);
+  max-width: 760px;
+}
+.callout strong { color: var(--text); }
+.callout.tip .co-title { color: var(--orange); }
+
+.callout .co-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 5px;
+}
+
+.callout.warn .co-title { color: #FF5C85; }
+
+/* ============ Checkpoint ============ */
+.checkpoint {
+  background: var(--green-dim);
+  border: 1px solid rgba(63, 185, 80, 0.35);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 28px;
+}
+.checkpoint .cp-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.cp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+.cp-item input {
+  flex: none;
+  margin-top: 5px;
+  width: 15px; height: 15px;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+.cp-item input:checked + span { color: var(--text); }
+
+/* ============ Tabs ============ */
+.tabs { margin: 18px 0 6px; }
+.tab-btns {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.tab-btn {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dim);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 9px 16px;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+.tab-pane { display: none; padding-top: 16px; }
+.tab-pane.active { display: block; }
+
+/* ============ Tables ============ */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 22px;
+  font-size: 14px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.tbl th, .tbl td {
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid #FFFFFF14;
+}
+.tbl th {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--orange);
+  background: rgba(255, 255, 255, 0.03);
+}
+.tbl td { color: var(--muted); vertical-align: middle; }
+.tbl td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl code { font-family: var(--font-code); font-size: 0.9em; color: #FFC466; }
+
+/* ============ Wrap-up ============ */
+.wrapup {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 32px 34px;
+  margin-bottom: 56px;
+}
+.wrapup h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.wrapup .sub { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
+.next-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: linear-gradient(90deg, rgba(182, 0, 46, 0.16), rgba(255, 153, 0, 0.08));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 26px;
+}
+.next-box .nx-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--orange);
+}
+.next-box h3 { font-size: 19px; font-weight: 800; }
+.next-box p { color: var(--muted); font-size: 14px; }
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 30px 32px 46px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.9;
+}
+footer .who { color: var(--muted); font-weight: 700; }
+footer .mail { color: var(--orange); }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 64px; }
+  .sidenav { display: none; }
+  .hero { padding: 44px 20px 32px; }
+  .timeline-inner { padding: 10px 20px; }
+  .seg .seg-txt { font-size: 9px; }
+  .task-head h2 { font-size: 20px; }
+}
+
+/* ===== Chapter 4 additions: Super Lab ===== */
+.part-divider { margin: 72px 0 12px; padding: 30px 34px; border-radius: 14px;
+  background: linear-gradient(135deg, #1d1433 0%, #12181F 65%); border: 1px solid #45306b; }
+.part-divider .pd-eyebrow { display: inline-block; background: #7a3ff2; color: #fff;
+  font-size: 11px; font-weight: 800; letter-spacing: .14em; padding: 4px 12px; border-radius: 4px; }
+.part-divider h2 { margin: 14px 0 8px; font-size: 26px; color: var(--text); }
+.part-divider p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.75; max-width: 860px; }
+.part-divider .rules { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px; }
+.part-divider .rules span { background: #241a3d; border: 1px solid #45306b; color: #d9c9ff;
+  font-size: 12.5px; padding: 6px 12px; border-radius: 999px; }
+.task.mission .task-num { color: #c9a2ff; }
+.task.mission { border-color: #3a2a57; }
+.checkpoint.dod { border-color: #7a3ff2; background: rgba(122, 63, 242, .06); }
+.checkpoint.dod .cp-title { color: #c9a2ff; }
+details.solution { margin: 18px 0; border: 1px dashed #FF9900; border-radius: 10px; background: rgba(255,153,0,.04); }
+details.solution summary { cursor: pointer; padding: 12px 16px; color: var(--accent); font-weight: 700; font-size: 13.5px; list-style: none; }
+details.solution summary::before { content: "▸ "; }
+details.solution[open] summary::before { content: "▾ "; }
+details.solution .sol-body { padding: 0 16px 14px; }
+
+/* ── Korean typography fix: 단어 단위 줄바꿈, 히어로 정돈 ── */
+body { word-break: keep-all; overflow-wrap: break-word; }
+.hero h1 { max-width: 980px; font-size: clamp(26px, 4vw, 38px); text-wrap: balance; }
+.hero .subtitle, .hero .lede, .task-goal, .wrapup .sub { text-wrap: pretty; }
+
+/* ── 잘림 방지 v2: 히어로 압축 + 좁은 화면 대응 ── */
+.hero { padding: 44px 28px 34px; }
+.eyebrow { margin-bottom: 14px; }
+.hero h1 { line-height: 1.3; }
+.hero .subtitle { margin-top: 10px; }
+.hero .lede { margin-top: 12px; }
+.seg-txt { text-overflow: ellipsis; }
+@media (max-width: 620px) {
+  .hero { padding: 26px 16px 24px; }
+  .hero h1 { font-size: 23px; }
+  .hero .subtitle { font-size: 15px; }
+  .hero .lede { font-size: 14px; }
+  .hero-meta { gap: 6px 14px; font-size: 12px; }
+  .seg .seg-txt { display: none; }
+  .timeline-inner { padding: 0 10px; }
+}
+
+/* ── 잘림 방지 v3: 좁은 화면 가로 넘침 제거 ── */
+.tbl { display: block; overflow-x: auto; max-width: 100%; }
+.hero, .layout, .timeline-inner, main, section { min-width: 0; }
+@media (max-width: 620px) {
+  .timeline-label:last-child { display: none; }
+}
+
+/* ── 잘림 방지 v4: 인라인 코드 칩의 최소폭 강제 해제 ── */
+code.inline { white-space: normal; overflow-wrap: anywhere; }
+
+/* ── v5: 소개문/본문 전체 폭 사용 (가독성 캡 해제) ── */
+.hero .lede, .task-goal, p.body, .callout, .part-divider p, .wrapup .sub { max-width: none; }
+.hero .lede { text-wrap: wrap; }
+
+/* ── macOS 터미널 스타일: 신호등 3버튼 ── */
+.code-head { position: relative; padding-left: 76px; }
+.code-head::before {
+  content: ""; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 11px; height: 11px; border-radius: 50%; background: #FF5F57;
+  box-shadow: 18px 0 0 #FEBC2E, 36px 0 0 #28C840;
+}
+
+/* ── v6: 화이트 모드 (우측 상단 고정 토글, 라이트 팔레트는 대비 4.5:1 이상) ── */
+.theme-toggle {
+  position: fixed; top: 9px; right: 14px; z-index: 60;
+  font-family: var(--font-body); font-size: 11.5px; font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--muted); background: var(--bg-card);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 5px 14px; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.theme-toggle:hover { color: var(--orange); border-color: var(--orange); }
+@media (max-width: 1300px) { .timeline-inner { padding-right: 88px; } }
+html.light {
+  --bg: #F4F6F9; --bg-card: #FFFFFF; --bg-inline: #E8EDF3;
+  --line: #8A95A3;
+  --orange: #9A4300; --orange-dim: rgba(168, 85, 0, 0.10);
+  --green: #17692F; --green-dim: rgba(31, 136, 61, 0.08);
+  --text: #1B2430; --muted: #3D4654; --dim: #4A5462;
+}
+/* Light = projector mode: text >= 7:1, accent text >= 4.5:1, borders ~3:1. */
+html.light [style*="#c9a2ff"] { color: #6b46c1 !important; }
+html.light [style*="#A6ABBE"] { color: #3D4654 !important; }
+html.light .callout.warn .co-title { color: #B3264A; }
+html.light ::selection { background: rgba(255, 153, 0, 0.35); }
+html.light .hero::after { background: radial-gradient(closest-side, rgba(182, 0, 46, 0.10), rgba(255, 153, 0, 0.06) 55%, transparent 75%); }
+html.light .timeline { background: rgba(255, 255, 255, 0.92); }
+html.light .step-title .step-no { color: #FFFFFF; }
+html.light code.inline, html.light .tbl code { color: #9A4E00; }
+html.light .tbl th { background: rgba(0, 0, 0, 0.035); }
+html.light .tbl th, html.light .tbl td { border-bottom-color: rgba(0, 0, 0, 0.08); }
+html.light .code-wrap { border-color: #303C4B; }
+html.light .code-head { border-bottom-color: #2A3542; }
+html.light .code-wrap .code-label { color: #7B8198; }
+html.light .code-wrap .copy-btn { color: #A6ABBE; background: #232E3A; border-color: #2A3542; }
+html.light .code-wrap .copy-btn:hover { color: #FF9900; border-color: #FF9900; }
+html.light .code-wrap .copy-btn.copied { color: #3FB950; border-color: #3FB950; }
+html.light .code-wrap.output pre { color: #8B96A5; }
+html.light .callout.warn .co-title { color: #C7325C; }
+html.light .checkpoint { border-color: rgba(31, 136, 61, 0.4); }
+html.light .next-box { background: linear-gradient(90deg, rgba(182, 0, 46, 0.06), rgba(255, 153, 0, 0.05)); }
+html.light .part-divider { background: linear-gradient(135deg, #F0EAFB 0%, #F7F5FC 65%); border-color: #CDBDF0; }
+html.light .part-divider .rules span { background: #EDE6FB; border-color: #CDBDF0; color: #4A2D8A; }
+html.light .task.mission .task-num, html.light .checkpoint.dod .cp-title { color: #6B3FD4; }
+html.light .checkpoint.dod { background: rgba(122, 63, 242, 0.05); }
+html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0, 0.04); }
+html.light .mcard .mc-tag { color: #6B3FC4; }
+html.light .anti .an-title { color: #B3264A; }
+/* ===== Overview additions ===== */
+.mcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 18px 0 22px; }
+.mcard { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.mcard .mc-tag { font-family: var(--font-code); font-size: 12px; font-weight: 700; color: #c9a2ff; letter-spacing: 0.08em; }
+.mcard h3 { font-size: 17px; font-weight: 800; line-height: 1.4; }
+.mcard .mc-data { font-size: 13px; color: var(--dim); }
+.mcard dl { font-size: 13.5px; color: var(--muted); }
+.mcard dt { color: var(--orange); font-weight: 800; font-size: 11.5px; letter-spacing: 0.08em; margin-top: 6px; }
+.mcard dd { margin: 0; }
+.mcard .mc-go { margin-top: auto; padding-top: 8px; font-weight: 700; font-size: 14px; }
+.mcard.common { border-color: #7a3ff2; background: rgba(122, 63, 242, .07); }
+.mcard.optional { border-style: dashed; }
+.rule-box { max-width: 760px; margin: 14px 0; padding: 12px 18px; border-left: 3px solid var(--orange); background: var(--orange-dim); border-radius: 0 8px 8px 0; color: var(--text); font-size: 14.5px; }
+.flow { list-style: none; max-width: 760px; margin: 8px 0 20px; }
+.flow li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.flow .fl-when { font-family: var(--font-code); font-size: 13px; color: var(--orange); font-weight: 700; }
+.flow .fl-what strong { color: var(--text); }
+.flow .fl-what { color: var(--muted); font-size: 14.5px; }
+.checkpoint ol { list-style: none; }
+.checkpoint li[data-check] { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; color: var(--muted); font-size: 14.5px; }
+.checkpoint li[data-check] .cn { flex: none; font-family: var(--font-code); font-weight: 800; color: var(--green); min-width: 18px; }
+.checkpoint li[data-check] label { display: flex; gap: 10px; cursor: pointer; }
+.checkpoint li[data-check] input { flex: none; margin-top: 5px; width: 15px; height: 15px; accent-color: var(--green); }
+.anti { border: 1px solid rgba(255, 92, 133, 0.45); background: rgba(255, 92, 133, 0.07); border-radius: 10px; padding: 16px 20px; max-width: 760px; }
+.anti .an-title { font-size: 12.5px; font-weight: 800; letter-spacing: 0.1em; color: #FF5C85; margin-bottom: 8px; }
+.anti ul { padding-left: 18px; color: var(--muted); font-size: 14.5px; }
+.anti li { margin: 4px 0; }
+.form-list { max-width: 760px; padding-left: 22px; color: var(--muted); font-size: 14.5px; }
+.form-list li { margin: 6px 0; }
+.form-list strong { color: var(--text); }
+@media (max-width: 900px) {
+  .mcards { grid-template-columns: 1fr; }
+  .flow li { grid-template-columns: 1fr; }
+}
+/* ==== VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim) ==== */
+/* Paste badges, "어디에 붙여 넣나요?" guide, glossary tips and step-through flow visuals.
+   Markup and data contract: see the comment at the top of the VIZ COMPONENT script. */
+:root {
+  --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF;
+  --viz-bad: #FF6B8B; --viz-chip-bg: #FF9900; --viz-chip-fg: #12181F;
+}
+html.light {
+  --pt-term: #08615A; --pt-claude: #8C3A12; --pt-file: #1A549C; --pt-slack: #5F37B0; --pt-web: #5F37B0;
+  --viz-bad: #B3264A; --viz-chip-bg: #9A4300; --viz-chip-fg: #FFFFFF;
+}
+/* Code blocks stay dark in both themes, so their badges keep the dark palette. */
+.code-wrap { --pt-term: #4FD1C1; --pt-claude: #F4A47E; --pt-file: #7DB7FF; --pt-slack: #C9A2FF; --pt-web: #C9A2FF; }
+.code-head { flex-wrap: wrap; gap: 6px 10px; }
+.pbadge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; line-height: 1.3;
+  padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pbadge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.code-head .pbadge { margin-right: auto; }
+.code-head .copy-btn { margin-left: auto; }
+.pbadge.t-term { color: var(--pt-term); } .pbadge.t-claude { color: var(--pt-claude); }
+.pbadge.t-file { color: var(--pt-file); } .pbadge.t-slack { color: var(--pt-slack); } .pbadge.t-web { color: var(--pt-web); }
+.pb-strip { padding: 6px 14px; font-size: 12.5px; color: #A6ABBE; border-bottom: 1px solid #2A3542; background: rgba(125, 183, 255, 0.06); }
+.pb-strip code { font-family: var(--font-code); color: #7DB7FF; overflow-wrap: anywhere; }
+
+.pg { margin: 0 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); }
+.pg > summary { cursor: pointer; padding: 14px 18px; font-weight: 800; font-size: 15px; color: var(--text); list-style: none; }
+.pg > summary::-webkit-details-marker { display: none; }
+.pg > summary::before { content: "▸ "; color: var(--orange); }
+.pg[open] > summary::before { content: "▾ "; }
+.pg > summary span { font-weight: 400; font-size: 13.5px; color: var(--muted); margin-left: 6px; }
+.pg-body { padding: 0 18px 18px; }
+.pg-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.pg-legend button { font-family: var(--font-body); background: transparent; cursor: pointer; }
+.pg-legend button[aria-pressed="true"] { background: var(--bg-inline); box-shadow: 0 0 0 2px currentColor inset; }
+.pg-map { display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 3fr); gap: 10px; align-items: start; font-size: 13px; }
+.pg-box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--muted); min-width: 0; }
+.pg-box b { display: block; color: var(--text); font-size: 13.5px; }
+.pg-arrow { align-self: center; text-align: center; color: var(--dim); font-weight: 800; }
+.pg-ide { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px; margin-top: 8px; }
+.pg-term .pg-box { margin-top: 8px; }
+.pg-zone.on { border-color: var(--hl, var(--orange)); box-shadow: 0 0 0 3px var(--orange-dim); }
+.pg-zone.on > b { color: var(--hl, var(--orange)); }
+.pg-cap { margin-top: 12px; color: var(--text); font-size: 14px; min-height: 1.75em; }
+@media (max-width: 620px) {
+  .pg-map { grid-template-columns: minmax(0, 1fr); }
+  .pg-arrow { transform: rotate(90deg); }
+  .pg-ide { grid-template-columns: minmax(0, 1fr); }
+}
+
+.gl { border-bottom: 1px dotted var(--orange); cursor: help; position: relative; }
+.gl:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
+.gl-tip { display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; width: max-content; max-width: min(300px, calc(100vw - 32px));
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--orange); border-radius: 8px; padding: 8px 12px;
+  font-size: 13px; font-weight: 400; line-height: 1.6; white-space: normal; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+.gl-tip.flip { left: auto; right: 0; }
+.gl:hover .gl-tip, .gl:focus .gl-tip, .gl:focus-within .gl-tip { display: block; }
+@media (max-width: 900px) {
+  .gl-tip, .gl-tip.flip { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; max-width: none; }
+}
+details.gl-more { margin: 0 0 40px; color: var(--muted); font-size: 14px; }
+details.gl-more summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+details.gl-more dl { margin-top: 8px; }
+details.gl-more dt { color: var(--text); font-weight: 800; margin-top: 8px; }
+details.gl-more dd { margin: 0; }
+
+.viz { margin: 18px 0 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); padding: 16px 18px; }
+.viz-title { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; color: var(--orange); }
+.viz-row { display: flex; align-items: stretch; margin: 14px 0 10px; }
+.viz-node { flex: 1 1 0; min-width: 0; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 8px;
+  text-align: center; background: var(--bg); color: var(--muted); transition: border-color 0.2s, box-shadow 0.2s; }
+.viz-node .ic { display: block; width: 40px; height: 40px; margin: 0 auto 6px; }
+.viz-node img.ic { border-radius: 6px; }
+.viz-node img.ic.tile { background: #FFFFFF; padding: 4px; }
+.viz-node .lb { display: block; font-weight: 800; font-size: 13.5px; color: var(--text); line-height: 1.35; }
+.viz-node .sb { display: block; font-size: 12px; color: var(--muted); font-family: var(--font-code); overflow-wrap: anywhere; line-height: 1.45; margin-top: 3px; }
+.viz-node .lk { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 10px; margin-top: 6px; font-size: 12.5px; font-weight: 700; }
+.viz-node.on { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); color: var(--orange); }
+.viz-node.ok { border-color: var(--green); color: var(--green); }
+.viz-node.bad { border-color: var(--viz-bad); color: var(--viz-bad); }
+.viz-node.ok .sb, .viz-node.bad .sb { color: inherit; }
+.viz-arrow { flex: 0 1 72px; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 4px; min-width: 0; }
+.viz-arrow .el { font-size: 11px; line-height: 1.3; text-align: center; color: var(--dim); font-family: var(--font-code); overflow-wrap: anywhere; min-height: 1.3em; }
+.viz-arrow .ln { position: relative; height: 24px; }
+.viz-arrow .ln::before { content: ""; position: absolute; left: 0; right: 7px; top: 11px; border-top: 2px dashed var(--line); }
+.viz-arrow .ln::after { content: ""; position: absolute; right: 0; top: 6px; border: 6px solid transparent; border-left: 8px solid var(--line); border-right: 0; }
+.viz-arrow.done .ln::before { border-top-style: solid; }
+.viz-arrow.on .ln::before { border-top: 2px solid var(--orange); }
+.viz-arrow.on .ln::after { border-left-color: var(--orange); }
+.viz-arrow.on .el { color: var(--orange); font-weight: 700; }
+.viz-chip { position: absolute; top: 1px; left: 100%; transform: translateX(-100%); z-index: 2; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; font-family: var(--font-code); font-size: 11px; font-weight: 800; line-height: 20px; padding: 0 7px;
+  border-radius: 5px; background: var(--viz-chip-bg); color: var(--viz-chip-fg); animation: viz-mx 1.4s ease-in-out both; }
+@keyframes viz-mx { from { left: 0; transform: translateX(0); opacity: 0.3; } to { left: 100%; transform: translateX(-100%); opacity: 1; } }
+@keyframes viz-my { from { top: 0; transform: translateY(0); opacity: 0.3; } to { top: 100%; transform: translateY(-100%); opacity: 1; } }
+.viz-side { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.viz-side .viz-node { flex: 1 1 160px; display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 10px; }
+.viz-side .viz-node .ic { width: 28px; height: 28px; margin: 0; flex: none; }
+.viz-cap { border-left: 3px solid var(--orange); background: var(--orange-dim); border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 4px 0 12px; font-size: 14.5px; color: var(--text); }
+.viz-cap .q { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; color: var(--orange); margin-bottom: 2px; }
+.viz-cap code, .viz-all code { font-family: var(--font-code); font-size: 0.88em; background: var(--bg-inline); color: var(--orange); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+.viz-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.viz-ctl button { font-family: var(--font-body); font-size: 13px; font-weight: 700; color: var(--text); background: var(--bg-inline);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; min-height: 32px; }
+.viz-ctl button:hover { border-color: var(--orange); color: var(--orange); }
+.viz-ctl button:disabled { opacity: 0.45; cursor: default; }
+.viz-ctl .dots { display: flex; flex-wrap: wrap; gap: 6px; }
+.viz-ctl .dots button { min-width: 32px; padding: 5px 0; }
+.viz-ctl .dots button[aria-current="step"] { background: var(--orange); border-color: var(--orange); color: var(--viz-chip-fg); }
+html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
+.viz-all { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+.viz-all summary { cursor: pointer; color: var(--orange); font-weight: 700; }
+.viz-all ol { padding-left: 20px; margin-top: 6px; }
+.viz-all li { margin: 4px 0; }
+/* Narrow diagrams: the script adds .vert when the box is too narrow for one row. */
+.viz.vert .viz-row { flex-direction: column; }
+.viz.vert .viz-arrow { flex: 0 0 auto; max-width: none; height: 48px; padding: 0; }
+.viz.vert .viz-arrow .ln { position: absolute; left: 50%; top: 0; bottom: 0; width: 24px; height: auto; margin-left: -12px; }
+.viz.vert .viz-arrow .ln::before { left: 11px; right: auto; top: 0; bottom: 7px; border-top: 0; border-left: 2px dashed var(--line); }
+.viz.vert .viz-arrow .ln::after { right: auto; left: 6px; top: auto; bottom: 0; border: 6px solid transparent; border-top: 8px solid var(--line); border-bottom: 0; }
+.viz.vert .viz-arrow.done .ln::before { border-left-style: solid; }
+.viz.vert .viz-arrow.on .ln::before { border-left: 2px solid var(--orange); }
+.viz.vert .viz-arrow.on .ln::after { border-top-color: var(--orange); }
+.viz.vert .viz-arrow .el { position: absolute; left: calc(50% + 18px); right: 0; top: 50%; transform: translateY(-50%); text-align: left; }
+.viz.vert .viz-chip { top: 100%; left: auto; right: calc(50% + 10px); transform: translateY(-100%); max-width: calc(50% - 14px); animation-name: viz-my; }
+@media (prefers-reduced-motion: reduce) {
+  .viz-chip { animation: none !important; }
+  .viz-node, .pg-zone { transition: none !important; }
+}
+/* ==== VIZ COMPONENT v1 END ==== */
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">HANDS-ON LAB / CAPSTONE OVERVIEW</span>
+  <h1>캡스톤 개요: 내 에이전트와 플러그인을 만들어 다시 쓴다</h1>
+  <div class="subtitle">R1은 데이터 미션 하나, R2는 재사용 미션 두 개 이상</div>
+  <p class="lede">
+    캡스톤의 목적은 <strong>본인만의 agents를 만들고 계속 사용 가능한 plugin을 사내에 배포해서 사용하며, 공통으로 사용하는 가드레일을 만든다</strong>는 것입니다.
+    결과물의 화려함이 아니라, 배운 것(<span class="gl" data-gl="plugin">plugin</span>, skill, agent, <span class="gl" data-gl="harness">harness</span>)을 직접 만들어 하나의 재사용 가능한 도구로 완성하는 것이 핵심입니다.
+    진짜 결과물은 재사용 가능한 plugin, 또는 agent + skill + MCP 세트이고, 앱이나 문서는 그 plugin이 제대로 동작한다는 것을 보여 주는 재료입니다.
+  </p>
+  <div class="hero-meta">
+    <span>R1 <strong>Day 1, 110분</strong></span>
+    <span>R2 <strong>Day 2, 180분</strong></span>
+    <span>한 사람이 한 팀</span>
+    <span>Update <strong>2026.11</strong></span>
+  </div>
+</header>
+
+<nav class="timeline" aria-label="개요 목차">
+  <div class="timeline-inner">
+    <span class="timeline-label">개요</span>
+    <div class="segments" id="segments">
+      <button class="seg" data-task="flow" style="flex:1" title="진행 순서"><span class="fill"></span><span class="seg-txt">진행 순서</span></button>
+      <button class="seg" data-task="missions-r1" style="flex:1" title="R1 미션"><span class="fill"></span><span class="seg-txt">R1 미션</span></button>
+      <button class="seg" data-task="missions-r2" style="flex:1" title="R2 미션"><span class="fill"></span><span class="seg-txt">R2 미션</span></button>
+      <button class="seg" data-task="checklist" style="flex:1" title="완주 체크리스트"><span class="fill"></span><span class="seg-txt">체크리스트</span></button>
+      <button class="seg" data-task="submit" style="flex:1" title="출품 양식"><span class="fill"></span><span class="seg-txt">출품</span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+
+<aside class="sidenav" aria-label="목차">
+  <div class="nav-title">OVERVIEW</div>
+  <a href="#flow" data-nav="flow"><span class="dot"></span>진행 순서</a>
+  <a href="#missions-r1" data-nav="missions-r1"><span class="dot"></span>R1 미션<span class="nav-time">110분</span></a>
+  <a href="#missions-r2" data-nav="missions-r2"><span class="dot"></span>R2 미션<span class="nav-time">180분</span></a>
+  <a href="#checklist" data-nav="checklist"><span class="dot"></span>완주 체크리스트</a>
+  <a href="#submit" data-nav="submit"><span class="dot"></span>출품 양식</a>
+</aside>
+
+<main>
+
+<section class="task" id="flow">
+  <div class="task-head"><span class="task-num">FLOW</span><h2>진행 순서</h2></div>
+  <p class="task-goal">
+    R1에서는 <strong>무엇을 다룰지</strong>, R2에서는 <strong>어떻게 다시 쓸지</strong>를 고릅니다. R1은 Ch3(Subagent)까지만 배운 상태라 plugin으로 묶는 일은 R2의 몫이고,
+    R2는 Ch4(plugin, 마켓플레이스)와 Ch5(컨텍스트 비용)를 배운 뒤에 열립니다.
+  </p>
+  <div class="viz" data-viz="journey"></div>
+  <ol class="flow">
+    <li><span class="fl-when">Day 1, R1의<br>처음 15분</span><span class="fl-what"><strong>SETUP</strong>. R1의 110분 중 처음 15분입니다. 대표 플러그인을 먼저 설치합니다. <a href="ClaudeCode_Capstone_Setup.html">시작 전 설치 페이지</a>를 따라 필수 묶음만 깔면 됩니다.</span></li>
+    <li><span class="fl-when">Day 1<br>15:50-17:40 (110분)</span><span class="fl-what"><strong>R1, 에이전트와 가드레일</strong>. 고른 데이터에 맞는 자기 agents와 가드레일이 동작하게 만듭니다. 아래 R1 미션 중 하나를 고릅니다. 110분에는 SETUP 15분이 들어 있어서, 미션 페이지의 단계는 남은 95분에 맞춰져 있습니다.</span></li>
+    <li><span class="fl-when">Day 1<br>17:40-18:00</span><span class="fl-what"><strong>쇼케이스 1</strong>. R1 결과를 공유합니다.</span></li>
+    <li><span class="fl-when">Day 2<br>13:40-16:40 (180분)</span><span class="fl-what"><strong>R2, 플러그인 배포와 재사용</strong>. R2 공통 단계로 plugin을 배포한 뒤, 같은 plugin으로 R2 미션 두 개 이상을 해 냅니다.</span></li>
+    <li><span class="fl-when">Day 2<br>17:40-18:00</span><span class="fl-what"><strong>쇼케이스 2</strong>. Ch6 뒤, Closing과 함께 재사용 시연을 공유합니다.</span></li>
+  </ol>
+  <p class="body">미션 페이지의 코드 블록마다 붙여 넣을 곳이 색 배지로 붙어 있습니다. 시작하기 전에 아래에서 실습 화면의 어느 칸에 무엇을 넣는지 봐 둡니다.</p>
+  <div class="paste-guide" data-types="term claude file slack"></div>
+  <div class="gl-list"></div>
+</section>
+
+<section class="task mission" id="missions-r1">
+  <div class="task-head"><span class="task-num">R1</span><h2>R1 미션, 셋 중 하나</h2><span class="time-badge">110분</span></div>
+  <p class="task-goal">
+    데이터 미션 하나를 고릅니다. 모든 미션의 끝은 같습니다. 고른 데이터를 다루는 <strong>자기 Subagent 2개 이상</strong>(역할이 겹치지 않고 도구 권한이 역할에 맞게 좁혀짐, 읽기 전용 검토 역할 하나를 권장)과,
+    <strong>실제로 막는 가드레일 하나 이상</strong>(<span class="gl" data-gl="hook">훅</span>이나 권한 deny 규칙, <span class="gl" data-gl="failclosed">fail-closed</span>)이 동작하고, 작업 폴더의 <code class="inline">CLAUDE.md</code>와 설정이 정리돼 있어야 합니다.
+    이것이 R2에서 plugin으로 묶을 재료입니다.
+    110분은 SETUP 15분을 포함한 시간이고, 각 미션 페이지의 단계는 SETUP 뒤 95분 안에 끝나도록 짜여 있습니다.
+  </p>
+  <div class="rule-box">규칙: R1은 <strong>셋 중 하나만</strong> 고릅니다.</div>
+  <div class="mcards">
+    <article class="mcard">
+      <span class="mc-tag">R1-A</span>
+      <h3>고객 맞춤 서비스</h3>
+      <div class="mc-data">데이터: 마이데이터 (랩 Ch3 체크포인트에서 출발)</div>
+      <dl>
+        <dt>만들 agents (예)</dt><dd>고객 한 명의 자산과 소비를 보는 상담 준비 agent, 읽기 전용 검토 agent</dd>
+        <dt>가드레일 (예)</dt><dd>주민번호, 계좌 등 개인정보 차단, 원본 <code class="inline">raw/</code> 접근 차단</dd>
+      </dl>
+      <a class="mc-go" href="ClaudeCode_Capstone_R1A_HandsOnLab.html">R1-A 미션 페이지로</a>
+    </article>
+    <article class="mcard">
+      <span class="mc-tag">R1-B</span>
+      <h3>서울 부동산 시세</h3>
+      <div class="mc-data">데이터: 서울 열린데이터광장 실거래가, 전월세 (MCP 직접 제작)</div>
+      <dl>
+        <dt>만들 agents (예)</dt><dd>지역별 시세를 정리하는 agent, 이상 거래를 찾는 agent</dd>
+        <dt>가드레일 (예)</dt><dd>API 키 노출 차단, 호출 대상과 횟수 제한</dd>
+      </dl>
+      <a class="mc-go" href="ClaudeCode_Capstone_R1B_HandsOnLab.html">R1-B 미션 페이지로</a>
+    </article>
+    <article class="mcard">
+      <span class="mc-tag">R1-C</span>
+      <h3>내가 고른 MCP</h3>
+      <div class="mc-data">데이터: 교육생이 고른 MCP (추천 목록 제공)</div>
+      <dl>
+        <dt>만들 agents (예)</dt><dd>그 데이터를 다루는 agent 2개</dd>
+        <dt>가드레일 (예)</dt><dd>MCP 허용 목록, 외부 호출 범위</dd>
+      </dl>
+      <a class="mc-go" href="ClaudeCode_Capstone_R1C_HandsOnLab.html">R1-C 미션 페이지로</a>
+    </article>
+  </div>
+  <p class="body">미션 표의 agent 이름과 가드레일은 예시입니다. 같은 틀 안에서 주제를 바꿔도 됩니다.</p>
+</section>
+
+<section class="task mission" id="missions-r2">
+  <div class="task-head"><span class="task-num">R2</span><h2>R2 미션, 공통 단계 후 두 개 이상</h2><span class="time-badge">180분</span></div>
+  <p class="task-goal">
+    R2는 R1의 agents를 plugin으로 묶는 <strong>공통 단계</strong>에서 시작합니다. 그다음 같은 plugin으로 재사용 미션을 해 냅니다. R2 미션은 R1에서 고른 데이터와 상관없이 고를 수 있습니다.
+    두 번째 업무에서 agent와 skill을 다시 짜지 않았다는 것을 보일 수 있어야 합니다.
+  </p>
+  <div class="rule-box">규칙: <strong>R2 공통 단계를 먼저 하고, 미션 중 둘 이상</strong>을 고릅니다. R2-3은 선택 미션이지만 고르면 두 개 중 하나로 셉니다.</div>
+  <div class="mcards">
+    <article class="mcard common">
+      <span class="mc-tag">R2 공통</span>
+      <h3>plugin으로 묶어 <span class="gl" data-gl="marketplace">마켓플레이스</span> 배포</h3>
+      <dl>
+        <dt>할 일</dt><dd>R1의 agents, 새 skill, MCP 설정, 가드레일 훅을 plugin 하나로 묶고, 마켓플레이스에 올려 새 폴더에서 설치합니다.</dd>
+        <dt>확인</dt><dd>설치한 새 폴더에서도 가드레일이 막습니다.</dd>
+      </dl>
+      <a class="mc-go" href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html">R2 공통 단계 페이지로</a>
+    </article>
+    <article class="mcard">
+      <span class="mc-tag">R2-1</span>
+      <h3>정기 분석 리포트</h3>
+      <dl>
+        <dt>같은 plugin으로</dt><dd>정해진 형식의 분석 리포트를 반복해서 만드는 skill과 명령</dd>
+      </dl>
+      <a class="mc-go" href="ClaudeCode_Capstone_R2_1_HandsOnLab.html">R2-1 미션 페이지로</a>
+    </article>
+    <article class="mcard">
+      <span class="mc-tag">R2-2</span>
+      <h3>기획안 작성</h3>
+      <dl>
+        <dt>같은 plugin으로</dt><dd>분석 결과를 상품이나 서비스 기획안 형식으로 정리</dd>
+      </dl>
+      <a class="mc-go" href="ClaudeCode_Capstone_R2_2_HandsOnLab.html">R2-2 미션 페이지로</a>
+    </article>
+    <article class="mcard optional">
+      <span class="mc-tag">R2-3 (선택)</span>
+      <h3>AgentCore 앱</h3>
+      <dl>
+        <dt>같은 plugin으로</dt><dd>같은 agent와 skill을 AgentCore에 올려 Claude Code 밖에서 쓰는 앱으로. 고르면 두 개 중 하나로 셉니다.</dd>
+      </dl>
+      <a class="mc-go" href="ClaudeCode_Capstone_R2_3_HandsOnLab.html">R2-3 미션 페이지로</a>
+    </article>
+  </div>
+  <div class="callout tip">
+    <span class="co-title">가드레일의 강제력</span>
+    plugin 훅은 사용자가 끌 수 있습니다. 조직이 강제하려면 Ch2의 managed 정책으로 내립니다.
+  </div>
+</section>
+
+<section class="task" id="checklist">
+  <div class="task-head"><span class="task-num">DONE</span><h2>완주 체크리스트</h2></div>
+  <p class="task-goal">아래 7가지가 모두 되면 완주입니다. 마지막 판단은 R2 끝에 합니다. 트랙 A(마이데이터)는 1번의 "자기 Subagent 2개 이상"을 새로 만든 1개 이상과 체크포인트에서 가져와 고친 것으로 셉니다.</p>
+  <div class="checkpoint dod">
+    <div class="cp-title">COMPLETION CHECKLIST</div>
+    <ol>
+      <li data-check="1"><label><span class="cn">1</span><input type="checkbox"><span>자기 Subagent 2개 이상, 도구 권한이 역할에 맞게 좁혀져 있다.</span></label></li>
+      <li data-check="2"><label><span class="cn">2</span><input type="checkbox"><span>skill 하나 이상 (반복 업무의 절차와 출력 형식).</span></label></li>
+      <li data-check="3"><label><span class="cn">3</span><input type="checkbox"><span>데이터 경로: MCP 연결 또는 직접 만든 MCP 서버 (트랙 A는 파일도 허용).</span></label></li>
+      <li data-check="4"><label><span class="cn">4</span><input type="checkbox"><span>가드레일 하나 이상이 실제로 막고, 오류 경로도 막는다 (fail-closed).</span></label></li>
+      <li data-check="5"><label><span class="cn">5</span><input type="checkbox"><span>위 네 가지가 plugin 하나에 묶여 마켓플레이스에서 설치된다 (새 폴더에서 확인).</span></label></li>
+      <li data-check="6"><label><span class="cn">6</span><input type="checkbox"><span>그 plugin으로 R2 재사용 미션 두 개 이상을 해 냈다.</span></label></li>
+      <li data-check="7"><label><span class="cn">7</span><input type="checkbox"><span>plugin 안에 README(무엇을 하는지, 설치 한 줄, 필요한 설정), 버전이 있고, 키와 개인정보가 들어 있지 않다.</span></label></li>
+    </ol>
+  </div>
+  <div class="anti" style="margin-top:24px">
+    <div class="an-title">이러면 완주가 아닙니다</div>
+    <ul>
+      <li>결과물이 한 번 쓰고 버리는 스크립트나 데모 앱뿐이고, plugin으로 묶여 다시 설치되지 않는다.</li>
+      <li>두 번째 업무에서 agent나 skill을 처음부터 다시 짠다 (재사용이 증명되지 않음).</li>
+      <li>가드레일이 문서에만 있고 실제로 아무것도 막지 않는다.</li>
+      <li>빠른 결과를 위해 API 키나 개인정보가 plugin 저장소나 Slack 출품물에 그대로 남는다.</li>
+      <li>화려한 UI를 만드느라 R2 시간을 다 쓰고 배포와 재사용 단계를 못 한다.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="task" id="submit">
+  <div class="task-head"><span class="task-num">SUBMIT</span><h2>출품 양식</h2><span class="time-badge">쇼케이스 전</span></div>
+  <p class="task-goal">Slack 워크숍 채널에 아래 양식으로 올립니다. 모든 미션 페이지의 출품은 이 양식을 따릅니다.</p>
+  <ol class="form-list">
+    <li><strong>plugin 이름, 고른 R1 미션과 R2 미션, 한 줄 설명</strong> (예: R1-B 서울 부동산 시세, R2-1 정기 분석 리포트와 R2-2 기획안 작성)</li>
+    <li><strong>마켓플레이스 추가와 설치 명령</strong> (git 저장소면 URL)</li>
+    <li><strong>업무 두 가지의 결과</strong> (화면 캡처나 결과 파일 요약)</li>
+    <li><strong>가드레일이 막은 장면 하나</strong></li>
+    <li><strong>(선택) AgentCore 앱 주소</strong></li>
+  </ol>
+  <div class="callout warn">
+    <span class="co-title">올리기 전에</span>
+    API 키와 개인정보가 캡처나 파일에 들어 있지 않은지 확인합니다. CloudFront 배포와 URL 출품은 필수가 아닙니다. 앱을 만든 사람은 URL을 덧붙일 수 있습니다.
+  </div>
+</section>
+
+</main>
+</div>
+<footer>
+  <div class="who">Claude Code Deep Dive Workshop, Capstone Overview</div>
+  <div>시작 전 설치는 <a href="ClaudeCode_Capstone_Setup.html">Capstone Setup</a>, 기준: 2026.11</div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  document.querySelectorAll(".seg").forEach(function (seg) {
+    seg.addEventListener("click", function () {
+      var el = document.getElementById(seg.dataset.task);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+  var sections = document.querySelectorAll("section[id]");
+  var navLinks = document.querySelectorAll(".sidenav a[data-nav]");
+  var segs = document.querySelectorAll(".seg[data-task]");
+  if ("IntersectionObserver" in window) {
+    var current = null;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) { if (entry.isIntersecting) current = entry.target.id; });
+      if (!current) return;
+      navLinks.forEach(function (a) { a.classList.toggle("active", a.dataset.nav === current); });
+      segs.forEach(function (s) { s.classList.toggle("active", s.dataset.task === current); });
+    }, { rootMargin: "-20% 0px -65% 0px" });
+    sections.forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var KEY = "hol-theme";
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "theme-toggle";
+  function apply(light) {
+    document.documentElement.classList.toggle("light", light);
+    btn.textContent = light ? "다크" : "프로젝터";
+    btn.title = light ? "다크 모드로 전환" : "프로젝터 모드(라이트)로 전환";
+    btn.setAttribute("aria-pressed", light ? "true" : "false");
+    btn.setAttribute("aria-label", btn.title);
+  }
+  // One switch for the whole event site: fsi-theme is shared by eDM, portal, labs and decks.
+  function fsiTheme(legacy){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}if(q==='light'||q==='dark'){try{localStorage.setItem('fsi-theme',q)}catch(e){}return q}var s=null;try{s=localStorage.getItem('fsi-theme')||localStorage.getItem(legacy)}catch(e){}return s==='light'?'light':'dark'}
+  apply(fsiTheme(KEY) === "light");
+  btn.addEventListener("click", function () {
+    var next = !document.documentElement.classList.contains("light");
+    apply(next);
+    try { localStorage.setItem("fsi-theme", next ? "light" : "dark"); localStorage.setItem(KEY, next ? "light" : "dark"); } catch (e) {}
+  });
+  window.addEventListener("storage", function (e) {
+    if (e.key === "fsi-theme" && (e.newValue === "light" || e.newValue === "dark")) apply(e.newValue === "light");
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+<script type="application/json" id="viz-data">
+{
+ "journey": {
+  "title": "R1에서 R2까지 한눈에 (상자 안 링크로 미션 페이지 이동)",
+  "nodes": [
+   {
+    "id": "r1",
+    "ic": "bot",
+    "lb": "R1 agents와 가드레일",
+    "sb": "~/claude-lab/capstone/",
+    "links": [
+     [
+      "R1-A",
+      "ClaudeCode_Capstone_R1A_HandsOnLab.html"
+     ],
+     [
+      "R1-B",
+      "ClaudeCode_Capstone_R1B_HandsOnLab.html"
+     ],
+     [
+      "R1-C",
+      "ClaudeCode_Capstone_R1C_HandsOnLab.html"
+     ]
+    ]
+   },
+   {
+    "id": "kit",
+    "ic": "folder",
+    "lb": "plugin으로 묶기",
+    "sb": "my-kit/",
+    "links": [
+     [
+      "R2 공통",
+      "ClaudeCode_Capstone_R2_Package_HandsOnLab.html"
+     ]
+    ]
+   },
+   {
+    "id": "mk",
+    "ic": "server",
+    "lb": "marketplace",
+    "sb": "marketplace/ (capstone-local)",
+    "links": [
+     [
+      "R2 공통",
+      "ClaudeCode_Capstone_R2_Package_HandsOnLab.html"
+     ]
+    ]
+   },
+   {
+    "id": "reuse",
+    "ic": "result",
+    "lb": "재사용 미션 2개 이상",
+    "sb": "같은 plugin, 다시 짜지 않음",
+    "links": [
+     [
+      "R2-1",
+      "ClaudeCode_Capstone_R2_1_HandsOnLab.html"
+     ],
+     [
+      "R2-2",
+      "ClaudeCode_Capstone_R2_2_HandsOnLab.html"
+     ],
+     [
+      "R2-3",
+      "ClaudeCode_Capstone_R2_3_HandsOnLab.html"
+     ]
+    ]
+   },
+   {
+    "id": "slack",
+    "ic": "chat",
+    "lb": "Slack 출품",
+    "sb": "쇼케이스 2",
+    "links": [
+     [
+      "출품 양식",
+      "#submit"
+     ]
+    ]
+   }
+  ],
+  "edges": [
+   "R2 공통",
+   "복사해 올리기",
+   "설치 한 줄",
+   "결과 공유"
+  ],
+  "steps": [
+   {
+    "t": "R1: 재료 만들기",
+    "on": [
+     "r1"
+    ],
+    "cap": "R1에서 미션 하나를 골라 자기 Subagent 2개 이상과 실제로 막는 가드레일을 `~/claude-lab/capstone/`에 만듭니다. 이 폴더가 R2의 재료입니다."
+   },
+   {
+    "t": "plugin으로 묶기",
+    "on": [
+     "r1",
+     "kit"
+    ],
+    "edge": 0,
+    "chip": "agents, hooks",
+    "cap": "R2 공통 단계에서 R1의 agents, 새로 만드는 skill, MCP 설정, 가드레일 훅을 `my-kit/` 폴더 하나에 모으고 `claude plugin validate`를 통과시킵니다."
+   },
+   {
+    "t": "marketplace에 올리기",
+    "on": [
+     "kit",
+     "mk"
+    ],
+    "edge": 1,
+    "chip": "my-kit",
+    "cap": "마켓플레이스 폴더에 my-kit를 복사해 올리고 카탈로그 `marketplace.json`을 만듭니다. 동료는 이 마켓플레이스를 추가해 이름으로 설치합니다."
+   },
+   {
+    "t": "새 폴더에서 설치하고 재사용",
+    "on": [
+     "mk",
+     "reuse"
+    ],
+    "edge": 2,
+    "chip": "/plugin install",
+    "cap": "agent도 훅도 없는 새 폴더에서 `/plugin install my-kit@capstone-local` 한 줄로 받으면 가드레일까지 함께 따라옵니다. 그 plugin으로 R2 미션 두 개 이상을 해 냅니다."
+   },
+   {
+    "t": "출품",
+    "on": [
+     "reuse",
+     "slack"
+    ],
+    "edge": 3,
+    "cap": "쇼케이스 전에 Slack 워크숍 채널에 출품 양식대로 올립니다. 키와 개인정보가 캡처나 파일에 없는지 먼저 확인합니다."
+   }
+  ]
+ }
+}
+</script>
+<!-- VIZ COMPONENT v1 START (shared by every capstone page; copy verbatim, page data lives in #viz-data) -->
+<script>
+/* VIZ COMPONENT v1: how a page uses it
+   1) Paste badges: automatic. Every .code-wrap (except .output) gets a badge from its .code-label text:
+      "Terminal..." -> 터미널, "Claude 세션..." -> Claude 세션, "Slack..." -> Slack, a label with 파일 -> 파일 내용,
+      a label with 브라우저 or 설치 창 -> 브라우저. Override with <div class="code-wrap" data-paste="term|claude|file|slack|web"
+      data-paste-path="~/x/y.md">. Terminal blocks that run cat > PATH << get a strip naming the file they create.
+   2) Paste guide: <div class="paste-guide" data-types="term claude file"></div> (data-types optional; default = badge
+      types found on the page). Renders the 노트북 브라우저 -> code-server(EC2) -> 편집기/터미널/Claude 세션 schematic.
+   3) Glossary: <span class="gl" data-gl="hook">훅</span> shows the GL definition on hover, focus or tap.
+      <div class="gl-list"></div> renders a "더 알아보기" list of the terms used on the page.
+   4) Flow and copy visuals: <div class="viz" data-viz="NAME"></div> plus one page-level
+      JSON block (script type="application/json" id="viz-data") holding {"NAME": {...}}, where a diagram is
+      { "title": "...", "nodes": [{"id","lb","sb","ic": shape | "img": "images/aws-icons/x.svg", "tile": true, "links": [["text","href"]]}],
+        "edges": ["label between node 1 and 2", ...], "side": [nodes shown under the row, no arrows],
+        "steps": [{"t": "short title", "cap": "caption, `code` allowed", "on": [ids], "ok": [ids], "bad": [ids],
+                   "edge": 0 | [0, 1], "chip": "file moving along that edge (copy mode)", "set": {"id": {"lb","sb"}}}] }
+      Shapes: browser server folder doc terminal chat plug globe shield key lock user bot result.
+      A step's "set" may change lb, sb, ic or img; a set.ic replaces the node's img with that shape for the step.
+      Buttons: 이전, 재생 (one pass, no loop; hidden with fewer than 2 steps), 다음, numbered steps.
+      A .viz whose data is missing, or has no nodes or steps, is hidden. prefers-reduced-motion: opens on the last step, no 재생. */
+(function () {
+  "use strict";
+  var TYPES = {
+    term: { lb: "터미널", zone: "term", cap: "code-server 아래쪽 Terminal 창(내 EC2의 리눅스 셸)에 붙여 넣고 Enter를 누릅니다. 여러 줄 블록도 통째로 붙여 넣으면 됩니다." },
+    claude: { lb: "Claude 세션", zone: "claude", cap: "터미널에서 claude를 실행한 뒤 나오는 프롬프트 칸에 붙여 넣습니다. 셸 명령이 아니라 Claude에게 보내는 요청입니다." },
+    file: { lb: "파일 내용", zone: "editor", cap: "code-server 편집기에서 블록 위에 적힌 경로의 파일을 열고, 이 내용을 넣어 저장합니다." },
+    slack: { lb: "Slack 메시지", zone: "browser", cap: "내 노트북 브라우저의 Slack 워크숍 채널 메시지 칸에 붙여 넣습니다. 실습 EC2에는 들어가지 않습니다." },
+    web: { lb: "브라우저", zone: "browser", cap: "내 노트북 브라우저의 다른 탭이나 창(예: 설치 창)에 넣습니다. 터미널에 붙여 넣는 명령이 아닙니다." }
+  };
+  var GL = {
+    hook: ["훅", "Claude Code가 프롬프트를 받을 때나 도구를 쓰기 직전 같은 정해진 순간에 자동으로 실행하는 내 스크립트입니다. exit 2로 끝나면 그 동작을 막습니다."],
+    mcp: ["MCP", "Model Context Protocol. Claude Code에 외부 데이터와 도구를 붙이는 연결 방식입니다. MCP 서버가 도구(예: search_trades)를 내놓으면 Claude가 그 도구를 부릅니다."],
+    plugin: ["plugin", "agents, skills, 훅, MCP 설정을 한 폴더에 묶어 설치 한 줄로 나눠 주는 단위입니다."],
+    marketplace: ["marketplace", "설치할 수 있는 plugin 목록(marketplace.json)을 담은 폴더나 git 저장소입니다. 추가한 뒤 plugin이름@마켓플레이스이름으로 설치합니다."],
+    userConfig: ["userConfig", "plugin을 설치할 때 키 같은 값을 묻는 칸입니다. sensitive로 둔 값은 설정 파일이 아닌 비밀 저장소에 들어갑니다."],
+    failclosed: ["fail-closed", "검사기가 오류를 내거나 아예 실행되지 못해도 통과가 아니라 차단으로 끝나게 하는 설계입니다. 이 실습에서는 오류 경로의 exit 2와 onFailure: block이 맡습니다."],
+    local: ["local 범위", "claude mcp add에 범위를 주지 않을 때의 기본값입니다. 등록한 폴더에서만 보이고, 설정은 ~/.claude.json에 저장됩니다."],
+    harness: ["AgentCore harness", "모델, 시스템 프롬프트, 도구를 설정 파일로 정하면 AgentCore가 에이전트 루프를 돌려 주는 방식입니다."]
+  };
+  var P = {
+    browser: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M6 6.5h.01M8.5 6.5h.01"/>',
+    server: '<rect x="4" y="3" width="16" height="7" rx="1.5"/><rect x="4" y="14" width="16" height="7" rx="1.5"/><path d="M8 6.5h.01M8 17.5h.01"/>',
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+    terminal: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+    plug: '<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+    shield: '<path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    key: '<circle cx="8" cy="14" r="4"/><path d="M11 11l9-9M16 6l3 3M14 8l2 2"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    bot: '<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 13h.01M15 13h.01"/>',
+    result: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+  };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function md(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function shape(name) { return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[name] || P.result) + "</svg>"; }
+
+  /* 1) paste badges */
+  var found = {};
+  document.querySelectorAll(".code-wrap").forEach(function (w) {
+    if (w.classList.contains("output")) return;
+    var head = w.querySelector(".code-head"), label = w.querySelector(".code-label");
+    if (!head) return;
+    var t = w.getAttribute("data-paste"), txt = label ? label.textContent : "";
+    if (!t) t = /^\s*terminal/i.test(txt) ? "term" : /^\s*Claude 세션/.test(txt) ? "claude" : /^\s*Slack/i.test(txt) ? "slack" : /파일/.test(txt) ? "file" : /브라우저|설치 창/.test(txt) ? "web" : "";
+    if (!TYPES[t]) return;
+    found[t] = true;
+    var b = el("span", "pbadge t-" + t, "붙여 넣을 곳: " + TYPES[t].lb);
+    b.title = TYPES[t].cap;
+    if (label && label.nextSibling) head.insertBefore(b, label.nextSibling); else head.insertBefore(b, head.firstChild);
+    var pre = w.querySelector("pre"), paths = [];
+    if (w.getAttribute("data-paste-path")) paths.push(w.getAttribute("data-paste-path"));
+    else if (t === "term" && pre) {
+      var dir = "";
+      pre.textContent.split("\n").forEach(function (line) {
+        var cd = line.match(/^\s*cd\s+([^\s;&|]+)/); if (cd) dir = cd[1];
+        line.replace(/cat\s+>\s*(\S+)\s+<</g, function (m, p) {
+          paths.push(/^[\/~$]/.test(p) || !dir ? p : dir.replace(/\/$/, "") + "/" + p.replace(/^\.\//, ""));
+        });
+      });
+    }
+    if (paths.length) {
+      var strip = el("div", "pb-strip", (t === "file" ? "저장할 파일: " : "붙여 넣으면 이 파일이 만들어집니다: ") + paths.map(function (p) { return "<code>" + esc(p) + "</code>"; }).join(", "));
+      head.parentNode.insertBefore(strip, head.nextSibling);
+    }
+  });
+
+  /* 2) paste guide */
+  document.querySelectorAll(".paste-guide").forEach(function (host) {
+    var list = (host.getAttribute("data-types") || Object.keys(found).join(" ") || "term claude").split(/\s+/).filter(function (k) { return TYPES[k]; });
+    var d = el("details", "pg");
+    var seen = false;
+    var seenKey = "fsi-paste-guide:" + location.pathname;
+    try { seen = localStorage.getItem(seenKey) === "seen"; localStorage.setItem(seenKey, "seen"); } catch (e) {}
+    d.open = !seen;
+    d.innerHTML = '<summary>어디에 붙여 넣나요?<span>코드 블록 위의 색 배지가 붙여 넣을 곳입니다. 배지를 눌러 보세요.</span></summary>' +
+      '<div class="pg-body"><div class="pg-legend" role="group" aria-label="붙여 넣을 곳 종류"></div>' +
+      '<div class="pg-map"><div class="pg-box pg-zone" data-zone="browser"><b>내 노트북 브라우저</b>실습 화면과 Slack을 여는 곳</div>' +
+      '<div class="pg-arrow" aria-hidden="true">→</div>' +
+      '<div class="pg-box"><b>code-server (내 실습 EC2)</b>1인 1대의 EC2를 브라우저로 엽니다' +
+      '<div class="pg-ide"><div class="pg-box pg-zone" data-zone="editor"><b>파일 편집기</b>파일을 열어 고치고 저장</div>' +
+      '<div class="pg-box pg-zone pg-term" data-zone="term"><b>터미널 (Terminal 창)</b>리눅스 셸 명령' +
+      '<div class="pg-box pg-zone" data-zone="claude"><b>Claude 세션</b>터미널에서 <code>claude</code>를 실행한 뒤의 프롬프트 칸</div></div></div></div></div>' +
+      '<p class="pg-cap" aria-live="polite">배지를 누르면 그 텍스트가 들어갈 곳이 밝게 표시됩니다.</p></div>';
+    var legend = d.querySelector(".pg-legend"), cap = d.querySelector(".pg-cap");
+    list.forEach(function (k) {
+      var b = el("button", "pbadge t-" + k, TYPES[k].lb);
+      b.type = "button"; b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        legend.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        d.querySelectorAll(".pg-zone").forEach(function (z) { z.classList.toggle("on", z.getAttribute("data-zone") === TYPES[k].zone); });
+        d.style.setProperty("--hl", "var(--pt-" + k + ")");
+        cap.innerHTML = "<strong>" + esc(TYPES[k].lb) + ":</strong> " + esc(TYPES[k].cap);
+      });
+      legend.appendChild(b);
+    });
+    host.appendChild(d);
+  });
+
+  /* 3) glossary */
+  var used = [];
+  document.querySelectorAll(".gl[data-gl]").forEach(function (g, i) {
+    var k = g.getAttribute("data-gl"); if (!GL[k]) return;
+    if (used.indexOf(k) < 0) used.push(k);
+    g.tabIndex = 0;
+    var tip = el("span", "gl-tip", "<strong>" + esc(GL[k][0]) + "</strong>: " + esc(GL[k][1]));
+    tip.id = "gl-tip-" + i; tip.setAttribute("role", "tooltip");
+    g.setAttribute("aria-describedby", tip.id);
+    g.appendChild(tip);
+    function place() { var r = g.getClientRects()[0] || g.getBoundingClientRect(); tip.classList.toggle("flip", r.left + Math.min(300, window.innerWidth - 32) > window.innerWidth - 16); }
+    g.addEventListener("mouseenter", place); g.addEventListener("focus", place);
+  });
+  document.querySelectorAll(".gl-list").forEach(function (host) {
+    if (!used.length) return;
+    var d = el("details", "gl-more", "<summary>더 알아보기: 이 페이지의 용어</summary><dl>" +
+      used.map(function (k) { return "<dt>" + esc(GL[k][0]) + "</dt><dd>" + esc(GL[k][1]) + "</dd>"; }).join("") + "</dl>");
+    host.appendChild(d);
+  });
+
+  /* 4) flow and copy visuals */
+  var data = {};
+  try { var src = document.getElementById("viz-data"); if (src) data = JSON.parse(src.textContent); } catch (e) { data = {}; }
+  function nodeHtml(n) {
+    var ic = n.img ? '<img class="ic' + (n.tile ? " tile" : "") + '" src="' + esc(n.img) + '" alt="">' : shape(n.ic);
+    var links = (n.links || []).map(function (l) { return '<a href="' + esc(l[1]) + '">' + esc(l[0]) + "</a>"; }).join("");
+    return ic + '<span><span class="lb">' + esc(n.lb) + "</span>" + (n.sb ? '<span class="sb">' + esc(n.sb) + "</span>" : "") +
+      (links ? '<span class="lk">' + links + "</span>" : "") + "</span>";
+  }
+  document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
+    var v = data[host.getAttribute("data-viz")];
+    if (!v || !v.nodes || !v.nodes.length || !v.steps || !v.steps.length) { host.hidden = true; return; }
+    var cur = 0, timer = null, all = (v.nodes || []).concat(v.side || []);
+    host.classList.add("n" + v.nodes.length);
+    host.setAttribute("role", "group");
+    host.setAttribute("aria-label", v.title || "흐름 그림");
+    var row = el("div", "viz-row"), side = el("div", "viz-side"), nodeEls = {}, arrows = [];
+    v.nodes.forEach(function (n, i) {
+      if (i > 0) {
+        var a = el("div", "viz-arrow", '<span class="el">' + esc((v.edges || [])[i - 1] || "") + '</span><span class="ln"></span>');
+        a.setAttribute("aria-hidden", "true"); arrows.push(a); row.appendChild(a);
+      }
+      nodeEls[n.id] = el("div", "viz-node"); row.appendChild(nodeEls[n.id]);
+    });
+    (v.side || []).forEach(function (n) { nodeEls[n.id] = el("div", "viz-node"); side.appendChild(nodeEls[n.id]); });
+    var cap = el("div", "viz-cap"); cap.setAttribute("aria-live", "polite");
+    var ctl = el("div", "viz-ctl"), dots = el("div", "dots");
+    var prev = el("button", "", "◀ 이전"), play = el("button", "", "▶ 재생"), next = el("button", "", "다음 ▶");
+    [prev, play, next].forEach(function (b) { b.type = "button"; });
+    v.steps.forEach(function (s, i) {
+      var b = el("button", "", String(i + 1)); b.type = "button";
+      b.setAttribute("aria-label", (i + 1) + "단계: " + (s.t || ""));
+      b.addEventListener("click", function () { stop(); show(i); });
+      dots.appendChild(b);
+    });
+    ctl.appendChild(prev); if (!reduce && v.steps.length > 1) ctl.appendChild(play); ctl.appendChild(next); ctl.appendChild(dots);
+    var allTxt = el("details", "viz-all", "<summary>모든 단계 글로 보기</summary><ol>" +
+      v.steps.map(function (s) { return "<li>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap) + "</li>"; }).join("") + "</ol>");
+    host.appendChild(el("div", "viz-title", esc(v.title || "무슨 일이 일어나나요?")));
+    host.appendChild(row); if (v.side && v.side.length) host.appendChild(side);
+    host.appendChild(cap); host.appendChild(ctl); host.appendChild(allTxt);
+    function edges(s) { return s.edge == null ? [] : [].concat(s.edge); }
+    function show(k) {
+      cur = k; var s = v.steps[k], set = s.set || {};
+      all.forEach(function (n) {
+        var e = nodeEls[n.id], o = set[n.id] || {};
+        e.innerHTML = nodeHtml({ lb: o.lb || n.lb, sb: o.sb != null ? o.sb : n.sb, ic: o.ic || n.ic, img: o.img || (o.ic ? null : n.img), tile: n.tile, links: n.links });
+        e.className = "viz-node" + ((s.bad || []).indexOf(n.id) >= 0 ? " bad" : (s.ok || []).indexOf(n.id) >= 0 ? " ok" : (s.on || []).indexOf(n.id) >= 0 ? " on" : "");
+      });
+      var done = [];
+      for (var j = 0; j < k; j++) done = done.concat(edges(v.steps[j]));
+      arrows.forEach(function (a, i) {
+        var on = edges(s).indexOf(i) >= 0;
+        a.className = "viz-arrow" + (on ? " on" : done.indexOf(i) >= 0 ? " done" : "");
+        var old = a.querySelector(".viz-chip"); if (old) old.remove();
+        if (on && s.chip) a.querySelector(".ln").appendChild(el("span", "viz-chip", esc(s.chip)));
+      });
+      cap.innerHTML = '<span class="q">지금 무슨 일이? (' + (k + 1) + "/" + v.steps.length + ")</span>" + (s.t ? "<strong>" + esc(s.t) + "</strong>: " : "") + md(s.cap);
+      dots.querySelectorAll("button").forEach(function (b, i) { if (i === k) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+      prev.disabled = k === 0; next.disabled = k === v.steps.length - 1;
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; play.textContent = "▶ 재생"; } }
+    prev.addEventListener("click", function () { stop(); if (cur > 0) show(cur - 1); });
+    next.addEventListener("click", function () { stop(); if (cur < v.steps.length - 1) show(cur + 1); });
+    play.addEventListener("click", function () {
+      if (timer) { stop(); return; }
+      show(cur >= v.steps.length - 1 ? 0 : cur);
+      play.textContent = "❚❚ 멈춤";
+      timer = setInterval(function () { if (cur < v.steps.length - 1) show(cur + 1); if (cur >= v.steps.length - 1) stop(); }, 2600);
+    });
+    function fit() { host.classList.toggle("vert", host.clientWidth < (v.nodes.length >= 5 ? 760 : 560)); }
+    fit();
+    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(host); else window.addEventListener("resize", fit);
+    show(reduce ? v.steps.length - 1 : 0);
+  });
+})();
+</script>
+<!-- VIZ COMPONENT v1 END -->
+</body>
+</html>
