@@ -998,7 +998,7 @@ wc -c app/capstone_app/system-prompt.md</code></pre>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore/CapstoneApp
-grep -nE '[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4}' app/capstone_app/* || echo "개인정보 패턴 없음"
+grep -nE '(^|[^0-9])([0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4})([^0-9]|$)' app/capstone_app/* || echo "개인정보 패턴 없음"
 jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?) | strings | sub("^Bearer "; "")' ~/.claude.json 2&gt;/dev/null \
   | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -rlF -- "$V" app/ agentcore/aws-targets.json ; done
 echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"</code></pre>
@@ -1079,7 +1079,7 @@ wc -c input.txt</code></pre>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 보내기 전 검사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore
-grep -nE '[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4}' input.txt || echo "개인정보 패턴 없음"
+grep -nE '(^|[^0-9])([0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4})([^0-9]|$)' input.txt || echo "개인정보 패턴 없음"
 jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?) | strings | sub("^Bearer "; "")' ~/.claude.json 2&gt;/dev/null \
   | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -lF -- "$V" input.txt ; done
 echo "키 검사 끝 (위에 input.txt가 나오면 보내지 않습니다)"</code></pre>
