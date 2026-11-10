@@ -976,6 +976,7 @@ P=~/claude-lab/capstone/marketplace/plugins/$KIT
   echo "이 환경에는 Claude Code의 subagent, 훅, MCP 도구가 없습니다."
   echo "아래 skill에서 '${KIT}:이름 에이전트에게 맡깁니다'라고 적힌 단계는, '역할: ${KIT}:이름' 절의 지침을 따라 직접 수행합니다."
   echo "자료는 사용자가 메시지에 준 것만 씁니다. 파일에 저장하라는 단계는 응답 본문으로 출력하는 것으로 대신합니다."
+  echo "HTML 웹 리포트는 만들지 않고, 출력 형식(마크다운)만 응답합니다."
   for a in "$COLLECT" "$REVIEW"; do
     echo; echo "## 역할: ${KIT}:$a"
     awk 'n &gt;= 2 { print; next } /^---$/ { n++ }' "$P/agents/$a.md"
