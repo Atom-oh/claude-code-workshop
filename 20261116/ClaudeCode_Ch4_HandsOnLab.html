@@ -924,15 +924,17 @@ cd ~/claude-lab/ch5/colleague &amp;&amp; claude --plugin-dir ~/claude-lab/ch5/fi
 <h3 id="step-2-원복">Step 2 · 원복</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo cp ~/claude-lab/ch5/managed-settings.backup.json /etc/claude-code/managed-settings.json &amp;&amp; sudo jq . /etc/claude-code/managed-settings.json
 use_bedrock_direct &gt;/dev/null
+claude plugin disable asset-team-kit@fsi-local --scope user
 claude plugin list</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
 <li data-lines="1">백업해 둔 정책 파일로 managed-settings.json을 되돌리고, <code>jq .</code>로 내용을 출력해 원복을 확인합니다.</li>
-<li data-lines="2">사용자 설정을 기본 모드로 되돌립니다.</li>
-<li data-lines="3">설치된 플러그인 목록과 상태를 봅니다. user 범위로 설치한 asset-team-kit은 앞 단계에서 <code>disabled</code>로 바뀌어 있습니다.</li>
+<li data-lines="2">사용자 설정의 모드 키를 기본 모드로 맞춥니다. 플러그인 켜기 상태와 상태줄은 그대로 둡니다.</li>
+<li data-lines="3">user 범위로 설치한 asset-team-kit을 끕니다. 지우지 않고 끄기만 하므로 나중에 다시 켤 수 있습니다.</li>
+<li data-lines="4">설치된 플러그인 목록과 상태를 봅니다. asset-team-kit이 <code>disabled</code>로 보여야 합니다.</li>
 </ol></details>
 
-<p><code>use_bedrock_direct</code>가 사용자 settings.json을 기본값으로 되돌리므로, user 범위로 설치한 asset-team-kit은 <code>Status: ✘ disabled</code>가 됩니다. 이후 챕터에서 이 플러그인의 DLP 훅이 프롬프트를 막지 않게 하려는 것입니다. 다시 쓰려면 <code>/plugin</code>에서 켜면 됩니다.</p>
+<p><code>claude plugin disable</code> 줄 때문에 asset-team-kit은 <code>Status: ✘ disabled</code>가 됩니다. 이후 챕터에서 이 플러그인의 DLP 훅이 프롬프트를 막지 않게 하려는 것입니다. 다시 쓰려면 <code>/plugin</code>에서 켜거나 <code>claude plugin enable asset-team-kit@fsi-local</code>을 실행합니다. 다른 플러그인(Capstone Setup에서 설치한 것 등)은 켜진 그대로입니다.</p>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span><code>allowManagedModsOnly</code>로 사용자 mod가 막히는 것을 확인했다</span></label></li>

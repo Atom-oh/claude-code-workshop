@@ -817,13 +817,15 @@ cd ~/claude-lab/ch3 &amp;&amp; claude --plugin-dir /tmp/rogue -p &quot;hi&quot;;
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo cp ~/claude-lab/ch3/managed-settings.backup.json /etc/claude-code/managed-settings.json
 sudo jq . /etc/claude-code/managed-settings.json
 rm -rf /tmp/rogue /tmp/ch3-remote.git
-use_bedrock_direct   # TASK 03에서 바꾼 사용자 settings.json(ask, autoMode)을 기본값으로</code></pre></div>
+jq &#x27;del(.permissions.ask, .autoMode)&#x27; ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
+use_bedrock_direct</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
 <li data-lines="1">TASK 00에서 만든 백업으로 managed-settings를 되돌립니다. DLP 훅·auto 잠금·사이드로드 금지가 모두 사라집니다.</li>
 <li data-lines="2">되돌린 내용을 출력해 확인합니다.</li>
 <li data-lines="3">실습용 임시 폴더를 지웁니다. <code>-r</code>은 폴더째, <code>-f</code>는 확인 없이 지웁니다.</li>
-<li data-lines="4">사용자 <code>settings.json</code>도 기본값으로 되돌립니다. <code>#</code> 뒤는 설명 주석입니다.</li>
+<li data-lines="4">TASK 03에서 사용자 <code>settings.json</code>에 넣은 <code>permissions.ask</code>(git push 확인)와 <code>autoMode</code>(신뢰 범위·hard_deny)를 지웁니다. 모드 전환 명령은 이 키들을 지우지 않으므로 직접 지웁니다.</li>
+<li data-lines="5">기본 모드(Bedrock 직접 연결)로 맞춥니다. 모드 키만 바꾸고 플러그인과 상태줄은 그대로 둡니다.</li>
 </ol></details>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>원복하지 않으면</strong></p>
