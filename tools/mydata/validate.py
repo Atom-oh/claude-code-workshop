@@ -13,6 +13,22 @@ def load_pattern():
     return re.compile(PATTERN_FILE.read_text(encoding="utf-8").strip())
 
 
+def count_matches(pat, line):
+    """Count matches, letting adjacent identifiers share one separator.
+
+    The number patterns consume a non-digit on each side, so the next search
+    starts at the last character of a match; that character can only begin
+    another match as its leading separator.
+    """
+    n, pos = 0, 0
+    while True:
+        m = pat.search(line, pos)
+        if not m:
+            return n
+        n += 1
+        pos = max(m.start() + 1, m.end() - 1)
+
+
 def _files(root):
     return {str(p.relative_to(root)): p for p in sorted(root.rglob("*")) if p.is_file()}
 
@@ -46,7 +62,7 @@ def validate(data_dir):
     raw_matches = 0
     for path in raw_files.values():
         with open(path, encoding="utf-8") as f:
-            raw_matches += sum(len(pat.findall(line)) for line in f)
+            raw_matches += sum(count_matches(pat, line) for line in f)
     if raw_matches < MIN_RAW_MATCHES:
         errors.append("raw/ has fewer than %d DLP matches (found %d)"
                       % (MIN_RAW_MATCHES, raw_matches))

@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from tools.mydata.generate import generate
-from tools.mydata.validate import load_pattern, validate
+from tools.mydata.validate import count_matches, load_pattern, validate
 
 
 class ValidateTest(unittest.TestCase):
@@ -30,6 +30,24 @@ class ValidateTest(unittest.TestCase):
 
     def test_load_pattern(self):
         self.assertTrue(load_pattern().search("010-0123-4567"))
+
+    def test_pattern_ignores_digits_inside_longer_numbers(self):
+        pat = load_pattern()
+        for text in ("print(170767500-170886300)", "20260928-20261028", "0610212-1916489"):
+            with self.subTest(text=text):
+                self.assertIsNone(pat.search(text))
+        for text in ("900101-1234567", "카드4111-1111-1111-9893", "계좌 123-456789-01234",
+                     "AKIAABCDEFGHIJKLMNOP"):
+            with self.subTest(text=text):
+                self.assertTrue(pat.search(text))
+
+    def test_count_matches_adjacent_identifiers(self):
+        pat = load_pattern()
+        row = "C0001,김영하,610212-1916489,010-0155-9050,65"
+        self.assertEqual(count_matches(pat, row), 2)
+        self.assertEqual(count_matches(pat, "610212-1916489,010-0155-9050"), 2)
+        self.assertEqual(count_matches(pat, "AKIAABCDEFGHIJKLMNOP 010-0155-9050"), 2)
+        self.assertEqual(count_matches(pat, "print(170767500-170886300)"), 0)
 
     def test_pseudo_has_no_dlp_match_any_file(self):
         targets = sorted((self.data / "pseudo").iterdir())
