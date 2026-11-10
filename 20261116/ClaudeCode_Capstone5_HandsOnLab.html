@@ -822,7 +822,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
    입력은 최근 24h 요약 통계와 상위 이벤트 목록, 출력은 한국어 "지난 24시간, 지구는" 브리핑:
    전체 흐름 한 문단, 주목 이벤트 2~3개 해설, 활동 급증 지역. 같은 10분 버킷 동안 결과 캐시
 7) 키의 거처: AWS_BEARER_TOKEN_BEDROCK은 환경변수로만. USGS는 키가 없다, 화면은 우리 API만 본다
-8) 배포: CDK로 CloudFront → VPC origin → 내부(internal) ALB → ECS Fargate 를 구성해 배포한다. ALB는 인터넷에 열지 않고 보안 그룹은 CloudFront origin-facing prefix list의 80만 허용, VPC에는 인터넷 게이트웨이를 붙인다. Secrets Manager가 Bearer를 기동 시 주입, 이미지에 비밀 없음
+8) 배포: CDK로 CloudFront → VPC origin → 내부(internal) ALB → ECS Fargate 를 구성해 배포한다. ALB는 인터넷에 열지 않고 보안 그룹은 CloudFront origin-facing prefix list에서 오는 80번 포트만 허용, VPC에는 인터넷 게이트웨이를 붙이고, us-east-1이면 VPC origin이 지원하지 않는 AZ(use1-az3)는 서브넷에서 뺀다. Secrets Manager가 Bearer를 기동 시 주입, 이미지에 비밀 없음
 9) 구현 순서: Phase 1(수집기 + 스토어 + /api/quakes, curl 검증) → Phase 2(지도 SVG + 테이블 + 필터)
    → Phase 3(브리핑 + 캐시) → Phase 4(cdk deploy와 CloudFront 개장). 시간 제약 2시간:
    테스트 생략, curl과 브라우저로 검증. 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
@@ -938,7 +938,7 @@ curl -s "https://$DOMAIN/healthz" &amp;&amp; echo " &lt;- 열렸습니다, 이 U
   <div class="callout warn">
     <span class="co-title">개장이 막힐 때</span>
     ① ALB 주소로 직접 접속이 안 됨 = 정상입니다. 내부 ALB라 인터넷에서 닿지 않고, CloudFront VPC origin으로만 들어옵니다.
-    ② 502 = 컨테이너 헬스체크 경로(/healthz)와 포트 매핑을 확인. ③ 브리핑만 실패 = Secrets의 Bearer가
+    ② 502 = 컨테이너 헬스체크 경로(/healthz)와 포트 매핑을 확인. 504 = ALB 보안 그룹이 CloudFront prefix list를 허용하는지 확인. VPC origin 생성이 실패하면 VPC에 인터넷 게이트웨이가 붙어 있는지 확인. ③ 브리핑만 실패 = Secrets의 Bearer가
     태스크에 주입되는지 (aws ecs describe-task-definition에서 secrets 블록) 확인하세요.
   </div>
   <div class="checkpoint">
