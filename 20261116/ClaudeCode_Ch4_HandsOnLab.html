@@ -499,10 +499,10 @@ claude</code></pre></div>
 </ol></details>
 
 <p>2~4분 뒤 <code>pension-report.html</code>이 생깁니다. risk-reviewer가 인원 수끼리 빼서 5명 미만 집단이 드러나는 조합을 찾으면 Claude가 그 숫자를 빼고 다시 저장하기도 합니다. 저장이 끝나면 외부 주소와 식별자가 없는지 확인합니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>!grep -cE &#x27;src=&quot;https?://|href=&quot;https?://&#x27; pension-report.html; grep -nE &#x27;\bC[0-9]{4}\b|고객[0-9]{4}|CI_&#x27; pension-report.html || echo &quot;식별자 없음&quot;</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>!grep -cE &#x27;src=&quot;https?://|href=&quot;https?://&#x27; pension-report.html; grep -nE &#x27;(^|[^0-9A-Fa-f#])C[0-9]{4}([^0-9A-Fa-f]|$)|고객[0-9]{4}|CI_&#x27; pension-report.html || echo &quot;식별자 없음&quot;</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
-<li data-lines="1">앞의 <code>grep -cE</code>는 외부 주소를 불러오는 <code>src</code>, <code>href</code>의 개수를 셉니다. <code>0</code>이면 파일 하나로 완결된 것입니다. 뒤의 grep은 Step 1과 같은 식별자 검사입니다. HTML에는 <code>#C0392B</code> 같은 색상값이 있어서 <code>C</code>와 숫자 4자리 앞뒤에 단어 경계(<code>\b</code>)를 붙였습니다.</li>
+<li data-lines="1">앞의 <code>grep -cE</code>는 외부 주소를 불러오는 <code>src</code>, <code>href</code>의 개수를 셉니다. <code>0</code>이면 파일 하나로 완결된 것입니다. 뒤의 grep은 Step 1과 같은 식별자 검사입니다. HTML에는 <code>#C0392B</code> 같은 색상값이 있어서, <code>C</code>와 숫자 4자리 앞에 <code>#</code>이나 16진수 글자가 오거나 뒤에 16진수 글자가 이어지면 고객 ID로 보지 않습니다. <code>C0001님</code>처럼 한글이 바로 붙은 ID는 그대로 잡습니다.</li>
 </ol></details>
 
 <h3 id="step-4-브라우저로-열어-보기">Step 4 · 브라우저로 열어 보기</h3>
