@@ -584,7 +584,7 @@
       { id: "nextnote", shape: "note", tone: "ok", label: "2장에서 다룹니다\n보존 기간 · DLP", x: 670, y: 270, w: 170, h: 54, appear: 4 }
     ],
     edges: [
-      { id: "e-write", from: "claude", to: "jsonl", label: "메시지 · 도구 결과\n기록", via: [[260, 238]] },
+      { id: "e-write", from: "claude", to: "jsonl", label: "기록", via: [[250, 238]] },
       { id: "e-grep", from: "grepnote", to: "jsonl", label: "찾기", via: [[540, 238]] }
     ],
     steps: [
