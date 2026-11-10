@@ -948,7 +948,7 @@ EOF
 claude mcp add --transport http microsoft-learn https://learn.microsoft.com/api/mcp
 claude mcp list</code></pre>
   </div>
-      <p class="body">인증이 없습니다. Setup의 선택 세트로 <code class="inline">microsoft-docs</code> plugin을 설치했다면 그 plugin도 이 서버와 같은 주소의 MCP 서버를 내놓습니다. 02에서 만들 허용 목록은 주소로 맞추므로 그 서버도 통과해, <code class="inline">claude mcp list</code>에 두 줄이 보입니다. plugin 쪽 도구는 이름이 <code class="inline">mcp__microsoft-learn__</code>로 시작하지 않아 01의 agent와 02의 mcp-guard가 쓰지 못하니, 이 폴더에서만 그 plugin을 끕니다.</p>
+      <p class="body">인증이 없습니다. Setup의 선택 세트로 <code class="inline">microsoft-docs</code> plugin을 설치했다면 그 plugin도 이 서버와 같은 주소의 MCP 서버를 내놓습니다. 02에서 만들 허용 목록은 주소로 맞추므로 그 서버도 통과해, <code class="inline">claude mcp list</code>에 두 줄이 보입니다. plugin 쪽 도구는 이름이 <code class="inline">mcp__microsoft-learn__</code>로 시작하지 않아 01의 agent는 부르지 못하고 02의 mcp-guard는 막으니, 이 폴더에서만 그 plugin을 끕니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, microsoft-docs plugin을 설치했을 때만</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
