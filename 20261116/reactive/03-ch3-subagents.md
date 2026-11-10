@@ -165,31 +165,31 @@ Subagent의 네 가지 속성과 그 효과
      edges:[{f:'m',t:'s',c:'info',l:'맡길 일',o:0}],
      snip:{hd:'두 개의 창',path:'개념도',lines:['메인 대화      사용자와의 본 흐름','Subagent 창    맡은 일만 담는 별도 창','','# 두 창의 내용은 섞이지 않습니다'],hl:[1,2],note:'게이지는 각 창이 채워지는 정도를 나타낸 <b>설명용 그림</b>입니다.'}},
     {kicker:'PROMPT', title:'전용 지침: 역할에 맞춘 시스템 프롬프트',
-     body:'각 Subagent는 <b>역할에 맞춘 시스템 프롬프트</b>를 따로 가집니다. 코드 리뷰어, 테스트 작성자처럼 역할마다 지침이 다릅니다.',
+     body:'각 Subagent는 <b>역할에 맞춘 시스템 프롬프트</b>를 따로 가집니다. 소비 분석가, 리스크 리뷰어처럼 역할마다 지침이 다릅니다.',
      facts:['역할마다 짧은 전용 지침','정의 파일 본문이 곧 시스템 프롬프트','메인의 긴 지침을 물려받지 않음'],
      zones:Z,
-     nodes:[M(.3),{id:'s',x:620,y:110,w:480,h:96,t:'Subagent 컨텍스트',s:'메인과 분리된 창',c:'info',ctx:.75},{id:'p',x:620,y:290,w:480,h:96,t:'전용 시스템 프롬프트',s:'10년 경력의 시니어 엔지니어',c:'info'}],
+     nodes:[M(.3),{id:'s',x:620,y:110,w:480,h:96,t:'Subagent 컨텍스트',s:'메인과 분리된 창',c:'info',ctx:.75},{id:'p',x:620,y:290,w:480,h:96,t:'전용 시스템 프롬프트',s:'소비 데이터를 읽는 고객 분석가',c:'info'}],
      hot:['s','p'],
      edges:[{f:'p',t:'s',c:'info',l:'역할 지침',o:0}],
-     snip:{hd:'정의 파일 본문 (다음 장)',path:'.claude/agents/code-reviewer.md',lines:['---','name: code-reviewer','---','당신은 10년 경력의 시니어 소프트웨어 엔지니어입니다.','검토 순서: 안전성 → 가독성 → 성능 → 테스트.'],hl:[4,5],note:'frontmatter 아래 본문이 그 Subagent의 시스템 프롬프트가 됩니다.'}},
+     snip:{hd:'정의 파일 본문 (다음 장)',path:'.claude/agents/spending-analyst.md',lines:['---','name: spending-analyst','---','당신은 소비 데이터를 읽는 고객 분석가입니다.','# 분석 순서','1. 대상 고객 그룹을 customers.csv에서 고릅니다.'],hl:[4,5,6],note:'frontmatter 아래 본문이 그 Subagent의 시스템 프롬프트가 됩니다.'}},
     {kicker:'TOOLS', title:'좁힌 도구: 필요한 도구만 허용',
-     body:'Subagent에는 <b>필요한 도구만 허용</b>합니다. Edit, Write가 없으면 그 Subagent는 <b>파일을 고칠 수 없습니다</b>. 읽기 전용 에이전트가 이렇게 만들어집니다.',
-     facts:['<b>보안</b> 읽기 전용 에이전트','허용 목록에 없는 도구는 존재하지 않음','Bash도 git diff, git log만 허용'],
+     body:'Subagent에는 <b>필요한 도구만 허용</b>합니다. Edit, Write가 없으면 그 Subagent는 <b>파일을 만들거나 고칠 수 없습니다</b>. 읽기 전용 에이전트가 이렇게 만들어집니다.',
+     facts:['<b>보안</b> 읽기 전용 에이전트','허용 목록에 없는 도구는 존재하지 않음','Bash도 없어 명령을 실행할 수 없음'],
      zones:Z,
-     nodes:[M(.3),{id:'s',x:620,y:90,w:480,h:90,t:'code-reviewer',s:'tools: 허용 목록',c:'info'},{id:'t1',x:620,y:240,w:105,h:76,t:'Read',c:'success'},{id:'t2',x:745,y:240,w:105,h:76,t:'Grep',c:'success'},{id:'t3',x:870,y:240,w:105,h:76,t:'Glob',c:'success'},{id:'t6',x:995,y:240,w:105,h:76,t:'Bash',s:'git만',c:'success'},{id:'t4',x:620,y:350,w:480,h:76,t:'Edit, Write 없음',s:'목록에 없어 쓸 수 없음',c:'danger'}],
-     hot:['s','t1','t2','t3','t6','t4'],
-     edges:[{f:'s',t:'t1',c:'success',o:0,side:'v'},{f:'s',t:'t2',c:'success',o:1,side:'v'},{f:'s',t:'t3',c:'success',o:2,side:'v'},{f:'s',t:'t6',c:'success',o:3,side:'v'}],
+     nodes:[M(.3),{id:'s',x:620,y:90,w:480,h:90,t:'risk-reviewer',s:'tools: 허용 목록',c:'info'},{id:'t1',x:620,y:240,w:150,h:76,t:'Read',c:'success'},{id:'t2',x:785,y:240,w:150,h:76,t:'Grep',c:'success'},{id:'t3',x:950,y:240,w:150,h:76,t:'Glob',c:'success'},{id:'t4',x:620,y:350,w:480,h:76,t:'Write, Edit, Bash 없음',s:'목록에 없어 쓸 수 없음',c:'danger'}],
+     hot:['s','t1','t2','t3','t4'],
+     edges:[{f:'s',t:'t1',c:'success',o:0,side:'v'},{f:'s',t:'t2',c:'success',o:1,side:'v'},{f:'s',t:'t3',c:'success',o:2,side:'v'}],
      stagger:0.3,
-     snip:{hd:'허용 목록',path:'.claude/agents/code-reviewer.md',lines:['tools: Read, Grep, Glob,','  Bash(git diff:*), Bash(git log:*)','','# Edit, Write가 없으므로 수정할 수 없음','# Bash는 git diff, git log만 허용'],hl:[1,2],note:'빨간 상자는 <b>허용 목록에 없어 쓸 수 없는</b> 도구입니다.'}},
+     snip:{hd:'허용 목록',path:'.claude/agents/risk-reviewer.md',lines:['tools: Read, Grep, Glob','','# Write, Edit가 없으므로 저장도 수정도 할 수 없음','# Bash가 없으므로 명령도 실행할 수 없음'],hl:[1],note:'빨간 상자는 <b>허용 목록에 없어 쓸 수 없는</b> 도구입니다.'}},
     {kicker:'SUMMARY', title:'요약만 반환: 전체 출력은 안에 남습니다',
-     body:'Subagent가 읽은 로그와 파일, 중간 출력은 <b>Subagent 안에 남고</b>, 메인에는 <b>요약만</b> 돌아옵니다. 장황한 출력이 메인 대화를 채우지 않습니다.',
+     body:'Subagent가 읽은 데이터 파일과 중간 출력은 <b>Subagent 안에 남고</b>, 메인에는 <b>요약만</b> 돌아옵니다. 장황한 출력이 메인 대화를 채우지 않습니다.',
      facts:['<b>비용</b> 장황한 출력을 밖에 둠','메인 컨텍스트 절약','<b>재사용</b> 정의 파일은 커밋 자산'],
      zones:Z,
-     nodes:[M(.35),R,{id:'s',x:620,y:110,w:480,h:96,t:'Subagent 컨텍스트',s:'로그, 파일, 중간 출력 전체',c:'info',ctx:.9},{id:'o',x:620,y:300,w:480,h:90,t:'전체 출력',s:'메인으로 넘어가지 않음',c:'muted'}],
+     nodes:[M(.35),R,{id:'s',x:620,y:110,w:480,h:96,t:'Subagent 컨텍스트',s:'데이터 파일, 중간 출력 전체',c:'info',ctx:.9},{id:'o',x:620,y:300,w:480,h:90,t:'전체 출력',s:'메인으로 넘어가지 않음',c:'muted'}],
      hot:['m','r','s'],
      edges:[{f:'m',t:'s',c:'info',l:'맡길 일',o:0},{f:'s',t:'r',c:'success',l:'요약만',o:1},{f:'s',t:'o',c:'muted',dash:true}],
      loop:true, stagger:1,
-     snip:{hd:'돌아오는 것',path:'예시 요약 (출력 형식은 정의 파일 본문대로)',lines:['code-reviewer 결과','high    pay/refund.ts:42  로그에 계좌번호 출력','medium  api/client.ts:17  하드코딩된 키 의심','','# 읽은 파일 전체는 Subagent 안에 남음'],hl:[1,2,3],note:'요약 내용은 <b>설명용 예시</b>입니다.'}}
+     snip:{hd:'돌아오는 것',path:'예시 요약 (출력 형식은 정의 파일 본문대로)',lines:['risk-reviewer 결과','근거     PASS  주장마다 pseudo/ 파일과 열 확인','PII 노출  WARN  segments.md:12 ID 형태 값 의심','','# 읽은 파일 전체는 Subagent 안에 남음'],hl:[1,2,3],note:'요약 내용은 <b>설명용 예시</b>입니다.'}}
   ], {legend:[['accent','메인 세션'],['info','Subagent'],['success','허용, 반환'],['danger','허용되지 않음'],['muted','메인으로 넘어가지 않는 출력']]});
 });
 :::
@@ -206,8 +206,8 @@ Subagent의 네 가지 속성과 그 효과
 Subagent의 네 가지 속성을 단계별로 보겠습니다. 오늘 배울 모든 것의 출발점입니다.
 첫째, 자기 컨텍스트. Subagent는 메인 대화와 분리된 창에서 일합니다. 그래서 곁가지 내용이 본 흐름과 섞이지 않습니다.
 둘째, 전용 지침. 역할에 맞춘 시스템 프롬프트를 따로 가집니다.
-셋째, 좁힌 도구. Read, Grep, Glob과 git 명령만 주면 Edit, Write가 없어서 파일을 고칠 수 없는, 읽기 전용 에이전트가 됩니다. 금융권에서는 이게 보안 장치입니다.
-넷째, 요약만 반환. 읽은 로그와 파일은 Subagent 안에 남고 메인에는 요약만 옵니다. 장황한 출력이 메인 컨텍스트를 채우지 않으니 비용도 아낍니다.
+셋째, 좁힌 도구. 랩의 risk-reviewer처럼 Read, Grep, Glob만 주면 Write, Edit가 없어서 파일을 만들거나 고칠 수 없는, 읽기 전용 에이전트가 됩니다. 금융권에서는 이게 보안 장치입니다.
+넷째, 요약만 반환. 읽은 데이터 파일과 중간 출력은 Subagent 안에 남고 메인에는 요약만 옵니다. 장황한 출력이 메인 컨텍스트를 채우지 않으니 비용도 아낍니다.
 :::
 
 ---
@@ -221,9 +221,9 @@ Subagent의 네 가지 속성을 단계별로 보겠습니다. 오늘 배울 모
 :::html
 <div class="fsi c4-def">
   <div class="file">
-    <span class="path">.claude/agents/code-reviewer.md</span>
-<pre id="c4-def-code"><span data-f="fm">---</span><span data-f="name">name: code-reviewer</span><span data-f="desc">description: |</span><span data-f="desc">  PR diff를 검토하여 가독성, 안전성, 성능, 테스트 커버리지 관점에서</span><span data-f="desc">  개선 사항을 제안하는 시니어 코드 리뷰어. 사용 시점: 코드 리뷰가</span><span data-f="desc">  필요하다고 사용자가 요청하거나 git diff 검토가 필요한 경우.</span><span data-f="tools">tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*)</span><span data-f="model">model: sonnet</span><span data-f="fm">---</span><span data-f="body">당신은 10년 경력의 시니어 소프트웨어 엔지니어입니다.</span><span data-f="body">검토 순서: 안전성 → 가독성 → 성능 → 테스트.</span><span data-f="body">출력: Severity(high|medium|low), 파일:라인, 문제, 권장 수정안.</span></pre>
-    <p class="cap">맨 위 --- 사이가 <span class="rp-detail" tabindex="0" data-tip="설정 머리말. 파일 맨 위 --- 두 줄 사이에 적는 key: value 설정">frontmatter</span>이고, 그 아래가 본문입니다.</p>
+    <span class="path">.claude/agents/spending-analyst.md</span>
+<pre id="c4-def-code"><span data-f="fm">---</span><span data-f="name">name: spending-analyst</span><span data-f="desc">description: |</span><span data-f="desc">  고객 또는 고객 그룹의 소비 패턴과 생애 단계를 추정하는 소비 분석가.</span><span data-f="desc">  월별 카드 소비 요약, 계좌 잔액, 고객 기본 정보를 근거로 삼음.</span><span data-f="desc">  사용 시점: 소비 성향, 선호 카테고리, 연령대별 생애 단계 분석이 필요한 경우.</span><span data-f="tools">tools: Read, Grep, Glob, Bash(python3:*)</span><span data-f="model">model: sonnet</span><span data-f="fm">---</span><span data-f="body">당신은 소비 데이터를 읽는 고객 분석가입니다.</span><span data-f="body"># 분석 순서: 그룹 고르기, python3로 집계, 생애 단계 추정</span><span data-f="body"># 출력 형식: 집계만 보고, 개별 고객 ID와 토큰 값은 쓰지 않음</span></pre>
+    <p class="cap">맨 위 --- 사이가 <span class="rp-detail" tabindex="0" data-tip="설정 머리말. 파일 맨 위 --- 두 줄 사이에 적는 key: value 설정">frontmatter</span>이고, 그 아래가 본문입니다. 본문은 줄여서 보여 줍니다.</p>
   </div>
   <div class="side">
     <div class="fsi-stack" data-pick="c4-def">
@@ -236,10 +236,10 @@ Subagent의 네 가지 속성을 단계별로 보겠습니다. 오늘 배울 모
     <div class="panel" data-pick-panel="c4-def">
       <p class="hint">필드를 누르면 왼쪽 파일에서 해당 줄이 켜집니다.</p>
       <div data-for="name"><p><b>name</b>은 호출 이름입니다. @ 입력 후 목록에서 고를 때 보이는 이름이라, 역할이 드러나는 짧은 이름이 좋습니다.</p></div>
-      <div data-for="desc"><p><b>description</b>은 Claude가 <b>자동으로 맡길지 판단하는 근거</b>입니다. 예시처럼 <span class="rp-detail" tabindex="0" data-tip="Pull Request. 변경 사항을 합치기 전에 리뷰를 요청하는 단위">PR</span> diff 검토라는 일과, 언제 쓰는지까지 구체적으로 적습니다.</p></div>
-      <div data-for="tools"><p><b>tools</b>는 쓸 수 있는 도구 목록입니다. Edit, Write가 없으니 수정할 수 없고, Bash는 git diff와 git log만 허용됩니다.</p></div>
+      <div data-for="desc"><p><b>description</b>은 Claude가 <b>자동으로 맡길지 판단하는 근거</b>입니다. 예시처럼 소비 패턴과 생애 단계 분석이라는 일과, 언제 쓰는지까지 구체적으로 적습니다.</p></div>
+      <div data-for="tools"><p><b>tools</b>는 쓸 수 있는 도구 목록입니다. Edit, Write가 없으니 파일을 고칠 수 없고, Bash는 python3으로 시작하는 명령만 허용됩니다.</p></div>
       <div data-for="model"><p><b>model</b>은 sonnet, opus, haiku, fable, 전체 모델 ID, inherit 중에서 고릅니다. 단순 작업은 haiku가 좋습니다.</p></div>
-      <div data-for="body"><p>frontmatter 아래 <b>본문이 시스템 프롬프트</b>입니다. 검토 순서와 출력 형식을 명시합니다.</p></div>
+      <div data-for="body"><p>frontmatter 아래 <b>본문이 시스템 프롬프트</b>입니다. 사용할 데이터, 분석 순서, 출력 형식을 명시합니다.</p></div>
     </div>
   </div>
 </div>
@@ -259,18 +259,17 @@ Subagent의 네 가지 속성을 단계별로 보겠습니다. 오늘 배울 모
 [요약]
 • 정의 파일은 frontmatter 몇 줄 + 본문
 • name은 호출 이름, description은 자동 위임의 근거
-• tools는 쓸 수 있는 도구 목록(Edit, Write 없음 = 수정 불가, Bash는 git만)
+• tools는 쓸 수 있는 도구 목록(Edit, Write 없음 = 수정 불가, Bash는 python3만)
 • model은 sonnet, opus, haiku, fable, 전체 모델 ID, inherit
-• 본문이 시스템 프롬프트(검토 순서, 출력 형식)
+• 본문이 시스템 프롬프트(사용할 데이터, 분석 순서, 출력 형식)
 
 {cue: demo}
-Subagent는 정의 파일 한 장으로 만듭니다. 화면은 오늘 랩에서 만드는 code-reviewer입니다. 오른쪽 필드를 하나씩 눌러 보겠습니다.
+Subagent는 정의 파일 한 장으로 만듭니다. 화면은 오늘 랩 TASK 01에서 만드는 spending-analyst입니다. 오른쪽 필드를 하나씩 눌러 보겠습니다.
 name은 호출 이름이고, description은 Claude가 이 에이전트에게 자동으로 맡길지 판단하는 근거입니다. 그래서 무엇을, 언제 쓰는지까지 구체적으로 적습니다.
-tools에는 Edit, Write가 없어서 이 에이전트는 파일을 고칠 수 없고, Bash도 git diff와 git log만 됩니다. model은 sonnet, opus, haiku, fable, 전체 모델 ID, inherit 중에서 고르고, 마지막으로 본문이 시스템 프롬프트입니다.
+tools에는 Edit, Write가 없어서 이 에이전트는 파일을 고칠 수 없고, Bash도 python3 집계만 됩니다. model은 sonnet, opus, haiku, fable, 전체 모델 ID, inherit 중에서 고르고, 마지막으로 본문이 시스템 프롬프트입니다.
 
 [약어]
 • frontmatter: 파일 맨 위 --- 사이의 설정 머리말
-• PR: Pull Request
 :::
 
 ---
@@ -333,12 +332,12 @@ QUICK CHECK, 손을 들어 답해 주세요
 
 :::html
 <div class="fsi qc" id="c4-qc-1">
-  <p class="q">tools에 Edit, Write가 없는 code-reviewer가 파일을 고치려 하면?</p>
+  <p class="q">tools에 Write가 없는 risk-reviewer에게 점검 결과를 파일로 저장하라고 하면?</p>
   <div class="opts">
-    <button class="opt"><b>A</b>수정된다</button>
+    <button class="opt"><b>A</b>저장된다</button>
     <button class="opt"><b>B</b>확인을 요청한다</button>
-    <button class="opt right"><b>C</b>도구가 없어 수정할 수 없다</button>
-    <button class="opt"><b>D</b>메인 대화가 대신 고친다</button>
+    <button class="opt right"><b>C</b>도구가 없어 저장할 수 없다</button>
+    <button class="opt"><b>D</b>스스로 tools에 Write를 추가한다</button>
   </div>
   <p class="ans">정답 C. 허용 목록에 없는 도구는 그 Subagent에 존재하지 않습니다.</p>
 </div>
@@ -352,12 +351,12 @@ QUICK CHECK, 손을 들어 답해 주세요
 {timing: 0.5min}
 {cue: poll}
 [요약]
-• 정답 C, 도구가 없어 수정할 수 없음
+• 정답 C, 도구가 없어 저장할 수 없음
 • 허용 목록에 없는 도구는 그 Subagent에 존재하지 않음
 
-퀴즈입니다. 손을 들어 답해 주세요. tools에 Edit, Write가 없는 code-reviewer가 파일을 고치려 하면 어떻게 될까요?
+퀴즈입니다. 손을 들어 답해 주세요. tools에 Write가 없는 risk-reviewer에게 점검 결과를 파일로 저장하라고 하면 어떻게 될까요?
 {cue: pause}
-정답은 C입니다. 확인을 묻는 것도 아니고 메인이 대신 고치는 것도 아닙니다. 허용 목록에 없는 도구는 그 Subagent에 아예 존재하지 않습니다. 랩 TASK 02에서 직접 확인합니다.
+정답은 C입니다. 확인을 묻는 것도 아니고 스스로 권한을 늘리는 것도 아닙니다. 허용 목록에 없는 도구는 그 Subagent에 아예 존재하지 않습니다. 랩 TASK 02에서 직접 확인합니다. 메인이 대신 저장하는 경우가 있는데, 그건 메인 세션의 권한으로 한 일입니다.
 :::
 
 ---
@@ -411,27 +410,27 @@ QUICK CHECK, 손을 들어 답해 주세요
      body:'사용자가 에이전트를 지목하지 않아도, Claude가 각 정의 파일의 <b>description을 읽고</b> 맞는 에이전트에게 맡깁니다. 그래서 description을 구체적으로 써야 합니다.',
      facts:['판단 주체: 메인 Claude','근거: description','통제 수준: 가장 낮음'],
      zones:Z,
-     nodes:[{id:'u',x:60,y:80,w:300,h:90,t:'사용자 요청',s:'이 PR 리뷰해 줘',c:'warning'},M,S('a',60,'code-reviewer','description이 맞음'),S('b',440,'test-writer','해당 없음'),S('c',820,'docs-writer','해당 없음')],
-     hot:['u','m','a'],
-     edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'a',c:'info',l:'description 일치',o:1},{f:'m',t:'b',c:'muted',dash:true},{f:'m',t:'c',c:'muted',dash:true}],
-     snip:{hd:'자동 위임',path:'예시 대화',lines:['> 이 PR 리뷰해 줘','','# Claude가 description을 보고 판단','code-reviewer 에게 위임'],hl:[1,4],note:'description이 모호하면 <b>엉뚱한 에이전트</b>에게 가거나 아무에게도 가지 않습니다.'}},
+     nodes:[{id:'u',x:60,y:80,w:300,h:90,t:'사용자 요청',s:'IRP 보유 현황 분석해 줘',c:'warning'},M,S('a',60,'spending-analyst','해당 없음'),S('b',440,'portfolio-analyst','description이 맞음'),S('c',820,'risk-reviewer','해당 없음')],
+     hot:['u','m','b'],
+     edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'b',c:'info',l:'description 일치',o:1},{f:'m',t:'a',c:'muted',dash:true},{f:'m',t:'c',c:'muted',dash:true}],
+     snip:{hd:'자동 위임',path:'랩 TASK 04 패턴 A',lines:['> 40~55세 고소득 고객이 IRP를 얼마나','  갖고 있는지, 노후 준비 격차를 분석해 줘','','# Claude가 description을 보고 판단','portfolio-analyst 에게 위임'],hl:[1,2,5],note:'description이 모호하면 <b>엉뚱한 에이전트</b>에게 가거나, 메인이 직접 처리하고 아무에게도 맡기지 않습니다.'}},
     {kicker:'2 @ 멘션 지목', title:'@ 입력 후 목록에서 에이전트 선택',
-     body:'<b>@</b>를 입력하면 등록된 에이전트 목록이 나오고, 골라서 지목합니다. 입력란에는 <b>@"code-reviewer (agent)"</b>처럼 들어갑니다. 규제 작업처럼 <b>반드시 그 에이전트가 해야 하는 일</b>에 씁니다.',
+     body:'<b>@</b>를 입력하면 등록된 에이전트 목록이 나오고, 골라서 지목합니다. 입력란에는 <b>@"risk-reviewer (agent)"</b>처럼 들어갑니다. 규제 작업처럼 <b>반드시 그 에이전트가 해야 하는 일</b>에 씁니다.',
      facts:['판단 주체: 사용자','@ 입력으로 등록된 에이전트 확인','규제 작업은 명시 호출'],
      zones:Z,
-     nodes:[{id:'u',x:60,y:80,w:300,h:90,t:'사용자 요청',s:'@ 입력 후 선택',c:'warning'},M,S('a',60,'code-reviewer','지목됨'),S('b',440,'test-writer',''),S('c',820,'docs-writer','')],
-     hot:['u','m','a'],
-     edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'a',c:'warning',l:'@ 멘션',o:1}],
-     snip:{hd:'명시 호출',path:'예시 대화',lines:['> @"code-reviewer (agent)" 이 PR 점검해 줘','','# 사용자가 지목, 판단 생략','code-reviewer 실행'],hl:[1],note:'랩에서는 <b>@agent-test-writer</b>처럼 이름으로 쓰는 형태도 봅니다. 누가 했는지가 분명해서 감사 관점에서 설명하기 쉽습니다.'}},
+     nodes:[{id:'u',x:60,y:80,w:300,h:90,t:'사용자 요청',s:'@ 입력 후 선택',c:'warning'},M,S('a',60,'spending-analyst',''),S('b',440,'portfolio-analyst',''),S('c',820,'risk-reviewer','지목됨')],
+     hot:['u','m','c'],
+     edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'c',c:'warning',l:'@ 멘션',o:1}],
+     snip:{hd:'명시 호출',path:'예시 대화',lines:['> @"risk-reviewer (agent)" pseudo/ CSV에','  식별자 형태의 값이 남았는지 점검해 줘','','# 사용자가 지목, 판단 생략','risk-reviewer 실행'],hl:[1,2],note:'랩 패턴 B는 <b>risk-reviewer 에이전트를 사용해서</b>처럼 이름을 적어 지정하고, <b>@agent-portfolio-analyst</b>처럼 쓰는 형태도 봅니다. 누가 했는지가 분명해서 감사 관점에서 설명하기 쉽습니다.'}},
     {kicker:'3 병렬 디스패치', title:'여러 Subagent를 동시에 실행',
      body:'메인이 <b>여러 Subagent를 동시에</b> 실행합니다. 각자 자기 창에서 돌고, 메인에는 요약이 모입니다.',
      facts:['동시에 실행','각자 자기 컨텍스트','결과는 요약으로 모임'],
      zones:Z,
-     nodes:[U,M,S('a',60,'code-reviewer','리뷰'),S('b',440,'test-writer','테스트'),S('c',820,'docs-writer','문서')],
+     nodes:[U,M,S('a',60,'spending-analyst','세그먼트 (c) 소비'),S('b',440,'portfolio-analyst','세그먼트 (a)(b) 자산'),S('c',820,'risk-reviewer','근거, PII 점검')],
      hot:['u','m','a','b','c'],
      edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'a',c:'info',o:1},{f:'m',t:'b',c:'info',o:1},{f:'m',t:'c',c:'info',o:1}],
      stagger:0.7, loop:true,
-     snip:{hd:'한 번에 세 개',path:'예시 대화',lines:['> 리뷰, 테스트 작성, README 갱신을','  각각 맡겨서 동시에 진행해 줘','','code-reviewer  실행 중','test-writer    실행 중','docs-writer    실행 중'],hl:[4,5,6],note:'비용은 Part 3 뒤 <b>더 알아보기, 병렬의 비용</b>에서 봅니다.'}},
+     snip:{hd:'한 번에 세 개',path:'랩 TASK 04 패턴 C, 요청은 줄임',lines:['> 고객을 세그먼트로 나누는 segments.md를','  작성해 줘. 세 에이전트를 병렬로 진행해 줘','','spending-analyst   실행 중','portfolio-analyst  실행 중','risk-reviewer      실행 중'],hl:[4,5,6],note:'비용은 Part 3 뒤 <b>더 알아보기, 병렬의 비용</b>에서 봅니다.'}},
     {kicker:'FOREGROUND / BACKGROUND', title:'기다릴지, 다른 일을 계속할지',
      body:'<b>foreground</b>는 결과를 기다리고, <b>background</b>는 Subagent가 도는 동안 메인에서 <b>다른 일을 계속</b>합니다.',
      facts:['foreground: 결과를 기다림','background: 다른 일을 계속','어느 쪽이든 요약이 돌아옴'],
@@ -445,11 +444,11 @@ QUICK CHECK, 손을 들어 답해 주세요
      body:'세 방식 모두 결과는 <b>요약으로 반환</b>됩니다. 메인 컨텍스트가 절약되는 이유입니다.',
      facts:['자동 위임: description','@ 멘션: 사용자가 지목','병렬: 동시에, 요약을 모음'],
      zones:Z,
-     nodes:[U,M,S('a',60,'code-reviewer','요약'),S('b',440,'test-writer','요약'),S('c',820,'docs-writer','요약'),{id:'r',x:820,y:80,w:300,h:90,t:'종합',s:'요약 셋을 모아 답변',c:'success'}],
+     nodes:[U,M,S('a',60,'spending-analyst','요약'),S('b',440,'portfolio-analyst','요약'),S('c',820,'risk-reviewer','요약'),{id:'r',x:820,y:80,w:300,h:90,t:'종합',s:'메인이 segments.md 작성',c:'success'}],
      hot:['m','a','b','c','r'],
      edges:[{f:'a',t:'m',c:'success',o:0},{f:'b',t:'m',c:'success',o:0},{f:'c',t:'m',c:'success',o:0},{f:'m',t:'r',c:'success',o:1}],
      stagger:0.8, loop:true,
-     snip:{hd:'메인에 남는 것',path:'예시',lines:['code-reviewer  high 1, medium 2','test-writer    테스트 4개 추가','docs-writer    README 갱신 완료'],hl:[1,2,3],note:'요약 내용은 <b>설명용 예시</b>입니다.'}}
+     snip:{hd:'메인에 남는 것',path:'예시',lines:['spending-analyst   (c) 소비 패턴, 생애 단계','portfolio-analyst  (a)(b) 노후 준비 격차','risk-reviewer      근거와 PII 점검 PASS','','# 세 에이전트는 Write가 없어 메인이 파일을 씀'],hl:[1,2,3],note:'요약 내용은 <b>설명용 예시</b>입니다.'}}
   ], {legend:[['warning','사용자'],['accent','메인'],['info','Subagent'],['success','요약 반환']]});
 });
 :::
@@ -458,15 +457,15 @@ QUICK CHECK, 손을 들어 답해 주세요
 {timing: 1.5min}
 [요약]
 • 자동 위임: description을 보고 Claude가 판단
-• @ 멘션 지목: @ 입력 후 목록에서 선택, @"code-reviewer (agent)", 규제 작업에 적합
+• @ 멘션 지목: @ 입력 후 목록에서 선택, @"risk-reviewer (agent)", 규제 작업에 적합
 • 병렬 디스패치: 여러 Subagent를 동시에
 • foreground는 결과를 기다리고 background는 다른 일을 계속, 결과는 요약 반환
 
 {cue: demo}
 맡기는 방법은 세 가지이고, 방법에 따라 통제 수준이 다릅니다.
-첫째, 자동 위임입니다. 사용자가 지목하지 않아도 Claude가 description을 읽고 맞는 에이전트에게 맡깁니다.
+첫째, 자동 위임입니다. 사용자가 지목하지 않아도 Claude가 description을 읽고 맞는 에이전트에게 맡깁니다. IRP 보유 현황을 물으면 portfolio-analyst가 선택되는 식입니다. 다만 간단한 질문은 메인이 직접 처리하기도 해서, 위임이 보장되지는 않습니다.
 둘째, @ 멘션입니다. @를 입력하고 목록에서 에이전트를 고르면 입력란에 따옴표로 묶인 이름이 들어갑니다. 사용자가 직접 지목하니 판단 단계가 없습니다. 금융권 규제 작업처럼 반드시 그 에이전트가 해야 하는 일은 이 방식을 권합니다.
-셋째, 병렬 디스패치. 여러 Subagent를 동시에 돌립니다.
+셋째, 병렬 디스패치. 여러 Subagent를 동시에 돌립니다. 랩에서는 세 에이전트를 한 번에 띄우고, Write가 없는 에이전트 대신 메인이 요약을 모아 segments.md를 씁니다.
 실행 방식은 결과를 기다리는 foreground와, 그동안 다른 일을 계속하는 background가 있고, 어느 쪽이든 메인에는 요약만 돌아옵니다.
 :::
 
@@ -589,30 +588,30 @@ claude -p, [CLI]{tip="Command Line Interface. 터미널에서 명령으로 쓰�
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var L = ['git diff origin/main...HEAD |','  claude --agent code-reviewer \\','  -p "전달된 diff를 검토해 주세요" \\','  --tools "Read,Grep,Glob" \\','  --allowedTools "Read,Grep,Glob" \\','  --output-format json > review.json','','jq -r .result review.json          # 리뷰 본문','jq .total_cost_usd review.json     # 이번 실행 비용','jq .permission_denials review.json # 막힌 명령'];
-  var N = [{id:'g',x:40,y:200,w:230,h:90,t:'git diff',s:'변경분',c:'muted'},{id:'c',x:330,y:200,w:260,h:90,t:'claude -p',s:'확인 창 없음',c:'accent'},{id:'j',x:650,y:200,w:230,h:90,t:'review.json',s:'JSON 결과',c:'info'},
-           {id:'r',x:940,y:80,w:210,h:76,t:'.result',s:'리뷰 본문',c:'success'},{id:'u',x:940,y:207,w:210,h:76,t:'.total_cost_usd',s:'실행 비용',c:'success'},{id:'d',x:940,y:334,w:210,h:76,t:'.permission_denials',s:'막힌 명령',c:'danger'}];
+  var L = ['claude -p \\','  "portfolio-analyst 에이전트로 segments.md의','  세그먼트 (a)~(c)를 다시 계산해 JSON 배열로" \\','  --allowedTools "Read,Grep,Glob,Bash(python3:*)" \\','  --output-format json > segments.json','','jq -r .result segments.json          # 세그먼트 JSON','jq .total_cost_usd segments.json     # 이번 실행 비용','jq .permission_denials segments.json # 막힌 명령'];
+  var N = [{id:'g',x:40,y:200,w:230,h:90,t:'요청 한 줄',s:'portfolio-analyst 지정',c:'muted'},{id:'c',x:330,y:200,w:260,h:90,t:'claude -p',s:'확인 창 없음',c:'accent'},{id:'j',x:650,y:200,w:230,h:90,t:'segments.json',s:'JSON 결과',c:'info'},
+           {id:'r',x:940,y:80,w:210,h:76,t:'.result',s:'세그먼트 JSON',c:'success'},{id:'u',x:940,y:207,w:210,h:76,t:'.total_cost_usd',s:'실행 비용',c:'success'},{id:'d',x:940,y:334,w:210,h:76,t:'.permission_denials',s:'막힌 명령',c:'danger'}];
   var Z = [{x:20,y:40,w:1140,h:410,l:'TERMINAL, 대화 없음'}];
   F.stepviz('#c4-sv-headless', [
-    {kicker:'STEP 1', title:'diff를 파이프로 넘깁니다',
-     body:'<b>claude -p</b>는 대화 없이 한 번 실행하고 끝냅니다. git diff를 파이프로 넘기고 <b>--agent code-reviewer</b>로 역할을 지정합니다.',
-     facts:['대화 없이 한 번 실행','입력은 파이프로','--agent로 에이전트 지정'],
+    {kicker:'STEP 1', title:'요청 한 줄로 에이전트를 부릅니다',
+     body:'<b>claude -p</b>는 대화 없이 한 번 실행하고 끝냅니다. 요청에 <b>portfolio-analyst 에이전트로</b>라고 적어 역할을 지정하고, 답은 JSON 배열로만 받습니다.',
+     facts:['대화 없이 한 번 실행','요청에서 에이전트 지정','세션 밖 터미널에서 실행'],
      zones:Z, nodes:N, hot:['g','c'],
      edges:[{f:'g',t:'c',c:'muted',o:0}],
-     snip:{hd:'가장 짧은 예',path:'Terminal',lines:L,hl:[1,2,3],note:'랩 <b>TASK 05(선택)</b>에서 직접 해 봅니다.'}},
-    {kicker:'STEP 2', title:'도구는 제한하고 사전 승인',
-     body:'승인이 필요한 도구는 <b>거부</b>됩니다(헤드리스 기본). <b>--tools</b>로 쓸 수 있는 도구를 제한하고, <b>--allowedTools</b>로 사전 승인합니다.',
-     facts:['승인이 필요한 도구는 거부 (헤드리스 기본)','--tools: 쓸 수 있는 도구 제한','--allowedTools: 사전 승인'],
+     snip:{hd:'가장 짧은 예',path:'Terminal, 요청은 줄임',lines:L,hl:[1,2,3],note:'랩 <b>TASK 05(선택)</b>에서 직접 해 봅니다.'}},
+    {kicker:'STEP 2', title:'필요한 도구만 사전 승인',
+     body:'헤드리스는 중간에 허락을 물을 수 없어서, 허용 규칙에 없는 명령은 <b>거부</b>됩니다. <b>--allowedTools</b>로 읽기 도구와 python3 집계만 미리 허용합니다.',
+     facts:['허용 규칙에 없는 명령은 거부 (헤드리스 기본)','--allowedTools: 사전 승인','--output-format json: 결과와 메타데이터'],
      zones:Z, nodes:N, hot:['c','j'],
      edges:[{f:'c',t:'j',c:'accent',o:0}],
-     snip:{hd:'가장 짧은 예',path:'Terminal',lines:L,hl:[4,5,6],note:'막힌 시도는 결과의 <b>permission_denials</b>에 남습니다.'}},
+     snip:{hd:'가장 짧은 예',path:'Terminal, 요청은 줄임',lines:L,hl:[4,5],note:'막힌 시도는 결과의 <b>permission_denials</b>에 남습니다.'}},
     {kicker:'STEP 3', title:'결과에서 필요한 값만 꺼냅니다',
-     body:'결과는 <b>.result 텍스트 하나</b>입니다. jq(JSON을 거르는 명령줄 도구)로 리뷰 본문, <b>이번 실행 비용</b>, 막힌 명령을 꺼냅니다. 구조가 필요하면 <b>--json-schema</b>를 씁니다.',
-     facts:['.result: 리뷰 본문','.total_cost_usd: 이번 실행 비용','.permission_denials: 막힌 명령'],
+     body:'답은 <b>.result 텍스트 하나</b>에 담겨 옵니다. jq(JSON을 거르는 명령줄 도구)로 세그먼트 JSON, <b>이번 실행 비용</b>, 막힌 명령을 꺼냅니다. 구조가 필요하면 <b>--json-schema</b>를 씁니다.',
+     facts:['.result: 세그먼트 JSON (텍스트)','.total_cost_usd: 이번 실행 비용','.permission_denials: 막힌 명령'],
      zones:Z, nodes:N, hot:['j','r','u','d'],
      edges:[{f:'j',t:'r',c:'success',o:0},{f:'j',t:'u',c:'success',o:1},{f:'j',t:'d',c:'danger',o:2}],
      stagger:0.4,
-     snip:{hd:'가장 짧은 예',path:'Terminal',lines:L,hl:[8,9,10],note:'CI에서 쓰는 형태는 뒤쪽 <b>더 알아보기</b>에 있습니다.'}}
+     snip:{hd:'가장 짧은 예',path:'Terminal, 요청은 줄임',lines:L,hl:[7,8,9],note:'CI에서 쓰는 형태는 뒤쪽 <b>더 알아보기</b>에 있습니다.'}}
   ], {legend:[['accent','claude -p'],['info','결과 파일'],['success','꺼내는 값'],['danger','막힌 명령']]});
 });
 :::
@@ -621,15 +620,15 @@ claude -p, [CLI]{tip="Command Line Interface. 터미널에서 명령으로 쓰�
 {timing: 1.5min}
 [요약]
 • claude -p: 대화 없이 한 번 실행, CLI 파이프라인을 고른 42명을 위한 예
-• 승인이 필요한 도구는 거부(헤드리스 기본), --tools로 제한하고 --allowedTools로 사전 승인
+• 허용 규칙에 없는 명령은 거부(헤드리스 기본), --allowedTools로 읽기 도구와 python3 집계만 사전 승인
 • 결과는 .result 텍스트 하나, 구조가 필요하면 --json-schema
 • jq로 .result, .total_cost_usd, .permission_denials, 랩 TASK 05(선택)
 
 설문에서 CLI 파이프라인을 고르신 42명을 위한 가장 짧은 예입니다.
 {cue: demo}
-claude -p는 대화 없이 한 번 실행하고 끝납니다. git diff를 파이프로 넘기고 --agent로 code-reviewer를 지정합니다.
-헤드리스에서는 승인이 필요한 도구가 기본으로 거부됩니다. 그래서 --tools로 쓸 수 있는 도구를 Read, Grep, Glob으로 제한하고, --allowedTools로 같은 도구를 사전 승인합니다.
-결과 JSON에서 jq로 리뷰 본문, 이번 실행 비용, 막힌 명령을 꺼낼 수 있습니다. 비용이 실행마다 바로 나온다는 점이 운영에서 편합니다. 랩 TASK 05 선택 과제로 직접 해 보실 수 있습니다.
+claude -p는 대화 없이 한 번 실행하고 끝납니다. 요청에 portfolio-analyst 에이전트로라고 적어 세그먼트를 다시 계산하게 하고, 답은 JSON 배열로만 받습니다.
+헤드리스에서는 중간에 허락을 물을 수 없어서 허용 규칙에 없는 명령은 거부됩니다. 그래서 --allowedTools로 Read, Grep, Glob과 python3 집계만 미리 허용합니다.
+결과 JSON에서 jq로 세그먼트 JSON, 이번 실행 비용, 막힌 명령을 꺼낼 수 있습니다. 비용이 실행마다 바로 나온다는 점이 운영에서 편합니다. 랩 TASK 05 선택 과제로 직접 해 보실 수 있습니다.
 
 [약어]
 • jq: JSON을 걸러 내는 명령줄 도구
@@ -795,14 +794,14 @@ LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
 :::html
 <div class="fsi c4-lab">
   <ol class="steps">
-    <li><b>TASK 00</b><span>사전 준비 확인</span><em>2분</em></li>
-    <li><b>TASK 01</b><span>첫 Subagent, code-reviewer 만들기</span><em>8분, 강의 Part 1 연계</em></li>
-    <li><b>TASK 02</b><span>도구 권한 격리 체험</span><em>6분, 강의 Part 1 연계</em></li>
-    <li><b>TASK 03</b><span>에이전트 3종 완성, test-writer와 docs-writer 추가</span><em>7분</em></li>
-    <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬)</span><em>10분, 강의 Part 2 연계</em></li>
-    <li class="opt"><b>선택 05</b><span>claude -p로 대화 없이 실행</span><em>7분, 강의 Part 2 연계</em></li>
+    <li><b>TASK 00</b><span>사전 준비 확인, 작업 폴더와 가명 데이터 연결</span><em>2분</em></li>
+    <li><b>TASK 01</b><span>첫 Subagent, spending-analyst 만들기</span><em>8분, 강의 Part 1 연계</em></li>
+    <li><b>TASK 02</b><span>도구 권한 격리 체험, 읽기 전용 risk-reviewer</span><em>6분, 강의 Part 1 연계</em></li>
+    <li><b>TASK 03</b><span>에이전트 3종 완성, portfolio-analyst 추가</span><em>7분</em></li>
+    <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬), segments.md 완성</span><em>10분, 강의 Part 2 연계</em></li>
+    <li class="opt"><b>선택 05</b><span>claude -p로 대화 없이 실행, segments.json</span><em>7분, 강의 Part 2 연계</em></li>
   </ol>
-  <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 여기서 만든 파일을 Ch4에서 씁니다.</p>
+  <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 가명 데이터 pseudo/만 읽고, 여기서 만든 에이전트 3종과 segments.md를 Ch4에서 씁니다.</p>
 </div>
 :::
 
@@ -810,13 +809,13 @@ LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
 {timing: 0.5min}
 [요약]
 • LAB 33분, TASK 00부터 04와 선택 05
-• TASK 01 code-reviewer, TASK 02 도구 권한 격리, TASK 03 3종 완성, TASK 04 디스패치 3패턴
-• 만든 파일은 Ch4에서 다시 사용
+• TASK 01 spending-analyst, TASK 02 risk-reviewer로 도구 권한 격리, TASK 03 portfolio-analyst로 3종 완성, TASK 04 디스패치 3패턴과 segments.md
+• 만든 에이전트 3종과 segments.md는 Ch4에서 다시 사용
 
 {cue: demo}
 이제 33분 랩입니다. Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 시작해 주세요.
-TASK 01에서 code-reviewer를 만들고, TASK 02에서 도구 권한 격리를 체험합니다. TASK 03에서 test-writer와 docs-writer를 더해 세 종류를 완성하고, TASK 04에서 자동, 명시, 병렬 세 가지 디스패치를 비교합니다. 시간이 남으면 선택 TASK 05에서 claude -p를 해 보세요.
-여기서 만든 파일은 Ch4에서 그대로 씁니다.
+고객자산 분석 담당자가 되어 고객 천 명을 세그먼트로 나누는 이야기입니다. TASK 01에서 소비 패턴을 읽는 spending-analyst를 만들고, TASK 02에서 읽기 전용 risk-reviewer로 도구 권한 격리를 체험합니다. TASK 03에서 portfolio-analyst를 더해 세 종류를 완성하고, TASK 04에서 자동, 명시, 병렬 세 가지 디스패치를 비교하며 세그먼트 제안서 segments.md를 완성합니다. 시간이 남으면 선택 TASK 05에서 claude -p로 segments.json을 만들어 보세요.
+여기서 만든 에이전트 세 개와 segments.md는 Ch4에서 그대로 씁니다.
 :::
 
 ---
@@ -969,7 +968,7 @@ Bedrock에서는 Explore가 메인 모델을 그대로 쓴다는 점, 앞에서 
 @fit: off
 
 ## CI에서는 키 없이 OIDC로
-GitHub Actions에서 Subagent로 PR 리뷰
+GitHub Actions에서 Subagent로 야간 세그먼트 리포트
 
 :::html
 <div id="c4-sv-ci"></div>
@@ -977,11 +976,11 @@ GitHub Actions에서 Subagent로 PR 리뷰
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var L1 = ['permissions: { id-token: write,','  contents: read, pull-requests: write }','  ...','  - uses: aws-actions/configure-aws-credentials@v4','    with:','      role-to-assume: ${{ secrets.AWS_ROLE_ARN }}','      aws-region: us-east-1'];
-  var L2 = ['env:','  CLAUDE_CODE_USE_BEDROCK: "1"','  AWS_REGION: us-east-1','steps:','  - uses: actions/checkout@v4','    with: { fetch-depth: 0 }','  ...','  - run: npm install -g @anthropic-ai/claude-code'];
-  var L3 = ['  - run: |','      git diff origin/main...HEAD |','      claude --agent code-reviewer \\','        -p "전달된 diff를 검토해 주세요" \\','        --tools "Read,Grep,Glob" \\','        --allowedTools "Read,Grep,Glob" \\','        --output-format text > review.md'];
+  var L1 = ['permissions: { id-token: write,','  contents: read }','  ...','  - uses: aws-actions/configure-aws-credentials@v4','    with:','      role-to-assume: ${{ secrets.AWS_ROLE_ARN }}','      aws-region: us-east-1'];
+  var L2 = ['env:','  CLAUDE_CODE_USE_BEDROCK: "1"','  AWS_REGION: us-east-1','steps:','  - uses: actions/checkout@v4','  ...','  - run: npm install -g @anthropic-ai/claude-code','  - run: aws s3 sync s3://YOUR_ANALYSIS_BUCKET/pseudo ./pseudo'];
+  var L3 = ['  - name: Evidence + PII check','    run: |','      claude -p "risk-reviewer 에이전트로 segments.json의','        근거와 식별자 노출 여부를 점검해 주세요" \\','        --allowedTools "Read,Grep,Glob" \\','        --output-format json > risk.json'];
   var Z = [{x:20,y:40,w:600,h:410,l:'GITHUB ACTIONS'},{x:660,y:40,w:500,h:410,l:'내 AWS 계정',tone:'info'}];
-  var N = [{id:'gh',x:70,y:90,w:500,h:84,t:'PR 워크플로',s:'id-token: write',c:'accent'},{id:'cc',x:70,y:300,w:500,h:90,t:'claude -p',s:'code-reviewer, 읽기 전용 도구',c:'accent'},
+  var N = [{id:'gh',x:70,y:90,w:500,h:84,t:'야간 워크플로',s:'id-token: write',c:'accent'},{id:'cc',x:70,y:300,w:500,h:90,t:'claude -p',s:'risk-reviewer, 읽기 전용 도구',c:'accent'},
            {id:'role',x:710,y:90,w:400,h:84,t:'IAM 역할 (OIDC)',s:'Bedrock 호출 최소 권한',c:'warning'},{id:'br',x:710,y:300,w:400,h:90,t:'Amazon Bedrock',s:'us-east-1',c:'info'}];
   F.stepviz('#c4-sv-ci', [
     {kicker:'STEP 1', title:'장기 키 대신 OIDC 역할',
@@ -989,19 +988,19 @@ GitHub Actions에서 Subagent로 PR 리뷰
      facts:['permissions에 id-token: write','configure-aws-credentials로 역할 맡기','장기 키 대신 OIDC 역할'],
      zones:Z, nodes:N, hot:['gh','role'],
      edges:[{f:'gh',t:'role',c:'warning',l:'OIDC 토큰',o:0}],
-     snip:{hd:'.github/workflows/pr-review.yml',path:'발췌, ... 은 생략한 줄',lines:L1,hl:[1,4,6],note:'역할에는 <b>Bedrock 호출 최소 권한만</b> 줍니다.'}},
+     snip:{hd:'.github/workflows/nightly-segments.yml',path:'발췌, ... 은 생략한 줄',lines:L1,hl:[1,4,6],note:'역할에는 <b>Bedrock 호출 최소 권한만</b> 줍니다.'}},
     {kicker:'STEP 2', title:'Bedrock 경로로 Claude Code 실행',
-     body:'환경 변수로 <b>Bedrock 경로</b>를 켜고, 저장소를 받은 뒤 Claude Code를 설치합니다. 그다음 <b>claude --agent code-reviewer</b>에게 diff 검토를 맡깁니다.',
+     body:'환경 변수로 <b>Bedrock 경로</b>를 켜고, 저장소를 받은 뒤 Claude Code를 설치합니다. 분석 입력은 S3의 <b>pseudo/ 가명 데이터</b>만 내려받습니다.',
      facts:['CLAUDE_CODE_USE_BEDROCK: "1"','AWS_REGION: us-east-1','claude -p로 대화 없이 실행'],
      zones:Z, nodes:N, hot:['cc','br','role'],
      edges:[{f:'role',t:'br',c:'warning',o:0,l:'임시 자격 증명'},{f:'cc',t:'br',c:'info',o:1,l:'추론 요청'}],
-     snip:{hd:'.github/workflows/pr-review.yml',path:'발췌, ... 은 생략한 줄',lines:L2,hl:[2,3,8],note:'fetch-depth: 0으로 받아야 origin/main과 비교할 수 있습니다.'}},
+     snip:{hd:'.github/workflows/nightly-segments.yml',path:'발췌, ... 은 생략한 줄',lines:L2,hl:[2,3,8],note:'YOUR_ANALYSIS_BUCKET은 자리 표시입니다. 원본(raw)은 <b>CI에 올리지 않습니다</b>.'}},
     {kicker:'STEP 3', title:'읽기 전용 도구로 제한하고 결과를 남깁니다',
-     body:'<b>--tools "Read,Grep,Glob"</b>로 읽기 전용 도구만 엽니다. 리뷰 결과 review.md도 <b>로그에 남는 데이터</b>로 다룹니다.',
-     facts:['--tools로 읽기 전용 도구만','--allowedTools로 같은 도구를 사전 승인','리뷰 결과도 로그에 남는 데이터'],
-     zones:Z, nodes:N.concat([{id:'out',x:70,y:200,w:240,h:70,t:'review.md',c:'muted'}]), hot:['cc','out'],
+     body:'앞 step에서 portfolio-analyst가 만든 segments.json을 <b>risk-reviewer</b>가 점검합니다. <b>--allowedTools "Read,Grep,Glob"</b>로 읽기 도구만 허용하고, 점검 결과 risk.json도 <b>로그에 남는 데이터</b>로 다룹니다.',
+     facts:['--allowedTools로 읽기 도구만 사전 승인','앞 step의 segments.json을 점검','점검 결과도 로그에 남는 데이터'],
+     zones:Z, nodes:N.concat([{id:'out',x:70,y:200,w:240,h:70,t:'risk.json',c:'muted'}]), hot:['cc','out'],
      edges:[{f:'cc',t:'out',c:'muted',o:0}],
-     snip:{hd:'.github/workflows/pr-review.yml',path:'발췌, 보기 좋게 줄바꿈',lines:L3,hl:[2,3,5,6],note:'금융권 체크: <b>OIDC, 최소 권한 역할, 읽기 전용 도구, 결과 데이터 관리</b>.'}}
+     snip:{hd:'.github/workflows/nightly-segments.yml',path:'발췌, 보기 좋게 줄바꿈',lines:L3,hl:[3,4,5],note:'금융권 체크: <b>OIDC, 최소 권한 역할, 읽기 전용 도구, 결과 데이터 관리</b>.'}}
   ], {legend:[['accent','CI 작업'],['warning','IAM 역할'],['info','Bedrock'],['muted','남는 결과']]});
 });
 :::
@@ -1012,13 +1011,13 @@ GitHub Actions에서 Subagent로 PR 리뷰
 • GitHub Actions에서 키 없이 OIDC로 Bedrock 호출
 • 역할에는 Bedrock 호출 최소 권한만
 • CLAUDE_CODE_USE_BEDROCK, AWS_REGION으로 Bedrock 경로
-• --tools로 읽기 전용 도구만, 리뷰 결과도 로그에 남는 데이터
+• 입력은 pseudo/ 가명 데이터만, --allowedTools로 읽기 도구만, 점검 결과도 로그에 남는 데이터
 
-CI에서 Subagent를 쓰는 예입니다. 핵심은 키 없이 OIDC로 Bedrock을 호출한다는 점입니다.
+CI에서 Subagent를 쓰는 예입니다. 랩 선택 TASK 05의 야간 세그먼트 리포트 워크플로이고, 핵심은 키 없이 OIDC로 Bedrock을 호출한다는 점입니다.
 {cue: demo}
 첫째, 워크플로가 OIDC 토큰으로 IAM 역할을 맡습니다. 저장소에 장기 키가 없고, 역할에는 Bedrock 호출 최소 권한만 줍니다.
-둘째, 환경 변수로 Bedrock 경로를 켜고 --agent code-reviewer로 diff 검토를 맡깁니다.
-셋째, --tools로 Read, Grep, Glob만 열고 같은 도구를 --allowedTools로 사전 승인합니다. 그리고 리뷰 결과도 로그에 남는 데이터라는 점을 잊지 마셔야 합니다.
+둘째, 환경 변수로 Bedrock 경로를 켜고, 분석 입력은 S3에서 pseudo/ 가명 데이터만 내려받습니다. 원본은 CI에 올리지 않습니다.
+셋째, portfolio-analyst가 만든 segments.json을 risk-reviewer가 점검하는데, --allowedTools로 Read, Grep, Glob만 허용합니다. 그리고 점검 결과도 로그에 남는 데이터라는 점을 잊지 마셔야 합니다.
 
 [약어]
 • OIDC: OpenID Connect, CI가 장기 키 없이 클라우드 역할을 맡게 하는 표준 인증
