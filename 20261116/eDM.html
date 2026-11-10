@@ -313,7 +313,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <h3><span class="chip">CH 01</span>Claude Code는 어떻게 동작하는가</h3>
         <p class="steps"><b>에이전트 루프</b> → <b>컨텍스트와 세션</b> → <b>권한과 데이터 경로</b> → <b>이틀 동안 배울 것</b></p>
         <p class="syn">Claude Code의 전체 구조를 한 장으로 보고, 에이전트가 맥락을 읽고 도구를 고르는 방식을 살펴봅니다. Amazon Bedrock 경로에서 코드와 대화가 어디로 가고 어디에 남는지 확인하고, 이틀 동안 다룰 관리와 활용 두 갈래를 정리합니다. 같은 내용은 점심 뒤 통합 랩에서 직접 확인합니다.</p>
-        <div class="links"><a class="lab" href="slides/ClaudeCode_FSI_Ch1_20261116.pdf">강의자료 PDF</a></div>
+        <div class="links"><a class="lab" href="reactive/01-ch1-how-it-works.html?theme=dark">강의자료</a></div>
       </article>
       <div class="slot"><div class="time">10:40–10:50</div><div class="title">Break</div></div>
       <article class="session">
@@ -321,7 +321,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <h3><span class="chip">CH 02</span>Bedrock 위에서 안전하게 쓰기</h3>
         <p class="steps"><b>연결과 자격증명</b> → <b>모델 고정과 비용 태깅</b> → <b>정책 전달</b> → <b>auto mode와 안전의 경계</b> → <b>DLP 5층과 감사</b></p>
         <p class="syn">키는 나눠 주지 않고, 정책은 파일로, 막을 것은 앞에서 막습니다. 장기 키 대신 SSO 자격증명으로 연결하고, 모델 버전을 고정해 inference profile로 팀별 비용을 나눕니다. claude.ai 관리 콘솔이 없는 Bedrock 환경에서 정책을 managed-settings.json으로 강제하는 구조를 보고, 권한 규칙, sandbox, hooks, Bedrock Guardrails, 반출 채널 통제를 층으로 쌓아 데이터가 나가는 길을 좁힙니다. auto mode가 어디에서 멈추는지, 감사에서 자주 받는 질문에 어떤 기록으로 답하는지도 함께 다룹니다.</p>
-        <div class="links"><a class="lab" href="slides/ClaudeCode_FSI_Ch2_20261116.pdf">강의자료 PDF</a></div>
+        <div class="links"><a class="lab" href="reactive/02-ch2-bedrock-safe.html?theme=dark">강의자료</a></div>
       </article>
       <div class="slot"><div class="time">11:40–13:00</div><div class="title">점심 식사</div></div>
       <article class="session">
@@ -337,7 +337,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <h3><span class="chip">CH 03</span>Subagent로 일 나눠 맡기기</h3>
         <p class="steps"><b>Subagent란</b> → <b>호출과 비용</b> → <b>레거시 분석과 claude -p</b> → <b>병렬의 확장</b></p>
         <p class="syn">역할과 도구 권한을 나눈 전문 에이전트가 무엇이고 언제 쓰는지 봅니다. 자동 위임, @멘션, 병렬 실행을 비교하고, 레거시 코드 분석과 대화 없이 실행하는 claude -p 활용법, 모델 배분으로 비용을 관리하는 방법을 함께 다룹니다.</p>
-        <div class="links"><a class="lab" href="slides/ClaudeCode_FSI_Ch3_20261116.pdf">강의자료 PDF</a></div>
+        <div class="links"><a class="lab" href="reactive/03-ch3-subagents.html?theme=dark">강의자료</a></div>
       </article>
       <article class="session">
         <div class="top"><span class="time">14:40–15:40</span><span class="badge lab">LAB</span><span class="dur">60분</span></div>
@@ -368,9 +368,9 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <div class="top"><span class="time">10:10–11:40</span><span class="badge lab">강의 + LAB</span><span class="dur">90분</span></div>
         <h3><span class="chip">CH 04</span>Claude Code 확장하기</h3>
         <p class="steps"><b>Plugins</b> → <b>사내 배포와 망분리</b> → <b>Mods</b> → <b>슈퍼랩</b></p>
-        <p class="syn">Day 1에 만든 DLP 훅과 서브에이전트를 skill과 함께 하나의 팀 플러그인으로 묶어 로컬 마켓플레이스로 배포하고, 사내 git 마켓플레이스와 망분리 환경에서 배포하는 방법을 살펴봅니다. Claude Code 안에서 도는 코드인 mod로 화면을 바꿔 보고, 조직이 mod를 통제하는 방법을 익힙니다.</p>
-        <p class="out"><b>산출물</b>설치 한 줄로 배포되는 팀 스타터 킷 플러그인</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Ch4_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="slides/ClaudeCode_FSI_Ch4_20261116.pdf">강의자료 PDF</a></div>
+        <p class="syn">반복하는 노후 자금 분석을 retirement-gap 스킬로 만들고, Day 1의 분석 에이전트 3종과 DLP 훅까지 asset-team-kit 플러그인 하나로 묶어 로컬 마켓플레이스로 배포합니다. 설치한 킷으로 연금상품 기획서를 완성하고, Claude Code 안에서 도는 코드인 mod로 화면을 바꿔 본 뒤 조직이 mod를 통제하는 방법을 익힙니다.</p>
+        <p class="out"><b>산출물</b>설치 한 줄로 배포되는 asset-team-kit 플러그인과 연금상품 기획서</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Ch4_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="reactive/04-ch4-extending.html?theme=dark">강의자료</a></div>
       </article>
       <div class="slot"><div class="time">11:40–13:00</div><div class="title">점심 식사</div></div>
       <article class="session">
@@ -379,7 +379,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <p class="steps"><b>먼저 본다</b> → <b>항상 실리는 지침 줄이기</b> → <b>출력 필터·도구 지연 로드</b> → <b>캐시와 압축</b> → <b>모델과 사고량</b></p>
         <p class="syn">같은 일을 더 적은 토큰으로 하는 여덟 가지 원리를 공식 기능으로 정리합니다. 출력 필터 훅을 적용하기 전후를 데모로 비교하고, 랩 TASK 01~04에서 기준선 재기, CLAUDE.md 줄이기, 압축 시점 정하기를 직접 해 봅니다.</p>
         <p class="out"><b>산출물</b>내 세션의 토큰 기준선과 줄인 결과</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Ch5_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="slides/ClaudeCode_FSI_Ch5_20261116.pdf">강의자료 PDF</a></div>
+        <div class="links"><a class="lab" href="ClaudeCode_Ch5_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="reactive/05-ch5-cost-efficient.html?theme=dark">강의자료</a></div>
       </article>
       <article class="session capstone">
         <div class="top"><span class="time">14:00–16:40</span><span class="badge lab">LAB</span><span class="dur">160분</span></div>
@@ -396,7 +396,7 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <p class="steps"><b>Bedrock의 비용 가시화</b> → <b>OTel 대시보드</b> → <b>Gateway 로그인과 그룹 정책</b> → <b>지출 한도 걸기</b></p>
         <p class="syn">Analytics가 없는 Bedrock에서 OpenTelemetry로 사용량을 모으고, 이틀간 우리가 쓴 토큰을 대시보드에서 함께 확인합니다. 랩 TASK 01에서는 텔레메트리가 어디로 가는지 따라가 봅니다. TASK 02~03에서는 Claude Apps Gateway에 로그인해 그룹별 모델 정책을 살펴보고, 관리자 역할로 사용자 지출 한도를 걸어 요청이 막히는 것까지 직접 봅니다.</p>
         <p class="out"><b>산출물</b>사용자 단위 지출 한도를 걸고 되돌려 본 경험</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Ch6_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="slides/ClaudeCode_FSI_Ch6_20261116.pdf">강의자료 PDF</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/blob/main/tech_doc/Claude_Cost_Efficiency.pdf">비용 효율화 PDF</a></div>
+        <div class="links"><a class="lab" href="ClaudeCode_Ch6_HandsOnLab.html">Hands-on Lab</a><a class="lab" href="reactive/06-ch6-org-cost.html?theme=dark">강의자료</a><a class="lab" href="https://github.com/whchoi98/claude-code-workshop/blob/main/tech_doc/Claude_Cost_Efficiency.pdf">비용 효율화 PDF</a></div>
       </article>
       <div class="slot ops"><div class="time">17:40–18:00</div><div class="title">쇼케이스 2 &amp; Closing<small>이틀의 결과물 공유와 마무리</small></div></div>
     </div>
