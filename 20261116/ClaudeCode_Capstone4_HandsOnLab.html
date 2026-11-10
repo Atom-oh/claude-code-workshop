@@ -1045,7 +1045,7 @@ curl -s -X POST "localhost:8000/api/brief?mode=daily" | head -c 300; echo</code>
   </div>
   <p class="body">레이더 → 필터 → 시계열 → 브리핑(now/daily)까지 한 바퀴 돌리고, <strong>화면 스크린샷을 Slack에 공유</strong>하세요.
   그게 개장입니다. 원작은 여기에 DynamoDB 스냅샷과 CloudFront → ALB(prefix list + X-Origin-Verify 2중 방어) → Fargate 배포,
-  Secrets Manager 주입까지 얹혀 운영 중입니다. 직접 배포까지 가 보려면 같은 방향으로 가되, ALB는 <a href="ClaudeCode_Capstone_Setup.html#submit" style="color:#c9a2ff">Capstone Setup</a>의 표준 패턴(CloudFront VPC origin → 내부 ALB → Fargate)으로 만듭니다.
+  Secrets Manager 주입까지 얹혀 운영 중입니다. 직접 배포해 보려면 같은 구성을 따르되, ALB는 <a href="ClaudeCode_Capstone_Setup.html#submit" style="color:#c9a2ff">Capstone Setup</a>의 표준 패턴(CloudFront VPC origin → 내부 ALB → Fargate)으로 만듭니다.
   <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴으로 수집 상태 점검을 파이프라인화하는 것도 좋은 확장입니다.</p>
   <div class="checkpoint">
     <div class="cp-title">DEFINITION OF DONE</div>
