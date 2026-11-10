@@ -966,7 +966,7 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try
-grep -nE '[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4}' reports/*.md proposals/*.md || echo "개인정보 패턴 없음"
+grep -nE '(^|[^0-9])([0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4})([^0-9]|$)' reports/*.md proposals/*.md || echo "개인정보 패턴 없음"
 jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?) | strings | sub("^Bearer "; "")' ~/.claude.json 2&gt;/dev/null \
   | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -rlF -- "$V" reports/ proposals/ ; done
 echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"</code></pre>

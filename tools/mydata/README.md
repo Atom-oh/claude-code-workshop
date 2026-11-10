@@ -12,7 +12,7 @@ Python 3.9+ stdlib only. Nothing under `tools/` is published; `dist/` is gitigno
 
 ## Build
 
-    python3 tools/mydata/build.py --version 2026.11.1
+    python3 tools/mydata/build.py --version 2026.11.2
 
 `build.py` regenerates and validates the data, then packs `raw/`, `pseudo/`, `checkpoints/`
 (ch2, ch3, ch4), `VERSION`, and `SHA256SUMS` into `tools/mydata/dist/mydata-kit.zip`.
