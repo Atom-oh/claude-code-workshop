@@ -25,7 +25,7 @@ AWS Korea
 
 Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 지금까지는 Claude Code 한 세션이 모든 일을 했다면, 이 챕터에서는 일을 역할별 에이전트에게 나눠 맡기고, 여러 개를 동시에 돌리는 방법을 봅니다.
-강의 17분, 랩 33분입니다.
+강의 17분, 랩 40분입니다.
 :::
 
 ---
@@ -33,7 +33,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 @type: content
 @fit: off
 
-## 강의 17분, 랩 33분
+## 강의 17분, 랩 40분
 세 개의 Part와 Lab, 맡기는 방법부터 병렬의 확장까지
 
 :::html
@@ -44,7 +44,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
     <div class="pick"><span class="k">PART 03 / 5분</span><span class="t">병렬의 확장</span><span class="d">Agent teams, Workflows, Worktrees</span></div>
   </div>
   <div class="fsi-grid-2">
-    <div class="pick lab"><span class="k">LAB / 33분</span><span class="t">첫 Subagent와 권한 격리</span><span class="d">TASK 00부터 04, 선택 05</span></div>
+    <div class="pick lab"><span class="k">LAB / 40분</span><span class="t">첫 Subagent와 권한 격리</span><span class="d">TASK 00부터 04, 선택 05</span></div>
     <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">정의 파일 필드, 내장 Subagent, Subagent vs 스킬, CI, 병렬의 비용</span></div>
   </div>
 </div>
@@ -54,11 +54,11 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 {timing: 0.5min}
 [요약]
 • 강의는 세 Part, 6분 6분 5분으로 17분
-• 랩 33분: 첫 Subagent와 권한 격리, TASK 00부터 04, 선택 05
+• 랩 40분: 첫 Subagent와 권한 격리, TASK 00부터 04, 선택 05
 • 더 알아보기는 시간이 남거나 질문이 나올 때
 
 오늘 순서입니다. 첫째, Subagent가 무엇인지 네 가지 속성과 정의 파일로 봅니다. 둘째, 어떻게 맡기고 얼마나 드는지, 셋째, Subagent 다음 단계인 더 큰 병렬화 수단을 봅니다.
-강의는 짧게 17분이고, 이어서 33분 동안 첫 Subagent를 직접 만들고 권한 격리를 확인합니다.
+강의는 짧게 17분이고, 이어서 40분 동안 첫 Subagent를 직접 만들고 권한 격리를 확인합니다.
 :::
 
 ---
@@ -67,7 +67,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 @fit: off
 
 ## 가장 듣고 싶은 주제 1위
-사전 설문 기대 주제, 그래서 50분 중 33분을 랩으로
+사전 설문 기대 주제, 그래서 57분 중 40분을 랩으로
 
 :::html
 <div class="fsi c4-survey">
@@ -75,12 +75,12 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
     <span class="eyebrow">PRE-SURVEY #1</span>
     <div class="num"><span id="c4-survey-num">84</span><small>표</small></div>
     <p class="lead">기대 주제 1위는 <b>Subagent</b>였습니다.</p>
-    <p class="why">가장 많이 듣고 싶어 한 주제라 50분 중 <b>33분을 랩</b>으로 잡았습니다.</p>
+    <p class="why">가장 많이 듣고 싶어 한 주제라 57분 중 <b>40분을 랩</b>으로 잡았습니다.</p>
   </div>
   <div class="split" id="c4-split">
     <div class="half"><span>강의 17분</span><span class="tr"><i data-w="17"></i></span></div>
-    <div class="half"><span>랩 33분</span><span class="tr"><i class="lab" data-w="33"></i></span></div>
-    <p class="cap">막대 길이는 Chapter 3 50분 중 차지하는 비율</p>
+    <div class="half"><span>랩 40분</span><span class="tr"><i class="lab" data-w="40"></i></span></div>
+    <p class="cap">막대 길이는 Chapter 3 57분 중 차지하는 비율</p>
   </div>
 </div>
 :::
@@ -90,7 +90,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
   F.countUp('#c4-survey-num', 84, { decimals: 0 });
   var host = document.getElementById('c4-split');
   var bars = Array.prototype.slice.call(host.querySelectorAll('i'));
-  function grow(on) { bars.forEach(function (b) { b.style.width = on ? (b.dataset.w / 50 * 100) + '%' : '0'; }); }
+  function grow(on) { bars.forEach(function (b) { b.style.width = on ? (b.dataset.w / 57 * 100) + '%' : '0'; }); }
   F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 80); });
   grow(true);
 });
@@ -100,11 +100,11 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 {timing: 0.5min}
 [요약]
 • 사전 설문 기대 주제 1위가 Subagent, 84표
-• 그래서 이 챕터 50분 중 33분을 랩으로 배정
+• 그래서 이 챕터 57분 중 40분을 랩으로 배정
 • 주제는 격리, 위임, 병렬, 비용
 
 사전 설문에서 가장 듣고 싶은 주제를 여쭤봤는데, 1위가 Subagent로 84표였습니다.
-그래서 이 챕터는 50분 중 33분을 랩으로 잡았습니다. 오늘 이야기는 격리, 위임, 병렬, 비용 네 단어로 정리됩니다.
+그래서 이 챕터는 57분 중 40분을 랩으로 잡았습니다. 오늘 이야기는 격리, 위임, 병렬, 비용 네 단어로 정리됩니다.
 
 [출처]
 • 이번 워크숍 사전 설문, 기대 주제 문항
@@ -788,17 +788,17 @@ Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미�
 @type: content
 @fit: off
 
-## 33분 동안 만들 세 에이전트
+## 40분 동안 만들 세 에이전트
 LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
 
 :::html
 <div class="fsi c4-lab">
   <ol class="steps">
-    <li><b>TASK 00</b><span>사전 준비 확인, 작업 폴더와 가명 데이터 연결</span><em>2분</em></li>
-    <li><b>TASK 01</b><span>첫 Subagent, spending-analyst 만들기</span><em>8분, 강의 Part 1 연계</em></li>
-    <li><b>TASK 02</b><span>도구 권한 격리 체험, 읽기 전용 risk-reviewer</span><em>6분, 강의 Part 1 연계</em></li>
-    <li><b>TASK 03</b><span>에이전트 3종 완성, portfolio-analyst 추가</span><em>7분</em></li>
-    <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬), segments.md 완성</span><em>10분, 강의 Part 2 연계</em></li>
+    <li><b>TASK 00</b><span>사전 준비 확인, 작업 폴더와 가명 데이터 연결</span><em>3분</em></li>
+    <li><b>TASK 01</b><span>첫 Subagent, spending-analyst 만들기</span><em>10분, 강의 Part 1 연계</em></li>
+    <li><b>TASK 02</b><span>도구 권한 격리 체험, 읽기 전용 risk-reviewer</span><em>7분, 강의 Part 1 연계</em></li>
+    <li><b>TASK 03</b><span>에이전트 3종 완성, portfolio-analyst 추가</span><em>8분</em></li>
+    <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬), segments.md 완성</span><em>12분, 강의 Part 2 연계</em></li>
     <li class="opt"><b>선택 05</b><span>claude -p로 대화 없이 실행, segments.json</span><em>7분, 강의 Part 2 연계</em></li>
   </ol>
   <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 가명 데이터 pseudo/만 읽고, 여기서 만든 에이전트 3종과 segments.md를 Ch4에서 씁니다.</p>
@@ -808,12 +808,12 @@ LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
 :::notes
 {timing: 0.5min}
 [요약]
-• LAB 33분, TASK 00부터 04와 선택 05
+• LAB 40분(필수), TASK 00부터 04와 선택 05
 • TASK 01 spending-analyst, TASK 02 risk-reviewer로 도구 권한 격리, TASK 03 portfolio-analyst로 3종 완성, TASK 04 디스패치 3패턴과 segments.md
 • 만든 에이전트 3종과 segments.md는 Ch4에서 다시 사용
 
 {cue: demo}
-이제 33분 랩입니다. Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 시작해 주세요.
+이제 40분 랩입니다. Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 시작해 주세요.
 고객자산 분석 담당자가 되어 고객 천 명을 세그먼트로 나누는 이야기입니다. TASK 01에서 소비 패턴을 읽는 spending-analyst를 만들고, TASK 02에서 읽기 전용 risk-reviewer로 도구 권한 격리를 체험합니다. TASK 03에서 portfolio-analyst를 더해 세 종류를 완성하고, TASK 04에서 자동, 명시, 병렬 세 가지 디스패치를 비교하며 세그먼트 제안서 segments.md를 완성합니다. 시간이 남으면 선택 TASK 05에서 claude -p로 segments.json을 만들어 보세요.
 여기서 만든 에이전트 세 개와 segments.md는 Ch4에서 그대로 씁니다.
 :::

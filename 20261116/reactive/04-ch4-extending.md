@@ -36,8 +36,8 @@ AWS Korea
 @type: content
 @fit: off
 
-## 강의 35분, 실습 45분
-세 개의 Part와 Super Lab, 팀의 플랫폼까지 80분
+## 강의 35분, 실습 60분
+세 개의 Part와 Super Lab, 팀의 플랫폼까지 95분
 
 :::html
 <div class="fsi fsi-agenda">
@@ -45,7 +45,7 @@ AWS Korea
     <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
     <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
     <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
-    <div class="pick lab"><span class="k">SUPER LAB / 45분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
+    <div class="pick lab"><span class="k">SUPER LAB / 60분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
 </div>
@@ -55,11 +55,11 @@ AWS Korea
 {timing: 0.5min}
 [요약]
 • 강의는 세 Part, 12분 10분 13분으로 35분
-• 이어서 Super Lab 45분, 팀 스타터 킷과 mod를 플러그인 하나로 묶기
+• 이어서 Super Lab 60분(선택 mod 12분 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
 • 더 알아보기는 질문이 나오면 펼침
 
 오늘은 세 Part로 진행합니다. 첫째, 플러그인이 무엇이고 어떻게 생겼는지, 둘째, 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 셋째, Claude Code 안에서 도는 코드인 mod입니다.
-강의 35분이 끝나면 45분 동안 Super Lab에서 직접 팀 스타터 킷을 만들어 봅니다.
+강의 35분이 끝나면 60분 동안 Super Lab에서 직접 팀 스타터 킷을 만들어 봅니다.
 :::
 
 ---
@@ -1025,7 +1025,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 45분 동안 팀 스타터 킷을 만든다
+## 60분 동안 팀 스타터 킷을 만든다
 SUPER LAB, 팀 스타터 킷 플러그인 + mod
 
 :::html
@@ -1044,13 +1044,13 @@ SUPER LAB, 팀 스타터 킷 플러그인 + mod
 :::notes
 {timing: 0.5min}
 [요약]
-• Super Lab 45분, 팀 스타터 킷 플러그인과 mod
+• Super Lab 60분(TASK 00 3, 01 8, 02 12, 03 8, 04 8, 05 12, 07 6, 08 4분), 팀 스타터 킷 플러그인과 mod
 • TASK 00 Ch3 결과물 확인, 01 retirement-gap 스킬, 02 asset-team-kit 묶기, 03 fsi-local 등록과 설치, 04 pension-product.md와 훅 차단
 • 05 first-mod와 /tally-reset, 07 사용자 mod 차단과 원복, 08 체크리스트
 • 선택 TASK 06은 Bedrock용 idle compaction mod, 12분
 
 {cue: demo}
-강의를 마치면 45분 Super Lab을 합니다.
+강의를 마치면 60분 Super Lab을 합니다.
 Ch3의 고객자산 분석 담당자가 반복한 분석을 팀 자산으로 만드는 흐름입니다. TASK 00에서 Ch3의 에이전트 세 개와 segments.md, Ch2 Lab 2의 DLP 스크립트를 확인하고, 없는 것은 키트 기준본으로 채웁니다.
 TASK 01에서 노후 연금 격차 계산을 retirement-gap 스킬로 고정하고, TASK 02에서 에이전트 세 개와 이 스킬, DLP 훅을 asset-team-kit 하나로 묶습니다. TASK 03에서 로컬 디렉터리 마켓플레이스 fsi-local을 등록해 /plugin install asset-team-kit@fsi-local로 동료 폴더에 설치하고, TASK 04에서 그 킷으로 연금상품 기획서 pension-product.md를 쓰고 플러그인 훅이 주민등록번호 형식 프롬프트를 막는지 봅니다.
 TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 추가하게 시킵니다. TASK 07은 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복합니다. 마지막 TASK 08은 배포 전 체크리스트입니다.
