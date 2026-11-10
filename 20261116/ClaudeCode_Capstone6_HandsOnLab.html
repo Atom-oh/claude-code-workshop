@@ -949,7 +949,7 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
     <span class="co-title">렌즈나 개장이 막힐 때</span>
     ① JSON 파싱 실패 = 응답 앞뒤의 코드펜스가 남은 것, 방어적 제거를 확인하세요.
     ② 클러스터가 1개뿐 = 정상일 수 있습니다, 조용한 뉴스 시간대엔 공통 토픽이 적습니다.
-    ③ ALB 주소로 직접 접속이 안 됨 = 정상(내부 ALB, CloudFront로만 들어옴). 504면 ALB 보안 그룹의 CloudFront prefix list 허용을 확인, ④ 브리핑만 실패 = 태스크 정의의 secrets 블록에서 Bearer 주입 확인.
+    ③ ALB 주소로 직접 접속이 안 됨 = 정상(내부 ALB, CloudFront로만 들어옴). 504면 ALB 보안 그룹의 CloudFront prefix list 허용을, VPC origin 생성이 실패하면 VPC의 인터넷 게이트웨이를 확인, ④ 브리핑만 실패 = 태스크 정의의 secrets 블록에서 Bearer 주입 확인.
   </div>
   <div class="checkpoint">
     <div class="cp-title">DEFINITION OF DONE</div>
