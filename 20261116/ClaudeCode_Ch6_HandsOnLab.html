@@ -280,9 +280,9 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <li data-lines="1">현재 계정에서 로그아웃합니다. 로그아웃하면 Claude Code가 끝나고 터미널로 돌아옵니다. 다시 <code>claude</code>를 열고 bob@workshop.example로 로그인합니다.</li>
 </ol></details>
 
-<p>다시 <code>claude</code>를 실행하고 같은 절차로 <code>bob@workshop.example</code>에 로그인합니다. 로그인 화면 대신 alice 세션이 그대로 열리면 <code>use_bedrock_direct &amp;&amp; use_gateway</code>를 실행해 로그인 정보를 지운 뒤 다시 <code>claude</code>를 실행합니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>두 번째 계정은 시크릿 창에서 승인합니다</strong></p>
 <p>브라우저에는 alice로 로그인한 상태가 남아 있어서, 같은 창에서 승인 페이지를 열면 비밀번호를 묻지 않고 alice로 다시 승인됩니다. bob 차례에는 code-server가 묻는 외부 사이트 열기 창을 <strong>Cancel</strong>로 닫고, 터미널에 나온 <code>https://…cloudfront.net/device</code> 주소를 Chrome 시크릿 창(⌘+Shift+N 또는 Ctrl+Shift+N)에서 열어 코드를 확인한 뒤 bob으로 로그인합니다. 외부 사이트 열기 창에 터미널과 다른 이전 코드가 보일 때도 같은 방법을 씁니다.</p></div></div>
+<p>다시 <code>claude</code>를 실행하고 같은 절차로 <code>bob@workshop.example</code>에 로그인합니다. 로그인 화면 대신 alice 세션이 그대로 열리면 <code>use_bedrock_direct &amp;&amp; use_gateway</code>를 실행해 로그인 정보를 지운 뒤 다시 <code>claude</code>를 실행합니다.</p>
 <p><code>/model</code>에서 <strong>Opus가 없는 것</strong>을 확인한 뒤, 지출 기록이 생기도록 질문을 하나 보냅니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 폴더의 pseudo 디렉터리에 어떤 파일이 있는지 이름만 알려줘</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
