@@ -36,8 +36,8 @@ AWS Korea
 @type: content
 @fit: off
 
-## 강의 35분, 실습 45분
-세 개의 Part와 Super Lab, 팀의 플랫폼까지 80분
+## 강의 35분 + 필수 랩 약 60분 (선택 12분)
+세 개의 Part와 Super Lab, 개인 설정에서 팀의 플랫폼까지
 
 :::html
 <div class="fsi fsi-agenda">
@@ -45,7 +45,7 @@ AWS Korea
     <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
     <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
     <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
-    <div class="pick lab"><span class="k">SUPER LAB / 45분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
+    <div class="pick lab"><span class="k">SUPER LAB / 약 60분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
 </div>
@@ -55,11 +55,13 @@ AWS Korea
 {timing: 0.5min}
 [요약]
 • 강의는 세 Part, 12분 10분 13분으로 35분
-• 이어서 Super Lab 45분, 팀 스타터 킷과 mod를 플러그인 하나로 묶기
+• 이어서 필수 Super Lab 약 60분(선택 TASK 06 12분 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
+• 진행자 메모: 슬롯에 맞추려면 필요할 때 TASK 05~08의 mod 실습을 Capstone 시간으로 옮김
 • 더 알아보기는 질문이 나오면 펼침
 
 오늘은 세 Part로 진행합니다. 첫째, 플러그인이 무엇이고 어떻게 생겼는지, 둘째, 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 셋째, Claude Code 안에서 도는 코드인 mod입니다.
-강의 35분이 끝나면 45분 동안 Super Lab에서 직접 팀 스타터 킷을 만들어 봅니다.
+강의 35분이 끝나면 약 60분 동안 Super Lab에서 직접 팀 스타터 킷을 만들어 봅니다. 선택 TASK 06은 12분이 더 걸립니다.
+진행자 메모입니다. 시간이 모자라면 TASK 05부터 08까지의 mod 실습은 Capstone 시간으로 옮겨 진행합니다.
 :::
 
 ---
@@ -189,8 +191,8 @@ AWS Korea
   <div class="panel" data-pick-panel="c5-ext">
     <p class="hint">CLAUDE.md는 managed CLAUDE.md나 저장소로,<br>나머지 5종은 한 디렉터리에 담아 플러그인으로 배포합니다.<br>하나를 누르면 언제 쓰는지 나옵니다.</p>
     <div data-for="md"><h4>CLAUDE.md</h4><p><b>항상 알아야 할 짧은 지침</b>을 둘 때 씁니다.</p><p>플러그인이 아니라 <b>managed CLAUDE.md나 저장소</b>로 배포합니다. 매 요청에 실리기 때문에 짧게 유지합니다 (Ch1, Ch5).</p></div>
-    <div data-for="skill"><h4>스킬</h4><p><b>같은 지시를 반복할 때</b> 씁니다. 필요할 때만 로드됩니다.</p><p>예: 팀의 PR 리뷰 절차</p></div>
-    <div data-for="sub"><h4>Subagent</h4><p><b>역할과 도구를 나눠 맡길 때</b> 씁니다.</p><p>예: Ch3에서 만든 code-reviewer</p></div>
+    <div data-for="skill"><h4>스킬</h4><p><b>같은 지시를 반복할 때</b> 씁니다. 필요할 때만 로드됩니다.</p><p>예: 노후 연금 격차 계산 절차 retirement-gap</p></div>
+    <div data-for="sub"><h4>Subagent</h4><p><b>역할과 도구를 나눠 맡길 때</b> 씁니다.</p><p>예: Ch3에서 만든 portfolio-analyst</p></div>
     <div data-for="hook"><h4>훅</h4><p><b>이벤트에 스크립트로 막거나 기록할 때</b> 씁니다.</p><p>예: Ch2의 DLP 훅</p></div>
     <div data-for="mcp"><h4>MCP</h4><p><b>외부 시스템에 닿아야 할 때</b> 씁니다.</p><p>외부로 나가는 채널이라 반출 채널 검토 대상입니다.</p></div>
     <div data-for="mod"><h4>mod</h4><p><b>화면, 커맨드, 이벤트 자체를 바꿀 때</b> 씁니다.</p><p>Part 3에서 자세히 다룹니다.</p></div>
@@ -230,11 +232,11 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 �
 :::html
 <div class="fsi c5-tree">
   <div class="tree" data-pick="c5-tree">
-    <div class="root">fsi-team-kit/</div>
+    <div class="root">asset-team-kit/</div>
     <button class="pick" data-key="manifest"><span class="p">.claude-plugin/plugin.json</span><span class="cm">이름, 버전, 설명</span></button>
-    <button class="pick" data-key="skills"><span class="p">skills/pr-review/SKILL.md</span><span class="cm">팀 리뷰 절차</span></button>
-    <button class="pick" data-key="agents"><span class="p">agents/code-reviewer.md</span><span class="cm">Ch3에서 만든 것</span></button>
-    <div class="leaf"><span class="p">agents/test-writer.md, docs-writer.md</span><span class="cm">Ch3 건너뛰면 code-reviewer만</span></div>
+    <button class="pick" data-key="skills"><span class="p">skills/retirement-gap/SKILL.md</span><span class="cm">연금 격차 절차</span></button>
+    <button class="pick" data-key="agents"><span class="p">agents/spending-analyst.md</span><span class="cm">Ch3에서 만든 것</span></button>
+    <div class="leaf"><span class="p">agents/portfolio-analyst.md, risk-reviewer.md</span><span class="cm">Ch3 3종</span></div>
     <button class="pick" data-key="hooks"><span class="p">hooks/hooks.json</span><span class="cm">DLP 훅 등록 (Ch2)</span></button>
     <button class="pick" data-key="scripts"><span class="p">scripts/dlp-guard.sh</span><span class="cm">검사 스크립트</span></button>
     <button class="pick extra" data-key="commands"><span class="p">commands/*.md</span><span class="cm">슬래시 커맨드</span></button>
@@ -244,8 +246,8 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 �
   <div class="panel" data-pick-panel="c5-tree">
     <p class="hint">파일을 누르면 무엇이 들어가는지 보여 줍니다. Ch2와 Ch3의 결과물을 그대로 넣고, 설치 한 줄로 동료가 같은 환경을 갖습니다.</p>
     <div data-for="manifest"><h4>.claude-plugin/plugin.json</h4><p>플러그인의 이름, 버전, 설명. <b>유일한 필수 파일</b>입니다.</p><p>버전으로 변경 이력을 관리합니다.</p></div>
-    <div data-for="skills"><h4>skills/&lt;name&gt;/SKILL.md</h4><p>스킬. <b>설명만 항상 실리고</b> 본문은 필요할 때 로드됩니다.</p><p>예시는 팀의 PR 리뷰 절차입니다.</p></div>
-    <div data-for="agents"><h4>agents/*.md</h4><p>Subagent. <b>Ch3에서 만든 정의를 그대로</b> 넣습니다. code-reviewer, test-writer, docs-writer 세 개입니다.</p><p>Ch3을 건너뛰었다면 code-reviewer만 넣습니다.</p></div>
+    <div data-for="skills"><h4>skills/&lt;name&gt;/SKILL.md</h4><p>스킬. <b>설명만 항상 실리고</b> 본문은 필요할 때 로드됩니다.</p><p>예시는 노후 연금 격차를 정해진 절차로 계산하는 retirement-gap입니다.</p></div>
+    <div data-for="agents"><h4>agents/*.md</h4><p>Subagent. <b>Ch3에서 만든 정의를 그대로</b> 넣습니다. spending-analyst, portfolio-analyst, risk-reviewer 세 개입니다.</p><p>Ch3 파일이 없으면 랩 TASK 00에서 키트 기준본으로 채웁니다.</p></div>
     <div data-for="hooks"><h4>hooks/hooks.json</h4><p>훅을 등록하는 곳. Ch2의 <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span> 훅을 여기에 등록합니다.</p><p><b>mod도 같은 hooks/ 아래</b>에 들어가고, 경로는 <code>${CLAUDE_PLUGIN_ROOT}</code>를 씁니다.</p></div>
     <div data-for="scripts"><h4>scripts/dlp-guard.sh</h4><p>훅이 실행하는 검사 스크립트입니다.</p></div>
     <div data-for="commands"><h4>commands/*.md</h4><p>슬래시 커맨드. <b>스킬로 대체되는 추세</b>입니다.</p></div>
@@ -262,14 +264,14 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 �
 {timing: 2.5min}
 [요약]
 • 플러그인은 디렉터리 하나, 필수 파일은 .claude-plugin/plugin.json
-• skills, agents, hooks, scripts 폴더에 Ch2와 Ch3 결과물을 그대로 넣음 (Subagent 3종, Ch3 건너뛰면 code-reviewer만)
+• skills, agents, hooks, scripts 폴더에 retirement-gap 스킬과 Ch2, Ch3 결과물을 넣음 (Subagent 3종, 없으면 키트 기준본)
 • mod도 같은 hooks/ 아래, 버전으로 변경 이력 관리
 • 설치 한 줄로 동료가 같은 환경
 
-플러그인은 디렉터리 하나입니다. 오늘 랩에서 만들 fsi-team-kit을 예로 보겠습니다.
+플러그인은 디렉터리 하나입니다. 오늘 랩에서 만들 asset-team-kit을 예로 보겠습니다.
 {cue: demo}
 맨 위 .claude-plugin 아래 plugin.json에는 이름, 버전, 설명이 들어가고, 이것만 필수입니다.
-skills에는 팀 리뷰 절차 같은 스킬을, agents에는 Ch3에서 만든 code-reviewer, test-writer, docs-writer를, Ch3을 건너뛰셨다면 code-reviewer만 넣습니다. hooks의 hooks.json에는 Ch2의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
+skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을, agents에는 Ch3에서 만든 spending-analyst, portfolio-analyst, risk-reviewer를 넣습니다. Ch3 파일이 없으면 랩 TASK 00에서 키트 기준본으로 채웁니다. hooks의 hooks.json에는 Ch2의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
 점선으로 표시한 commands와 .mcp.json도 넣을 수 있습니다. 특히 .mcp.json은 외부로 나가는 길이라 반출 채널 검토 대상입니다.
 버전으로 변경 이력을 관리하고, 설치 한 줄이면 동료가 같은 환경을 갖게 됩니다.
 
@@ -310,13 +312,13 @@ skills에는 팀 리뷰 절차 같은 스킬을, agents에는 Ch3에서 만든 c
      facts:['이름과 마켓플레이스를 함께 지정','같은 이름이 여러 마켓플레이스에 있어도 구분','회사는 이 단계를 정책으로 강제 (Part 2)'],
      zones:Z, nodes:ALL, hot:['mk','in'],
      edges:[{f:'mk',t:'in',c:'accent',o:0}],
-     snip:{hd:'설치',path:'Claude Code 프롬프트',lines:['# 랩','/plugin install fsi-team-kit@fsi-local','','# 형식: 이름@마켓플레이스'],hl:[2],note:'랩은 로컬 디렉터리 마켓플레이스 <b>fsi-local</b>을 씁니다. Part 2의 정책 예시는 fsi-tools입니다.'}},
+     snip:{hd:'설치',path:'Claude Code 프롬프트',lines:['# 랩','/plugin install asset-team-kit@fsi-local','','# 형식: 이름@마켓플레이스'],hl:[2],note:'랩은 로컬 디렉터리 마켓플레이스 <b>fsi-local</b>을 씁니다. Part 2의 정책 예시는 fsi-tools입니다.'}},
     {kicker:'STEP 3', title:'리로드하거나 다음 세션부터',
      body:'설치한 플러그인은 <b>/reload-plugins</b>로 바로 적용하거나 <b>다음 세션</b>부터 적용됩니다.',
      facts:['/reload-plugins: 지금 세션에 적용','또는 다음 세션 시작 시','적용되면 스킬, Subagent, 훅이 함께 켜짐'],
      zones:Z, nodes:ALL, hot:['in','ap'],
      edges:[{f:'in',t:'ap',c:'success',o:0}],
-     snip:{hd:'적용',path:'Claude Code 프롬프트',lines:['/reload-plugins','','# 또는 새 세션을 시작'],hl:[1],note:'랩의 mod는 파일을 고치면 hot reload로 바로 반영되고, 새 커맨드는 /exit 후 다시 열어 확인합니다 (TASK 03).'}},
+     snip:{hd:'적용',path:'Claude Code 프롬프트',lines:['/reload-plugins','','# 또는 새 세션을 시작'],hl:[1],note:'랩의 mod는 파일을 고치면 hot reload로 바로 반영되고, 새 커맨드는 /exit 후 다시 열어 확인합니다 (TASK 05).'}},
     {kicker:'STEP 4', title:'갱신은 자동 또는 수동',
      body:'갱신은 <b>autoUpdate</b>로 자동으로 받거나 <b>수동 update</b>로 합니다. 갱신된 버전이 다시 적용 단계로 이어집니다.',
      facts:['autoUpdate: 자동 갱신','수동 update: 검토한 버전만 받기','남이 만든 mod는 자동 갱신 대신 검토한 버전 (더 알아보기)'],
@@ -329,7 +331,7 @@ skills에는 팀 리뷰 절차 같은 스킬을, agents에는 Ch3에서 만든 c
      zones:Z, nodes:ALL,
      edges:[{f:'src',t:'mk',c:'info',o:0},{f:'mk',t:'in',c:'accent',o:1},{f:'in',t:'ap',c:'success',o:2},{f:'mk',t:'up',c:'warning',o:3},{f:'up',t:'ap',c:'warning',o:4}],
      loop:true, stagger:0.7,
-     snip:{hd:'한 번에 보기',path:'Claude Code 프롬프트',lines:['/plugin marketplace add <소스>','/plugin install <이름>@<마켓플레이스>','/reload-plugins'],hl:[1,2,3],note:'Super Lab TASK 02에서 등록과 설치 흐름을 새 폴더에서 동료처럼 따라 합니다.'}}
+     snip:{hd:'한 번에 보기',path:'Claude Code 프롬프트',lines:['/plugin marketplace add <소스>','/plugin install <이름>@<마켓플레이스>','/reload-plugins'],hl:[1,2,3],note:'Super Lab TASK 03에서 등록과 설치 흐름을 새 폴더에서 동료처럼 따라 합니다.'}}
   ], {legend:[['info','등록'],['accent','설치'],['success','적용'],['warning','갱신']]});
 });
 :::
@@ -345,7 +347,7 @@ skills에는 팀 리뷰 절차 같은 스킬을, agents에는 Ch3에서 만든 c
 {cue: demo}
 플러그인이 동료의 세션까지 가는 길을 네 단계로 보겠습니다.
 첫째, 마켓플레이스 등록입니다. /plugin marketplace add로 등록하고, 소스는 로컬 경로, GitHub 저장소, 사내 git URL을 쓸 수 있습니다. 오늘 랩은 로컬 경로를 씁니다.
-둘째, 설치는 이름 골뱅이 마켓플레이스 형식입니다. 랩에서는 fsi-team-kit@fsi-local로 설치합니다.
+둘째, 설치는 이름 골뱅이 마켓플레이스 형식입니다. 랩에서는 asset-team-kit@fsi-local로 설치합니다.
 셋째, /reload-plugins로 바로 적용하거나 다음 세션부터 적용됩니다.
 넷째, 갱신은 autoUpdate로 자동으로 받거나 수동으로 합니다. 금융권에서는 버전을 고정하고 검토한 버전만 올리는 쪽을 권합니다.
 :::
@@ -394,11 +396,11 @@ managed-settings.json 네 개 키로 사내 마켓플레이스를 강제
   var MS = {id:'ms',x:40,y:200,w:260,h:90,t:'managed-settings.json',s:'사용자가 못 바꿈',c:'accent'};
   var AL = {id:'al',x:400,y:90,w:340,h:72,t:'허용 목록',s:'your-org/*, 사내 git, skills-dir',c:'info'};
   var RG = {id:'rg',x:400,y:200,w:340,h:72,t:'등록된 마켓플레이스',s:'fsi-tools',c:'info'};
-  var PL = {id:'pl',x:400,y:310,w:340,h:72,t:'fsi-team-kit',s:'강제 설치, 해제 불가',c:'success'};
+  var PL = {id:'pl',x:400,y:310,w:340,h:72,t:'asset-team-kit',s:'강제 설치, 해제 불가',c:'success'};
   var SL = {id:'sl',x:800,y:310,w:330,h:72,t:'--plugin-dir',s:'로컬 사이드로드',c:'danger'};
   var SK = {id:'sk',x:800,y:90,w:330,h:72,t:'skills-dir',s:'로컬 스킬 플러그인 유지',c:'info'};
   var ALL = [MS, AL, RG, PL, SL, SK];
-  var J = ['{',' "strictKnownMarketplaces": [','  { "source": "github", "repo": "your-org/*" },','  { "source": "hostPattern",','    "hostPattern": "^git\\\\.corp\\\\.example$" },','  { "source": "skills-dir" } ],',' "extraKnownMarketplaces": {','  "fsi-tools": { "source": { "source": "github",','    "repo": "your-org/fsi-tools" } } },',' "enabledPlugins": {','  "fsi-team-kit@fsi-tools": true },',' "disableSideloadFlags": true','}'];
+  var J = ['{',' "strictKnownMarketplaces": [','  { "source": "github", "repo": "your-org/*" },','  { "source": "hostPattern",','    "hostPattern": "^git\\\\.corp\\\\.example$" },','  { "source": "skills-dir" } ],',' "extraKnownMarketplaces": {','  "fsi-tools": { "source": { "source": "github",','    "repo": "your-org/fsi-tools" } } },',' "enabledPlugins": {','  "asset-team-kit@fsi-tools": true },',' "disableSideloadFlags": true','}'];
   function snip(hl, note) { return {hd:'사내 마켓플레이스 강제',path:'managed-settings.json',lines:J,hl:hl,note:note}; }
   F.stepviz('#c5-sv-force', [
     {kicker:'OVERVIEW', title:'키 네 개가 각자 한 가지를 합니다',
@@ -696,7 +698,7 @@ mod를 한 줄로 정의하면, 플러그인 안의 이벤트 핸들러입니다
      body:'ui.render 핸들러는 <b>props에 suffix를 더한 이벤트</b>를 next로 넘깁니다. 이것이 <b>변경</b>입니다. 스피너 옆에 호출 수가 붙습니다.',
      zones:Z, nodes:ALL, hot:['rd','sp'],
      edges:[{f:'rd',t:'sp',c:'success',l:'suffix 추가',o:0}],
-     snip:snip([8,9,10],'Super Lab TASK 03에서 이 mod에 <code>/tally-reset</code> 커맨드를 Claude에게 추가시킵니다.')},
+     snip:snip([8,9,10],'Super Lab TASK 05에서 이 mod에 <code>/tally-reset</code> 커맨드를 Claude에게 추가시킵니다.')},
     {kicker:'FILES', title:'세 파일과 두 원칙',
      body:'mod는 <b>.claude-plugin/plugin.json</b>, 코드 위치를 적은 <b>hooks/hooks.json</b>, 그리고 <b>hooks/register.js</b> 세 파일로 된 플러그인입니다. 원칙은 두 가지, <b>관찰, 변경, 대신 처리</b>와 <b>바깥 작업은 $ API로만</b>입니다.',
      facts:['원칙 1: 관찰, 변경, 대신 처리','원칙 2: 바깥 작업은 $ API로만','배포와 통제는 일반 플러그인과 같음'],
@@ -906,7 +908,7 @@ allowManagedModsOnly와 claude plugin validate 읽는 법
      facts:['managed-settings.json의 pluginConfigs','사용자가 설치한 mod는 로드 안 됨','사이드로드는 disableSideloadFlags와 함께'],
      zones:Z, nodes:ALL, hot:['ms','om','um','cc'],
      edges:[{f:'ms',t:'om',c:'success',l:'허용',o:0},{f:'um',t:'cc',c:'danger',dash:true},{f:'om',t:'cc',c:'success',o:1}],
-     snip:{hd:'사용자 mod 차단',path:'managed-settings.json',lines:POL,hl:[3,4],note:'Super Lab TASK 05에서 이 설정으로 사용자 mod가 막히는지 확인한 뒤 원복합니다.'}},
+     snip:{hd:'사용자 mod 차단',path:'managed-settings.json',lines:POL,hl:[3,4],note:'Super Lab TASK 07에서 이 설정으로 사용자 mod가 막히는지 확인한 뒤 원복합니다.'}},
     {kicker:'STEP 2', title:'조직 mod는 로컬 마켓플레이스로',
      body:'조직 mod는 <b>로컬 디렉터리 마켓플레이스</b>에 두고 <b>prependPlugins</b>로 싣습니다.',
      facts:['로컬 디렉터리 마켓플레이스','prependPlugins','검토한 버전만 올림'],
@@ -1025,34 +1027,36 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 45분 동안 팀 스타터 킷을 만든다
+## 약 60분 동안 팀 스타터 킷을 만든다
 SUPER LAB, 팀 스타터 킷 플러그인 + mod
 
 :::html
 <div class="fsi fsi-lab">
   <ol class="steps">
-    <li><b>TASK 01</b><span>Ch3 Subagent 3종(Ch3 건너뛰면 code-reviewer 1종) + DLP 훅 + 리뷰 스킬 묶기</span><em>Part 1</em></li>
-    <li><b>TASK 02</b><span>로컬 디렉터리 마켓플레이스 fsi-local 등록, /plugin install fsi-team-kit@fsi-local</span><em>Part 1</em></li>
-    <li><b>TASK 03</b><span>공식 first-mod 붙여 넣기, Claude에게 /tally-reset 추가 요청</span><em>Part 3</em></li>
-    <li><b>TASK 05</b><span>allowManagedModsOnly로 사용자 mod 차단 확인, 원복</span><em>Part 3</em></li>
-    <li><b>TASK 06</b><span>배포 전 체크리스트 (선택 TASK 04: Bedrock용 idle compaction mod, 12분)</span><em>Part 2</em></li>
+    <li><b>TASK 01-02</b><span>retirement-gap 스킬 만들기, Ch3 에이전트 3종 + DLP 훅과 asset-team-kit으로 묶기</span><em>Part 1</em></li>
+    <li><b>TASK 03-04</b><span>fsi-local에서 asset-team-kit@fsi-local 설치, 킷으로 pension-product.md 완성</span><em>Part 1</em></li>
+    <li><b>TASK 05</b><span>공식 first-mod 만들기, Claude에게 /tally-reset 추가 요청</span><em>Part 3</em></li>
+    <li><b>TASK 07</b><span>allowManagedModsOnly로 사용자 mod 차단 확인, 원복</span><em>Part 3</em></li>
+    <li><b>TASK 08</b><span>배포 전 체크리스트 (선택 TASK 06: Bedrock용 idle compaction mod, 12분)</span><em>Part 2</em></li>
   </ol>
-  <p class="where">골격은 복사해 붙이고, 나머지는 Claude에게 시킵니다. Hands-on Lab 포털에서 Chapter 4를 엽니다.</p>
+  <p class="where">TASK 00에서 Ch3 결과물을 확인하고, 없으면 키트 기준본으로 채웁니다. 골격은 복사해 붙이고, 나머지는 Claude에게 시킵니다.</p>
 </div>
 :::
 
 :::notes
 {timing: 0.5min}
 [요약]
-• Super Lab 45분, 팀 스타터 킷 플러그인과 mod
-• TASK 01 Subagent 3종과 DLP 훅, 리뷰 스킬 묶기, 02 fsi-local 등록과 설치, 03 first-mod와 /tally-reset, 05 사용자 mod 차단과 원복, 06 체크리스트
-• 선택 TASK 04는 Bedrock용 idle compaction mod, 12분
+• Super Lab 약 60분(필수 TASK 00~08, 선택 TASK 06 12분 별도), 팀 스타터 킷 플러그인과 mod
+• TASK 00 Ch3 결과물 확인, 01 retirement-gap 스킬, 02 asset-team-kit 묶기, 03 fsi-local 등록과 설치, 04 pension-product.md와 훅 차단
+• 05 first-mod와 /tally-reset, 07 사용자 mod 차단과 원복, 08 체크리스트
+• 선택 TASK 06은 Bedrock용 idle compaction mod, 12분
 
 {cue: demo}
-강의를 마치면 45분 Super Lab을 합니다.
-TASK 01에서 Ch3의 Subagent 세 개, Ch3을 건너뛰셨다면 code-reviewer 하나와 Ch2의 DLP 훅, 리뷰 스킬을 fsi-team-kit 하나로 묶고, TASK 02에서 로컬 디렉터리 마켓플레이스 fsi-local을 등록해 /plugin install fsi-team-kit@fsi-local로 설치합니다.
-TASK 03은 공식 first-mod를 붙여 넣고 Claude에게 /tally-reset 커맨드를 추가하게 시킵니다. TASK 05는 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복합니다. 마지막 TASK 06은 배포 전 체크리스트입니다.
-시간이 남으면 12분짜리 선택 TASK 04, Bedrock용 idle compaction mod를 해 보세요.
+강의를 마치면 약 60분 Super Lab을 합니다.
+Ch3의 고객자산 분석 담당자가 반복한 분석을 팀 자산으로 만드는 흐름입니다. TASK 00에서 Ch3의 에이전트 세 개와 segments.md, Ch2 Lab 2의 DLP 스크립트를 확인하고, 없는 것은 키트 기준본으로 채웁니다.
+TASK 01에서 노후 연금 격차 계산을 retirement-gap 스킬로 고정하고, TASK 02에서 에이전트 세 개와 이 스킬, DLP 훅을 asset-team-kit 하나로 묶습니다. TASK 03에서 로컬 디렉터리 마켓플레이스 fsi-local을 등록해 /plugin install asset-team-kit@fsi-local로 동료 폴더에 설치하고, TASK 04에서 그 킷으로 연금상품 기획서 pension-product.md를 쓰고 플러그인 훅이 주민등록번호 형식 프롬프트를 막는지 봅니다.
+TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 추가하게 시킵니다. TASK 07은 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복합니다. 마지막 TASK 08은 배포 전 체크리스트입니다.
+시간이 남으면 12분짜리 선택 TASK 06, Bedrock용 idle compaction mod를 해 보세요.
 골격은 복사해 붙이고, 나머지는 Claude에게 시키시면 됩니다.
 
 [출처]
@@ -1077,7 +1081,7 @@ TASK 03은 공식 first-mod를 붙여 넣고 Claude에게 /tally-reset 커맨드
     <button class="it"><span class="k">MEASURE</span><span class="t">측정</span><span class="d">plugin_loaded 이벤트로 사용 현황 확인</span></button>
     <button class="it"><span class="k">ROLLBACK</span><span class="t">롤백</span><span class="d">enabledPlugins false로 즉시 차단</span></button>
   </div>
-  <div class="foot"><span>Super Lab TASK 06에서 같은 목록을 직접 점검합니다.</span><span class="cnt" id="c5-check-cnt">0 / 6</span></div>
+  <div class="foot"><span>Super Lab TASK 08에서 같은 목록을 직접 점검합니다.</span><span class="cnt" id="c5-check-cnt">0 / 6</span></div>
 </div>
 :::
 
@@ -1203,7 +1207,7 @@ TASK 03은 공식 first-mod를 붙여 넣고 Claude에게 /tally-reset 커맨드
     }
   },
   "enabledPlugins": {
-    "fsi-team-kit@fsi-internal": true
+    "asset-team-kit@fsi-internal": true
   }
 }</pre>
   </div>
