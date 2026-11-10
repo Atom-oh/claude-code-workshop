@@ -20,6 +20,8 @@ to the curriculum; they are not repository infrastructure.
 | `20261116/eDM.html`, `eDM.txt` | Web invitation and plain-text email copy |
 | `20261116/fsi-edm.html` | Compatibility entry forwarding to the web invitation |
 | `20261116/image/` | Event image assets |
+| `20261116/assets/labviz.js`, `labviz.css` | Shared lab visual-explainer component: step-through SVG figures (`<figure class="viz" data-viz>`), per-block `cmd-explain` line highlighting, and paste-target badges. Loaded by the Preflight, Ch1-Ch6 and Ch2 Guardrails labs; no network dependencies |
+| `20261116/assets/aws-icons/` | Unmodified AWS Architecture Icons (07312025 set) used by the lab figures; source mapping in its `README.md` |
 | `20261123/eDM.html`, `20261123/image/` | Standalone one-day invitation for Hanwha Financial with the trimmed supplied logo; copied to `/20261123/` by the Pages workflow (no `index.html`, so use `/20261123/eDM.html`) |
 | `workshop-v2/` | Draft two-day workshop: HTML labs with `assets/`, runnable seed projects under `seed/`, and a facilitator guide. Copied to `/workshop-v2/` by the Pages workflow for team review; seed projects are downloadable files, not executed by Pages |
 | `20260525/`, `20260703/`, `20260901/`, `20260905/`, `tech_doc/` | PDF distribution, outside the Pages artifact |
@@ -81,4 +83,5 @@ When changing the November labs or `tools/mydata/`, also run:
 ```bash
 python3 -m unittest discover -s tools/mydata/tests -t .
 python3 tools/mydata/build.py --version <v> && python3 tools/mydata/check_labs.py 20261116 tools/mydata/dist/mydata-kit.zip
+python3 tools/mydata/check_viz.py 20261116
 ```
