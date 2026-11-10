@@ -183,7 +183,7 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;
 <figure class="viz" data-viz="agent-loop">
 <figcaption>그림: 에이전트 루프 — 1) 프롬프트 전송: 사용자가 터미널에서 프롬프트를 입력합니다. 2) 모델이 결정: Claude Code가 Bedrock의 모델에 묻고, 모델은 "파일 앞부분부터 보자"고 정해 읽기 도구를 쓰라고 답합니다. 3) 수집: Read와 Bash 도구가 customers.csv와 pensions.csv의 앞 5행을 읽습니다. 4) 결과를 모델에 다시: 읽은 결과가 모델에 전달됩니다. 5) 수행: 모델이 짠 Python 집계 코드를 Bash로 실행합니다. 6) 검증: 다른 방법으로 다시 계산해 합계와 중복 고객을 확인합니다. 7) 답 표시: 검증된 표를 터미널에 보여줍니다.</figcaption>
 </figure>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>먼저 data/customers.csv와 data/pensions.csv의 맨 앞 5행씩을 보여주고, 그 데이터로 연령대(20대~70대 이상)별 고객 수와 퇴직연금(DB, DC, IRP) 보유율을 표로 만들어줘. 한 고객이 연금을 여러 개 가질 수 있으니 고객 단위로 세고, 끝나면 숫자를 다른 방법으로 다시 계산해서 검증해줘</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>먼저 data/customers.csv와 data/pensions.csv의 맨 앞 5행씩을 보여주고, 그 데이터로 연령대(20대~60대)별 고객 수와 퇴직연금(DB, DC, IRP) 보유율을 표로 만들어줘. 한 고객이 연금을 여러 개 가질 수 있으니 고객 단위로 세고, 끝나면 숫자를 다른 방법으로 다시 계산해서 검증해줘</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
 <li data-lines="1">이 한 문장에 수집(앞 5행 보기), 수행(연령대별 표 만들기), 검증(다른 방법으로 다시 계산)이 모두 들어 있습니다. 위 그림의 순서대로 Claude Code가 도구를 고르는지 지켜보세요. 한 고객이 연금을 여러 개 가질 수 있다는 말은 중복을 세지 말라는 힌트입니다.</li>
