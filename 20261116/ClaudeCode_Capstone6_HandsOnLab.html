@@ -677,7 +677,7 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
     <tr><td>수집</td><td>BBC / Guardian / NHK World / 연합뉴스 RSS를 120초 폴링</td><td>소스별 실패 격리, 피드 하나가 죽어도 뉴스룸은 산다</td></tr>
     <tr><td>저장</td><td>기사 link 멱등 딕셔너리(소스별 50건)</td><td>본문은 저장하지 않는다, 헤드라인 + 요약 + 링크만</td></tr>
     <tr><td>렌즈</td><td>공통 토픽 클러스터 + 매체별 프레임을 <strong>JSON 계약</strong>으로</td><td>LLM 출력이 곧 화면 데이터, 계약이 무너지면 화면도 무너진다</td></tr>
-    <tr><td>개장</td><td>CDK로 CF → prefix SG → ALB → Fargate</td><td>Bearer는 Secrets 기동 주입, 이미지에 비밀 없음</td></tr>
+    <tr><td>개장</td><td>CDK로 CF → VPC origin → 내부 ALB → Fargate</td><td>Bearer는 Secrets 기동 주입, 이미지에 비밀 없음</td></tr>
   </table>
 
   <p class="body"><strong>1. 뉴스룸 (기본 뷰)</strong></p>
@@ -781,7 +781,7 @@ FastAPI ── 4소스 헤드라인 묶음 ──> httpx POST converse(Bearer) �
     <tr><td>link 멱등 + 본문 미저장</td><td>중복 없는 스토어와 출처 존중을 한 번에, 우리는 렌즈지 아카이브가 아니다</td></tr>
     <tr><td>소스별 실패 격리</td><td>RSS는 언제든 한 곳이 느려진다, 4분의 1의 장애가 4분의 4가 되면 안 된다</td></tr>
     <tr><td>JSON 전용 LLM 계약</td><td>자유 산문은 사람용, 화면용 출력은 스키마 - 파싱 가능성이 곧 신뢰성</td></tr>
-    <tr><td>CF → ALB → Fargate 개장 형식</td><td>prefix list SG와 X-Origin-Verify 이중 방어를 갖춘, 공개 URL까지 가는 최단 경로</td></tr>
+    <tr><td>CF → ALB → Fargate 개장 형식</td><td>ALB를 인터넷에 열지 않고 CloudFront VPC origin으로만 잇는, 공개 URL까지 가는 표준 경로</td></tr>
   </table>
 </section>
 
@@ -839,7 +839,7 @@ aws sts get-caller-identity --query Account --output text</code></pre>
    미보도는 회색 처리, 근거 기사 링크 칩. 뷰 전환 토글
 8) 키와 윤리: Bearer는 환경변수로만. 기사 본문을 저장하지 않는다(헤드라인+요약+링크만),
    화면 모든 카드에 원문 출처 링크 필수
-9) 배포와 순서: CDK로 CloudFront → (prefix list SG + X-Origin-Verify) ALB → Fargate 를 구성,
+9) 배포와 순서: CDK로 CloudFront → VPC origin → 내부(internal) ALB → Fargate 를 구성(ALB 보안 그룹은 CloudFront origin-facing prefix list만 허용, VPC에 인터넷 게이트웨이),
    Secrets 기동 주입. Phase 1(수집 + 스토어 + /api/articles) → Phase 2(4열 그리드)
    → Phase 3(렌즈 JSON + 클러스터 뷰) → Phase 4(cdk deploy 개장). 2시간 제약: 테스트 생략,
    curl과 브라우저로 검증. 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
@@ -865,7 +865,7 @@ aws sts get-caller-identity --query Account --output text</code></pre>
 
   <div class="callout tip">
     <span class="co-title">2시간의 열쇠, 인프라 선배포</span>
-    <code class="inline">cdk deploy</code>는 첫 회 12~15분이 걸립니다. <strong>Phase 1을 시작하자마자
+    <code class="inline">cdk deploy</code>는 첫 회 20~30분이 걸립니다(VPC origin 생성만 최대 15분). <strong>Phase 1을 시작하자마자
     별도 터미널에서 인프라 배포를 먼저 걸어 두세요</strong>. 빌드와 배포 대기가 겹치면
     M4는 이미지 푸시와 서비스 갱신만 남아 10분 안에 개장합니다.
   </div>  <div class="code-wrap">
@@ -935,7 +935,7 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 개장</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. X-Origin-Verify와 Secrets 주입 확인 절차 포함.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. ALB가 internal인지와 Secrets 주입 확인 절차 포함.</code></pre>
   </div>
   <div class="callout tip">
     <span class="co-title">개념 짚기 (Level 200), 관점을 묻는 프롬프트</span>
@@ -949,7 +949,7 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
     <span class="co-title">렌즈나 개장이 막힐 때</span>
     ① JSON 파싱 실패 = 응답 앞뒤의 코드펜스가 남은 것, 방어적 제거를 확인하세요.
     ② 클러스터가 1개뿐 = 정상일 수 있습니다, 조용한 뉴스 시간대엔 공통 토픽이 적습니다.
-    ③ ALB 직접 접근 403 = 정상(이중 방어), ④ 브리핑만 실패 = 태스크 정의의 secrets 블록에서 Bearer 주입 확인.
+    ③ ALB 주소로 직접 접속이 안 됨 = 정상(내부 ALB, CloudFront로만 들어옴), ④ 브리핑만 실패 = 태스크 정의의 secrets 블록에서 Bearer 주입 확인.
   </div>
   <div class="checkpoint">
     <div class="cp-title">DEFINITION OF DONE</div>

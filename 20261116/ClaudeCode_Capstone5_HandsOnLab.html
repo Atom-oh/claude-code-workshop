@@ -692,7 +692,7 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
     <tr><th>기능</th><th>설명</th></tr>
     <tr><td>브리핑</td><td>"지난 24시간, 지구는" - 전체 흐름, 주목 이벤트 2~3개, 활동 급증 지역, 한국어</td></tr>
     <tr><td>브리핑 캐시</td><td>같은 10분 버킷 동안 재사용, LLM 호출은 아껴 쓴다</td></tr>
-    <tr><td>실배포</td><td>CloudFront → prefix list SG + X-Origin-Verify → ALB → Fargate</td></tr>
+    <tr><td>실배포</td><td>CloudFront VPC origin → 내부(internal) ALB → Fargate</td></tr>
     <tr><td>피날레</td><td>CloudFront URL을 Slack에, 누구나 열리는 내 지진 워치</td></tr>
   </table>
 
@@ -748,7 +748,7 @@ Browser ── fetch ──> FastAPI: /api/quakes?hours=&min_mag= ──> 필터
    +── 지도 원(반지름=규모, 색=깊이) + 테이블 ────────────────────────+
 
 [출고 경로]  개장
-docker build ──> ECR push ──> CDK: CloudFront ──> (prefix list SG + X-Origin-Verify) ALB ──> Fargate
+docker build ──> ECR push ──> CDK: CloudFront ──> (VPC origin) 내부 ALB ──> Fargate
                                                     Secrets Manager ──(기동 주입)──> AWS_BEARER_TOKEN_BEDROCK</code></pre>
   </div>
 
@@ -768,7 +768,7 @@ docker build ──> ECR push ──> CDK: CloudFront ──> (prefix list SG + 
     <tr><td>이벤트 id 멱등 스토어</td><td>피드는 24h 창이라 매 폴링 대부분이 재등장, 키 기반 upsert가 시계열을 오염에서 지킨다</td></tr>
     <tr><td>등장방형 투영</td><td>두 줄짜리 수학으로 충분히 정확한 세계지도, 라이브러리는 과잉</td></tr>
     <tr><td>Bedrock REST 직접</td><td>SDK 없이 Authorization 헤더 + JSON, "LLM 호출은 결국 HTTP"</td></tr>
-    <tr><td>CF → ALB → Fargate 개장 형식</td><td>prefix list SG와 X-Origin-Verify 이중 방어를 갖춘, 공개 URL까지 가는 최단 경로</td></tr>
+    <tr><td>CF → ALB → Fargate 개장 형식</td><td>ALB를 인터넷에 열지 않고 CloudFront VPC origin으로만 잇는, 공개 URL까지 가는 표준 경로</td></tr>
   </table>
 </section>
 
@@ -822,7 +822,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
    입력은 최근 24h 요약 통계와 상위 이벤트 목록, 출력은 한국어 "지난 24시간, 지구는" 브리핑:
    전체 흐름 한 문단, 주목 이벤트 2~3개 해설, 활동 급증 지역. 같은 10분 버킷 동안 결과 캐시
 7) 키의 거처: AWS_BEARER_TOKEN_BEDROCK은 환경변수로만. USGS는 키가 없다, 화면은 우리 API만 본다
-8) 배포: CDK로 CloudFront → (prefix list SG + X-Origin-Verify) ALB → ECS Fargate 를 구성해 배포한다. Secrets Manager가 Bearer를 기동 시 주입, 이미지에 비밀 없음
+8) 배포: CDK로 CloudFront → VPC origin → 내부(internal) ALB → ECS Fargate 를 구성해 배포한다. ALB는 인터넷에 열지 않고 보안 그룹은 CloudFront origin-facing prefix list의 80만 허용, VPC에는 인터넷 게이트웨이를 붙인다. Secrets Manager가 Bearer를 기동 시 주입, 이미지에 비밀 없음
 9) 구현 순서: Phase 1(수집기 + 스토어 + /api/quakes, curl 검증) → Phase 2(지도 SVG + 테이블 + 필터)
    → Phase 3(브리핑 + 캐시) → Phase 4(cdk deploy와 CloudFront 개장). 시간 제약 2시간:
    테스트 생략, curl과 브라우저로 검증. 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
@@ -848,7 +848,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
 
   <div class="callout tip">
     <span class="co-title">2시간의 열쇠, 인프라 선배포</span>
-    <code class="inline">cdk deploy</code>는 첫 회 12~15분이 걸립니다. <strong>Phase 1을 시작하자마자
+    <code class="inline">cdk deploy</code>는 첫 회 20~30분이 걸립니다(VPC origin 생성만 최대 15분). <strong>Phase 1을 시작하자마자
     별도 터미널에서 인프라 배포를 먼저 걸어 두세요</strong>(앱 이미지는 나중에 갱신). 빌드와 배포 대기가
     겹치면 M4는 이미지 푸시와 서비스 갱신만 남아 10분 안에 개장합니다.
   </div>  <div class="code-wrap">
@@ -857,7 +857,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 1만 구현하고 멈춰줘. backend venv + requirements(fastapi, uvicorn, httpx, apscheduler), USGS 수집기(60초, 정규화, 부분 실패 격리), 이벤트 id 멱등 스토어(최대 500), /api/quakes(hours, min_mag 필터 + 통계)와 /healthz. Dockerfile과 infra(CDK: CloudFront + prefix list SG + X-Origin-Verify + ALB + Fargate + Secrets)까지 골격 생성. uvicorn 실행과 curl 검증 방법 포함.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 1만 구현하고 멈춰줘. backend venv + requirements(fastapi, uvicorn, httpx, apscheduler), USGS 수집기(60초, 정규화, 부분 실패 격리), 이벤트 id 멱등 스토어(최대 500), /api/quakes(hours, min_mag 필터 + 통계)와 /healthz. Dockerfile과 infra(CDK: CloudFront + VPC origin + 내부 ALB + Fargate + Secrets)까지 골격 생성. uvicorn 실행과 curl 검증 방법 포함.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 스모크</span><button class="copy-btn" type="button">복사</button></div>
@@ -921,7 +921,7 @@ curl -s "localhost:8000/api/quakes?hours=24&amp;min_mag=2.5" | python3 -c "impor
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 개장</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. X-Origin-Verify와 Secrets 주입이 살아 있는지 확인 절차 포함.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. ALB가 internal이고 Secrets 주입이 살아 있는지 확인 절차 포함.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 개장 확인</span><button class="copy-btn" type="button">복사</button></div>
@@ -937,7 +937,7 @@ curl -s "https://$DOMAIN/healthz" &amp;&amp; echo " &lt;- 열렸습니다, 이 U
   </div>
   <div class="callout warn">
     <span class="co-title">개장이 막힐 때</span>
-    ① ALB 직접 접근이 403 = 정상입니다, X-Origin-Verify 이중 방어가 일하는 중(CloudFront로만 오세요).
+    ① ALB 주소로 직접 접속이 안 됨 = 정상입니다. 내부 ALB라 인터넷에서 닿지 않고, CloudFront VPC origin으로만 들어옵니다.
     ② 502 = 컨테이너 헬스체크 경로(/healthz)와 포트 매핑을 확인. ③ 브리핑만 실패 = Secrets의 Bearer가
     태스크에 주입되는지 (aws ecs describe-task-definition에서 secrets 블록) 확인하세요.
   </div>
