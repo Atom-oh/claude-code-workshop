@@ -91,7 +91,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <p><strong>Claude Code Deep Dive Workshop, Chapter 4 - Claude Code 확장하기 (Plugins와 Mods) 실습</strong></p>
 </blockquote>
 <p>고객자산 분석 담당자가 Ch3에서 반복한 분석을 <strong>팀 자산</strong>으로 만듭니다. 노후 연금 격차 계산을 <code>retirement-gap</code> 스킬로 고정하고, Ch3의 세 에이전트와 Ch2 Lab 2의 DLP 훅과 함께 <strong>asset-team-kit 플러그인</strong>으로 묶어 로컬 마켓플레이스로 배포한 뒤, 이 킷으로 연금상품 기획서를 완성합니다. 후반에는 Claude Code 안에서 도는 코드인 <strong>mod</strong>를 직접 만들어 보고, IT보안·플랫폼 담당자 입장에서 조직이 mod와 사이드로드를 어떻게 통제하는지 확인합니다.</p>
-<p>소요 시간 <strong>60분 내외 (슈퍼랩) + 선택 12분</strong> · Task <strong>준비 + 7개 + 선택 1개</strong> · 기준 버전 <strong>Claude Code 2.1.287 이상</strong> · Update <strong>2026.11</strong></p>
+<p>소요 시간 <strong>70분 내외 (슈퍼랩) + 선택 12분</strong> · Task <strong>준비 + 7개 + 선택 1개</strong> · 기준 버전 <strong>Claude Code 2.1.287 이상</strong> · Update <strong>2026.11</strong></p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>슈퍼랩 규칙</strong></p>
 <p>파일을 손으로 짜지 말고 가능하면 Claude에게 시켜서 만듭니다. 아래 코드 블록은 막혔을 때 쓰는 정답지입니다.</p></div></div>
 
@@ -499,10 +499,10 @@ claude</code></pre></div>
 </ol></details>
 
 <p>2~4분 뒤 <code>pension-report.html</code>이 생깁니다. risk-reviewer가 인원 수끼리 빼서 5명 미만 집단이 드러나는 조합을 찾으면 Claude가 그 숫자를 빼고 다시 저장하기도 합니다. 저장이 끝나면 외부 주소와 식별자가 없는지 확인합니다.</p>
-<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>!grep -cE &#x27;src=&quot;https?://|href=&quot;https?://&#x27; pension-report.html; grep -nE &#x27;C[0-9]{4}|고객[0-9]{4}|CI_&#x27; pension-report.html || echo &quot;식별자 없음&quot;</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>!grep -cE &#x27;src=&quot;https?://|href=&quot;https?://&#x27; pension-report.html; grep -nE &#x27;\bC[0-9]{4}\b|고객[0-9]{4}|CI_&#x27; pension-report.html || echo &quot;식별자 없음&quot;</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
-<li data-lines="1">앞의 <code>grep -cE</code>는 외부 주소를 불러오는 <code>src</code>, <code>href</code>의 개수를 셉니다. <code>0</code>이면 파일 하나로 완결된 것입니다. 뒤의 grep은 Step 1과 같은 식별자 검사입니다.</li>
+<li data-lines="1">앞의 <code>grep -cE</code>는 외부 주소를 불러오는 <code>src</code>, <code>href</code>의 개수를 셉니다. <code>0</code>이면 파일 하나로 완결된 것입니다. 뒤의 grep은 Step 1과 같은 식별자 검사입니다. HTML에는 <code>#C0392B</code> 같은 색상값이 있어서 <code>C</code>와 숫자 4자리 앞뒤에 단어 경계(<code>\b</code>)를 붙였습니다.</li>
 </ol></details>
 
 <h3 id="step-4-브라우저로-열어-보기">Step 4 · 브라우저로 열어 보기</h3>
@@ -514,9 +514,9 @@ claude</code></pre></div>
 <li data-lines="1">동료 폴더를 8000번 포트의 웹 서버로 엽니다. <code>Serving HTTP on 0.0.0.0 port 8000</code>이 나오면 켜진 것이고, 이 터미널은 서버가 쓰고 있으니 그대로 둡니다.</li>
 </ol></details>
 
-<p>오른쪽 아래에 <code>Your application running on port 8000 is available.</code> 알림이 뜨면 <strong>Open in Browser</strong>를 누릅니다. 새 탭에 파일 목록이 열리면 <code>pension-report.html</code>을 누릅니다. 알림을 놓쳤다면 지금 IDE 주소의 <code>?folder=…</code> 앞부분 뒤에 <code>/proxy/8000/pension-report.html</code>을 붙여 엽니다(예: <code>https://…cloudfront.net/proxy/8000/pension-report.html</code>). 터미널 패널의 <strong>Ports</strong> 탭에서 8000번 줄의 지구본 아이콘을 눌러도 됩니다.</p>
+<p>오른쪽 아래에 <code>Your application running on port 8000 is available.</code> 알림이 뜨면 <strong>Open in Browser</strong>를 누릅니다. 새 탭에 파일 목록이 열리면 <code>pension-report.html</code>을 누릅니다. 알림을 놓쳤다면 지금 IDE 주소의 도메인 뒤에 <code>/proxy/8000/pension-report.html</code>을 붙여 엽니다(예: <code>https://…cloudfront.net/proxy/8000/pension-report.html</code>).</p>
 <p><img alt="한 장짜리 웹 리포트 예: 제목과 데이터 기준, 세 줄 요약, KPI 카드 4개, 연령 구간별 월 격차와 자산 구성 막대 차트, 근거 표, 유의사항" src="images/guides/ch4/fig-pension-report.png" onerror="this.closest('p').classList.add('img-missing')" /></p>
-<p>모양과 문구는 실행마다 조금씩 다르지만 구성은 위 그림과 같아야 합니다. KPI 카드의 149명, 60.4%, 월 273,789원, 월 1,227,951원은 TASK 01 표와 같습니다. 브라우저에서 <code>⌘ P</code>(Windows는 <code>Ctrl P</code>)로 인쇄 미리보기를 열어 한 장에 들어가는지 봅니다. 다 봤으면 Terminal 2에서 <code>Ctrl C</code>로 서버를 끕니다.</p>
+<p>모양과 문구는 실행마다 조금씩 다르지만 구성은 위 그림과 같아야 합니다. KPI 카드의 149명, 월 273,789원, 월 1,227,951원은 TASK 01 표의 전체 행과, 60.4%(90명)는 <code>pension-product.md</code>의 연금 보유 현황과 같아야 합니다. 브라우저에서 <code>⌘ P</code>(Windows는 <code>Ctrl P</code>)로 인쇄 미리보기를 열어 한 장에 들어가는지 봅니다. 다 봤으면 Terminal 2에서 <code>Ctrl C</code>로 서버를 끕니다.</p>
 
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>

@@ -879,7 +879,7 @@ ls -A .claude</code></pre>
     <div class="code-head"><span class="code-label">Claude 세션 입력, 형식</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/my-kit:proposal-draft reports/(근거 리포트 파일) (기획 주제)</code></pre>
   </div>
-  <p class="body">파일 이름은 <code class="inline">ls reports/</code>에서 본 그대로 씁니다. 주제는 예시이고, 내 업무에 맞게 바꿔도 됩니다.</p>
+  <p class="body">파일 이름은 <code class="inline">ls reports/</code>에서 본 <code class="inline">.md</code> 파일 이름을 그대로 씁니다. 주제는 예시이고, 내 업무에 맞게 바꿔도 됩니다.</p>
   <table class="tbl"><thead><tr><th>트랙</th><th>예시 (근거 리포트 파일 이름은 내 것으로)</th></tr></thead><tbody>
     <tr><td>A 마이데이터</td><td><code class="inline">/my-kit:proposal-draft reports/(세그먼트 a 리포트) 세그먼트 (a) 고객 맞춤 상담 서비스. 고객 사례 한 명은 my-kit:consult-prep 으로 준비</code></td></tr>
     <tr><td>B 서울 부동산</td><td><code class="inline">/my-kit:proposal-draft reports/(강남구 202610 리포트) 강남구 실거래 시세 브리핑을 곁들인 주택담보대출 사전 상담 서비스</code></td></tr>
@@ -966,7 +966,7 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try
-grep -nE '(^|[^0-9])([0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4})([^0-9]|$)' reports/*.md proposals/*.md || echo "개인정보 패턴 없음"
+grep -nE '(^|[^0-9])([0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4})([^0-9]|$)' reports/*.md reports/*.html proposals/*.md || echo "개인정보 패턴 없음"
 jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?) | strings | sub("^Bearer "; "")' ~/.claude.json 2&gt;/dev/null \
   | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -rlF -- "$V" reports/ proposals/ ; done
 echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"</code></pre>
