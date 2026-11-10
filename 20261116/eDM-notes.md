@@ -113,10 +113,12 @@ Session mapping:
   optional), Showcase 2 17:40–18:00. Ch4 + Ch5 + R2 = 310 minutes (90 + 60 +
   160), against 320 before (80 + 60 + 180) with a 70-minute lunch; the R2 cut
   of 20 minutes pays for the 10 longer Ch4 and the 10 longer lunch.
-- Ch4 (90 minutes) pairs a 35-minute lecture with a Super Lab of about 60
-  required minutes (about 95 minutes, plus an optional 12-minute TASK 06), so
-  the lab now fits the slot and the TASK 05–08 mod exercises stay in Ch4
-  instead of moving into Capstone time.
+- Ch4 (90 minutes) pairs a 35-minute lecture with a Super Lab of about 61
+  required minutes by the lab page (TASK 00 3, 01 8, 02 12, 03 8, 04 8, 05 12,
+  07 6, 08 4; optional TASK 06 is 12 more), so the chapter runs about 95
+  minutes, about 5 over the slot and within the ±30-minute tolerance. If time
+  runs short, TASK 07–08 (mod control and the checklist, about 10 minutes)
+  slip to the start of Capstone Round 2.
 - Ch5 (60 minutes, unchanged length) pairs about 21 minutes of lecture and
   demo with the 38-minute lab (TASK 01 5, 02 10, 03 8, 04 15), about 59
   minutes.
