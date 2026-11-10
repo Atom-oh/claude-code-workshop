@@ -21,7 +21,7 @@ AWS Korea
 [요약]
 • Chapter 5 비용 효율적으로 쓰기, 같은 일을 더 적은 토큰으로
 • Claude Code v2.1.319(2026-11-08 리허설 검증)와 Amazon Bedrock 기준
-• 12:40부터 강의와 데모, 이어서 랩 TASK 01부터 04
+• 13:00부터 강의와 데모, 이어서 랩 TASK 01부터 04
 
 Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 적은 토큰으로 하는 법을 다룹니다.
 조직이 비용을 보고 막는 법은 오후 4시 50분 Chapter 6에서 이어집니다.
@@ -37,7 +37,7 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
 :::html
 <div class="c6 c6-agenda fsi">
   <div class="fsi-grid-2">
-    <div class="pick"><span class="k">CHAPTER 05 / 60분</span><span class="t">컨텍스트 엔지니어링</span><span class="d">먼저 보기, 지침 줄이기, 출력 필터, 캐시와 압축, 모델과 사고량</span><span class="when">12:40 시작</span></div>
+    <div class="pick"><span class="k">CHAPTER 05 / 60분</span><span class="t">컨텍스트 엔지니어링</span><span class="d">먼저 보기, 지침 줄이기, 출력 필터, 캐시와 압축, 모델과 사고량</span><span class="when">13:00 시작</span></div>
     <div class="pick lab"><span class="k">LAB / Ch5 Lab</span><span class="t">TASK 01부터 04</span><span class="d">기준선 재기, 출력 필터 훅, CLAUDE.md 다이어트, 압축 시점</span><span class="when">강의 뒤 바로</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 둡니다</span></div>
@@ -47,7 +47,7 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
 :::notes
 {timing: 0.5min}
 [요약]
-• 12:40부터 60분, 강의와 데모 약 21분 + 랩 38분
+• 13:00부터 60분, 강의와 데모 약 21분 + 랩 38분
 • 여덟 가지 원리와 랩 TASK 01부터 04
 • 조직의 비용 통제는 16:50 Chapter 6
 
@@ -61,7 +61,7 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
 
 :::html
 <div class="fsi fsi-section c6-sec">
-  <span class="num">CHAPTER 05 / 12:40</span>
+  <span class="num">CHAPTER 05 / 13:00</span>
   <div class="name">컨텍스트 엔지니어링</div>
   <p class="what">같은 일을 더 적은 토큰으로</p>
   <ol>
@@ -1142,14 +1142,14 @@ Chapter 6은 오후 4시 50분에 이어집니다. 그 사이 Capstone을 하시
 @toc: toc.html
 @next: 06-ch6-org-cost.html
 @next-label: Chapter 6 (16:50)
-@message: 다음은 Capstone Round 2이고, 16:50에 Chapter 6. 조직의 비용 보고 통제하기로 이어집니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
+@message: 다음은 14:00 Capstone Round 2이고, 16:50에 Chapter 6. 조직의 비용 보고 통제하기로 이어집니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
 
 :::notes
 {timing: 0.5min}
 [요약]
-• 다음은 Capstone Round 2, 16:50 Chapter 6
+• 다음은 14:00 Capstone Round 2, 16:50 Chapter 6
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 이어서 Capstone Round 2를 하고, 오후 4시 50분에 Chapter 6, 조직의 비용 보고 통제하기로 다시 모입니다.
+감사합니다. 이어서 2시부터 Capstone Round 2를 하고, 오후 4시 50분에 Chapter 6, 조직의 비용 보고 통제하기로 다시 모입니다.
 Capstone 하시면서 /usage를 한 번씩 확인해 보시면, 오후에 대시보드에서 여러분의 숫자를 다시 만납니다.
 :::

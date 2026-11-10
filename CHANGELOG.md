@@ -25,6 +25,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Changed
 
+- Retime November Day 2 (11/17): Ch4 10:10-11:40 (90 min), lunch 11:40-13:00, Ch5 13:00-14:00 (60 min, same length) and Capstone Round 2 14:00-16:40 (160 min); Ch6 and Day 1 are unchanged. The eDM set, portal, Capstone Overview and R2 package page, reactive toc, the Ch1, Ch4 and Ch5 decks and their slide PDFs, and the intro video follow.
 - Rework the November Preflight and Chapter 1-6 labs into one storyline: a bank customer-asset analyst working on synthetic MyData and ending in a pension product proposal. Learners download the kit with `aws s3 cp` and restore earlier chapters' artifacts from checkpoints in TASK 00.
 - Align the November Ch3, Ch4 and Ch5 reactive decks, slide PDFs and the eDM with the MyData labs: the Ch3 agents are spending-analyst, portfolio-analyst and risk-reviewer with segments.md, the Ch4 Super Lab builds the retirement-gap skill and the asset-team-kit plugin (TASK 00-08), the Ch5 skill example is retirement-gap, and the eDM lists Preflight CHECK 01-06.
 - Redesign `20261116/reactive/toc.html` as a hand-maintained Korean chapter index: Day 1 and Day 2 groups of chapter cards with the preview poster, session time, Korean title and tagline, slide count, and links to the slides, the one-minute preview, the hands-on labs and the PDF; the per-deck and whole-deck PDF/ZIP/PPTX exports stay. Dark by default with the shared projector mode.

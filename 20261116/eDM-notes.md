@@ -105,13 +105,28 @@ Session mapping:
   so facilitators choose which TASKs run in the session; the Ch2 Lab 1 and Lab 2
   restore TASKs must still run. The Ch3 deck is paced for a 17-minute lecture
   and a 40-minute lab (the lab page's required TASKs).
-- Ch4 (10:10–11:30, 80 minutes) pairs a 35-minute lecture with a Super Lab of
-  about 60 required minutes (about 95 minutes, plus an optional 12-minute
-  TASK 06), within the agreed ±30-minute tolerance. If time runs short,
-  facilitators move the TASK 05–08 mod exercises into Capstone time.
-- Day 2 times are unchanged: Ch4 10:10–11:30, Ch5 12:40–13:40 (lab TASK
-  01–04), Ch6 16:50–17:40 (lab TASK 01–03 as a participant lab: telemetry,
-  gateway login and group policy, spend limit; TASK 04 is optional).
+- Day 2 (retimed 2026-11-10): recap 10:00–10:10, Ch4 10:10–11:40 (90
+  minutes), lunch 11:40–13:00, Ch5 13:00–14:00 (60 minutes, lab TASK 01–04),
+  Capstone Round 2 14:00–16:40 (160 minutes, no break before it), break
+  16:40–16:50, Ch6 16:50–17:40 (lab TASK 01–03 as a participant lab:
+  telemetry, gateway login and group policy, spend limit; TASK 04 is
+  optional), Showcase 2 17:40–18:00. Ch4 + Ch5 + R2 = 310 minutes (90 + 60 +
+  160), against 320 before (80 + 60 + 180) with a 70-minute lunch; the R2 cut
+  of 20 minutes pays for the 10 longer Ch4 and the 10 longer lunch.
+- Ch4 (90 minutes) pairs a 35-minute lecture with a Super Lab of about 61
+  required minutes by the lab page (TASK 00 3, 01 8, 02 12, 03 8, 04 8, 05 12,
+  07 6, 08 4; optional TASK 06 is 12 more), so the chapter runs about 95
+  minutes, about 5 over the slot and within the ±30-minute tolerance. If time
+  runs short, TASK 07–08 (mod control and the checklist, about 10 minutes)
+  slip to the start of Capstone Round 2.
+- Ch5 (60 minutes, unchanged length) pairs about 21 minutes of lecture and
+  demo with the 38-minute lab (TASK 01 5, 02 10, 03 8, 04 15), about 59
+  minutes.
+- Capstone Round 2 (160 minutes): the common package step is 70 required
+  minutes (TASK 05 git, 5 more, is optional) and R2-1 and R2-2 are 45 each, so
+  the common step plus two missions is about 160 minutes and fills the slot.
+  R2-3 (AgentCore, 60 minutes) stays optional and is the one to drop when
+  time is short.
 
 Capstone and reference labs were imported from the archive. In the November copy of Capstone 3, the
 import removed one missing local webfont stylesheet and two browser-extension
@@ -125,12 +140,13 @@ The capstone is no longer a free-topic build that must be deployed to
 CloudFront. Round 1 (Day 1, 15:50–17:40) is "my agents and guardrails": each
 participant picks one data mission (R1-A customer-tailored service on MyData,
 R1-B Seoul real-estate public data with a self-built MCP, R1-C an MCP of their
-choice). Round 2 (Day 2, 13:40–16:40) is "publish and reuse my plugin": bundle
+choice). Round 2 (Day 2, 14:00–16:40 since the 2026-11-10 retime, 160
+minutes) is "publish and reuse my plugin": bundle
 the R1 agents into a plugin, publish it to a marketplace, install it in a fresh
 folder, then complete at least two of R2-1 (recurring analysis report), R2-2
 (planning proposal), R2-3 (AgentCore app, optional). Submission in Slack is the
 plugin install command, the two task results, and the scene where a guardrail
-blocked something; CloudFront is not required. Times are unchanged.
+blocked something; CloudFront is not required.
 
 New pages: `ClaudeCode_Capstone_Overview.html`,
 `ClaudeCode_Capstone_R1A/R1B/R1C_HandsOnLab.html`, and

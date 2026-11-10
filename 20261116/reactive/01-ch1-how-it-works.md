@@ -1048,7 +1048,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
     <div class="dl"><b>DAY 2</b>확장에서 측정으로</div>
     <div class="track">
       <div class="ev"><span class="tm">10:10</span><span class="nm">Ch4 확장하기</span></div>
-      <div class="ev"><span class="tm">12:40</span><span class="nm">Ch5 비용 효율</span></div>
+      <div class="ev"><span class="tm">13:00</span><span class="nm">Ch5 비용 효율</span></div>
       <div class="ev"><span class="tm">16:50</span><span class="nm">Ch6 조직의 비용</span></div>
     </div>
   </div>
@@ -1061,7 +1061,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 {timing: 1min}
 [요약]
 • Day 1: 10:10 Ch1, 10:50 Ch2 Bedrock 위에서 안전하게 쓰기, 13:00 통합 랩(Preflight, Ch1 Lab, Ch2 Lab 1과 Lab 2), 14:00 Ch3 Subagent (Lab 14:40)
-• Day 2: 10:10 Ch4 Claude Code 확장하기, 12:40 Ch5 비용 효율적으로 쓰기, 16:50 Ch6 조직의 비용 보고 통제하기
+• Day 2: 10:10 Ch4 Claude Code 확장하기, 13:00 Ch5 비용 효율적으로 쓰기, 16:50 Ch6 조직의 비용 보고 통제하기
 • 매일 오후 Capstone 라운드
 
 이틀의 흐름입니다. Day 1은 개인의 도구를 조직이 통제하는 단계까지, Day 2는 팀의 플랫폼으로 확장하고 비용을 측정하는 단계까지 갑니다.
