@@ -40,7 +40,11 @@ KIT_URI_RE = re.compile(r"s3://[^\s\"'<>()]*mydata-kit\.zip")
 STALE_URL_RE = re.compile(r"https?://[^\s\"'<>()]*(?:MYDATA_KIT_URL|mydata-kit\.zip)")
 CURL_KIT_RE = re.compile(r"\bcurl\b.*mydata-kit\.zip")
 PRE_RE = re.compile(r"<pre\b[^>]*>(.*?)</pre>", re.S)
-KIT_VAR_RE = re.compile(r"^\s*KIT=[\"']?" + KIT_URI_RE.pattern, re.M)
+KIT_VAR_RE = re.compile(r"^\s*KIT=[\"']?(?:\$\{WS_KIT:-)?" + KIT_URI_RE.pattern, re.M)
+# Rule 7: KIT= prefers the event asset snapshot (WS_KIT, private, read with the instance role)
+# and falls back to the public copy, which only refreshes on publish. The download is signed.
+EVENT_KIT_RE = re.compile(r"^\s*KIT=\$\{WS_KIT:-" + KIT_URI_RE.pattern + r"\}\s*$", re.M)
+UNSIGNED_KIT_CP_RE = re.compile(r"\baws s3 cp\s+(?:--?[\w-]+\s+)*--no-sign-request\b[^\n]*\$\{?KIT\b")
 S3_CP_RE = re.compile(r"\baws s3 cp\b")
 S3_CP_VAR_RE = re.compile(r"\baws s3 cp\s+(?:--?[\w-]+\s+)*[\"']?\$\{?KIT\}?[\"']?(?:\s|$)")
 # Rule 4: required TASK minutes may exceed the baseline by this much.
@@ -158,6 +162,12 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
         if name == GUARDRAILS and not PAT_RE.search(text):
             err(2, "no PAT='...' found")
 
+        for block in code_blocks(raw):  # rule 7
+            for line in block.splitlines():
+                if KIT_VAR_RE.match(line) and not EVENT_KIT_RE.match(line):
+                    err(7, "KIT= must be ${WS_KIT:-<public kit URI>}: %s" % line.strip())
+            if KIT_VAR_RE.search(block) and UNSIGNED_KIT_CP_RE.search(block):
+                err(7, "aws s3 cp of $KIT must be signed (no --no-sign-request)")
         found = set(KIT_URI_RE.findall(text))
         urls[name] = found
         if has_stale_download(raw):  # rule 6

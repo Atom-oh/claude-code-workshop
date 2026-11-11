@@ -17,13 +17,13 @@ PACKAGE = "ClaudeCode_Capstone_R2_Package_HandsOnLab.html"
 R2_3_BODY = ('<section id="cleanup"><pre>agentcore remove all --yes</pre></section>'
              '<pre>{ "permissions": { "ask": [ "Bash(agentcore deploy *)" ] } }</pre>')
 
-PUBLIC_KIT = "s3://public-bucket/abc/mydata-kit.zip"
+PUBLIC_KIT = "${WS_KIT:-s3://public-bucket/abc/mydata-kit.zip}"
 CH3 = "ClaudeCode_Ch3_HandsOnLab.html"
 CH3_PAGE = (f"<html><body><pre>KIT={PUBLIC_KIT}\n"
-            "aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip</pre></body></html>")
+            "aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip</pre></body></html>")
 
 
-def restore_pre(kit=PUBLIC_KIT, flag="--no-sign-request "):
+def restore_pre(kit=PUBLIC_KIT, flag=""):
     return (f"<pre>KIT={kit}\n[ -d ~/claude-lab/mydata/pseudo ] || "
             f'(aws s3 cp {flag}"$KIT" /tmp/mydata-kit.zip)</pre>')
 
@@ -114,9 +114,12 @@ class CheckCapstoneTest(unittest.TestCase):
         pre = restore_pre(kit="s3://ws-assets-us-east-1/abc/mydata-kit.zip")
         root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), step00=pre)})
         self.assertTrue(any("KIT=" in m for m in rule(check(root), "r1a_restore")))
+        pre = restore_pre(kit="s3://public-bucket/abc/mydata-kit.zip")  # no WS_KIT fallback
+        root = make_site(f"{self.tmp}/plain", extra={R1_PAGES[0]: page("R1", (50, 45), step00=pre)})
+        self.assertTrue(any("KIT=" in m for m in rule(check(root), "r1a_restore")))
 
-    def test_r1a_restore_requires_no_sign_request(self):
-        pre = restore_pre(flag="")
+    def test_r1a_restore_rejects_unsigned_download(self):
+        pre = restore_pre(flag="--no-sign-request ")
         root = make_site(self.tmp, extra={R1_PAGES[0]: page("R1", (50, 45), step00=pre)})
         self.assertTrue(any("--no-sign-request" in m for m in rule(check(root), "r1a_restore")))
 

@@ -132,13 +132,13 @@ cat /etc/claude-code/managed-settings.json</code></pre></div>
 <p>분석 담당자는 가명처리된 <code>pseudo/</code> 데이터만 씁니다. 실습 폴더에서 <code>data</code>라는 이름으로 연결해 두면, 이후 프롬프트에서 <code>data/customers.csv</code>처럼 짧게 부를 수 있습니다.</p>
 <p>아래 블록의 네 번째 줄이 키트를 내려받는 줄입니다. 그림은 Preflight에서 본 전체 과정이고, 이 줄은 그중 복사와 풀기만 합니다. Preflight에서 받았다면 이 줄은 아무것도 하지 않습니다.</p>
 <figure class="viz" data-viz="kit-download">
-<figcaption>그림: S3의 키트가 EC2(ccb-endpoint)로 복사되는 과정 — 1) <code>aws s3 cp --no-sign-request</code>: 키트(zip)가 공개 S3 버킷에서 EC2의 /tmp로 복사됩니다. 자격 증명 없이 받습니다. 2) <code>unzip</code>: zip이 ~/claude-lab/mydata 안에서 raw/ · pseudo/ · checkpoints/ 세 폴더로 펼쳐집니다. 3) <code>sha256sum -c</code>: 파일마다 지문을 확인합니다. 하나라도 다르면 FAILED로 멈춥니다. 4) <code>chmod -R a-w</code>: raw/와 pseudo/를 읽기 전용으로 잠급니다. 5) raw/는 DLP 시연용 가짜 원본(주민번호 등), pseudo/는 분석용 가명처리 데이터입니다.</figcaption>
+<figcaption>그림: S3의 키트가 EC2(ccb-endpoint)로 복사되는 과정 — 1) <code>aws s3 cp</code>: 키트(zip)가 이 이벤트의 S3 버킷에서 EC2의 /tmp로 복사됩니다. EC2의 인스턴스 역할로 받습니다. 2) <code>unzip</code>: zip이 ~/claude-lab/mydata 안에서 raw/ · pseudo/ · checkpoints/ 세 폴더로 펼쳐집니다. 3) <code>sha256sum -c</code>: 파일마다 지문을 확인합니다. 하나라도 다르면 FAILED로 멈춥니다. 4) <code>chmod -R a-w</code>: raw/와 pseudo/를 읽기 전용으로 잠급니다. 5) raw/는 DLP 시연용 가짜 원본(주민번호 등), pseudo/는 분석용 가명처리 데이터입니다.</figcaption>
 </figure>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>git config --global user.name  &gt;/dev/null || git config --global user.name  &quot;Workshop Participant&quot;
 git config --global user.email &gt;/dev/null || git config --global user.email &quot;participant@example.com&quot;
-KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
-[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
+KIT=${WS_KIT:-s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip}
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 mkdir -p ~/claude-lab/ch1-loop &amp;&amp; cd ~/claude-lab/ch1-loop &amp;&amp; git init -q
 ln -sfn ~/claude-lab/mydata/pseudo data
 git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;&amp; head -2 data/customers.csv data/pensions.csv</code></pre></div>
