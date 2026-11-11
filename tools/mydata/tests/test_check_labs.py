@@ -160,11 +160,28 @@ class CheckLabsTest(unittest.TestCase):
         pre = "ClaudeCode_Preflight_Check.html"
         errs = self.run_check(full_set(**{pre: "<html><p>aws s3 cp %s</p></html>" % URL}))
         self.assertEqual(errs, [pre + ": rule 3: no aws s3 cp of mydata-kit.zip"])
-        for cp in ('"$KIT"', "$KIT", '--no-sign-request "$KIT"'):
-            ok = "<pre>KIT=%s\n[ -d x ] || (aws s3 cp %s /tmp/k.zip)</pre>" % (URL, cp)
+        for cp in ('"$KIT"', "$KIT", '--only-show-errors "$KIT"'):
+            ok = "<pre>KIT=${WS_KIT:-%s}\n[ -d x ] || (aws s3 cp %s /tmp/k.zip)</pre>" % (URL, cp)
             self.assertEqual(self.run_check(full_set(**{name: page(task00=ok)})), [], cp)
-        split = "<pre>KIT=%s</pre><pre>aws s3 cp \"$KIT\" /tmp/k.zip</pre>" % URL
+        split = "<pre>KIT=${WS_KIT:-%s}</pre><pre>aws s3 cp \"$KIT\" /tmp/k.zip</pre>" % URL
         self.assertEqual(self.run_check(full_set(**{name: page(task00=split)})), [msg])
+
+    def test_rule7_event_kit_first_and_signed(self):
+        name = "ClaudeCode_Ch1_HandsOnLab.html"
+        plain = "<pre>KIT=%s\n[ -d x ] || (aws s3 cp \"$KIT\" /tmp/k.zip)</pre>" % URL
+        errs = self.run_check(full_set(**{name: page(task00=plain)}))
+        self.assertEqual(len(errs), 1)
+        self.assertTrue(errs[0].startswith(name + ": rule 7: KIT= must be the unquoted ${WS_KIT:-"), errs)
+        unsigned = ("<pre>KIT=${WS_KIT:-%s}\n[ -d x ] || "
+                    "(aws s3 cp --no-sign-request \"$KIT\" /tmp/k.zip)</pre>" % URL)
+        msg = name + ": rule 7: aws s3 cp of the kit must be signed (no --no-sign-request)"
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=unsigned)})), [msg])
+        trailing = ("<pre>KIT=${WS_KIT:-%s}\n[ -d x ] || "
+                    "(aws s3 cp \"$KIT\" /tmp/k.zip --no-sign-request)</pre>" % URL)
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=trailing)})), [msg])
+        literal = ('<pre>[ -d ~/claude-lab/mydata/pseudo ] || '
+                   '(aws s3 cp --no-sign-request "%s" /tmp/kit.zip)</pre>' % URL)
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=literal)})), [msg])
 
     def test_stale_curl_only_in_code(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"

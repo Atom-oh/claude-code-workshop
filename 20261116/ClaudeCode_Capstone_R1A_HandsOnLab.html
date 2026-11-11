@@ -855,8 +855,8 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>use_bedrock_direct &gt;/dev/null
-KIT=s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip
-[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp --no-sign-request &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
+KIT=${WS_KIT:-s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip}
+[ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 mkdir -p ~/claude-lab/capstone/.claude/agents ~/claude-lab/capstone/.claude/hooks
 cd ~/claude-lab/capstone
 ln -sfn ~/claude-lab/mydata/pseudo pseudo
@@ -1247,12 +1247,12 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
 <script type="application/json" id="viz-data">
 {
  "kit-download": {
-  "title": "TASK 00 키트 받기: 공개 S3 버킷에서 내 EC2로",
+  "title": "TASK 00 키트 받기: 이벤트 S3 버킷에서 내 EC2로",
   "nodes": [
    {
     "id": "s3",
     "img": "images/aws-icons/Arch_Amazon-Simple-Storage-Service_48.svg",
-    "lb": "워크숍 공개 버킷",
+    "lb": "이벤트 S3 버킷",
     "sb": "Amazon S3, mydata-kit.zip"
    },
    {
@@ -1275,7 +1275,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
    }
   ],
   "edges": [
-   "aws s3 cp --no-sign-request",
+   "aws s3 cp",
    "unzip -qo",
    "ln -sfn, cp"
   ],
@@ -1296,7 +1296,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "mydata-kit.zip",
-    "cap": "없으면 `aws s3 cp`가 워크숍 공개 버킷의 mydata-kit.zip을 내 EC2의 `/tmp/mydata-kit.zip`으로 복사합니다. 누구나 읽을 수 있는 공개 버킷이라 `--no-sign-request`로 AWS 자격 증명 없이 받습니다."
+    "cap": "없으면 `aws s3 cp`가 이 이벤트의 S3 버킷(`WS_KIT`)에 있는 mydata-kit.zip을 내 EC2의 `/tmp/mydata-kit.zip`으로 복사합니다. 이 PC에 붙은 IAM 역할(인스턴스 역할)의 권한으로 받으므로 따로 로그인하지 않습니다."
    },
    {
     "t": "압축 풀기",

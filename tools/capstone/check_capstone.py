@@ -30,9 +30,10 @@ SETUP_PAGE = "ClaudeCode_Capstone_Setup.html"
 BUDGET = {"R1": 110, "R2": 180}
 # SETUP (Capstone Setup page) runs at the start of R1 and uses part of its 110 minutes.
 SETUP_MINUTES = 15
-# The R1-A kit restore must match the Ch3 lab (public bucket, unsigned download).
+# The R1-A kit restore must match the Ch3 lab: KIT=${WS_KIT:-<public copy>} (event asset
+# snapshot first, read with the instance role) and a signed aws s3 cp.
 KIT_REFERENCE = "ClaudeCode_Ch3_HandsOnLab.html"
-KIT_LINE_RE = re.compile(r"^\s*KIT=[\"']?(s3://[^\s\"'<>()]*mydata-kit\.zip)", re.M)
+KIT_LINE_RE = re.compile(r"^\s*KIT=[\"']?((?:\$\{WS_KIT:-)?s3://[^\s\"'<>()}]*mydata-kit\.zip\}?)", re.M)
 S3_CP_KIT_RE = re.compile(r"\baws s3 cp\s+((?:--?[\w-]+\s+)*)[\"']?\$\{?KIT\}?[\"']?(?:\s|$)")
 
 SECRET_PATTERNS = [
@@ -301,8 +302,10 @@ def check_r1a_restore(root, trees):
             msgs.append(f"r1a_restore: {name} step 00 KIT= {kits} does not match "
                         f"{KIT_REFERENCE} ({ref.group(1)})")
     cps = S3_CP_KIT_RE.findall(blob)
-    if not cps or any("--no-sign-request" not in flags.split() for flags in cps):
-        msgs.append(f'r1a_restore: {name} step 00 must run aws s3 cp --no-sign-request "$KIT"')
+    cp_lines = [l for l in blob.splitlines() if re.search(r"\baws s3 cp\b", l)
+                and (re.search(r"\$\{?KIT\b", l) or "mydata-kit.zip" in l)]
+    if not cps or any("--no-sign-request" in l for l in cp_lines):
+        msgs.append(f'r1a_restore: {name} step 00 must run a signed aws s3 cp "$KIT" (no --no-sign-request)')
     return msgs
 
 
