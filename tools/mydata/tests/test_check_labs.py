@@ -171,11 +171,17 @@ class CheckLabsTest(unittest.TestCase):
         plain = "<pre>KIT=%s\n[ -d x ] || (aws s3 cp \"$KIT\" /tmp/k.zip)</pre>" % URL
         errs = self.run_check(full_set(**{name: page(task00=plain)}))
         self.assertEqual(len(errs), 1)
-        self.assertTrue(errs[0].startswith(name + ": rule 7: KIT= must be ${WS_KIT:-"), errs)
+        self.assertTrue(errs[0].startswith(name + ": rule 7: KIT= must be the unquoted ${WS_KIT:-"), errs)
         unsigned = ("<pre>KIT=${WS_KIT:-%s}\n[ -d x ] || "
                     "(aws s3 cp --no-sign-request \"$KIT\" /tmp/k.zip)</pre>" % URL)
-        errs = self.run_check(full_set(**{name: page(task00=unsigned)}))
-        self.assertEqual(errs, [name + ": rule 7: aws s3 cp of $KIT must be signed (no --no-sign-request)"])
+        msg = name + ": rule 7: aws s3 cp of the kit must be signed (no --no-sign-request)"
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=unsigned)})), [msg])
+        trailing = ("<pre>KIT=${WS_KIT:-%s}\n[ -d x ] || "
+                    "(aws s3 cp \"$KIT\" /tmp/k.zip --no-sign-request)</pre>" % URL)
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=trailing)})), [msg])
+        literal = ('<pre>[ -d ~/claude-lab/mydata/pseudo ] || '
+                   '(aws s3 cp --no-sign-request "%s" /tmp/kit.zip)</pre>' % URL)
+        self.assertEqual(self.run_check(full_set(**{name: page(task00=literal)})), [msg])
 
     def test_stale_curl_only_in_code(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"

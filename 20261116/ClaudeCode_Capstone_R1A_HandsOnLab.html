@@ -1296,7 +1296,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "mydata-kit.zip",
-    "cap": "없으면 `aws s3 cp`가 이 이벤트의 S3 버킷(`WS_KIT`)에 있는 mydata-kit.zip을 내 EC2의 `/tmp/mydata-kit.zip`으로 복사합니다. EC2의 인스턴스 역할로 받습니다."
+    "cap": "없으면 `aws s3 cp`가 이 이벤트의 S3 버킷(`WS_KIT`)에 있는 mydata-kit.zip을 내 EC2의 `/tmp/mydata-kit.zip`으로 복사합니다. 이 PC에 붙은 IAM 역할(인스턴스 역할)의 권한으로 받으므로 따로 로그인하지 않습니다."
    },
    {
     "t": "압축 풀기",

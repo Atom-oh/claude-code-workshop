@@ -302,7 +302,9 @@ def check_r1a_restore(root, trees):
             msgs.append(f"r1a_restore: {name} step 00 KIT= {kits} does not match "
                         f"{KIT_REFERENCE} ({ref.group(1)})")
     cps = S3_CP_KIT_RE.findall(blob)
-    if not cps or any("--no-sign-request" in flags.split() for flags in cps):
+    cp_lines = [l for l in blob.splitlines() if re.search(r"\baws s3 cp\b", l)
+                and (re.search(r"\$\{?KIT\b", l) or "mydata-kit.zip" in l)]
+    if not cps or any("--no-sign-request" in l for l in cp_lines):
         msgs.append(f'r1a_restore: {name} step 00 must run a signed aws s3 cp "$KIT" (no --no-sign-request)')
     return msgs
 

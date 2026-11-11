@@ -490,7 +490,7 @@
     nodes: [
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 532, y: 202, w: 506, h: 364 },
       { id: "mydata", shape: "group", label: "~/claude-lab/mydata", x: 535, y: 277, w: 470, h: 196 },
-      { id: "s3", shape: "icon", icon: "S3-Bucket", label: "Workshop Studio\n이벤트 에셋 버킷", sub: "mydata-kit.zip", x: 90, y: 110 },
+      { id: "s3", shape: "icon", icon: "S3-Bucket", label: "이벤트 S3 버킷", sub: "mydata-kit.zip", x: 90, y: 110 },
       { id: "tmp", shape: "file", label: "/tmp", sub: "mydata-kit.zip", x: 360, y: 110, w: 120, h: 60, appear: 1 },
       { id: "raw", shape: "folder", label: "raw/", x: 384, y: 248, w: 120, h: 64, appear: 2 },
       { id: "pseudo", shape: "folder", label: "pseudo/", x: 527, y: 248, w: 120, h: 64, appear: 2 },
@@ -506,7 +506,7 @@
     ],
     steps: [
       { cmd: "aws s3 cp",
-        caption: "키트(zip 파일)가 이 이벤트의 S3 버킷에서 EC2의 /tmp로 복사됩니다. EC2의 인스턴스 역할로 받습니다.",
+        caption: "키트(zip 파일)가 이 이벤트의 S3 버킷에서 EC2의 /tmp로 복사됩니다. 이 PC에 붙은 IAM 역할(인스턴스 역할)의 권한으로 받으므로 따로 로그인하지 않습니다.",
         on: ["s3", "tmp", "e-cp"], flow: { edge: "e-cp", token: "mydata-kit.zip" } },
       { cmd: "unzip",
         caption: "zip이 ~/claude-lab/mydata 안에서 raw/ · pseudo/ · checkpoints/ 세 폴더로 펼쳐집니다.",
