@@ -868,7 +868,7 @@
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 515, y: 270, w: 730, h: 440 },
       { id: "user", shape: "note", tone: "info", label: "사용자\n(Claude 입력창)", x: 70, y: 225, w: 110, h: 54 },
       { id: "main", shape: "note", label: "메인 Claude\n(Claude Code)", x: 255, y: 225, w: 140, h: 58 },
-      { id: "term", shape: "note", tone: "info", label: "터미널\n(~/claude-lab/ch4)", x: 255, y: 385, w: 150, h: 58 },
+      { id: "term", shape: "note", tone: "info", label: "터미널\n(~/claude-lab/ch3)", x: 255, y: 385, w: 150, h: 58 },
       { id: "rr", shape: "group", label: "risk-reviewer (서브에이전트)", x: 590, y: 225, w: 440, h: 200 },
       { id: "rr-a", shape: "note", label: "tools: Read, Grep, Glob", x: 590, y: 200, w: 400, h: 44, appear: 1, until: 3 },
       { id: "rr-b", shape: "note", tone: "info", label: "tools: Read, Grep, Glob, Write", x: 590, y: 200, w: 400, h: 44, appear: 4, until: 6 },
@@ -924,7 +924,7 @@
     viewBox: "0 0 1000 590",
     nodes: [
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 500, y: 250, w: 980, h: 440 },
-      { id: "ing-agents", shape: "folder", label: "에이전트 3종 (Ch3)", sub: "ch4/.claude/agents/*.md", x: 150, y: 135, w: 230, h: 66 },
+      { id: "ing-agents", shape: "folder", label: "에이전트 3종 (Ch3)", sub: "ch3/.claude/agents/*.md", x: 150, y: 135, w: 230, h: 66 },
       { id: "ing-skill", shape: "file", label: "retirement-gap 스킬", sub: "SKILL.md (TASK 01)", x: 150, y: 205, w: 230, h: 56 },
       { id: "ing-dlp", shape: "file", label: "DLP 스크립트 (Ch2)", sub: "/opt/dlp/dlp-guard.sh", x: 150, y: 275, w: 230, h: 56 },
       { id: "ing-claude", shape: "note", label: "Claude Code\n(플러그인 폴더에서 실행)", x: 150, y: 385, w: 230, h: 58, appear: 4 },

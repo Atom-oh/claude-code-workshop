@@ -92,7 +92,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 </blockquote>
 <p>이번 이야기의 주인공은 <strong>고객자산 분석 담당자</strong>입니다. 고객 1,000명을 소비, 자산, 위험 점검까지 혼자 보기에는 일이 많아서, 일을 <strong>spending-analyst, portfolio-analyst, risk-reviewer</strong> 3종의 서브에이전트에게 나눠 맡기고 고객을 세그먼트로 묶어 세그먼트별 맞춤 서비스를 제안하려 합니다.
 이 랩에서는 세 에이전트를 직접 정의하고, 도구 권한 격리를 체험한 뒤 자동 / 명시 / 병렬 디스패치 3가지 패턴과 Headless 통합까지 실습합니다.
-TASK 00에서 준비하는 작업 폴더(<code>~/claude-lab/ch4</code>)에서 <code>pseudo/</code> 가명 데이터를 대상으로 진행합니다.</p>
+TASK 00에서 준비하는 작업 폴더(<code>~/claude-lab/ch3</code>)에서 <code>pseudo/</code> 가명 데이터를 대상으로 진행합니다.</p>
 <p>소요 시간 <strong>필수 40분 + 선택 7분</strong> · Task <strong>준비 + 4개 + 선택 1개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>가명 데이터만 사용하세요</strong></p>
 <p>이 랩은 <code>pseudo/</code>(가명 토큰) 데이터만 읽습니다. 원본 식별자가 있는 <code>raw/</code>는 열지 않습니다. 모든 값은 형식만 맞춘 가짜 데이터입니다.</p>
@@ -100,9 +100,9 @@ TASK 00에서 준비하는 작업 폴더(<code>~/claude-lab/ch4</code>)에서 <c
 <h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</h2>
 <p>분석 담당자의 작업 폴더를 만들고 가명 데이터를 연결합니다. <code>CLAUDE.md</code>에는 이번 작업의 목표를 적어, 세 에이전트와 메인이 같은 목표를 보게 합니다. 키트를 이미 받았다면 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>터미널 위치</strong></p>
-<p>이 랩은 <code>~/claude-lab/ch4</code>에서 진행합니다(폴더 이름은 이전 구성의 것을 그대로 씁니다).
+<p>이 랩은 <code>~/claude-lab/ch3</code>에서 진행합니다.
 아래에 나오는 <code>.claude/agents/</code> 같은 상대 경로도 전부 이 폴더 기준입니다.
-시작 전에 <code>cd ~/claude-lab/ch4</code>로 위치를 맞추세요.</p>
+시작 전에 <code>cd ~/claude-lab/ch3</code>로 위치를 맞추세요.</p>
 </div></div>
 <h3 id="step-1-작업-폴더와-데이터-연결">Step 1 · 작업 폴더와 데이터 연결</h3>
 <p><code>use_bedrock_direct</code> 기본 모드인지 확인한 뒤 아래 블록을 통째로 실행합니다. 여러 번 실행해도 안전합니다.</p>
@@ -110,7 +110,7 @@ TASK 00에서 준비하는 작업 폴더(<code>~/claude-lab/ch4</code>)에서 <c
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null
 KIT=${WS_KIT:-s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip}
 [ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
-mkdir -p ~/claude-lab/ch4 &amp;&amp; cd ~/claude-lab/ch4
+mkdir -p ~/claude-lab/ch3 &amp;&amp; cd ~/claude-lab/ch3
 ln -sfn ~/claude-lab/mydata/pseudo pseudo
 
 cat &gt; CLAUDE.md &lt;&lt; &#x27;EOF&#x27;
@@ -130,7 +130,7 @@ head -1 pseudo/customers.csv &amp;&amp; wc -l pseudo/customers.csv</code></pre><
 <ol>
 <li data-lines="1">use_bedrock_direct는 실습 환경에 준비된 명령으로, 기본 모드(Bedrock 직접 호출)로 맞춥니다. &gt;/dev/null은 화면에 나오는 출력을 버린다는 뜻입니다.</li>
 <li data-lines="2-3">키트(mydata-kit.zip)의 S3 주소를 KIT 변수에 담고, ~/claude-lab/mydata/pseudo 폴더가 없을 때만 내려받아 풉니다. 이미 받았다면 아무것도 하지 않습니다.</li>
-<li data-lines="4-5">이번 랩의 작업 폴더 ch4를 만들고 들어갑니다. ln -sfn은 pseudo라는 이름의 바로가기(심볼릭 링크)를 만들어 가명 데이터 폴더를 가리키게 하고, 이미 있으면 덮어씁니다.</li>
+<li data-lines="4-5">이번 랩의 작업 폴더 ch3를 만들고 들어갑니다. ln -sfn은 pseudo라는 이름의 바로가기(심볼릭 링크)를 만들어 가명 데이터 폴더를 가리키게 하고, 이미 있으면 덮어씁니다.</li>
 <li data-lines="7-13">heredoc은 여러 줄을 한 번에 파일로 쓰는 방법입니다. 8-12줄이 CLAUDE.md 내용이고, 'EOF'의 따옴표 덕분에 안의 글자를 셸이 해석하지 않고 그대로 저장합니다. CLAUDE.md는 Claude Code가 이 폴더에서 시작할 때 읽는 프로젝트 지침으로, 목표와 읽을 데이터 범위를 정해 둡니다.</li>
 <li data-lines="15-18">이 폴더를 git 저장소로 만들고, 이름과 이메일이 없을 때만 임시 값을 넣은 뒤 첫 커밋을 합니다. 이미 커밋이 있어 실패해도 || true 덕분에 블록이 멈추지 않습니다.</li>
 <li data-lines="19">customers.csv의 첫 줄(헤더)과 전체 줄 수를 보여줍니다. 링크가 제대로 걸렸는지 확인하는 줄입니다.</li>
@@ -176,7 +176,7 @@ head -1 pseudo/customers.csv &amp;&amp; wc -l pseudo/customers.csv</code></pre><
 <h3 id="step-1-에이전트-정의-파일-작성">Step 1 · 에이전트 정의 파일 작성</h3>
 <p>정의 파일은 <strong>YAML frontmatter 핵심 4필드</strong>(name / description / tools / model, 필수는 name과 description)와 시스템 프롬프트 본문으로 구성됩니다. 작업 폴더에서 아래 블록을 실행하세요.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch4
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch3
 mkdir -p .claude/agents
 
 cat &gt; .claude/agents/spending-analyst.md &lt;&lt; &#x27;EOF&#x27;
@@ -232,7 +232,7 @@ EOF</code></pre></div>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
-<li data-lines="1">현재 폴더(~/claude-lab/ch4)에서 Claude Code 대화 세션을 시작합니다. .claude/agents/의 정의 파일도 이 시점에 읽습니다. 처음 여는 폴더라면 신뢰 확인 창이 뜹니다.</li>
+<li data-lines="1">현재 폴더(~/claude-lab/ch3)에서 Claude Code 대화 세션을 시작합니다. .claude/agents/의 정의 파일도 이 시점에 읽습니다. 처음 여는 폴더라면 신뢰 확인 창이 뜹니다.</li>
 </ol></details>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>변경 안내, /agents 위저드 제거 (v2.1.198+)</strong></p>
 <p>구버전에서 쓰던 <code>/agents</code>는 이제 안내 문구만 출력합니다.
@@ -388,7 +388,7 @@ grep &#x27;^tools:&#x27; .claude/agents/risk-reviewer.md   # tools: Read, Grep, 
 <ol>
 <li data-lines="1">/exit는 Claude Code 세션을 완전히 끝냅니다. 정의 파일을 고친 뒤 새 인스턴스가 바뀐 정의를 읽게 하려면 세션을 나갔다가 다시 들어가야 합니다.</li>
 </ol></details>
-<p><strong>Terminal (~/claude-lab/ch4), 재진입</strong></p>
+<p><strong>Terminal (~/claude-lab/ch3), 재진입</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>claude</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
