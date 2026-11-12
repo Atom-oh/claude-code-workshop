@@ -142,9 +142,9 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
   <div class="fsi-stack">
     <div class="fsi-stack" data-pick="c6-usage">
       <button class="pick" data-key="context"><span class="k">/context</span><span class="t">항목별 컨텍스트 점유</span></button>
-      <button class="pick" data-key="cache"><span class="k">/usage</span><span class="t">세션 비용과 캐시 적중률</span></button>
+      <button class="pick" data-key="cost"><span class="k">/usage 금액</span><span class="t">금액은 추정치, 정산은 AWS 청구서</span></button>
+      <button class="pick" data-key="cache"><span class="k">캐시</span><span class="t">캐시 적중률</span></button>
       <button class="pick" data-key="miss"><span class="k">miss</span><span class="t">캐시 미스에는 추정 원인이 표시됨</span></button>
-      <button class="pick" data-key="cost"><span class="k">금액</span><span class="t">금액은 추정치, 정산은 AWS 청구서</span></button>
     </div>
     <div class="panel" data-pick-panel="c6-usage">
       <p class="hint">읽는 법을 누르면 설명이 나오고, /usage 항목은 왼쪽 출력에서 해당 줄이 강조됩니다.</p>
@@ -170,13 +170,13 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
 {timing: 0.5min}
 [요약]
 • 원리 1: 줄이기 전에 먼저 본다
-• /context는 항목별 컨텍스트 점유, /usage는 세션 비용과 캐시 적중률
-• 캐시 미스에는 추정 원인이 표시되고, 금액은 추정치이며 정산은 AWS 청구서
+• /context는 항목별 컨텍스트 점유, /usage는 위에서부터 금액, 캐시 적중률, 캐시 미스
+• 금액은 추정치이며 정산은 AWS 청구서, 캐시 미스에는 추정 원인이 표시됨
 
 {cue: demo}
 첫 번째 원리는 먼저 보는 것입니다. 왼쪽은 /usage 예시 출력입니다. 오른쪽 읽는 법을 누르면 설명이 나오고, /usage 항목은 해당 줄이 강조됩니다.
-/context는 항목별로 컨텍스트를 얼마나 차지하는지 보여 주고, /usage는 세션 비용과 캐시 적중률을 보여 줍니다. 이 예시는 입력 토큰의 91%가 캐시에서 왔습니다.
-캐시 미스가 나면 추정 원인이 표시되고, 금액은 어디까지나 추정치입니다. 정산은 AWS 청구서로 합니다.
+/context는 항목별로 컨텍스트를 얼마나 차지하는지 보여 줍니다. /usage는 출력 위에서부터 읽습니다. 맨 위 금액은 어디까지나 추정치이고, 정산은 AWS 청구서로 합니다.
+그 아래 캐시 적중률을 보면 이 예시는 입력 토큰의 91%가 캐시에서 왔습니다. 마지막 줄의 캐시 미스에는 추정 원인이 함께 표시됩니다.
 
 [출처]
 • 원본 Ch6 강의자료 p6 /usage 출력 예시
