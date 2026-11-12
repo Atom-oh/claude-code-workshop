@@ -8,8 +8,8 @@ block: ch3-subagents
 
 # Chapter 3. Subagent로 일 나눠 맡기기
 ## 역할별 에이전트로 나누고, 병렬로 맡기기 (Claude Code v2.1.319, 2026-11-08 리허설 검증, Bedrock 기준)
-Choi, WooHyung
-Prin. Solutions Architect
+Song, Minji
+Solutions Architect
 AWS Korea
 
 :::script
@@ -25,40 +25,10 @@ AWS Korea
 
 Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 지금까지는 Claude Code 한 세션이 모든 일을 했다면, 이 챕터에서는 일을 역할별 에이전트에게 나눠 맡기고, 여러 개를 동시에 돌리는 방법을 봅니다.
-강의 17분, 랩 40분입니다.
-:::
+강의 40분, 랩 60분입니다.
 
----
-<!-- Slide 2: Agenda (PDF p2) -->
-@type: content
-@fit: off
-
-## 강의 17분, 랩 40분
-세 개의 Part와 Lab, 맡기는 방법부터 병렬의 확장까지
-
-:::html
-<div class="fsi c4-agenda">
-  <div class="fsi-grid-3">
-    <div class="pick"><span class="k">PART 01 / 6분</span><span class="t">Subagent란</span><span class="d">네 가지 속성, 정의 파일</span></div>
-    <div class="pick"><span class="k">PART 02 / 6분</span><span class="t">호출과 비용</span><span class="d">위임, 비용, 레거시 분석과 claude -p</span></div>
-    <div class="pick"><span class="k">PART 03 / 5분</span><span class="t">병렬의 확장</span><span class="d">Agent teams, Workflows, Worktrees</span></div>
-  </div>
-  <div class="fsi-grid-2">
-    <div class="pick lab"><span class="k">LAB / 40분</span><span class="t">첫 Subagent와 권한 격리</span><span class="d">TASK 00부터 04, 선택 05</span></div>
-    <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">정의 파일 필드, 내장 Subagent, Subagent vs 스킬, CI, 병렬의 비용</span></div>
-  </div>
-</div>
-:::
-
-:::notes
-{timing: 0.5min}
-[요약]
-• 강의는 세 Part, 6분 6분 5분으로 17분
-• 랩 40분: 첫 Subagent와 권한 격리, TASK 00부터 04, 선택 05
-• 더 알아보기는 시간이 남거나 질문이 나올 때
-
-오늘 순서입니다. 첫째, Subagent가 무엇인지 네 가지 속성과 정의 파일로 봅니다. 둘째, 어떻게 맡기고 얼마나 드는지, 셋째, Subagent 다음 단계인 더 큰 병렬화 수단을 봅니다.
-강의는 짧게 17분이고, 이어서 40분 동안 첫 Subagent를 직접 만들고 권한 격리를 확인합니다.
+{cue: transition}
+순서를 보기 전에, 사전 설문 결과부터 보겠습니다.
 :::
 
 ---
@@ -67,7 +37,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 @fit: off
 
 ## 가장 듣고 싶은 주제 1위
-사전 설문 기대 주제, 그래서 강의 17분 + 필수 랩 40분
+사전 설문 기대 주제, 그래서 강의 40분 + 랩 60분
 
 :::html
 <div class="fsi c4-survey">
@@ -75,12 +45,12 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
     <span class="eyebrow">PRE-SURVEY #1</span>
     <div class="num"><span id="c4-survey-num">84</span><small>표</small></div>
     <p class="lead">기대 주제 1위는 <b>Subagent</b>였습니다.</p>
-    <p class="why">가장 많이 듣고 싶어 한 주제라 강의는 17분으로 줄이고 <b>필수 랩 40분</b>을 잡았습니다.</p>
+    <p class="why">가장 많이 듣고 싶어 한 주제라 강의 40분에 <b>랩 60분</b>을 이어 붙였습니다.</p>
   </div>
   <div class="split" id="c4-split">
-    <div class="half"><span>강의 17분</span><span class="tr"><i data-w="17"></i></span></div>
-    <div class="half"><span>필수 랩 40분</span><span class="tr"><i class="lab" data-w="40"></i></span></div>
-    <p class="cap">막대 길이는 필수 랩 40분을 기준으로 한 상대 길이</p>
+    <div class="half"><span>강의 40분</span><span class="tr"><i data-w="40"></i></span></div>
+    <div class="half"><span>랩 60분</span><span class="tr"><i class="lab" data-w="60"></i></span></div>
+    <p class="cap">막대 길이는 랩 60분을 기준으로 한 상대 길이, 랩은 필수 40분 + 선택 7분 + 여유</p>
   </div>
 </div>
 :::
@@ -90,24 +60,61 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
   F.countUp('#c4-survey-num', 84, { decimals: 0 });
   var host = document.getElementById('c4-split');
   var bars = Array.prototype.slice.call(host.querySelectorAll('i'));
-  function grow(on) { bars.forEach(function (b) { b.style.width = on ? (b.dataset.w / 40 * 100) + '%' : '0'; }); }
+  function grow(on) { bars.forEach(function (b) { b.style.width = on ? (b.dataset.w / 60 * 100) + '%' : '0'; }); }
   F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 80); });
   grow(true);
 });
 :::
 
 :::notes
-{timing: 0.5min}
+{timing: 1.5min}
 [요약]
 • 사전 설문 기대 주제 1위가 Subagent, 84표
-• 그래서 강의 17분 + 필수 랩 40분으로 배정
+• 그래서 강의 40분 + 랩 60분(필수 40분, 선택 7분, 여유 13분)으로 배정
 • 주제는 격리, 위임, 병렬, 비용
 
 사전 설문에서 가장 듣고 싶은 주제를 여쭤봤는데, 1위가 Subagent로 84표였습니다.
-그래서 이 챕터는 강의를 17분으로 줄이고 필수 랩을 40분으로 잡았습니다. 오늘 이야기는 격리, 위임, 병렬, 비용 네 단어로 정리됩니다.
+그래서 이 챕터는 강의 40분, 랩 60분으로 넉넉하게 잡았습니다. 오늘 이야기는 격리, 위임, 병렬, 비용 네 단어로 정리됩니다.
 
 [출처]
 • 이번 워크숍 사전 설문, 기대 주제 문항
+
+{cue: transition}
+이 관심에 맞춘 오늘의 순서입니다.
+:::
+
+---
+<!-- Slide 2: Agenda (PDF p2) -->
+@type: content
+@fit: off
+
+## 강의 40분, 랩 60분
+네 개의 Part와 Lab, 동작 원리부터 병렬의 확장까지
+
+:::html
+<div class="fsi c4-agenda">
+  <div class="fsi-grid-4">
+    <div class="pick"><span class="k">PART 01 / 10분</span><span class="t">Subagent란</span><span class="d">네 가지 속성, 분기와 컨텍스트 이동, 정의 파일</span></div>
+    <div class="pick"><span class="k">PART 02 / 12분</span><span class="t">호출과 비용</span><span class="d">위임, 비용, 레거시 분석과 claude -p</span></div>
+    <div class="pick"><span class="k">PART 03 / 7분</span><span class="t">병렬의 확장</span><span class="d">Agent teams, Workflows, Worktrees, Bedrock 기본값</span></div>
+    <div class="pick"><span class="k">PART 04 / 6분</span><span class="t">심화</span><span class="d">정의 필드, 내장 Subagent, 스킬과의 경계, CI, 병렬의 비용</span></div>
+  </div>
+  <div class="fsi-grid-2">
+    <div class="pick lab"><span class="k">LAB / 60분</span><span class="t">첫 Subagent와 권한 격리</span><span class="d">필수 TASK 00부터 04 (40분), 선택 05 (7분), 나머지는 질문과 막힌 곳 해결</span></div>
+    <div class="pick more"><span class="k">OPEN + CLOSE / 5분</span><span class="t">설문과 마무리</span><span class="d">사전 설문, 여섯 줄 정리, 랩 안내</span></div>
+  </div>
+</div>
+:::
+
+:::notes
+{timing: 1min}
+[요약]
+• 강의 40분: 오프닝 3분, Part 1 10분, Part 2 12분, Part 3 7분, Part 4 심화 6분, 마무리 2분
+• 랩 60분: 필수 TASK 00부터 04 (40분), 선택 05 (7분), 남는 13분은 질문과 막힌 곳 해결
+• 진행자 메모: 시간이 밀리면 Part 4 심화를 질문 위주로 줄이고 랩 시작 시각(14:40)을 지킴
+
+오늘 순서입니다. 첫째, Subagent가 무엇인지 네 가지 속성과 함께, 일이 어떻게 갈라지고 컨텍스트가 어떻게 오가는지 한 장으로 봅니다. 둘째, 어떻게 맡기고 얼마나 드는지, 셋째, Subagent 다음 단계인 더 큰 병렬화 수단을 봅니다. 넷째, 자주 받는 질문을 심화로 묶었습니다.
+강의 40분이 끝나면 14시 40분부터 60분 동안 첫 Subagent를 직접 만들고 권한 격리를 확인합니다. 필수 TASK는 40분이고, 남는 시간은 선택 TASK와 질문에 씁니다.
 :::
 
 ---
@@ -122,8 +129,9 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
   <p class="what">본 흐름을 잃지 않고 곁가지를 맡기는 공간</p>
   <ol>
     <li><b>01</b>네 가지 속성</li>
-    <li><b>02</b>정의 파일 한 장</li>
-    <li><b>03</b>정의 파일이 사는 곳</li>
+    <li><b>02</b>분기와 컨텍스트 이동</li>
+    <li><b>03</b>정의 파일 한 장</li>
+    <li><b>04</b>정의 파일이 사는 곳</li>
   </ol>
 </div>
 :::
@@ -132,10 +140,10 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 {timing: 0.5min}
 [요약]
 • Part 1은 Subagent가 무엇인지
-• 네 가지 속성, 정의 파일, 저장 위치 순서
+• 네 가지 속성, 분기와 컨텍스트 이동, 정의 파일, 저장 위치 순서 (10분)
 
 첫 번째 Part입니다. Subagent는 본 흐름을 잃지 않고 곁가지 일을 맡기는 공간입니다.
-무엇이 다른지 네 가지 속성으로 보고, 그 속성을 정하는 정의 파일 한 장과 그 파일을 어디에 두는지 보겠습니다.
+무엇이 다른지 네 가지 속성으로 보고, Fork와 세션 분기까지 일이 갈라지고 합쳐지는 모습을 한 장으로 본 뒤, 그 속성을 정하는 정의 파일 한 장과 그 파일을 어디에 두는지 보겠습니다.
 :::
 
 ---
@@ -143,7 +151,7 @@ Chapter 3, Subagent로 일 나눠 맡기기를 시작하겠습니다.
 @type: content
 @fit: off
 
-## 곁가지는 맡기고, 요약만 받는다
+## 곁가지는 위임, 결과는 요약으로
 Subagent의 네 가지 속성과 그 효과
 
 :::html
@@ -195,7 +203,7 @@ Subagent의 네 가지 속성과 그 효과
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 2.5min}
 [요약]
 • 자기 컨텍스트: 메인 대화와 분리된 창, 맥락이 섞이지 않음(격리)
 • 전용 지침: 역할에 맞춘 시스템 프롬프트
@@ -211,11 +219,136 @@ Subagent의 네 가지 속성을 단계별로 보겠습니다. 오늘 배울 모
 :::
 
 ---
+<!-- Slide 5b: Branch and context (new 2026-11-12, sub-agents.md, skills.md, sessions.md) -->
+@type: content
+@fit: off
+
+## 분기와 합류, 컨텍스트의 이동
+Subagent, Fork, 세션 분기를 git branch처럼 한 장에
+
+:::html
+<div class="fsi c4-branch" id="c4-branch">
+  <div class="graph">
+    <svg viewBox="0 0 1120 520" role="img" aria-label="메인 대화에서 세션 분기, Fork, Subagent가 갈라지고 합류하는 그림">
+      <g class="lane-labels">
+        <text x="0" y="79" class="ll main">메인 대화</text>
+        <text x="0" y="209" class="ll sub">Subagent</text>
+        <text x="0" y="329" class="ll fork">Fork</text>
+        <text x="0" y="449" class="ll sess">세션 분기</text>
+      </g>
+      <g class="br sess" data-k="3">
+        <path class="out" d="M300,70 C345,70 315,440 360,440"/>
+        <line x1="360" y1="440" x2="1080" y2="440" class="lane"/>
+        <path d="M1080,429 L1102,440 L1080,451 Z" class="arrow"/>
+        <circle cx="560" cy="440" r="8" class="tool"/><circle cx="720" cy="440" r="8" class="tool"/><circle cx="880" cy="440" r="8" class="tool"/>
+        <text x="400" y="414" class="note">/branch 또는 --resume ID --fork-session</text>
+        <text x="400" y="480" class="note dim">새 세션 ID로 따로 진행, 원본은 그대로, 합류 없음</text>
+        <text x="314" y="268" class="tag end">대화 사본</text>
+      </g>
+      <g class="br fork" data-k="2">
+        <path class="out thick" id="c4b-fork-out" d="M420,70 C465,70 435,320 480,320"/>
+        <line x1="480" y1="320" x2="1000" y2="320" class="lane"/>
+        <path class="back" d="M1000,320 C1045,320 1005,70 1050,70"/>
+        <circle cx="620" cy="320" r="8" class="tool"/><circle cx="740" cy="320" r="8" class="tool"/><circle cx="860" cy="320" r="8" class="tool"/>
+        <text x="520" y="294" class="note">대화 전체 상속, 프롬프트 캐시 공유</text>
+        <text x="520" y="360" class="note dim">/subtask로 시작, fork 안에서 다시 fork는 불가</text>
+        <text x="470" y="236" class="tag">대화 전체</text>
+        <text x="1044" y="206" class="tag ok">결과만</text>
+        <rect class="chip big" width="64" height="28" rx="6" x="-32" y="-14"><animateMotion class="mv" dur="1.6s" begin="indefinite" fill="freeze"><mpath href="#c4b-fork-out"/></animateMotion></rect>
+      </g>
+      <g class="br sub" data-k="1">
+        <path class="out thin" id="c4b-sub-out" d="M560,70 C605,70 575,200 620,200"/>
+        <line x1="620" y1="200" x2="840" y2="200" class="lane"/>
+        <path class="back" d="M840,200 C885,200 855,70 900,70"/>
+        <circle cx="680" cy="200" r="8" class="tool"/><circle cx="740" cy="200" r="8" class="tool"/><circle cx="800" cy="200" r="8" class="tool"/>
+        <text x="640" y="176" class="note">빈 창에서 시작</text>
+        <text x="640" y="238" class="note dim">중간 출력은 이 창에 남음</text>
+        <text x="606" y="130" class="tag">위임 메시지만</text>
+        <text x="886" y="146" class="tag ok">요약만</text>
+        <rect class="chip" width="40" height="16" rx="4" x="-20" y="-8"><animateMotion class="mv" dur="1.6s" begin="indefinite" fill="freeze"><mpath href="#c4b-sub-out"/></animateMotion></rect>
+      </g>
+      <g class="br main">
+        <line x1="150" y1="70" x2="1100" y2="70" class="trunk"/>
+        <circle cx="180" cy="70" r="11"/><text x="180" y="38" class="cl">요청</text>
+        <circle cx="300" cy="70" r="11"/><text x="300" y="38" class="cl">/branch 시점</text>
+        <circle cx="420" cy="70" r="11"/><text x="420" y="38" class="cl">Fork 시점</text>
+        <circle cx="560" cy="70" r="11"/><text x="560" y="38" class="cl">위임 시점</text>
+        <circle cx="900" cy="70" r="11" class="merge"/><text x="900" y="38" class="cl">요약 합류</text>
+        <circle cx="1050" cy="70" r="11" class="merge"/><text x="1050" y="38" class="cl">결과 합류</text>
+      </g>
+    </svg>
+    <p class="cap" id="c4b-cap">메인 대화에서 세 가지 방식으로 갈라집니다. 아래 화살표로 하나씩 봅니다.</p>
+  </div>
+  <table class="cmp">
+    <thead><tr><th></th><th>들고 가는 것</th><th>돌려받는 것</th></tr></thead>
+    <tbody>
+      <tr data-k="1"><th>Subagent</th><td>위임 메시지, 전용 프롬프트, CLAUDE.md (대화 기록은 없음)</td><td>요약만</td></tr>
+      <tr data-k="2"><th>Fork</th><td>대화 전체, 프롬프트 캐시</td><td>결과만</td></tr>
+      <tr data-k="3"><th>세션 분기</th><td>그 시점까지의 대화 사본</td><td>없음, 각자 진행</td></tr>
+    </tbody>
+  </table>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var host = document.querySelector('.slide-deck #c4-branch') || document.getElementById('c4-branch');
+  if (!host) return;
+  var CAP = [
+    '메인 대화에서 세 가지 방식으로 갈라집니다. 아래 화살표로 하나씩 봅니다.',
+    'Subagent: 빈 창에서 시작해 위임 메시지만 들고 가고, 중간 출력은 남겨 둔 채 요약만 합류합니다.',
+    'Fork: 지금까지의 대화를 통째로 물려받아 곁가지를 처리하고, 결과만 합류합니다.',
+    '세션 분기: 대화를 복사해 새 세션으로 갈라지며, 다시 합류하지 않습니다.',
+    '정리: 무엇을 들고 가고, 무엇을 돌려받는가. 오른쪽 표가 그 답입니다.'
+  ];
+  var k = 0;
+  function render(i) {
+    k = i;
+    host.classList.toggle('focus', i > 0 && i < 4);
+    host.querySelectorAll('[data-k]').forEach(function (n) { n.classList.toggle('on', +n.dataset.k === i); });
+    host.querySelector('#c4b-cap').textContent = CAP[i];
+    if (i > 0 && i < 4) host.querySelectorAll('.br[data-k="' + i + '"] .mv').forEach(function (m) { try { m.beginElement(); } catch (e) {} });
+  }
+  F.bindKeys(host, {
+    down: function () { if (k < 4) { render(k + 1); return true; } return false; },
+    up: function () { if (k > 0) { render(k - 1); return true; } return false; }
+  });
+  F.onEnter(host, function () { render(0); });
+  host.querySelectorAll('tbody tr').forEach(function (tr) { tr.addEventListener('click', function () { render(+tr.dataset.k === k ? 0 : +tr.dataset.k); }); });
+  render(0);
+});
+:::
+
+:::notes
+{timing: 3min}
+[요약]
+• Subagent: 빈 컨텍스트에서 시작, 위임 메시지와 전용 프롬프트, CLAUDE.md만 들고 감, 중간 출력은 안에 남고 요약만 돌아옴
+• Fork: 지금까지의 대화 전체를 물려받음 (같은 시스템 프롬프트, 도구, 모델, 프롬프트 캐시 공유), /subtask로 시작, 결과만 돌아옴
+• 세션 분기: /branch 또는 --resume과 --fork-session, 대화 사본이 새 세션 ID로 진행, 합류 없음
+• 기억할 질문 하나: 무엇을 들고 가고, 무엇을 돌려받는가
+
+{cue: demo}
+앞 장의 네 가지 속성을 git branch 그림 한 장으로 다시 보겠습니다. 가로줄이 메인 대화이고, 갈라지는 선이 일을 맡기는 방식입니다. 선의 굵기가 들고 가는 컨텍스트의 양입니다.
+아래 화살표를 누르면 첫 번째, Subagent입니다. 가는 선 하나로 갈라집니다. 빈 창에서 시작해서 전용 프롬프트, CLAUDE.md, 그리고 Claude가 쓴 위임 메시지만 들고 갑니다. 메인 대화의 기록은 보지 못합니다. 안에서 Read, Grep 같은 중간 출력이 쌓여도 그건 그 창에 남고, 메인에는 요약만 합류합니다.
+두 번째, Fork입니다. 굵은 선이죠. 지금까지의 대화를 통째로 물려받습니다. 같은 시스템 프롬프트, 도구, 모델에 프롬프트 캐시도 공유합니다. 그래서 맥락을 다시 설명할 필요가 없는 곁가지 작업에 맞습니다. /subtask로 직접 시작할 수 있고, 이 버전에서는 Claude가 스스로 쓰기도 합니다. 돌아올 때는 결과만 합류합니다.
+세 번째, 세션 분기입니다. /branch나 --resume에 --fork-session을 붙이면 대화를 복사해서 새 세션으로 갈라집니다. 이건 다시 합쳐지지 않습니다. 같은 지점에서 다른 방향을 시험해 볼 때 씁니다.
+한 번 더 누르면 전체 그림으로 돌아옵니다. 정리하면 질문은 하나입니다. 무엇을 들고 가고, 무엇을 돌려받는가. 오른쪽 표가 그 답입니다.
+
+{cue: transition}
+이제 Subagent를 정하는 정의 파일 한 장을 보겠습니다.
+
+[출처]
+• code.claude.com/docs/en/sub-agents (What loads at startup, Fork the current conversation, 배경 실행)
+• code.claude.com/docs/en/sessions (--fork-session, /branch)
+• Fork 모드 기본 활성은 v2.1.302부터, 끄려면 CLAUDE_CODE_FORK_SUBAGENT=0
+:::
+
+---
 <!-- Slide 6: Definition file (PDF p7) -->
 @type: content
 @fit: off
 
-## frontmatter 몇 줄이면 역할이 된다
+## frontmatter 몇 줄 = 역할 하나
 정의 파일 한 장, 필드를 누르면 해당 줄이 켜짐
 
 :::html
@@ -255,7 +388,7 @@ Subagent의 네 가지 속성을 단계별로 보겠습니다. 오늘 배울 모
 :::
 
 :::notes
-{timing: 1min}
+{timing: 1.5min}
 [요약]
 • 정의 파일은 frontmatter 몇 줄 + 본문
 • name은 호출 이름, description은 자동 위임의 근거
@@ -277,7 +410,7 @@ tools에는 Edit, Write가 없어서 이 에이전트는 파일을 고칠 수 �
 @type: content
 @fit: off
 
-## 두는 곳이 공유 범위를 정한다
+## 저장 위치 = 공유 범위
 정의 파일이 사는 네 곳
 
 :::html
@@ -304,7 +437,7 @@ tools에는 Edit, Write가 없어서 이 에이전트는 파일을 고칠 수 �
 :::
 
 :::notes
-{timing: 1min}
+{timing: 1.5min}
 [요약]
 • .claude/agents/: 팀 전체, 저장소에 커밋하는 프로젝트 표준
 • ~/.claude/agents/: 내 PC의 모든 프로젝트, 개인 도구
@@ -348,7 +481,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 :::
 
 :::notes
-{timing: 0.5min}
+{timing: 1min}
 {cue: poll}
 [요약]
 • 정답 C, 도구가 없어 저장할 수 없음
@@ -381,7 +514,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 {timing: 0.5min}
 [요약]
 • Part 2는 어떻게 맡기고 얼마나 드는지
-• 위임 세 방식, 비용, 레거시 분석과 대화 없는 실행
+• 위임 세 방식, 비용, 레거시 분석과 대화 없는 실행 (12분)
 
 두 번째 Part입니다. 만든 에이전트에게 어떻게 일을 맡기는지, 그리고 그때 비용은 어떻게 되는지 보겠습니다.
 설문에서 많이 고르신 레거시 현대화와 CLI 파이프라인 활용도 함께 짚겠습니다.
@@ -392,7 +525,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 맡기는 방법이 통제 수준을 정한다
+## 위임 방식 = 통제 수준
 위임 세 방식과 foreground, background
 
 :::html
@@ -430,7 +563,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      hot:['u','m','a','b','c'],
      edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'a',c:'info',o:1},{f:'m',t:'b',c:'info',o:1},{f:'m',t:'c',c:'info',o:1}],
      stagger:0.7, loop:true,
-     snip:{hd:'한 번에 세 개',path:'랩 TASK 04 패턴 C, 요청은 줄임',lines:['> 고객을 세그먼트로 나누는 segments.md를','  작성해 줘. 세 에이전트를 병렬로 진행해 줘','','spending-analyst   실행 중','portfolio-analyst  실행 중','risk-reviewer      실행 중'],hl:[4,5,6],note:'비용은 Part 3 뒤 <b>더 알아보기, 병렬의 비용</b>에서 봅니다.'}},
+     snip:{hd:'한 번에 세 개',path:'랩 TASK 04 패턴 C, 요청은 줄임',lines:['> 고객을 세그먼트로 나누는 segments.md를','  작성해 줘. 세 에이전트를 병렬로 진행해 줘','','spending-analyst   실행 중','portfolio-analyst  실행 중','risk-reviewer      실행 중'],hl:[4,5,6],note:'비용은 <b>Part 4 심화, 병렬의 비용</b>에서 봅니다.'}},
     {kicker:'FOREGROUND / BACKGROUND', title:'기다릴지, 다른 일을 계속할지',
      body:'<b>foreground</b>는 결과를 기다리고, <b>background</b>는 Subagent가 도는 동안 메인에서 <b>다른 일을 계속</b>합니다.',
      facts:['foreground: 결과를 기다림','background: 다른 일을 계속','어느 쪽이든 요약이 돌아옴'],
@@ -454,7 +587,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 3min}
 [요약]
 • 자동 위임: description을 보고 Claude가 판단
 • @ 멘션 지목: @ 입력 후 목록에서 선택, @"risk-reviewer (agent)", 규제 작업에 적합
@@ -474,7 +607,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 컨텍스트는 아끼고, 요청은 따로 나간다
+## 컨텍스트는 절약, 요청은 별도
 Subagent와 비용, 모델 상속 시뮬레이터
 
 :::html
@@ -513,7 +646,7 @@ Subagent와 비용, 모델 상속 시뮬레이터
 :::
 
 :::notes
-{timing: 1min}
+{timing: 2.5min}
 [요약]
 • 아끼는 것: 장황한 출력이 메인에 남지 않음, 메인 컨텍스트 작게, 역할별 짧은 지침
 • 드는 것: Subagent의 요청도 사용량에 포함
@@ -532,7 +665,7 @@ Subagent는 컨텍스트는 아끼지만 요청은 따로 나갑니다.
 @type: content
 @fit: off
 
-## 레거시는 바꾸기 전에 나눠 읽는다
+## 레거시, 바꾸기 전에 나눠 읽기
 레거시 현대화를 고른 40명이 가장 먼저 해 볼 방법
 
 :::html
@@ -558,7 +691,7 @@ Subagent는 컨텍스트는 아끼지만 요청은 따로 나갑니다.
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 3min}
 [요약]
 • 사전 설문에서 레거시 현대화를 고른 40명을 위한 방법
 • plan 모드로 계획 먼저(승인 전까지 편집 보류, 읽기 전용은 tools 제한), Explore로 넓게 훑기
@@ -579,7 +712,7 @@ Subagent는 컨텍스트는 아끼지만 요청은 따로 나갑니다.
 @type: content
 @fit: off
 
-## 대화 없이도 에이전트를 돌린다
+## 대화 없는 에이전트 실행
 claude -p, [CLI]{tip="Command Line Interface. 터미널에서 명령으로 쓰는 방식"} 파이프라인을 고른 42명을 위한 가장 짧은 예
 
 :::html
@@ -611,13 +744,13 @@ claude -p, [CLI]{tip="Command Line Interface. 터미널에서 명령으로 쓰�
      zones:Z, nodes:N, hot:['j','r','u','d'],
      edges:[{f:'j',t:'r',c:'success',o:0},{f:'j',t:'u',c:'success',o:1},{f:'j',t:'d',c:'danger',o:2}],
      stagger:0.4,
-     snip:{hd:'가장 짧은 예',path:'Terminal, 요청은 줄임',lines:L,hl:[7,8,9],note:'CI에서 쓰는 형태는 뒤쪽 <b>더 알아보기</b>에 있습니다.'}}
+     snip:{hd:'가장 짧은 예',path:'Terminal, 요청은 줄임',lines:L,hl:[7,8,9],note:'CI에서 쓰는 형태는 뒤쪽 <b>Part 4 심화</b>에 있습니다.'}}
   ], {legend:[['accent','claude -p'],['info','결과 파일'],['success','꺼내는 값'],['danger','막힌 명령']]});
 });
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 3min}
 [요약]
 • claude -p: 대화 없이 한 번 실행, CLI 파이프라인을 고른 42명을 위한 예
 • 허용 규칙에 없는 명령은 거부(헤드리스 기본), --allowedTools로 읽기 도구와 python3 집계만 사전 승인
@@ -658,7 +791,7 @@ claude -p는 대화 없이 한 번 실행하고 끝납니다. 요청에 portfoli
 {timing: 0.5min}
 [요약]
 • Part 3은 Subagent 다음 단계의 병렬화
-• Agent teams, Workflows, Worktrees와 Bedrock 차이
+• Agent teams, Workflows, Worktrees와 Bedrock 차이 (7분)
 
 세 번째 Part입니다. Subagent 다음 단계, 더 크게 병렬로 돌리는 수단 세 가지와 Bedrock에서 달라지는 점을 보겠습니다.
 :::
@@ -713,7 +846,7 @@ claude -p는 대화 없이 한 번 실행하고 끝납니다. 요청에 portfoli
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 3.5min}
 [요약]
 • Agent teams: 여러 인스턴스의 협업, 기본 꺼짐(실험 기능, 환경 변수로 켬), 팀원이 plan 모드일 때 일반 세션의 약 7배 토큰
 • Workflows: Subagent를 많이 띄우는 대규모 오케스트레이션, 모든 공급자에서 사용 가능
@@ -747,7 +880,7 @@ Worktrees는 git worktree로 브랜치마다 작업 공간을 나눠서, 여러 
 :::
 
 :::notes
-{timing: 2min}
+{timing: 3min}
 [요약]
 • 내장 Explore: 메인 모델을 그대로 씀(메인이 Opus 5.5면 Explore도 Opus 5.5), model: haiku 탐색 에이전트로 절감
 • Haiku 지정: 계정과 리전에 활성화돼 있어야 함, 사전 확인
@@ -760,73 +893,14 @@ Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미�
 :::
 
 ---
-<!-- Slide 17: Next (PDF p18) -->
-@type: content
-@fit: off
-
-:::html
-<div class="fsi fsi-statement">
-  <span class="eyebrow">NEXT</span>
-  <div class="big">정의 파일은 <em>커밋 가능한</em> 자산입니다</div>
-  <p class="lead">오늘 만든 에이전트를 Ch4에서 팀 플러그인으로 묶습니다.</p>
-</div>
-:::
-
-:::notes
-{timing: 0.5min}
-[요약]
-• 정의 파일은 커밋 가능한 자산
-• 오늘 만든 에이전트를 Ch4에서 팀 플러그인으로 묶음
-
-{cue: pause}
-기억하실 한 문장입니다. 정의 파일은 커밋 가능한 자산입니다.
-마크다운 파일 한 장이라 리뷰하고 버전 관리할 수 있습니다. 오늘 랩에서 만든 에이전트를 Ch4에서 팀 플러그인으로 묶어 배포합니다.
-:::
-
----
-<!-- Slide 18: Lab (PDF p19, lab guide task minutes) -->
-@type: content
-@fit: off
-
-## 40분 동안 만들 세 에이전트
-LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
-
-:::html
-<div class="fsi c4-lab">
-  <ol class="steps">
-    <li><b>TASK 00</b><span>사전 준비 확인, 작업 폴더와 가명 데이터 연결</span><em>3분</em></li>
-    <li><b>TASK 01</b><span>첫 Subagent, spending-analyst 만들기</span><em>10분, 강의 Part 1 연계</em></li>
-    <li><b>TASK 02</b><span>도구 권한 격리 체험, 읽기 전용 risk-reviewer</span><em>7분, 강의 Part 1 연계</em></li>
-    <li><b>TASK 03</b><span>에이전트 3종 완성, portfolio-analyst 추가</span><em>8분</em></li>
-    <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬), segments.md 완성</span><em>12분, 강의 Part 2 연계</em></li>
-    <li class="opt"><b>선택 05</b><span>claude -p로 대화 없이 실행, segments.json</span><em>7분, 강의 Part 2 연계</em></li>
-  </ol>
-  <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 가명 데이터 pseudo/만 읽고, 여기서 만든 에이전트 3종과 segments.md를 Ch4에서 씁니다.</p>
-</div>
-:::
-
-:::notes
-{timing: 0.5min}
-[요약]
-• LAB 40분(필수), TASK 00부터 04와 선택 05
-• TASK 01 spending-analyst, TASK 02 risk-reviewer로 도구 권한 격리, TASK 03 portfolio-analyst로 3종 완성, TASK 04 디스패치 3패턴과 segments.md
-• 만든 에이전트 3종과 segments.md는 Ch4에서 다시 사용
-
-{cue: demo}
-이제 40분 랩입니다. Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 시작해 주세요.
-고객자산 분석 담당자가 되어 고객 천 명을 세그먼트로 나누는 이야기입니다. TASK 01에서 소비 패턴을 읽는 spending-analyst를 만들고, TASK 02에서 읽기 전용 risk-reviewer로 도구 권한 격리를 체험합니다. TASK 03에서 portfolio-analyst를 더해 세 종류를 완성하고, TASK 04에서 자동, 명시, 병렬 세 가지 디스패치를 비교하며 세그먼트 제안서 segments.md를 완성합니다. 시간이 남으면 선택 TASK 05에서 claude -p로 segments.json을 만들어 보세요.
-여기서 만든 에이전트 세 개와 segments.md는 Ch4에서 그대로 씁니다.
-:::
-
----
 <!-- Slide 19: Deep dive divider (PDF p20) -->
 @type: content
 @fit: off
 
 :::html
 <div class="fsi fsi-section c4-dd">
-  <span class="num">CHAPTER 03 / DEEP DIVE</span>
-  <div class="name">더 알아보기</div>
+  <span class="num">CHAPTER 03 / PART 04</span>
+  <div class="name">심화</div>
   <p class="what">자주 받는 질문과 세부 설정</p>
   <ol>
     <li><b>01</b>정의 파일 필드</li>
@@ -841,10 +915,11 @@ LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
 :::notes
 {timing: 0.5min}
 [요약]
-• 시간이 남거나 질문이 나올 때 펼치는 더 알아보기
+• Part 4 심화 6분, 자주 받는 질문과 세부 설정
 • 정의 파일 필드, 내장 Subagent, Subagent vs 스킬, CI, 병렬의 비용
+• 진행자 메모: 시간이 밀리면 장마다 한 문장으로 줄이고 랩 시작(14:40)을 지킴
 
-여기부터는 더 알아보기입니다. 시간이 남거나 질문이 나오면 펼칩니다. 저장 위치는 앞의 정의 파일 위치 장표에서 함께 다뤘습니다.
+네 번째 Part, 심화입니다. 자주 받는 질문 다섯 가지를 6분 안에 빠르게 보겠습니다. 저장 위치는 앞의 정의 파일 위치 장표에서 함께 다뤘습니다.
 :::
 
 ---
@@ -884,7 +959,7 @@ LAB, TASK 00부터 04와 선택 05, 첫 Subagent와 권한 격리
 @type: content
 @fit: off
 
-## 정의하지 않아도 이미 쓰고 있다
+## 정의 없이도 이미 사용 중
 내장 Subagent 세 가지
 
 :::html
@@ -1006,7 +1081,7 @@ GitHub Actions에서 Subagent로 야간 세그먼트 리포트
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 1min}
 [요약]
 • GitHub Actions에서 키 없이 OIDC로 Bedrock 호출
 • 역할에는 Bedrock 호출 최소 권한만
@@ -1030,7 +1105,7 @@ CI에서 Subagent를 쓰는 예입니다. 랩 선택 TASK 05의 야간 세그먼
 @type: content
 @fit: off
 
-## 시간은 줄고 토큰은 합산된다
+## 시간은 단축, 토큰은 합산
 병렬의 비용, 순차와 병렬 비교
 
 :::html
@@ -1141,7 +1216,7 @@ Chapter 3 Key Takeaways
 :::
 
 :::notes
-{timing: 1min}
+{timing: 0.5min}
 [요약]
 • Subagent = 자기 컨텍스트, 전용 지침, 좁힌 도구, 요약 반환
 • description이 자동 위임, tools로 읽기 전용, 규제 작업은 @ 멘션
@@ -1150,6 +1225,65 @@ Chapter 3 Key Takeaways
 Chapter 3을 여섯 줄로 정리합니다.
 Subagent는 자기 컨텍스트, 전용 지침, 좁힌 도구, 요약 반환 네 가지로 이뤄집니다. description이 자동 위임을 결정하고, tools 허용 목록으로 읽기 전용 에이전트를 만듭니다.
 규제 작업은 @ 멘션으로 명시 호출하시고, 장황한 작업은 격리, 단순 작업은 haiku로. Agent teams는 강력하지만 토큰이 크다는 점을 기억해 주세요.
+:::
+
+---
+<!-- Slide 17: Next (PDF p18) -->
+@type: content
+@fit: off
+
+:::html
+<div class="fsi fsi-statement">
+  <span class="eyebrow">NEXT</span>
+  <div class="big">정의 파일은 <em>커밋 가능한</em> 자산입니다</div>
+  <p class="lead">오늘 만든 에이전트를 Ch4에서 팀 플러그인으로 묶습니다.</p>
+</div>
+:::
+
+:::notes
+{timing: 0.5min}
+[요약]
+• 정의 파일은 커밋 가능한 자산
+• 오늘 만든 에이전트를 Ch4에서 팀 플러그인으로 묶음
+
+{cue: pause}
+기억하실 한 문장입니다. 정의 파일은 커밋 가능한 자산입니다.
+마크다운 파일 한 장이라 리뷰하고 버전 관리할 수 있습니다. 오늘 랩에서 만든 에이전트를 Ch4에서 팀 플러그인으로 묶어 배포합니다.
+:::
+
+---
+<!-- Slide 18: Lab (PDF p19, lab guide task minutes) -->
+@type: content
+@fit: off
+
+## 랩 60분, 세 에이전트 완성
+LAB, 필수 TASK 00부터 04 (40분)와 선택 05 (7분), 첫 Subagent와 권한 격리
+
+:::html
+<div class="fsi c4-lab">
+  <ol class="steps">
+    <li><b>TASK 00</b><span>사전 준비 확인, 작업 폴더와 가명 데이터 연결</span><em>3분</em></li>
+    <li><b>TASK 01</b><span>첫 Subagent, spending-analyst 만들기</span><em>10분, 강의 Part 1 연계</em></li>
+    <li><b>TASK 02</b><span>도구 권한 격리 체험, 읽기 전용 risk-reviewer</span><em>7분, 강의 Part 1 연계</em></li>
+    <li><b>TASK 03</b><span>에이전트 3종 완성, portfolio-analyst 추가</span><em>8분</em></li>
+    <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬), segments.md 완성</span><em>12분, 강의 Part 2 연계</em></li>
+    <li class="opt"><b>선택 05</b><span>claude -p로 대화 없이 실행, segments.json</span><em>7분, 강의 Part 2 연계</em></li>
+  </ol>
+  <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 가명 데이터 pseudo/만 읽고, 여기서 만든 에이전트 3종과 segments.md를 Ch4에서 씁니다.</p>
+</div>
+:::
+
+:::notes
+{timing: 0.5min}
+[요약]
+• LAB 60분 (14:40부터 15:40): 필수 TASK 00부터 04 40분, 선택 05 7분, 남는 13분은 질문과 막힌 곳 해결
+• TASK 01 spending-analyst, TASK 02 risk-reviewer로 도구 권한 격리, TASK 03 portfolio-analyst로 3종 완성, TASK 04 디스패치 3패턴과 segments.md
+• 만든 에이전트 3종과 segments.md는 Ch4에서 다시 사용
+
+{cue: demo}
+이제 60분 랩입니다. 필수 TASK는 40분 분량이고, 남는 시간은 선택 TASK와 질문에 씁니다. Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 시작해 주세요.
+고객자산 분석 담당자가 되어 고객 천 명을 세그먼트로 나누는 이야기입니다. TASK 01에서 소비 패턴을 읽는 spending-analyst를 만들고, TASK 02에서 읽기 전용 risk-reviewer로 도구 권한 격리를 체험합니다. TASK 03에서 portfolio-analyst를 더해 세 종류를 완성하고, TASK 04에서 자동, 명시, 병렬 세 가지 디스패치를 비교하며 세그먼트 제안서 segments.md를 완성합니다. 시간이 남으면 선택 TASK 05에서 claude -p로 segments.json을 만들어 보세요.
+여기서 만든 에이전트 세 개와 segments.md는 Ch4에서 그대로 씁니다.
 :::
 
 ---

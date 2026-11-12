@@ -103,8 +103,10 @@ Session mapping:
   15:50–17:40. The combined lab's required TASKs add up to about 110 minutes
   by the lab pages' own estimates (Preflight 7, Ch1 20, Lab 1 50, Lab 2 35),
   so facilitators choose which TASKs run in the session; the Ch2 Lab 1 and Lab 2
-  restore TASKs must still run. The Ch3 deck is paced for a 17-minute lecture
-  and a 40-minute lab (the lab page's required TASKs).
+  restore TASKs must still run. The Ch3 deck is paced for the 40-minute lecture
+  slot (four Parts; the former deep dive is Part 4, retimed 2026-11-12) and
+  the 60-minute lab slot (40 required lab-page minutes, optional TASK 05 7,
+  about 13 minutes for questions).
 - Day 2 (retimed 2026-11-10): recap 10:00–10:10, Ch4 10:10–11:40 (90
   minutes), lunch 11:40–13:00, Ch5 13:00–14:00 (60 minutes, lab TASK 01–04),
   Capstone Round 2 14:00–16:40 (160 minutes, no break before it), break

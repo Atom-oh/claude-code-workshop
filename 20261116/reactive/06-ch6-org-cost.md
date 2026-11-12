@@ -8,8 +8,8 @@ block: ch6-org-cost
 
 # Chapter 6. 조직의 비용 보고 통제하기
 ## 쓴 만큼 보고, 넘치면 막는다 (Claude Code v2.1.319, 2026-11-08 리허설 검증)
-Choi, WooHyung
-Prin. Solutions Architect
+Oh, Junseok
+Sr. Solutions Architect
 AWS Korea
 
 :::script
@@ -87,7 +87,7 @@ Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와
 @type: content
 @fit: off
 
-## Bedrock은 콘솔과 직접 설치한 계측이 전부다
+## Bedrock 가시성, 콘솔과 자체 계측뿐
 셋업별 비용 관리 방법
 
 :::html
@@ -149,7 +149,7 @@ Bedrock에서는 지출은 AWS 청구 콘솔로, 지출 한도는 AWS 예산 도
 @type: content
 @fit: off
 
-## OTel을 정책으로 켠다
+## 정책으로 켜는 OTel
 managed settings env 한 블록이면 모두에게
 
 :::html
@@ -223,7 +223,7 @@ managed settings env 한 블록이면 모두에게
 @type: content
 @fit: off
 
-## 이틀간 우리가 쓴 토큰을 본다
+## 이틀간 우리가 쓴 토큰
 DEMO 10분, 강사 대시보드 (URL은 현장 안내)
 
 :::html
@@ -320,7 +320,7 @@ DEMO 10분, 강사 대시보드 (URL은 현장 안내)
 @type: content
 @fit: off
 
-## AWS 쪽에서도 본다
+## AWS 쪽에서 보는 비용
 Claude Code 계측과 별개로 계정에서 보이는 것, 둘을 대사
 
 :::html

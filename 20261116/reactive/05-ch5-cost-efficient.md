@@ -65,7 +65,7 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
   <div class="name">컨텍스트 엔지니어링</div>
   <p class="what">같은 일을 더 적은 토큰으로</p>
   <ol>
-    <li><b>01</b>먼저 본다</li>
+    <li><b>01</b>측정 먼저</li>
     <li><b>02</b>항상 실리는 지침 줄이기</li>
     <li><b>03</b>구조 정보, 출력 필터, 도구 지연 로드</li>
     <li><b>04</b>캐시와 압축(compaction)</li>
@@ -88,7 +88,7 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
 @type: content
 @fit: off
 
-## 하루 13달러가 출발점이다
+## 출발점은 하루 13달러
 엔터프라이즈 배포의 개발자 1인당 평균 비용
 
 :::html
@@ -130,7 +130,7 @@ Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 �
 @type: content
 @fit: off
 
-## 원리 1, 먼저 본다
+## 원리 1, 측정 먼저
 /context와 /usage로 무엇이 자리를 차지하는지
 
 :::html
@@ -434,7 +434,7 @@ fi</pre>
 @type: content
 @fit: off
 
-## 훅 하나로 컨텍스트가 줄어든다
+## 훅 하나로 컨텍스트 절감
 DEMO 7분, 출력 필터 훅 적용 전후 비교
 
 :::html
@@ -534,7 +534,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 원리 6, 캐시를 깨지 않는다
+## 원리 6, 캐시 보존
 /clear와 /compact는 비용이 다릅니다
 
 :::html
@@ -615,7 +615,7 @@ Idle compaction은 1시간 TTL 세션을 오래 비웠을 때 캐시 만료 직�
 @type: content
 @fit: off
 
-## 다 차기 전에 미리 압축한다
+## 가득 차기 전 선제 압축
 auto-compact window 조정과 설정 우선순위
 
 :::html
@@ -822,7 +822,7 @@ Claude Code도 기본값 "auto"를 권하는 이유
 @type: content
 @fit: off
 
-## 같은 기능도 접속 방식마다 다르다
+## 같은 기능, 접속 방식별 차이
 Bedrock에서 캐시 수명과 idle compaction
 
 :::html

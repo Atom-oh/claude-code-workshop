@@ -24,8 +24,8 @@
   <h1 style="position:absolute; left:5%; top:48%; font-size:2.8rem; color:#fff; font-weight:300; line-height:1.2; width:53%; margin:0;">Chapter 2. Bedrock 위에서 안전하게 쓰기</h1>
   <p style="position:absolute; left:5%; top:62%; font-size:1.3rem; color:rgba(255,255,255,0.8); width:53%; margin:0;">키는 나눠 주지 않고, 정책은 파일로, 막을 것은 앞에서 (Claude Code v2.1.319, Bedrock 기준)</p>
   <div style="position:absolute; left:5%; top:76%;">
-    <p style="font-size:1.05rem; color:#fff; font-weight:600; margin:0;">Choi, WooHyung</p>
-    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:6px 0 0 0;">Prin. Solutions Architect</p>
+    <p style="font-size:1.05rem; color:#fff; font-weight:600; margin:0;">Oh, Junseok</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:6px 0 0 0;">Sr. Solutions Architect</p>
     <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:2px 0 0 0;">AWS Korea</p>
   </div>
 
@@ -85,7 +85,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s4" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s4-header"><h2>환경변수 두 개면 연결된다</h2></div>
+  <div class="slide-header" data-remarp-id="s4-header"><h2>환경변수 두 개로 연결</h2></div>
   <div class="slide-body" data-remarp-id="s4-body">
     <p><!-- Slide 5: Manual setup and region order --></p>
 <p>수동 설정과 리전 결정 순서</p>
@@ -139,7 +139,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s6" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s6-header"><h2>만료되면 Claude Code가 대신 로그인한다</h2></div>
+  <div class="slide-header" data-remarp-id="s6-header"><h2>만료 시 자동 재로그인</h2></div>
   <div class="slide-body" data-remarp-id="s6-body">
     <p><!-- Slide 7: SSO auto refresh --></p>
 <p>SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport</p>
@@ -202,7 +202,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s9" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s9-header"><h2>팀별 비용은 프로필 ARN이 가른다</h2></div>
+  <div class="slide-header" data-remarp-id="s9-header"><h2>팀별 비용의 기준, 프로필 ARN</h2></div>
   <div class="slide-body" data-remarp-id="s9-body">
     <p><!-- Slide 10: Team cost tagging --></p>
 <p>Application inference profile로 경로와 비용 경계를 고정</p>
@@ -220,7 +220,7 @@
   <p class="what">콘솔이 없으니 파일이 정책이다</p>
   <ol>
     <li><b>01</b>managed settings 파일</li>
-    <li><b>02</b>같은 키는 위가 이긴다</li>
+    <li><b>02</b>키 충돌 시 상위 우선</li>
     <li><b>03</b>/status로 확인</li>
   </ol>
 </div>
@@ -228,7 +228,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s11" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s11-header"><h2>콘솔 대신 파일과 MDM으로 닿는다</h2></div>
+  <div class="slide-header" data-remarp-id="s11-header"><h2>콘솔 대신 파일과 MDM</h2></div>
   <div class="slide-body" data-remarp-id="s11-body">
     <p><!-- Slide 12: Policy delivery channels --></p>
 <p>Bedrock에서 정책이 도달하는 길과 병합 규칙</p>
@@ -237,7 +237,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s12" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s12-header"><h2>같은 키가 충돌하면 위가 이긴다</h2></div>
+  <div class="slide-header" data-remarp-id="s12-header"><h2>키 충돌 시 상위 우선</h2></div>
   <div class="slide-body" data-remarp-id="s12-body">
     <p><!-- Slide 13: Settings precedence --></p>
 <p>설정 우선순위 다섯 층, 값을 넣어 보며 확인</p>
@@ -260,7 +260,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s13" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s13-header"><h2>배포했다고 끝이 아니다</h2></div>
+  <div class="slide-header" data-remarp-id="s13-header"><h2>배포 이후가 진짜 시작</h2></div>
   <div class="slide-body" data-remarp-id="s13-body">
     <p><!-- Slide 14: Verification --></p>
 <p>적용 검증 4단계</p>
@@ -284,7 +284,7 @@
   <div class="name">무엇을 못 하게 할 것인가</div>
   <p class="what">앞에서 막고, 못 막은 것은 기록으로</p>
   <ol>
-    <li><b>01</b>deny가 항상 이긴다</li>
+    <li><b>01</b>deny 절대 우선</li>
     <li><b>02</b>훅은 exit 2만 차단</li>
     <li><b>03</b>DLP 다섯 겹과 남는 기록</li>
   </ol>
@@ -315,7 +315,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s16" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s16-header"><h2>deny가 항상 이긴다</h2></div>
+  <div class="slide-header" data-remarp-id="s16-header"><h2>deny 절대 우선</h2></div>
   <div class="slide-body" data-remarp-id="s16-body">
     <p><!-- Slide 17: Permission evaluation order --></p>
 <p>권한 평가 순서와 Tool(specifier) 규칙 문법</p>
@@ -342,7 +342,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s18" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s18-header"><h2>각 층은 앞 층이 놓친 것을 잡는다</h2></div>
+  <div class="slide-header" data-remarp-id="s18-header"><h2>앞 층이 놓친 것은 다음 층에서</h2></div>
   <div class="slide-body" data-remarp-id="s18-body">
     <p><!-- Slide 19: DLP 5 layers --></p>
 <p>DLP 5층과 층마다의 설정</p>
@@ -351,7 +351,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s19" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s19-header"><h2>exit 2만 차단이다</h2></div>
+  <div class="slide-header" data-remarp-id="s19-header"><h2>차단은 exit 2뿐</h2></div>
   <div class="slide-body" data-remarp-id="s19-body">
     <p><!-- Slide 20: DLP hook script and fail-open --></p>
 <p>3층 DLP 훅 예제와 fail-open, 그리고 수정본</p>
@@ -378,7 +378,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s21" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s21-header"><h2>감사에 답할 근거는 네 곳에 남는다</h2></div>
+  <div class="slide-header" data-remarp-id="s21-header"><h2>감사 근거가 남는 네 곳</h2></div>
   <div class="slide-body" data-remarp-id="s21-body">
     <p><!-- Slide 22: What remains as records --></p>
 <p>무엇이 기록으로 남는가, 그리고 주의할 것</p>

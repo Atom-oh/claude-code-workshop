@@ -8,8 +8,8 @@ block: ch4-extending
 
 # Chapter 4. Claude Code 확장하기
 ## 나의 Claude Code를 팀의 플랫폼으로 (2026.11, Claude Code v2.1.319, Bedrock 기준)
-Choi, WooHyung
-Prin. Solutions Architect
+Huh, Jinsung
+Sr. Solutions Architect
 AWS Korea
 
 :::script
@@ -28,40 +28,7 @@ AWS Korea
 그리고 Claude Code 안에서 직접 도는 코드인 mod까지 다룹니다.
 
 {cue: transition}
-먼저 오늘의 순서를 보겠습니다.
-:::
-
----
-<!-- Slide 2: Agenda (PDF p2) -->
-@type: content
-@fit: off
-
-## 강의 35분 + 필수 랩 약 60분 (선택 12분)
-세 개의 Part와 Super Lab, 개인 설정에서 팀의 플랫폼까지
-
-:::html
-<div class="fsi fsi-agenda">
-  <div class="fsi-grid-4">
-    <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
-    <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
-    <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
-    <div class="pick lab"><span class="k">SUPER LAB / 약 60분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
-  </div>
-  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
-</div>
-:::
-
-:::notes
-{timing: 0.5min}
-[요약]
-• 강의는 세 Part, 12분 10분 13분으로 35분
-• 이어서 필수 Super Lab 약 60분(선택 TASK 06 12분 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
-• 진행자 메모: 강의 35분 + 랩 약 61분으로 약 95분, 90분 슬롯보다 5분 정도 김. 모자라면 TASK 07~08(mod 통제와 체크리스트, 약 10분)을 Capstone R2 시작 때 진행
-• 더 알아보기는 질문이 나오면 펼침
-
-오늘은 세 Part로 진행합니다. 첫째, 플러그인이 무엇이고 어떻게 생겼는지, 둘째, 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 셋째, Claude Code 안에서 도는 코드인 mod입니다.
-강의 35분이 끝나면 약 60분 동안 Super Lab에서 직접 팀 스타터 킷을 만들어 봅니다. 선택 TASK 06은 12분이 더 걸립니다.
-진행자 메모입니다. 강의와 랩을 합치면 약 95분이라 90분 슬롯보다 5분 정도 깁니다. 시간이 모자라면 TASK 07과 08, mod 통제와 체크리스트 약 10분은 Capstone Round 2를 시작할 때 진행합니다.
+순서를 보기 전에, 사전 설문 결과부터 보겠습니다.
 :::
 
 ---
@@ -69,7 +36,7 @@ AWS Korea
 @type: content
 @fit: off
 
-## 팀 표준화는 기대 주제 2위였다
+## 기대 주제 2위, 팀 표준화
 사전 설문 결과로 정한 이 챕터의 목표
 
 :::html
@@ -110,6 +77,42 @@ AWS Korea
 
 [출처]
 • 이번 워크숍 사전 설문, 참가 확정자 138명 기준
+
+{cue: transition}
+이 목표에 맞춘 오늘의 순서입니다.
+:::
+
+---
+<!-- Slide 2: Agenda (PDF p2) -->
+@type: content
+@fit: off
+
+## 강의 35분 + 필수 랩 약 60분 (선택 12분)
+세 개의 Part와 Super Lab, 개인 설정에서 팀의 플랫폼까지
+
+:::html
+<div class="fsi fsi-agenda">
+  <div class="fsi-grid-4">
+    <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
+    <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
+    <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
+    <div class="pick lab"><span class="k">SUPER LAB / 약 60분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
+  </div>
+  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
+</div>
+:::
+
+:::notes
+{timing: 0.5min}
+[요약]
+• 강의는 세 Part, 12분 10분 13분으로 35분
+• 이어서 필수 Super Lab 약 60분(선택 TASK 06 12분 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
+• 진행자 메모: 강의 35분 + 랩 약 61분으로 약 95분, 90분 슬롯보다 5분 정도 김. 모자라면 TASK 07~08(mod 통제와 체크리스트, 약 10분)을 Capstone R2 시작 때 진행
+• 더 알아보기는 질문이 나오면 펼침
+
+오늘은 세 Part로 진행합니다. 첫째, 플러그인이 무엇이고 어떻게 생겼는지, 둘째, 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 셋째, Claude Code 안에서 도는 코드인 mod입니다.
+강의 35분이 끝나면 약 60분 동안 Super Lab에서 직접 팀 스타터 킷을 만들어 봅니다. 선택 TASK 06은 12분이 더 걸립니다.
+진행자 메모입니다. 강의와 랩을 합치면 약 95분이라 90분 슬롯보다 5분 정도 깁니다. 시간이 모자라면 TASK 07과 08, mod 통제와 체크리스트 약 10분은 Capstone Round 2를 시작할 때 진행합니다.
 :::
 
 ---
@@ -226,7 +229,7 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 �
 @type: content
 @fit: off
 
-## 폴더 하나에 팀의 표준을 담는다
+## 폴더 하나 = 팀의 표준
 플러그인 디렉터리 구성과 각 파일의 역할
 
 :::html
@@ -490,7 +493,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## git clone이 안 되면 미리 심어 둔다
+## git clone 불가 환경엔 사전 배치
 망분리와 CI는 CLAUDE_CODE_PLUGIN_SEED_DIR
 
 :::html
@@ -560,7 +563,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 설치했다면 쓰이는지도 본다
+## 설치 다음은 사용 확인
 배포 후 측정, OTel 이벤트 두 개와 이름 가림
 
 :::html
@@ -658,7 +661,7 @@ mod를 한 줄로 정의하면, 플러그인 안의 이벤트 핸들러입니다
 @type: content
 @fit: off
 
-## 도구 호출 수를 스피너 옆에 띄운다
+## 스피너 옆 도구 호출 수
 가장 작은 mod, 이벤트 두 개를 다루는 register.js
 
 :::html
@@ -732,7 +735,7 @@ mod를 한 줄로 정의하면, 플러그인 안의 이벤트 핸들러입니다
 @type: content
 @fit: off
 
-## 다른 수단으로 되면 mod는 쓰지 않는다
+## mod는 최후의 수단
 mod와 다른 확장 비교, 바꿀 수 있는 것과 작성 언어
 
 :::html
@@ -780,7 +783,7 @@ mod는 도구 호출부터 화면까지 바꿀 수 있고 JS나 TS로 씁니다.
 @type: content
 @fit: off
 
-## 공식 샘플 셋으로 감을 잡는다
+## 공식 샘플 셋으로 감 잡기
 claude-code-playground 저장소, 공식 지원 대상은 아님
 
 :::html
@@ -822,7 +825,7 @@ token-weather는 컨텍스트 사용량을 날씨 예보처럼 보여 주고, bl
 @type: content
 @fit: off
 
-## mod는 사용자 권한으로 모든 것에 닿는다
+## mod의 범위 = 사용자 권한 전부
 설치 전에 알아야 할 신뢰 모델, 닿는 것과 막히는 것
 
 :::html
@@ -1027,7 +1030,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 약 60분 동안 팀 스타터 킷을 만든다
+## 약 60분, 팀 스타터 킷 제작
 SUPER LAB, 팀 스타터 킷 플러그인 + mod
 
 :::html
@@ -1068,7 +1071,7 @@ TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 
 @type: content
 @fit: off
 
-## 올리기 전에 여섯 가지를 확인한다
+## 배포 전 여섯 가지 점검
 사내 배포 전 체크리스트, 눌러서 하나씩 확인
 
 :::html
@@ -1149,7 +1152,7 @@ TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 
 @type: content
 @fit: off
 
-## 마켓플레이스는 네 곳에서 온다
+## 마켓플레이스의 네 출처
 더 알아보기, /plugin marketplace add로 등록하는 소스
 
 :::html
@@ -1192,7 +1195,7 @@ TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 
 @type: content
 @fit: off
 
-## 사내 git으로 등록하고 강제한다
+## 사내 git 등록과 강제
 더 알아보기, 조직 배포 설정과 함께 거는 잠금
 
 :::html
@@ -1236,7 +1239,7 @@ Part 2의 예시는 GitHub였는데, 사내 git으로 등록하면 이런 모양
 @type: content
 @fit: off
 
-## 남이 만든 mod에는 샌드박스가 없다
+## 남의 mod, 샌드박스 없음
 더 알아보기, validate 두 줄 읽기와 리뷰 여섯 항목
 
 :::html
@@ -1292,7 +1295,7 @@ Part 2의 예시는 GitHub였는데, 사내 git으로 등록하면 이런 모양
 @type: content
 @fit: off
 
-## 배포 후에는 네 가지를 본다
+## 배포 후 확인할 네 가지
 더 알아보기, 플러그인 운영 지표
 
 :::html

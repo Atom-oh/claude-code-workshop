@@ -50,7 +50,12 @@ change; old numbers in learner folders are legacy.
   strip trailing whitespace from the generated HTML before committing. The
   build also writes `reactive/toc.html`; that page is hand-maintained (Korean
   chapter cards linking slides, previews, labs and PDFs), so restore it after a
-  build (`git checkout -- 20261116/reactive/toc.html`) and edit it directly.
+  build and edit it directly. `20261116/reactive/build.sh` does all three.
+  Before editing a deck, read
+  [20261116/reactive/README.md](20261116/reactive/README.md): compiler install
+  (aws-content-plugin from the Atom-oh/oh-my-cloud-skills marketplace, also
+  enabled in `.claude/settings.json`), Remarp syntax used here, and the deck
+  house style (noun-phrase titles, survey before agenda, notes structure).
 - The Agent SDK lab is a self-paced "SDK" track, not a chapter.
 - Every November page (eDM, portal, labs, capstones, references, reactive
   decks) opens dark. Light is the projector mode, for rooms where dark slides

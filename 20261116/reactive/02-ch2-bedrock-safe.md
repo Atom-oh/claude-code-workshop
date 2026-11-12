@@ -8,8 +8,8 @@ block: ch2-bedrock-safe
 
 # Chapter 2. Bedrock 위에서 안전하게 쓰기
 ## 키는 나눠 주지 않고, 정책은 파일로, 막을 것은 앞에서 (Claude Code v2.1.319, Bedrock 기준)
-Choi, WooHyung
-Prin. Solutions Architect
+Oh, Junseok
+Sr. Solutions Architect
 AWS Korea
 
 :::script
@@ -146,7 +146,7 @@ Chapter 2, Bedrock 위에서 안전하게 쓰기를 시작하겠습니다. Bedro
 @type: content
 @fit: off
 
-## 환경변수 두 개면 연결된다
+## 환경변수 두 개로 연결
 수동 설정과 리전 결정 순서
 
 :::html
@@ -263,7 +263,7 @@ Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
 @type: content
 @fit: off
 
-## 만료되면 Claude Code가 대신 로그인한다
+## 만료 시 자동 재로그인
 SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport
 
 :::html
@@ -436,7 +436,7 @@ ANTHROPIC_DEFAULT_*와 리전에 따른 prefix 규칙
 @type: content
 @fit: off
 
-## 팀별 비용은 프로필 ARN이 가른다
+## 팀별 비용의 기준, 프로필 ARN
 Application inference profile로 경로와 비용 경계를 고정
 
 :::html
@@ -509,7 +509,7 @@ Application inference profile로 경로와 비용 경계를 고정
   <p class="what">콘솔이 없으니 파일이 정책이다</p>
   <ol>
     <li><b>01</b>managed settings 파일</li>
-    <li><b>02</b>같은 키는 위가 이긴다</li>
+    <li><b>02</b>키 충돌 시 상위 우선</li>
     <li><b>03</b>/status로 확인</li>
   </ol>
 </div>
@@ -528,7 +528,7 @@ Application inference profile로 경로와 비용 경계를 고정
 @type: content
 @fit: off
 
-## 콘솔 대신 파일과 MDM으로 닿는다
+## 콘솔 대신 파일과 MDM
 Bedrock에서 정책이 도달하는 길과 병합 규칙
 
 :::html
@@ -611,7 +611,7 @@ claude.ai 콘솔의 서버 관리 설정은 Bedrock에서 쓸 수 없습니다. 
 @type: content
 @fit: off
 
-## 같은 키가 충돌하면 위가 이긴다
+## 키 충돌 시 상위 우선
 설정 우선순위 다섯 층, 값을 넣어 보며 확인
 
 :::html
@@ -672,7 +672,7 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 �
 @type: content
 @fit: off
 
-## 배포했다고 끝이 아니다
+## 배포 이후가 진짜 시작
 적용 검증 4단계
 
 :::html
@@ -710,7 +710,7 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 �
   <div class="name">무엇을 못 하게 할 것인가</div>
   <p class="what">앞에서 막고, 못 막은 것은 기록으로</p>
   <ol>
-    <li><b>01</b>deny가 항상 이긴다</li>
+    <li><b>01</b>deny 절대 우선</li>
     <li><b>02</b>훅은 exit 2만 차단</li>
     <li><b>03</b>DLP 다섯 겹과 남는 기록</li>
   </ol>
@@ -779,7 +779,7 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 �
 @type: content
 @fit: off
 
-## deny가 항상 이긴다
+## deny 절대 우선
 권한 평가 순서와 Tool(specifier) 규칙 문법
 
 :::html
@@ -900,7 +900,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 각 층은 앞 층이 놓친 것을 잡는다
+## 앞 층이 놓친 것은 다음 층에서
 DLP 5층과 층마다의 설정
 
 :::html
@@ -985,7 +985,7 @@ DLP 5층을 한 층씩 보겠습니다. 위에서 아래로 내려갈수록 앞 
 @type: content
 @fit: off
 
-## exit 2만 차단이다
+## 차단은 exit 2뿐
 3층 DLP 훅 예제와 fail-open, 그리고 수정본
 
 :::html
@@ -1090,7 +1090,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 감사에 답할 근거는 네 곳에 남는다
+## 감사 근거가 남는 네 곳
 무엇이 기록으로 남는가, 그리고 주의할 것
 
 :::html

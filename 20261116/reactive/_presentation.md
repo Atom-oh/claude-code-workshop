@@ -10,7 +10,7 @@ speaker:
 audience: "금융 서비스 산업 고객 개발자와 플랫폼 관리자"
 level: "200"
 quiz: false
-duration: 178
+duration: 201
 date: 2026-11-16
 event: "Claude Code Deep Dive Workshop, FSI Edition"
 lang: ko
@@ -23,7 +23,7 @@ blocks:
     duration: 50
   - name: ch3-subagents
     title: "Chapter 3. Subagent로 일 나눠 맡기기"
-    duration: 17
+    duration: 40
   - name: ch4-extending
     title: "Chapter 4. Claude Code 확장하기"
     duration: 35
