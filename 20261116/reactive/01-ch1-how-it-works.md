@@ -32,44 +32,7 @@ if (!window.__fsiLoaded) {
 이번 자료는 정적인 장표 대신 단계별로 움직이는 그림으로 준비했습니다. 화면 오른쪽 아래 버튼이나 키보드 아래 화살표로 단계를 넘기겠습니다.
 
 {cue: transition}
-먼저 오늘 30분의 순서를 보겠습니다.
-:::
-
----
-<!-- Slide 2: Agenda (PDF p2) -->
-@type: content
-@fit: off
-
-## 강의 30분, 실습은 13:00 통합 랩
-네 개의 Part와 Lab, 작동 원리에서 이틀간의 학습 지도까지
-
-:::html
-<div class="fsi fsi-agenda">
-  <div class="fsi-grid-4">
-    <div class="pick"><span class="k">PART 01 / 7분</span><span class="t">에이전트 루프</span><span class="d">모델과 도구가 함께 일하는 방식</span></div>
-    <div class="pick"><span class="k">PART 02 / 8분</span><span class="t">컨텍스트와 세션</span><span class="d">무엇이 들어가고 어디에 남나</span></div>
-    <div class="pick"><span class="k">PART 03 / 9분</span><span class="t">권한과 데이터 경로</span><span class="d">Bedrock에서 데이터가 가는 길</span></div>
-    <div class="pick"><span class="k">PART 04 / 6분</span><span class="t">이틀 동안 배울 것</span><span class="d">관리와 활용, 두 갈래</span></div>
-  </div>
-  <div class="fsi-grid-2">
-    <div class="pick lab"><span class="k">LAB / 점심 뒤 13:00 통합 랩</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
-    <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">CLAUDE.md 계층, 추론 리전과 데이터 위치</span></div>
-  </div>
-</div>
-:::
-
-
-:::notes
-{timing: 0.5min}
-[요약]
-• 강의는 네 Part, 7분 8분 9분 6분으로 총 30분
-• 실습은 점심 뒤 13:00 통합 랩에서 Ch2 Lab과 함께 진행 (Preflight + 에이전트 루프 관찰)
-• 더 알아보기는 시간이 남거나 질문이 나올 때 사용
-
-오늘은 네 Part로 진행합니다.
-첫째, 한 번의 요청이 처리되는 에이전트 루프를 보고, 둘째, 그 루프에 무엇이 실리고 어디에 남는지 봅니다.
-셋째, 금융권에서 가장 많이 묻는 권한과 Bedrock 데이터 경로를 정리하고, 마지막으로 이틀 동안 어떤 순서로 배우는지 지도를 드리겠습니다.
-Ch1 실습은 바로 이어지지 않고, 점심 뒤 13시 통합 랩에서 Ch2 랩과 함께 진행합니다. 뒤쪽의 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
+순서를 보기 전에, 사전 설문 결과부터 함께 보겠습니다.
 :::
 
 ---
@@ -77,7 +40,7 @@ Ch1 실습은 바로 이어지지 않고, 점심 뒤 13시 통합 랩에서 Ch2 
 @type: content
 @fit: off
 
-## 10명 중 4명은 이제 막 시작했다
+## 10명 중 4명, 이제 막 출발선
 사전 설문 결과로 정한 이 챕터의 눈높이
 
 :::html
@@ -125,6 +88,46 @@ Ch1 실습은 바로 이어지지 않고, 점심 뒤 13시 통합 랩에서 Ch2 
 
 [출처]
 • 이번 워크숍 사전 설문, 참가 확정자 138명 기준
+
+{cue: transition}
+이 눈높이에 맞춰 짠 오늘 30분의 순서입니다.
+:::
+
+---
+<!-- Slide 2: Agenda (PDF p2) -->
+@type: content
+@fit: off
+
+## 강의 30분, 실습은 13:00 통합 랩
+네 개의 Part와 Lab, 작동 원리에서 이틀간의 학습 지도까지
+
+:::html
+<div class="fsi fsi-agenda">
+  <div class="fsi-grid-4">
+    <div class="pick"><span class="k">PART 01 / 7분</span><span class="t">에이전트 루프</span><span class="d">모델과 도구가 함께 일하는 방식</span></div>
+    <div class="pick"><span class="k">PART 02 / 8분</span><span class="t">컨텍스트와 세션</span><span class="d">무엇이 들어가고 어디에 남나</span></div>
+    <div class="pick"><span class="k">PART 03 / 9분</span><span class="t">권한과 데이터 경로</span><span class="d">Bedrock에서 데이터가 가는 길</span></div>
+    <div class="pick"><span class="k">PART 04 / 6분</span><span class="t">이틀 동안 배울 것</span><span class="d">관리와 활용, 두 갈래</span></div>
+  </div>
+  <div class="fsi-grid-2">
+    <div class="pick lab"><span class="k">LAB / 점심 뒤 13:00 통합 랩</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
+    <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">CLAUDE.md 계층, 추론 리전과 데이터 위치</span></div>
+  </div>
+</div>
+:::
+
+
+:::notes
+{timing: 0.5min}
+[요약]
+• 강의는 네 Part, 7분 8분 9분 6분으로 총 30분
+• 실습은 점심 뒤 13:00 통합 랩에서 Ch2 Lab과 함께 진행 (Preflight + 에이전트 루프 관찰)
+• 더 알아보기는 시간이 남거나 질문이 나올 때 사용
+
+오늘은 네 Part로 진행합니다.
+첫째, 한 번의 요청이 처리되는 에이전트 루프를 보고, 둘째, 그 루프에 무엇이 실리고 어디에 남는지 봅니다.
+셋째, 금융권에서 가장 많이 묻는 권한과 Bedrock 데이터 경로를 정리하고, 마지막으로 이틀 동안 어떤 순서로 배우는지 지도를 드리겠습니다.
+Ch1 실습은 바로 이어지지 않고, 점심 뒤 13시 통합 랩에서 Ch2 랩과 함께 진행합니다. 뒤쪽의 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
 :::
 
 ---
@@ -174,7 +177,7 @@ Ch1 실습은 바로 이어지지 않고, 점심 뒤 13시 통합 랩에서 Ch2 
 @type: content
 @fit: off
 
-## 가운데 루프에 여덟 가지가 붙는다
+## 루프 하나, 기능 여덟 가지
 클릭하면 역할과 다루는 챕터를 보여 주는 Claude Code 전체 구조
 
 :::html
@@ -336,7 +339,7 @@ Ch1 실습은 바로 이어지지 않고, 점심 뒤 13시 통합 랩에서 Ch2 
 @type: content
 @fit: off
 
-## 기본 도구는 다섯 종류다
+## 기본 도구 다섯 종류
 주목할 내장 도구 2개와 도구를 더하는 방법 2개
 
 :::html
@@ -463,7 +466,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 컨텍스트에는 다섯 가지가 실린다
+## 컨텍스트에 실리는 다섯 가지
 항상 실리는 것과 필요할 때 오는 것, 그리고 줄이는 방법
 
 :::html
@@ -535,7 +538,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 세션은 내 PC의 평문 파일이다
+## 세션 = 내 PC의 평문 파일
 세션 파일, 세션 명령, 보존 기간, 체크포인트의 범위
 
 :::html
@@ -674,7 +677,7 @@ Part 2에서 하나만 기억하신다면 이 숫자입니다. CLAUDE.md는 200�
 @type: content
 @fit: off
 
-## Shift+Tab 한 번에 확인 방식이 바뀐다
+## Shift+Tab 한 번, 확인 방식 전환
 권한 모드 여섯 가지와 금융권 권고
 
 :::html
@@ -834,7 +837,7 @@ Bedrock 경로의 데이터 흐름과 그 밖의 통신
 @type: content
 @fit: off
 
-## 로컬에서 도는 기능은 전부 된다
+## 로컬 기능은 전부 가능
 Bedrock에서 되는 것, 안 되는 것, 조건부인 것
 
 :::html
@@ -1194,7 +1197,7 @@ CLAUDE.md는 네 곳에 둘 수 있고 모두 합쳐 실립니다. 계층마다 
 @type: content
 @fit: off
 
-## 모델 ID 접두사가 처리 위치를 정한다
+## 모델 ID 접두사 = 처리 위치
 더 알아보기, 추론 리전과 데이터 위치
 
 :::html

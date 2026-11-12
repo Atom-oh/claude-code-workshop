@@ -326,6 +326,13 @@
     document.head.appendChild(v);
   }
 
+  // Hide/show tab for the left slide sidebar (loaded once, next to this file).
+  if (!window.__fsiSidebar && !document.querySelector('script[src$="assets/sidebar-toggle.js"]')) {
+    const sb = document.createElement('script');
+    sb.src = 'assets/sidebar-toggle.js';
+    document.head.appendChild(sb);
+  }
+
   const q = window.__fsiq || [];
   window.__fsiq = { push: fn => { try { fn(api); } catch (e) { console.error('[FSI]', e); } } };
   q.forEach(fn => window.__fsiq.push(fn));

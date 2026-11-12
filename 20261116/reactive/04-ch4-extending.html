@@ -24,33 +24,16 @@
   <h1 style="position:absolute; left:5%; top:48%; font-size:2.8rem; color:#fff; font-weight:300; line-height:1.2; width:53%; margin:0;">Chapter 4. Claude Code 확장하기</h1>
   <p style="position:absolute; left:5%; top:62%; font-size:1.3rem; color:rgba(255,255,255,0.8); width:53%; margin:0;">나의 Claude Code를 팀의 플랫폼으로 (2026.11, Claude Code v2.1.319, Bedrock 기준)</p>
   <div style="position:absolute; left:5%; top:76%;">
-    <p style="font-size:1.05rem; color:#fff; font-weight:600; margin:0;">Choi, WooHyung</p>
-    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:6px 0 0 0;">Prin. Solutions Architect</p>
+    <p style="font-size:1.05rem; color:#fff; font-weight:600; margin:0;">Huh, Jinsung</p>
+    <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:6px 0 0 0;">Sr. Solutions Architect</p>
     <p style="font-size:0.9rem; color:rgba(255,255,255,0.65); margin:2px 0 0 0;">AWS Korea</p>
   </div>
 
 </div>
 
 <div class="slide" data-remarp-id="s1" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s1-header"><h2>강의 35분 + 필수 랩 약 60분 (선택 12분)</h2></div>
+  <div class="slide-header" data-remarp-id="s1-header"><h2>기대 주제 2위, 팀 표준화</h2></div>
   <div class="slide-body" data-remarp-id="s1-body">
-    <p><!-- Slide 2: Agenda (PDF p2) --></p>
-<p>세 개의 Part와 Super Lab, 개인 설정에서 팀의 플랫폼까지</p>
-<div class="fsi fsi-agenda">
-  <div class="fsi-grid-4">
-    <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
-    <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
-    <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
-    <div class="pick lab"><span class="k">SUPER LAB / 약 60분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
-  </div>
-  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
-</div>
-  </div>
-</div>
-
-<div class="slide" data-remarp-id="s2" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s2-header"><h2>팀 표준화는 기대 주제 2위였다</h2></div>
-  <div class="slide-body" data-remarp-id="s2-body">
     <p><!-- Slide 3: Pre-survey (PDF p3) --></p>
 <p>사전 설문 결과로 정한 이 챕터의 목표</p>
 <div class="fsi fsi-survey c5-survey">
@@ -65,6 +48,23 @@
     <div class="tr"><i></i></div>
     <p class="rank">기대 주제 2위, 복수 선택 문항</p>
   </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s2" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
+  <div class="slide-header" data-remarp-id="s2-header"><h2>강의 35분 + 필수 랩 약 60분 (선택 12분)</h2></div>
+  <div class="slide-body" data-remarp-id="s2-body">
+    <p><!-- Slide 2: Agenda (PDF p2) --></p>
+<p>세 개의 Part와 Super Lab, 개인 설정에서 팀의 플랫폼까지</p>
+<div class="fsi fsi-agenda">
+  <div class="fsi-grid-4">
+    <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
+    <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
+    <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
+    <div class="pick lab"><span class="k">SUPER LAB / 약 60분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
+  </div>
+  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
 </div>
   </div>
 </div>
@@ -133,7 +133,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s6" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s6-header"><h2>폴더 하나에 팀의 표준을 담는다</h2></div>
+  <div class="slide-header" data-remarp-id="s6-header"><h2>폴더 하나 = 팀의 표준</h2></div>
   <div class="slide-body" data-remarp-id="s6-body">
     <p><!-- Slide 7: Plugin structure (PDF p7, p25) --></p>
 <p>플러그인 디렉터리 구성과 각 파일의 역할</p>
@@ -217,7 +217,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s11" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s11-header"><h2>git clone이 안 되면 미리 심어 둔다</h2></div>
+  <div class="slide-header" data-remarp-id="s11-header"><h2>git clone 불가 환경엔 사전 배치</h2></div>
   <div class="slide-body" data-remarp-id="s11-body">
     <p><!-- Slide 12: Air-gapped and CI (PDF p12, p26) --></p>
 <p>망분리와 CI는 CLAUDE_CODE_PLUGIN_SEED_DIR</p>
@@ -226,7 +226,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s12" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s12-header"><h2>설치했다면 쓰이는지도 본다</h2></div>
+  <div class="slide-header" data-remarp-id="s12-header"><h2>설치 다음은 사용 확인</h2></div>
   <div class="slide-body" data-remarp-id="s12-body">
     <p><!-- Slide 13: Measure after deploy (PDF p13) --></p>
 <p>배포 후 측정, OTel 이벤트 두 개와 이름 가림</p>
@@ -276,7 +276,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s15" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s15-header"><h2>도구 호출 수를 스피너 옆에 띄운다</h2></div>
+  <div class="slide-header" data-remarp-id="s15-header"><h2>스피너 옆 도구 호출 수</h2></div>
   <div class="slide-body" data-remarp-id="s15-body">
     <p><!-- Slide 16: Smallest mod (PDF p16) --></p>
 <p>가장 작은 mod, 이벤트 두 개를 다루는 register.js</p>
@@ -285,7 +285,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s16" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s16-header"><h2>다른 수단으로 되면 mod는 쓰지 않는다</h2></div>
+  <div class="slide-header" data-remarp-id="s16-header"><h2>mod는 최후의 수단</h2></div>
   <div class="slide-body" data-remarp-id="s16-body">
     <p><!-- Slide 17: Mod vs other extensions (PDF p17) --></p>
 <p>mod와 다른 확장 비교, 바꿀 수 있는 것과 작성 언어</p>
@@ -308,7 +308,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s17" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s17-header"><h2>공식 샘플 셋으로 감을 잡는다</h2></div>
+  <div class="slide-header" data-remarp-id="s17-header"><h2>공식 샘플 셋으로 감 잡기</h2></div>
   <div class="slide-body" data-remarp-id="s17-body">
     <p><!-- Slide 18: Official sample mods (PDF p18) --></p>
 <p>claude-code-playground 저장소, 공식 지원 대상은 아님</p>
@@ -330,7 +330,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s18" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s18-header"><h2>mod는 사용자 권한으로 모든 것에 닿는다</h2></div>
+  <div class="slide-header" data-remarp-id="s18-header"><h2>mod의 범위 = 사용자 권한 전부</h2></div>
   <div class="slide-body" data-remarp-id="s18-body">
     <p><!-- Slide 19: Trust model (PDF p19) --></p>
 <p>설치 전에 알아야 할 신뢰 모델, 닿는 것과 막히는 것</p>
@@ -382,7 +382,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s22" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s22-header"><h2>약 60분 동안 팀 스타터 킷을 만든다</h2></div>
+  <div class="slide-header" data-remarp-id="s22-header"><h2>약 60분, 팀 스타터 킷 제작</h2></div>
   <div class="slide-body" data-remarp-id="s22-body">
     <p><!-- Slide 23: Super Lab (PDF p23) --></p>
 <p>SUPER LAB, 팀 스타터 킷 플러그인 + mod</p>
@@ -400,7 +400,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s23" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s23-header"><h2>올리기 전에 여섯 가지를 확인한다</h2></div>
+  <div class="slide-header" data-remarp-id="s23-header"><h2>배포 전 여섯 가지 점검</h2></div>
   <div class="slide-body" data-remarp-id="s23-body">
     <p><!-- Slide 24: Pre-deploy checklist (PDF p24) --></p>
 <p>사내 배포 전 체크리스트, 눌러서 하나씩 확인</p>
@@ -439,7 +439,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s25" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s25-header"><h2>마켓플레이스는 네 곳에서 온다</h2></div>
+  <div class="slide-header" data-remarp-id="s25-header"><h2>마켓플레이스의 네 출처</h2></div>
   <div class="slide-body" data-remarp-id="s25-body">
     <p><!-- Slide 26: Marketplace sources (PDF p27) --></p>
 <p>더 알아보기, /plugin marketplace add로 등록하는 소스</p>
@@ -462,7 +462,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s26" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s26-header"><h2>사내 git으로 등록하고 강제한다</h2></div>
+  <div class="slide-header" data-remarp-id="s26-header"><h2>사내 git 등록과 강제</h2></div>
   <div class="slide-body" data-remarp-id="s26-body">
     <p><!-- Slide 27: Org deploy settings (PDF p28) --></p>
 <p>더 알아보기, 조직 배포 설정과 함께 거는 잠금</p>
@@ -492,7 +492,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s27" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s27-header"><h2>남이 만든 mod에는 샌드박스가 없다</h2></div>
+  <div class="slide-header" data-remarp-id="s27-header"><h2>남의 mod, 샌드박스 없음</h2></div>
   <div class="slide-body" data-remarp-id="s27-body">
     <p><!-- Slide 28: Mod events and reviewing others' mods (PDF p29, p30) --></p>
 <p>더 알아보기, validate 두 줄 읽기와 리뷰 여섯 항목</p>
@@ -528,7 +528,7 @@
 </div>
 
 <div class="slide" data-remarp-id="s28" data-fit="off" data-block="04-ch4-extending" data-block-title="Chapter 4. Claude Code 확장하기">
-  <div class="slide-header" data-remarp-id="s28-header"><h2>배포 후에는 네 가지를 본다</h2></div>
+  <div class="slide-header" data-remarp-id="s28-header"><h2>배포 후 확인할 네 가지</h2></div>
   <div class="slide-body" data-remarp-id="s28-body">
     <p><!-- Slide 29: Plugin ops metrics (PDF p31) --></p>
 <p>더 알아보기, 플러그인 운영 지표</p>
@@ -918,9 +918,9 @@
 <script>
 
   const presenterNotes = {
-    1: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 4, Claude Code \ud655\uc7a5\ud558\uae30 (Plugins\uc640 Mods)\n\u2022 \uac1c\uc778\uc774 \uc313\uc740 \uc124\uc815\uc744 \ud300\uc758 \ud50c\ub7ab\ud3fc\uc73c\ub85c \ubb36\uc5b4 \ubc30\ud3ec\ud558\ub294 \ucc55\ud130\n\u2022 2026\ub144 11\uc6d4, Claude Code v2.1.319 (2026-11-08 \ub9ac\ud5c8\uc124 \uac80\uc99d), Amazon Bedrock \uae30\uc900\n\n\ub458\uc9f8 \ub0a0 \uccab \ucc55\ud130, Claude Code \ud655\uc7a5\ud558\uae30\ub97c \uc2dc\uc791\ud558\uaca0\uc2b5\ub2c8\ub2e4. \ub3c4\uad6c\ub294 Plugins\uc640 Mods\uc785\ub2c8\ub2e4.\n\uc5b4\uc81c Ch2\uc5d0\uc11c \ub9cc\ub4e0 DLP \ud6c5\uacfc Ch3\uc5d0\uc11c \ub9cc\ub4e0 Subagent\ub97c \uc624\ub298\uc740 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4\uc11c \ud300 \uc804\uccb4\uc5d0 \ubc30\ud3ec\ud569\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 Claude Code \uc548\uc5d0\uc11c \uc9c1\uc811 \ub3c4\ub294 \ucf54\ub4dc\uc778 mod\uae4c\uc9c0 \ub2e4\ub8f9\ub2c8\ub2e4.\n\n\n\uba3c\uc800 \uc624\ub298\uc758 \uc21c\uc11c\ub97c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
-    2: "[0.5min] [\uc694\uc57d]\n\u2022 \uac15\uc758\ub294 \uc138 Part, 12\ubd84 10\ubd84 13\ubd84\uc73c\ub85c 35\ubd84\n\u2022 \uc774\uc5b4\uc11c \ud544\uc218 Super Lab \uc57d 60\ubd84(\uc120\ud0dd TASK 06 12\ubd84 \ubcc4\ub3c4), \ud300 \uc2a4\ud0c0\ud130 \ud0b7\uacfc mod\ub97c \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uae30\n\u2022 \uc9c4\ud589\uc790 \uba54\ubaa8: \uac15\uc758 35\ubd84 + \ub7a9 \uc57d 61\ubd84\uc73c\ub85c \uc57d 95\ubd84, 90\ubd84 \uc2ac\ub86f\ubcf4\ub2e4 5\ubd84 \uc815\ub3c4 \uae40. \ubaa8\uc790\ub77c\uba74 TASK 07~08(mod \ud1b5\uc81c\uc640 \uccb4\ud06c\ub9ac\uc2a4\ud2b8, \uc57d 10\ubd84)\uc744 Capstone R2 \uc2dc\uc791 \ub54c \uc9c4\ud589\n\u2022 \ub354 \uc54c\uc544\ubcf4\uae30\ub294 \uc9c8\ubb38\uc774 \ub098\uc624\uba74 \ud3bc\uce68\n\n\uc624\ub298\uc740 \uc138 Part\ub85c \uc9c4\ud589\ud569\ub2c8\ub2e4. \uccab\uc9f8, \ud50c\ub7ec\uadf8\uc778\uc774 \ubb34\uc5c7\uc774\uace0 \uc5b4\ub5bb\uac8c \uc0dd\uacbc\ub294\uc9c0, \ub458\uc9f8, \ud68c\uc0ac\uc5d0\uc11c \uc5b4\ub5bb\uac8c \uac15\uc81c\ub85c \ubc30\ud3ec\ud558\uace0 \ucd9c\ucc98\ub97c \uc81c\ud55c\ud558\ub294\uc9c0, \uc14b\uc9f8, Claude Code \uc548\uc5d0\uc11c \ub3c4\ub294 \ucf54\ub4dc\uc778 mod\uc785\ub2c8\ub2e4.\n\uac15\uc758 35\ubd84\uc774 \ub05d\ub098\uba74 \uc57d 60\ubd84 \ub3d9\uc548 Super Lab\uc5d0\uc11c \uc9c1\uc811 \ud300 \uc2a4\ud0c0\ud130 \ud0b7\uc744 \ub9cc\ub4e4\uc5b4 \ubd05\ub2c8\ub2e4. \uc120\ud0dd TASK 06\uc740 12\ubd84\uc774 \ub354 \uac78\ub9bd\ub2c8\ub2e4.\n\uc9c4\ud589\uc790 \uba54\ubaa8\uc785\ub2c8\ub2e4. \uac15\uc758\uc640 \ub7a9\uc744 \ud569\uce58\uba74 \uc57d 95\ubd84\uc774\ub77c 90\ubd84 \uc2ac\ub86f\ubcf4\ub2e4 5\ubd84 \uc815\ub3c4 \uae41\ub2c8\ub2e4. \uc2dc\uac04\uc774 \ubaa8\uc790\ub77c\uba74 TASK 07\uacfc 08, mod \ud1b5\uc81c\uc640 \uccb4\ud06c\ub9ac\uc2a4\ud2b8 \uc57d 10\ubd84\uc740 Capstone Round 2\ub97c \uc2dc\uc791\ud560 \ub54c \uc9c4\ud589\ud569\ub2c8\ub2e4.",
-    3: "[1min] [\uc694\uc57d]\n\u2022 138\uba85 \uc911 58\uba85\uc774 \ud300 \ud45c\uc900\ud654(\uc124\uc815, \uad8c\ud55c, \ud6c5, MCP)\ub97c \uae30\ub300 \uc8fc\uc81c\ub85c \uc120\ud0dd\n\u2022 \uae30\ub300 \uc8fc\uc81c 2\uc704, \ubcf5\uc218 \uc120\ud0dd\n\u2022 \uadf8 \ud45c\uc900\uc744 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4 \ubc30\ud3ec\ud558\ub294 \uac83\uc774 \uc774 \ucc55\ud130\uc758 \ubaa9\ud45c\n\n\uc0ac\uc804 \uc124\ubb38\uc5d0\uc11c 138\ubd84 \uc911 58\ubd84\uc774 \ud300 \ud45c\uc900\ud654\ub97c \uae30\ub300 \uc8fc\uc81c\ub85c \uace0\ub974\uc168\uc2b5\ub2c8\ub2e4. \uc124\uc815, \uad8c\ud55c, \ud6c5, MCP\ub97c \ud300\uc774 \ub611\uac19\uc774 \uc4f0\ub294 \ubc29\ubc95\uc774\uace0, \ubcf5\uc218 \uc120\ud0dd\uc5d0\uc11c 2\uc704\uc600\uc2b5\ub2c8\ub2e4.\n\uc5b4\uc81c\uae4c\uc9c0 \uac01\uc790 \ub9cc\ub4e0 \uac83\ub4e4\uc744 \uc624\ub298\uc740 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4, \uc124\uce58 \ud55c \uc904\ub85c \ub3d9\ub8cc\uac00 \uac19\uc740 \ud658\uacbd\uc744 \uac16\uac8c \ub9cc\ub4dc\ub294 \uac83\uc774 \ubaa9\ud45c\uc785\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 \uc774\ubc88 \uc6cc\ud06c\uc20d \uc0ac\uc804 \uc124\ubb38, \ucc38\uac00 \ud655\uc815\uc790 138\uba85 \uae30\uc900",
+    1: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 4, Claude Code \ud655\uc7a5\ud558\uae30 (Plugins\uc640 Mods)\n\u2022 \uac1c\uc778\uc774 \uc313\uc740 \uc124\uc815\uc744 \ud300\uc758 \ud50c\ub7ab\ud3fc\uc73c\ub85c \ubb36\uc5b4 \ubc30\ud3ec\ud558\ub294 \ucc55\ud130\n\u2022 2026\ub144 11\uc6d4, Claude Code v2.1.319 (2026-11-08 \ub9ac\ud5c8\uc124 \uac80\uc99d), Amazon Bedrock \uae30\uc900\n\n\ub458\uc9f8 \ub0a0 \uccab \ucc55\ud130, Claude Code \ud655\uc7a5\ud558\uae30\ub97c \uc2dc\uc791\ud558\uaca0\uc2b5\ub2c8\ub2e4. \ub3c4\uad6c\ub294 Plugins\uc640 Mods\uc785\ub2c8\ub2e4.\n\uc5b4\uc81c Ch2\uc5d0\uc11c \ub9cc\ub4e0 DLP \ud6c5\uacfc Ch3\uc5d0\uc11c \ub9cc\ub4e0 Subagent\ub97c \uc624\ub298\uc740 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4\uc11c \ud300 \uc804\uccb4\uc5d0 \ubc30\ud3ec\ud569\ub2c8\ub2e4.\n\uadf8\ub9ac\uace0 Claude Code \uc548\uc5d0\uc11c \uc9c1\uc811 \ub3c4\ub294 \ucf54\ub4dc\uc778 mod\uae4c\uc9c0 \ub2e4\ub8f9\ub2c8\ub2e4.\n\n\n\uc21c\uc11c\ub97c \ubcf4\uae30 \uc804\uc5d0, \uc0ac\uc804 \uc124\ubb38 \uacb0\uacfc\ubd80\ud130 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
+    2: "[1min] [\uc694\uc57d]\n\u2022 138\uba85 \uc911 58\uba85\uc774 \ud300 \ud45c\uc900\ud654(\uc124\uc815, \uad8c\ud55c, \ud6c5, MCP)\ub97c \uae30\ub300 \uc8fc\uc81c\ub85c \uc120\ud0dd\n\u2022 \uae30\ub300 \uc8fc\uc81c 2\uc704, \ubcf5\uc218 \uc120\ud0dd\n\u2022 \uadf8 \ud45c\uc900\uc744 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4 \ubc30\ud3ec\ud558\ub294 \uac83\uc774 \uc774 \ucc55\ud130\uc758 \ubaa9\ud45c\n\n\uc0ac\uc804 \uc124\ubb38\uc5d0\uc11c 138\ubd84 \uc911 58\ubd84\uc774 \ud300 \ud45c\uc900\ud654\ub97c \uae30\ub300 \uc8fc\uc81c\ub85c \uace0\ub974\uc168\uc2b5\ub2c8\ub2e4. \uc124\uc815, \uad8c\ud55c, \ud6c5, MCP\ub97c \ud300\uc774 \ub611\uac19\uc774 \uc4f0\ub294 \ubc29\ubc95\uc774\uace0, \ubcf5\uc218 \uc120\ud0dd\uc5d0\uc11c 2\uc704\uc600\uc2b5\ub2c8\ub2e4.\n\uc5b4\uc81c\uae4c\uc9c0 \uac01\uc790 \ub9cc\ub4e0 \uac83\ub4e4\uc744 \uc624\ub298\uc740 \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uc5b4, \uc124\uce58 \ud55c \uc904\ub85c \ub3d9\ub8cc\uac00 \uac19\uc740 \ud658\uacbd\uc744 \uac16\uac8c \ub9cc\ub4dc\ub294 \uac83\uc774 \ubaa9\ud45c\uc785\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 \uc774\ubc88 \uc6cc\ud06c\uc20d \uc0ac\uc804 \uc124\ubb38, \ucc38\uac00 \ud655\uc815\uc790 138\uba85 \uae30\uc900\n\n\n\uc774 \ubaa9\ud45c\uc5d0 \ub9de\ucd98 \uc624\ub298\uc758 \uc21c\uc11c\uc785\ub2c8\ub2e4.",
+    3: "[0.5min] [\uc694\uc57d]\n\u2022 \uac15\uc758\ub294 \uc138 Part, 12\ubd84 10\ubd84 13\ubd84\uc73c\ub85c 35\ubd84\n\u2022 \uc774\uc5b4\uc11c \ud544\uc218 Super Lab \uc57d 60\ubd84(\uc120\ud0dd TASK 06 12\ubd84 \ubcc4\ub3c4), \ud300 \uc2a4\ud0c0\ud130 \ud0b7\uacfc mod\ub97c \ud50c\ub7ec\uadf8\uc778 \ud558\ub098\ub85c \ubb36\uae30\n\u2022 \uc9c4\ud589\uc790 \uba54\ubaa8: \uac15\uc758 35\ubd84 + \ub7a9 \uc57d 61\ubd84\uc73c\ub85c \uc57d 95\ubd84, 90\ubd84 \uc2ac\ub86f\ubcf4\ub2e4 5\ubd84 \uc815\ub3c4 \uae40. \ubaa8\uc790\ub77c\uba74 TASK 07~08(mod \ud1b5\uc81c\uc640 \uccb4\ud06c\ub9ac\uc2a4\ud2b8, \uc57d 10\ubd84)\uc744 Capstone R2 \uc2dc\uc791 \ub54c \uc9c4\ud589\n\u2022 \ub354 \uc54c\uc544\ubcf4\uae30\ub294 \uc9c8\ubb38\uc774 \ub098\uc624\uba74 \ud3bc\uce68\n\n\uc624\ub298\uc740 \uc138 Part\ub85c \uc9c4\ud589\ud569\ub2c8\ub2e4. \uccab\uc9f8, \ud50c\ub7ec\uadf8\uc778\uc774 \ubb34\uc5c7\uc774\uace0 \uc5b4\ub5bb\uac8c \uc0dd\uacbc\ub294\uc9c0, \ub458\uc9f8, \ud68c\uc0ac\uc5d0\uc11c \uc5b4\ub5bb\uac8c \uac15\uc81c\ub85c \ubc30\ud3ec\ud558\uace0 \ucd9c\ucc98\ub97c \uc81c\ud55c\ud558\ub294\uc9c0, \uc14b\uc9f8, Claude Code \uc548\uc5d0\uc11c \ub3c4\ub294 \ucf54\ub4dc\uc778 mod\uc785\ub2c8\ub2e4.\n\uac15\uc758 35\ubd84\uc774 \ub05d\ub098\uba74 \uc57d 60\ubd84 \ub3d9\uc548 Super Lab\uc5d0\uc11c \uc9c1\uc811 \ud300 \uc2a4\ud0c0\ud130 \ud0b7\uc744 \ub9cc\ub4e4\uc5b4 \ubd05\ub2c8\ub2e4. \uc120\ud0dd TASK 06\uc740 12\ubd84\uc774 \ub354 \uac78\ub9bd\ub2c8\ub2e4.\n\uc9c4\ud589\uc790 \uba54\ubaa8\uc785\ub2c8\ub2e4. \uac15\uc758\uc640 \ub7a9\uc744 \ud569\uce58\uba74 \uc57d 95\ubd84\uc774\ub77c 90\ubd84 \uc2ac\ub86f\ubcf4\ub2e4 5\ubd84 \uc815\ub3c4 \uae41\ub2c8\ub2e4. \uc2dc\uac04\uc774 \ubaa8\uc790\ub77c\uba74 TASK 07\uacfc 08, mod \ud1b5\uc81c\uc640 \uccb4\ud06c\ub9ac\uc2a4\ud2b8 \uc57d 10\ubd84\uc740 Capstone Round 2\ub97c \uc2dc\uc791\ud560 \ub54c \uc9c4\ud589\ud569\ub2c8\ub2e4.",
     4: "[0.5min] [\uc694\uc57d]\n\u2022 \uc2a4\ud0ac, Subagent, \ud6c5, MCP, mod\ub97c \ud55c \ubc88\uc5d0 \ubc30\ud3ec\ud558\ub294 \ub2e8\uc704\uac00 \ud50c\ub7ec\uadf8\uc778\n\n\uc774 \ucc55\ud130\uc758 \ud55c \ubb38\uc7a5\uc785\ub2c8\ub2e4. \uc2a4\ud0ac, Subagent, \ud6c5, MCP, \uadf8\ub9ac\uace0 mod\uae4c\uc9c0 \ud55c \ubc88\uc5d0 \ubc30\ud3ec\ud55c\ub2e4.\n\ud769\uc5b4\uc838 \uc788\ub358 \ud655\uc7a5 \uc218\ub2e8\uc744 \ud558\ub098\uc758 \ubc30\ud3ec \ub2e8\uc704\ub85c \ubb36\ub294 \uac83, \uadf8\uac8c \ud50c\ub7ec\uadf8\uc778\uc785\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 MCP: Model Context Protocol",
     5: "[0.5min] [\uc694\uc57d]\n\u2022 Part 1\uc740 \ud50c\ub7ec\uadf8\uc778: \ud655\uc7a5 \ubc29\ubc95, \uad6c\uc870, \uc124\uce58\uc640 \uac31\uc2e0\n\n\uccab \ubc88\uc9f8 Part, \ud50c\ub7ec\uadf8\uc778\uc785\ub2c8\ub2e4. \ubb34\uc5c7\uc73c\ub85c \ud655\uc7a5\ud560 \uc218 \uc788\ub294\uc9c0 \uc9c0\ub3c4\ub97c \uba3c\uc800 \ubcf4\uace0, \ud50c\ub7ec\uadf8\uc778 \ud3f4\ub354\uac00 \uc5b4\ub5bb\uac8c \uc0dd\uacbc\ub294\uc9c0, \uc5b4\ub5bb\uac8c \uc124\uce58\ud558\uace0 \uac31\uc2e0\ud558\ub294\uc9c0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
     6: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \ud655\uc7a5 \ubc29\ubc95\uc740 CLAUDE.md, \uc2a4\ud0ac, Subagent, \ud6c5, MCP, mod \uc5ec\uc12f \uac00\uc9c0\n\u2022 CLAUDE.md\ub294 managed CLAUDE.md\ub098 \uc800\uc7a5\uc18c\ub85c, \ub098\uba38\uc9c0 5\uc885\uc740 \ud55c \ub514\ub809\ud130\ub9ac\uc5d0 \ub2f4\uc544 \ud50c\ub7ec\uadf8\uc778\uc73c\ub85c \ubc30\ud3ec\n\u2022 \ubb34\uc5c7\uc744 \uc4f8\uc9c0\ub294 \"\uc5b8\uc81c, \ub204\uac00, \ubb34\uc5c7\uc744 \ubc14\uafb8\ub294\uac00\"\ub85c \uace0\ub984\n\nClaude Code\ub97c \ud655\uc7a5\ud558\ub294 \ubc29\ubc95\uc740 \uc5ec\uc12f \uac00\uc9c0\uc785\ub2c8\ub2e4.\n\n\uc544\ub798 \ud654\uc0b4\ud45c\ub85c \ud558\ub098\uc529 \uc5f4\uc5b4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. CLAUDE.md\ub294 \ud56d\uc0c1 \uc54c\uc544\uc57c \ud560 \uc9e7\uc740 \uc9c0\uce68, \uc2a4\ud0ac\uc740 \uac19\uc740 \uc9c0\uc2dc\ub97c \ubc18\ubcf5\ud560 \ub54c \ud544\uc694\ud560 \ub54c\ub9cc \ubd88\ub7ec\uc624\ub294 \uac83, Subagent\ub294 \uc5ed\ud560\uacfc \ub3c4\uad6c\ub97c \ub098\ub220 \ub9e1\uae38 \ub54c, \ud6c5\uc740 \uc774\ubca4\ud2b8\uc5d0 \uc2a4\ud06c\ub9bd\ud2b8\ub85c \ub9c9\uac70\ub098 \uae30\ub85d\ud560 \ub54c, MCP\ub294 \uc678\ubd80 \uc2dc\uc2a4\ud15c\uc5d0 \ub2ff\uc544\uc57c \ud560 \ub54c, \uadf8\ub9ac\uace0 mod\ub294 \ud654\uba74\uc774\ub098 \ucee4\ub9e8\ub4dc, \uc774\ubca4\ud2b8 \uc790\uccb4\ub97c \ubc14\uafc0 \ub54c \uc501\ub2c8\ub2e4.\nCLAUDE.md\ub294 managed CLAUDE.md\ub098 \uc800\uc7a5\uc18c\ub85c \ubc30\ud3ec\ud558\uace0, \ub098\uba38\uc9c0 \ub2e4\uc12f \uac00\uc9c0\ub97c \ud55c \ub514\ub809\ud130\ub9ac\uc5d0 \ub2f4\uc544 \ubc30\ud3ec\ud558\ub294 \ub2e8\uc704\uac00 \ud50c\ub7ec\uadf8\uc778\uc785\ub2c8\ub2e4.\n\uc5b4\ub5a4 \uac83\uc744 \uace0\ub97c\uc9c0\ub294 \uc5b8\uc81c, \ub204\uac00, \ubb34\uc5c7\uc744 \ubc14\uafb8\ub294\uac00\ub97c \uae30\uc900\uc73c\ub85c \uc0dd\uac01\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 MCP: Model Context Protocol",

@@ -2,7 +2,7 @@
 
 /* Agenda */
 .c4-agenda { display: flex; flex-direction: column; gap: var(--space-5); justify-content: center; }
-.c4-agenda .fsi-grid-3 .pick { min-height: 13rem; display: flex; flex-direction: column; justify-content: flex-end; cursor: default; }
+.c4-agenda .fsi-grid-3 .pick, .c4-agenda .fsi-grid-4 .pick { min-height: 13rem; display: flex; flex-direction: column; justify-content: flex-end; cursor: default; }
 .c4-agenda .pick .t { font-size: var(--fs-subtitle); }
 .c4-agenda .pick .d { font-size: var(--fs-card); }
 .c4-agenda .lab { cursor: default; border-color: var(--accent); }
@@ -152,3 +152,46 @@
 .slide-deck #c4-sv-ci .sv-pre, .slide-deck #c4-sv-headless .sv-pre { word-break: normal; overflow-wrap: anywhere; }
 .c4-diff .rw .c { overflow-wrap: anywhere; }
 .slide-deck #c4-sv-headless .sv-body b, .slide-deck #c4-sv-ci .sv-body b { white-space: nowrap; }
+
+/* Branch and context (Subagent, Fork, session branch as a git graph) */
+.c4-branch { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: var(--space-5); align-items: center; }
+.c4-branch .graph { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.c4-branch svg { width: 100%; height: auto; overflow: visible; }
+.c4-branch .ll { font-size: 26px; font-weight: 700; fill: var(--text-primary); }
+.c4-branch .ll.main { fill: var(--accent); } .c4-branch .ll.sub { fill: var(--info); }
+.c4-branch .ll.fork { fill: var(--success); } .c4-branch .ll.sess { fill: var(--text-secondary); }
+.c4-branch .cl { font-size: 19px; fill: var(--text-secondary); text-anchor: middle; }
+.c4-branch .note { font-size: 21px; fill: var(--text-primary); }
+.c4-branch .note.dim { fill: var(--text-secondary); }
+.c4-branch .tag { font-size: 20px; font-weight: 700; fill: var(--text-secondary); text-anchor: middle; }
+.c4-branch .tag.ok { fill: var(--success); }
+.c4-branch .tag:not(.end) { text-anchor: start; } .c4-branch .tag.end { text-anchor: end; }
+.c4-branch .br { transition: opacity .3s ease; }
+.c4-branch .br path, .c4-branch .br line { fill: none; stroke-linecap: round; }
+.c4-branch .br.main .trunk { stroke: var(--accent); stroke-width: 10; }
+.c4-branch .br.main circle { fill: var(--surface-1); stroke: var(--accent); stroke-width: 5; }
+.c4-branch .br.main circle.merge { fill: var(--accent); }
+.c4-branch .br .tool { fill: var(--surface-1); stroke-width: 4; }
+.c4-branch .br.sub path, .c4-branch .br.sub line { stroke: var(--info); stroke-width: 5; }
+.c4-branch .br.sub .tool { stroke: var(--info); }
+.c4-branch .br.fork path, .c4-branch .br.fork line { stroke: var(--success); stroke-width: 5; }
+.c4-branch .br.fork path.thick { stroke-width: 18; stroke-opacity: .85; }
+.c4-branch .br.fork .tool { stroke: var(--success); }
+.c4-branch .br.sess path, .c4-branch .br.sess line { stroke: var(--text-secondary); stroke-width: 5; stroke-dasharray: 12 9; }
+.c4-branch .br.sess path.arrow { fill: var(--text-secondary); stroke: none; }
+.c4-branch .br.sess .tool { stroke: var(--text-secondary); }
+.c4-branch .br .back { stroke-dasharray: 3 9; stroke-width: 5; }
+.c4-branch .chip { fill: var(--info); opacity: 0; }
+.c4-branch .chip.big { fill: var(--success); }
+.c4-branch .br.on .chip { opacity: 1; }
+.c4-branch.focus .br[data-k]:not(.on) { opacity: .18; }
+.c4-branch .cap { margin: 0; min-height: 3em; font-size: var(--fs-card); color: var(--text-primary); }
+.c4-branch .cmp { width: 100%; border-collapse: collapse; font-size: var(--fs-caption); }
+.c4-branch .cmp th, .c4-branch .cmp td { text-align: left; padding: var(--space-3) var(--space-3); border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-secondary); }
+.c4-branch .cmp thead th { color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.c4-branch .cmp tbody th { color: var(--text-primary); white-space: nowrap; }
+.c4-branch .cmp tbody tr { cursor: pointer; transition: background .2s ease, opacity .2s ease; }
+.c4-branch .cmp tbody tr.on { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.c4-branch .cmp tbody tr.on td, .c4-branch .cmp tbody tr.on th { color: var(--text-primary); }
+.c4-branch.focus .cmp tbody tr:not(.on) { opacity: .45; }
+@media (prefers-reduced-motion: reduce) { .c4-branch .chip { display: none; } }
