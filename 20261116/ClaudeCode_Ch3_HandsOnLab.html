@@ -130,7 +130,7 @@ head -1 pseudo/customers.csv &amp;&amp; wc -l pseudo/customers.csv</code></pre><
 <ol>
 <li data-lines="1">use_bedrock_direct는 실습 환경에 준비된 명령으로, 기본 모드(Bedrock 직접 호출)로 맞춥니다. &gt;/dev/null은 화면에 나오는 출력을 버린다는 뜻입니다.</li>
 <li data-lines="2-3">키트(mydata-kit.zip)의 S3 주소를 KIT 변수에 담고, ~/claude-lab/mydata/pseudo 폴더가 없을 때만 내려받아 풉니다. 이미 받았다면 아무것도 하지 않습니다.</li>
-<li data-lines="4-5">이번 랩의 작업 폴더 ch4를 만들고 들어갑니다. ln -sfn은 pseudo라는 이름의 바로가기(심볼릭 링크)를 만들어 가명 데이터 폴더를 가리키게 하고, 이미 있으면 덮어씁니다.</li>
+<li data-lines="4-5">이번 랩의 작업 폴더 ch3를 만들고 들어갑니다. ln -sfn은 pseudo라는 이름의 바로가기(심볼릭 링크)를 만들어 가명 데이터 폴더를 가리키게 하고, 이미 있으면 덮어씁니다.</li>
 <li data-lines="7-13">heredoc은 여러 줄을 한 번에 파일로 쓰는 방법입니다. 8-12줄이 CLAUDE.md 내용이고, 'EOF'의 따옴표 덕분에 안의 글자를 셸이 해석하지 않고 그대로 저장합니다. CLAUDE.md는 Claude Code가 이 폴더에서 시작할 때 읽는 프로젝트 지침으로, 목표와 읽을 데이터 범위를 정해 둡니다.</li>
 <li data-lines="15-18">이 폴더를 git 저장소로 만들고, 이름과 이메일이 없을 때만 임시 값을 넣은 뒤 첫 커밋을 합니다. 이미 커밋이 있어 실패해도 || true 덕분에 블록이 멈추지 않습니다.</li>
 <li data-lines="19">customers.csv의 첫 줄(헤더)과 전체 줄 수를 보여줍니다. 링크가 제대로 걸렸는지 확인하는 줄입니다.</li>

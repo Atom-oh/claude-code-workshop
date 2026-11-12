@@ -24,7 +24,7 @@ site compilation step, or automated test suite.
 
 The November event uses six chapters (renumbered 2026-11-09, PR #20). Use
 these numbers and titles in every deck, lab, portal, invitation, and video
-change; old numbers in learner folders are legacy.
+change. Learner folders follow the same numbers (see the folder rule below).
 
 | Ch | Title | Former content | Lab page(s) | Reactive deck |
 | --- | --- | --- | --- | --- |

@@ -128,13 +128,13 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <li data-lines="1">use_bedrock_direct는 실습 환경에 준비된 명령으로, Claude Code를 Bedrock 직접 호출 모드로 맞춥니다. &gt;/dev/null은 화면 출력을 버린다는 뜻입니다.</li>
 <li data-lines="2">claude --version으로 버전을 봅니다. 2.1.287 이상이어야 이 챕터의 기능이 모두 있습니다.</li>
 <li data-lines="3-4">키트의 S3 주소를 KIT 변수에 담고, <code>~/claude-lab/mydata/pseudo</code> 폴더가 <strong>없을 때만</strong> 내려받아 풉니다. <code>[ -d … ] ||</code>는 폴더가 있으면 뒤를 건너뛴다는 뜻입니다. <code>WS_KIT</code>는 실습 환경이 미리 넣어 둔 이 이벤트의 키트 주소입니다. 이 값이 비어 있을 때만 <code>:-</code> 뒤의 공개 사본 주소를 씁니다.</li>
-<li data-lines="5-6">ch5 폴더와 에이전트 폴더를 만들고(<code>mkdir -p</code>는 이미 있어도 오류가 없습니다), ch5 안에 <code>pseudo</code> 바로가기(심볼릭 링크)를 걸어 TASK 01의 스킬이 데이터를 찾게 합니다.</li>
+<li data-lines="5-6">ch4 폴더와 Ch3의 에이전트 폴더(ch3)를 만들고(<code>mkdir -p</code>는 이미 있어도 오류가 없습니다), ch4 안에 <code>pseudo</code> 바로가기(심볼릭 링크)를 걸어 TASK 01의 스킬이 데이터를 찾게 합니다.</li>
 <li data-lines="7-9">세 에이전트 이름을 하나씩 돌며, 내 에이전트 파일이 <strong>없을 때만</strong> 키트의 Ch3 기준본을 복사합니다. 내가 만든 파일이 있으면 덮어쓰지 않습니다.</li>
 <li data-lines="10"><code>segments.md</code>도 같은 방식으로, 없을 때만 키트 기준본을 복사합니다.</li>
 <li data-lines="11-16">키트의 DLP 스크립트 경로를 CK에 담습니다. 설치된 <code>/opt/dlp/dlp-guard.sh</code>가 없거나 <code>cmp -s</code>(조용히 두 파일을 비교)로 기준본과 다르면, <code>sudo install -m 755</code>가 기준본을 실행 권한 755로 설치합니다. 같으면 안내 문구만 출력하고 아무것도 바꾸지 않습니다.</li>
 <li data-lines="17"><code>ls</code>로 에이전트 세 개, segments.md, dlp-guard.sh가 모두 있는지 보여 줍니다. CHECKPOINT에서 이 출력을 봅니다.</li>
 <li data-lines="18-19">managed-settings.json에서 <code>forceLoginMethod</code>, <code>forceLoginGatewayUrl</code> 두 키를 뺀 나머지가 빈 객체({})인지 <code>jq -e</code>로 확인합니다. 맞으면 "정책 상태: 깨끗함", 아니면 이전 챕터 정책이 남았다는 경고를 보여 줍니다.</li>
-<li data-lines="20-21">현재 정책 파일을 ch5의 백업 파일로 복사해 두고(TASK 07에서 원복에 씁니다), 내용을 보기 좋게 출력합니다.</li>
+<li data-lines="20-21">현재 정책 파일을 ch4의 백업 파일로 복사해 두고(TASK 07에서 원복에 씁니다), 내용을 보기 좋게 출력합니다.</li>
 </ol></details>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>"이전 챕터 정책이 남아 있습니다"가 나오면, 정책 초기화</strong></p>
@@ -222,7 +222,7 @@ head -4 ~/claude-lab/ch4/.claude/skills/retirement-gap/SKILL.md</code></pre></di
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch4 &amp;&amp; claude</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
-<li data-lines="1">ch5 폴더로 이동한 뒤 Claude Code를 시작합니다. 이 폴더의 <code>.claude/skills/</code>에 있는 스킬이 세션에 불러와집니다.</li>
+<li data-lines="1">ch4 폴더로 이동한 뒤 Claude Code를 시작합니다. 이 폴더의 <code>.claude/skills/</code>에 있는 스킬이 세션에 불러와집니다.</li>
 </ol></details>
 
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/retirement-gap (a)</code></pre></div>
@@ -820,7 +820,7 @@ cd ~/claude-lab/ch3 &amp;&amp; claude --plugin-dir ~/claude-lab/ch4/bedrock-idle
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
 <li data-lines="1"><code>sed -i</code>로 register.js의 기본값 두 개를 시연용으로 바꿉니다. 캐시 수명 300초를 75초로(여유 45초를 빼면 30초 idle 후 압축), 최소 컨텍스트를 8만에서 5천 토큰으로 줄입니다. <code>$B</code>는 앞 블록에서 정한 변수입니다.</li>
-<li data-lines="2">ch4 폴더에서 Claude Code를 열며 bedrock-idle-compact를 이번 세션에만 불러옵니다.</li>
+<li data-lines="2">에이전트와 segments.md가 있는 Ch3 폴더(ch3)에서 Claude Code를 열며, ch4에 만든 bedrock-idle-compact를 이번 세션에만 불러옵니다.</li>
 </ol></details>
 
 <p>세션에서 컨텍스트를 키운 뒤 손을 뗍니다.</p>
