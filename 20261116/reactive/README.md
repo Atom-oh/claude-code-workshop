@@ -171,3 +171,15 @@ request; see `docs/review.md` for the merge gate.
 the overview, `T` toggles dark and light, and `S` or the `‹` `›` tab on the left
 edge hides or shows the slide sidebar. The sidebar choice is remembered across
 decks.
+
+To skip slides in a talk, right-click a thumbnail in the sidebar and choose
+"슬라이드 숨기기" (or press `H` on the slide) before going fullscreen. next and
+previous then skip it everywhere, and the presenter view's "Next" preview
+shows the next visible slide; clicking its thumbnail (or Home, End, `#N`) still
+opens it. "숨긴 슬라이드 모두 보이기" clears only the current chapter's hides. Hidden slides are dimmed in the sidebar, the choice
+is saved per chapter slide in this browser (`fsi-hidden-slides`, shared by the
+chapter deck and `index.html`), and exports keep every slide.
+
+Step-through visuals (`↓`) must move in reading order: top to bottom, left to
+right, or by their printed numbers. When you add or reorder steps, place the
+diagram nodes or list items in that same order.

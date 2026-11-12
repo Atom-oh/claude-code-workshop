@@ -333,6 +333,13 @@
     document.head.appendChild(sb);
   }
 
+  // Hide slides from the sidebar's right-click menu or H (loaded once, next to this file).
+  if (!window.__fsiHideSlides && !document.querySelector('script[src$="assets/hide-slides.js"]')) {
+    const hs = document.createElement('script');
+    hs.src = 'assets/hide-slides.js';
+    document.head.appendChild(hs);
+  }
+
   const q = window.__fsiq || [];
   window.__fsiq = { push: fn => { try { fn(api); } catch (e) { console.error('[FSI]', e); } } };
   q.forEach(fn => window.__fsiq.push(fn));
