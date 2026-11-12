@@ -87,7 +87,7 @@ Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와
 @type: content
 @fit: off
 
-## Bedrock의 눈, 콘솔과 자체 계측뿐
+## Bedrock 가시성, 콘솔과 자체 계측뿐
 셋업별 비용 관리 방법
 
 :::html

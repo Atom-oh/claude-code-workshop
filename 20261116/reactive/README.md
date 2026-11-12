@@ -22,9 +22,10 @@ kept the pre-renumbering chapter names (see the chapter table in
 The compiler ships in the `aws-content-plugin` from the
 `Atom-oh/oh-my-cloud-skills` marketplace. This repository's
 `.claude/settings.json` registers that marketplace and enables the plugin.
-When you open the repository in Claude Code and trust the folder, Claude Code
-offers to install the plugin. To install it by hand, run these commands in
-Claude Code:
+Trusting the folder registers the marketplace, but a plugin enabled only in
+project settings does not load until it is installed on your machine (`/plugin`
+lists it under Errors as "enabled in project settings but isn't installed").
+Install it once, then run `/reload-plugins`. In Claude Code:
 
 ```
 /plugin marketplace add Atom-oh/oh-my-cloud-skills
@@ -129,8 +130,9 @@ The decks use a small subset of Remarp:
   each slide as it first appears.
 - `:::notes` is required on every slide. It holds `{timing: Nmin}`, then a
   `[요약]` list, a spoken script, and optional `{cue: demo|pause|poll|transition}`
-  and `[출처]`. The `{timing}` values of a chapter should add up to its
-  `duration` in `_presentation.md`.
+  and `[출처]`. Keep the `{timing}` values of a chapter close to its `duration` in
+  `_presentation.md` (Ch3 matches exactly; Ch1 and Ch4 currently run a few
+  minutes over).
 
 ## 4. House style for these decks
 
@@ -138,8 +140,9 @@ The decks use a small subset of Remarp:
   in 다 or 한다. Examples: "저장 위치 = 공유 범위", "배포 전 여섯 가지 점검",
   "원리 6, 캐시 보존". Questions are fine for quiz slides ("tools를 빼면 무엇을
   쓸까?"). Aim for 28 characters or fewer.
-- No em dash (U+2014) and no middle dot (U+00B7, U+30FB) anywhere in authored
-  text, including notes. Use a comma, colon or parentheses.
+- No em dash (U+2014) and no middle dot (U+00B7, U+30FB) in new authored text,
+  including notes. Use a comma, colon or parentheses. (Some older slides and
+  `toc.html` still contain middle dots.)
 - **Opening order:** cover (with the 1분 미리보기 video button), then the
   pre-survey slide, then the agenda. Ch1, Ch3 and Ch4 have survey openings;
   Ch2's survey opens Part 3.

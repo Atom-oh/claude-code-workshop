@@ -64,22 +64,22 @@
     if (saved() === 'hidden' && visible() && !document.fullscreenElement) f.hideSidebar();
     sync();
 
-    // The framework's S key, fullscreen exit and resize all flip the body class.
+    // Save only what the user chose: the framework's own S key (flagged here, saved
+    // when the body class flips). Its automatic hide/restore around fullscreen is
+    // not a choice, so it never overwrites the saved value.
+    var userKey = false;
+    document.addEventListener('keydown', function (e) {
+      if ((e.key === 's' || e.key === 'S') && !e.ctrlKey && !e.metaKey && !e.altKey) { userKey = true; setTimeout(function () { userKey = false; }, 0); }
+    }, true);
     new MutationObserver(function () {
-      var was = btn.classList.contains('is-open');
       sync();
-      // Remember an S-key toggle (not the automatic hide/restore around fullscreen).
-      if (was !== visible() && !document.fullscreenElement && !document.body.dataset.fsiFsJustExited) save(visible());
+      if (userKey) { userKey = false; if (!document.fullscreenElement) save(visible()); }
     }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
     document.addEventListener('fullscreenchange', function () {
       if (document.fullscreenElement) return;
       // The framework restores the sidebar it hid on entering fullscreen; honour a saved "hidden".
-      document.body.dataset.fsiFsJustExited = '1';
-      setTimeout(function () {
-        delete document.body.dataset.fsiFsJustExited;
-        if (saved() === 'hidden' && visible()) { f.hideSidebar(); sync(); }
-      }, 0);
+      setTimeout(function () { if (saved() === 'hidden' && visible()) { f.hideSidebar(); sync(); } }, 0);
     });
 
     document.addEventListener('keydown', function (e) {

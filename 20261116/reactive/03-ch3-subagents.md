@@ -563,7 +563,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      hot:['u','m','a','b','c'],
      edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'a',c:'info',o:1},{f:'m',t:'b',c:'info',o:1},{f:'m',t:'c',c:'info',o:1}],
      stagger:0.7, loop:true,
-     snip:{hd:'한 번에 세 개',path:'랩 TASK 04 패턴 C, 요청은 줄임',lines:['> 고객을 세그먼트로 나누는 segments.md를','  작성해 줘. 세 에이전트를 병렬로 진행해 줘','','spending-analyst   실행 중','portfolio-analyst  실행 중','risk-reviewer      실행 중'],hl:[4,5,6],note:'비용은 Part 3 뒤 <b>더 알아보기, 병렬의 비용</b>에서 봅니다.'}},
+     snip:{hd:'한 번에 세 개',path:'랩 TASK 04 패턴 C, 요청은 줄임',lines:['> 고객을 세그먼트로 나누는 segments.md를','  작성해 줘. 세 에이전트를 병렬로 진행해 줘','','spending-analyst   실행 중','portfolio-analyst  실행 중','risk-reviewer      실행 중'],hl:[4,5,6],note:'비용은 <b>Part 4 심화, 병렬의 비용</b>에서 봅니다.'}},
     {kicker:'FOREGROUND / BACKGROUND', title:'기다릴지, 다른 일을 계속할지',
      body:'<b>foreground</b>는 결과를 기다리고, <b>background</b>는 Subagent가 도는 동안 메인에서 <b>다른 일을 계속</b>합니다.',
      facts:['foreground: 결과를 기다림','background: 다른 일을 계속','어느 쪽이든 요약이 돌아옴'],
@@ -665,7 +665,7 @@ Subagent는 컨텍스트는 아끼지만 요청은 따로 나갑니다.
 @type: content
 @fit: off
 
-## 레거시, 바꾸기 전에 분할 독해
+## 레거시, 바꾸기 전에 나눠 읽기
 레거시 현대화를 고른 40명이 가장 먼저 해 볼 방법
 
 :::html
@@ -744,7 +744,7 @@ claude -p, [CLI]{tip="Command Line Interface. 터미널에서 명령으로 쓰�
      zones:Z, nodes:N, hot:['j','r','u','d'],
      edges:[{f:'j',t:'r',c:'success',o:0},{f:'j',t:'u',c:'success',o:1},{f:'j',t:'d',c:'danger',o:2}],
      stagger:0.4,
-     snip:{hd:'가장 짧은 예',path:'Terminal, 요청은 줄임',lines:L,hl:[7,8,9],note:'CI에서 쓰는 형태는 뒤쪽 <b>더 알아보기</b>에 있습니다.'}}
+     snip:{hd:'가장 짧은 예',path:'Terminal, 요청은 줄임',lines:L,hl:[7,8,9],note:'CI에서 쓰는 형태는 뒤쪽 <b>Part 4 심화</b>에 있습니다.'}}
   ], {legend:[['accent','claude -p'],['info','결과 파일'],['success','꺼내는 값'],['danger','막힌 명령']]});
 });
 :::
