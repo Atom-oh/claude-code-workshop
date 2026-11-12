@@ -174,8 +174,9 @@ decks.
 
 To skip slides in a talk, right-click a thumbnail in the sidebar and choose
 "슬라이드 숨기기" (or press `H` on the slide) before going fullscreen. next and
-previous then skip it everywhere, including the presenter view; clicking its
-thumbnail still opens it. Hidden slides are dimmed in the sidebar, the choice
+previous then skip it everywhere, and the presenter view's "Next" preview
+shows the next visible slide; clicking its thumbnail (or Home, End, `#N`) still
+opens it. "숨긴 슬라이드 모두 보이기" clears only the current chapter's hides. Hidden slides are dimmed in the sidebar, the choice
 is saved per chapter slide in this browser (`fsi-hidden-slides`, shared by the
 chapter deck and `index.html`), and exports keep every slide.
 

@@ -539,8 +539,8 @@ Bedrock에서 정책이 도달하는 길과 병합 규칙
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var Z = [{x:20,y:30,w:440,h:430,l:'관리자'},{x:500,y:30,w:660,h:430,l:'개발자 PC'}];
   var SV = {id:'sv',x:50,y:80,w:380,h:90,t:'Server-managed settings',s:'claude.ai 콘솔',c:'muted'};
-  var MD = {id:'md',x:50,y:340,w:380,h:90,t:'MDM',s:'macOS plist, Windows 레지스트리',c:'accent'};
-  var DT = {id:'dt',x:50,y:210,w:380,h:90,t:'배포 도구로 파일 복사',s:'Ansible, SSM, 이미지 등',c:'accent'};
+  var MD = {id:'md',x:50,y:210,w:380,h:90,t:'MDM',s:'macOS plist, Windows 레지스트리',c:'accent'};
+  var DT = {id:'dt',x:50,y:340,w:380,h:90,t:'배포 도구로 파일 복사',s:'Ansible, SSM, 이미지 등',c:'accent'};
   var MS = {id:'ms',x:530,y:120,w:330,h:96,t:'managed-settings.json',s:'OS별 고정 경로',c:'danger'};
   var DD = {id:'dd',x:530,y:320,w:330,h:96,t:'managed-settings.d/',s:'*.json 조각, 이름순 병합',c:'danger'};
   var CC = {id:'cc',x:900,y:210,w:240,h:96,t:'Claude Code',s:'최종 설정',c:'ink'};
@@ -559,13 +559,6 @@ Bedrock에서 정책이 도달하는 길과 병합 규칙
      zones:Z, nodes:ALL, hot:['sv'],
      edges:[{f:'sv',t:'cc',c:'muted',dash:true,curve:-80}],
      snip:{hd:'쓸 수 없는 이유',path:'Server-managed settings',lines:['Team, Enterprise 조직이 필요','ANTHROPIC_BASE_URL이 비공식 호스트면 꺼짐'],hl:[1,2],note:'콘솔이 없는 자리를 <b>파일로 채웁니다</b>.'}},
-    {kicker:'FILE', title:'OS마다 정해진 경로가 있습니다',
-     body:'관리자 권한이 있어야 쓰는 <b>OS별 고정 경로</b>에 managed-settings.json을 둡니다. 이 랩은 Linux 경로를 씁니다.',
-     facts:['macOS: Jamf, Intune 등 MDM','Linux, WSL: 이 랩의 경로','Windows: Intune, GPO'],
-     zones:Z, nodes:ALL, hot:['dt','ms','cc'],
-     edges:[{f:'dt',t:'ms',c:'accent',o:0},{f:'ms',t:'cc',c:'danger',o:1}],
-     loop:true, stagger:0.8,
-     snip:{hd:'OS별 정책 파일',path:'managed-settings.json',lines:['# macOS','/Library/Application Support/ClaudeCode/','# Linux, WSL (이 랩)','/etc/claude-code/','# Windows','C:\\Program Files\\ClaudeCode\\'],hl:[2,4,6],note:'파일 이름은 모두 <b>managed-settings.json</b>입니다.'}},
     {kicker:'MDM', title:'MDM은 OS 정책 그대로 씁니다',
      body:'macOS는 <b>plist</b>, Windows는 <b>레지스트리</b>로 MDM이 같은 정책을 내려보냅니다.',
      facts:['macOS: plist','Windows: 레지스트리','단말 관리 체계를 그대로 재사용'],
@@ -573,6 +566,13 @@ Bedrock에서 정책이 도달하는 길과 병합 규칙
      edges:[{f:'md',t:'cc',c:'accent',side:'h',curve:-30,o:0}],
      loop:true,
      snip:{hd:'MDM 채널',path:'OS 정책',lines:['macOS    plist','Windows  레지스트리'],hl:[1,2],note:'배포 도구는 OS마다 다릅니다. OS별 자세한 표는 PDF 덱의 더 알아보기에 있습니다.'}},
+    {kicker:'FILE', title:'OS마다 정해진 경로가 있습니다',
+     body:'관리자 권한이 있어야 쓰는 <b>OS별 고정 경로</b>에 managed-settings.json을 둡니다. 이 랩은 Linux 경로를 씁니다.',
+     facts:['macOS: Jamf, Intune 등 MDM','Linux, WSL: 이 랩의 경로','Windows: Intune, GPO'],
+     zones:Z, nodes:ALL, hot:['dt','ms','cc'],
+     edges:[{f:'dt',t:'ms',c:'accent',o:0},{f:'ms',t:'cc',c:'danger',o:1}],
+     loop:true, stagger:0.8,
+     snip:{hd:'OS별 정책 파일',path:'managed-settings.json',lines:['# macOS','/Library/Application Support/ClaudeCode/','# Linux, WSL (이 랩)','/etc/claude-code/','# Windows','C:\\Program Files\\ClaudeCode\\'],hl:[2,4,6],note:'파일 이름은 모두 <b>managed-settings.json</b>입니다.'}},
     {kicker:'DROP-IN', title:'팀별 조각은 옆 디렉터리에',
      body:'파일 옆 <b>managed-settings.d/</b>에 조각을 두면 <b>이름순으로 병합</b>됩니다. 하나의 파일을 여러 팀이 고치지 않아도 됩니다.',
      facts:['보안팀, 플랫폼팀이 각자 관리','*.json 조각, 이름순 병합','하나의 파일을 함께 고치지 않음'],
@@ -594,15 +594,15 @@ Bedrock에서 정책이 도달하는 길과 병합 규칙
 {timing: 3.5min}
 [요약]
 • Server-managed settings(claude.ai 콘솔)는 Team, Enterprise 조직 필요, ANTHROPIC_BASE_URL이 비공식 호스트면 꺼짐
-• 파일: macOS /Library/Application Support/ClaudeCode/, Linux와 WSL /etc/claude-code/, Windows C:\Program Files\ClaudeCode\
 • MDM: macOS plist, Windows 레지스트리
+• 파일: macOS /Library/Application Support/ClaudeCode/, Linux와 WSL /etc/claude-code/, Windows C:\Program Files\ClaudeCode\
 • managed-settings.d/ drop-in 조각은 이름순 병합
 • managed 소스가 여럿이면 기본은 서버, MDM, 파일 순으로 하나만, managedSourcesBehavior "merge"로 모두 합침
 
 {cue: demo}
 정책이 단말에 닿는 길을 단계별로 보겠습니다.
 claude.ai 콘솔의 서버 관리 설정은 Bedrock에서 쓸 수 없습니다. Team, Enterprise 조직이 필요하고, 비공식 호스트를 쓰면 꺼지기 때문입니다.
-대신 OS마다 정해진 경로에 managed-settings.json을 두거나, MDM으로 plist와 레지스트리를 내려보냅니다.
+대신 MDM으로 plist와 레지스트리를 내려보내거나, OS마다 정해진 경로에 managed-settings.json을 둡니다.
 여러 팀이 정책을 나눠 관리한다면 파일 옆 managed-settings.d 디렉터리에 조각을 두시면 이름순으로 합쳐집니다.
 마지막으로 주의할 점, managed 소스가 여럿이면 기본은 하나만 적용됩니다. 모두 합치려면 managedSourcesBehavior를 merge로 둡니다.
 :::

@@ -48,6 +48,7 @@
       });
     }
     if (badge && f) badge.hidden = !isHidden(f.currentSlide);
+    try { if (f && f.presenterView && f.presenterView.presenterWindow && !f.presenterView.presenterWindow.closed) f.presenterView.updatePresenterView(); } catch (e) { /* closed */ }
   }
 
   // Next/previous slide that is not hidden, or null when none is left that way.
@@ -56,7 +57,13 @@
     return null;
   }
 
-  function closeMenu() { if (menu) menu.hidden = true; }
+  var returnFocus = null;
+  function closeMenu() {
+    if (!menu || menu.hidden) return;
+    menu.hidden = true;
+    var r = returnFocus; returnFocus = null;
+    if (r && document.contains(r) && r.focus) r.focus(); else if (document.activeElement && menu.contains(document.activeElement)) document.activeElement.blur();
+  }
   function openMenu(i, x, y) {
     if (!menu) {
       menu = document.createElement('div');
@@ -64,14 +71,31 @@
       menu.setAttribute('role', 'menu');
       document.body.appendChild(menu);
       document.addEventListener('mousedown', function (e) { if (menu && !menu.contains(e.target)) closeMenu(); }, true);
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu && !menu.hidden) { e.stopPropagation(); closeMenu(); } }, true);
+      // While the menu is open it owns the keyboard: arrows move between items,
+      // Escape or Tab closes it, and nothing reaches the deck.
+      document.addEventListener('keydown', function (e) {
+        if (!menu || menu.hidden) return;
+        var btns = Array.prototype.slice.call(menu.querySelectorAll('button'));
+        var at = btns.indexOf(document.activeElement);
+        if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); closeMenu(); }
+        else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          var d = e.key === 'ArrowDown' ? 1 : -1;
+          btns[(at + d + btns.length) % btns.length].focus();
+          e.preventDefault();
+        } else if (e.key === 'Home' || e.key === 'End') { btns[e.key === 'Home' ? 0 : btns.length - 1].focus(); e.preventDefault(); }
+        else if (e.key === 'Enter' || e.key === ' ') { return; }
+        else if (/^(Arrow|Page)/.test(e.key)) { e.preventDefault(); }
+        else return;
+        e.stopPropagation();
+      }, true);
       window.addEventListener('blur', closeMenu);
       window.addEventListener('resize', closeMenu);
     }
+    if (menu.hidden) returnFocus = document.activeElement !== document.body ? document.activeElement : null;
     var h = isHidden(i);
     var items = [[h ? '슬라이드 다시 보이기' : '슬라이드 숨기기', function () { setHidden(i, !h); }]];
     if (count() > 0) {
-      items.push(['숨긴 슬라이드 모두 보이기 (' + count() + '장)', function () { hidden = {}; store(); paint(); }]);
+      items.push(['숨긴 슬라이드 모두 보이기 (' + count() + '장)', function () { keys.forEach(function (k) { delete hidden[k]; }); store(); paint(); }]);
     }
     menu.innerHTML = '';
     var head = document.createElement('div');
@@ -111,6 +135,29 @@
     var show = f.showSlide.bind(f);
     f.next = function () { var i = step(f.currentSlide, 1); if (i !== null) show(i); };
     f.prev = function () { var i = step(f.currentSlide, -1); if (i !== null) show(i); };
+
+    // Presenter view: its "Next" preview should be the next slide that will show.
+    var pvPatched = null;
+    function patchPresenter() {
+      var pv = f.presenterView;
+      if (!pv || pv === pvPatched || !pv.updatePresenterView) return;
+      pvPatched = pv;
+      var orig = pv.updatePresenterView.bind(pv);
+      pv.updatePresenterView = function () {
+        orig();
+        try {
+          if (!pv.presenterWindow || pv.presenterWindow.closed) return;
+          var doc = pv.presenterWindow.document, el = doc.getElementById('p-next');
+          if (!el || !isHidden(f.currentSlide + 1)) return;
+          var n = step(f.currentSlide, 1);
+          if (n === null) el.innerHTML = '<div class="end-message">End of presentation</div>';
+          else pv._renderSlidePreview(doc, el, f.slides[n], true);
+        } catch (e) { /* presenter window closed mid-update */ }
+      };
+    }
+    var origOpen = f.openPresenterView && f.openPresenterView.bind(f);
+    if (origOpen) f.openPresenterView = function () { var r = origOpen(); patchPresenter(); try { f.presenterView && f.presenterView.updatePresenterView(); } catch (e) {} return r; };
+    patchPresenter();
 
     badge = document.createElement('div');
     badge.className = 'fsi-hidden-badge';
