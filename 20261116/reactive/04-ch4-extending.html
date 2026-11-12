@@ -452,7 +452,7 @@
   </div>
   <div class="panel" data-pick-panel="c5-src">
     <p class="hint">소스를 누르면 예시와 맞는 경우가 나옵니다.</p>
-    <div data-for="local"><dl class="kv"><dt>예</dt><dd><code>~/claude-lab/ch5/marketplace</code></dd><dt>맞는 경우</dt><dd>개발, 테스트 (이 랩)</dd></dl></div>
+    <div data-for="local"><dl class="kv"><dt>예</dt><dd><code>~/claude-lab/ch4/marketplace</code></dd><dt>맞는 경우</dt><dd>개발, 테스트 (이 랩)</dd></dl></div>
     <div data-for="gh"><dl class="kv"><dt>예</dt><dd><code>owner/repo</code></dd><dt>맞는 경우</dt><dd>공개, 사내 GitHub</dd></dl></div>
     <div data-for="git"><dl class="kv"><dt>예</dt><dd><code>https://git.corp.example/...git</code></dd><dt>맞는 경우</dt><dd>사내 GitLab 등</dd></dl></div>
     <div data-for="seed"><dl class="kv"><dt>예</dt><dd><code>CLAUDE_CODE_PLUGIN_SEED_DIR</code></dd><dt>맞는 경우</dt><dd>망분리, 이미지에 미리 심기 (Part 2)</dd></dl></div>
@@ -621,7 +621,7 @@
      facts:['로컬 경로: 개발, 테스트 (이 랩)','GitHub 저장소: 공개, 사내 GitHub','git URL: 사내 GitLab 등'],
      zones:Z, nodes:ALL, hot:['src','mk'],
      edges:[{f:'src',t:'mk',c:'info',o:0}],
-     snip:{hd:'마켓플레이스 등록',path:'Claude Code 프롬프트, 소스별 예시',lines:['# 로컬 경로 (이 랩)','/plugin marketplace add ~/claude-lab/ch5/marketplace','','# GitHub 저장소','/plugin marketplace add owner/repo','','# 사내 git URL','/plugin marketplace add https://git.corp.example/...git'],hl:[2,5,8],note:'망분리 환경은 등록 대신 <b>seed 디렉터리</b>를 씁니다 (Part 2).'}},
+     snip:{hd:'마켓플레이스 등록',path:'Claude Code 프롬프트, 소스별 예시',lines:['# 로컬 경로 (이 랩)','/plugin marketplace add ~/claude-lab/ch4/marketplace','','# GitHub 저장소','/plugin marketplace add owner/repo','','# 사내 git URL','/plugin marketplace add https://git.corp.example/...git'],hl:[2,5,8],note:'망분리 환경은 등록 대신 <b>seed 디렉터리</b>를 씁니다 (Part 2).'}},
     {kicker:'STEP 2', title:'이름@마켓플레이스로 설치합니다',
      body:'등록한 마켓플레이스에서 <b>/plugin install 이름@마켓플레이스</b>로 설치합니다. 동료는 이 한 줄이면 같은 플러그인을 받습니다.',
      facts:['이름과 마켓플레이스를 함께 지정','같은 이름이 여러 마켓플레이스에 있어도 구분','회사는 이 단계를 정책으로 강제 (Part 2)'],
