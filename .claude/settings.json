@@ -1,0 +1,10 @@
+{
+  "extraKnownMarketplaces": {
+    "oh-my-cloud-skills": {
+      "source": { "source": "github", "repo": "Atom-oh/oh-my-cloud-skills" }
+    }
+  },
+  "enabledPlugins": {
+    "aws-content-plugin@oh-my-cloud-skills": true
+  }
+}
