@@ -227,7 +227,7 @@ wc -l &quot;$F&quot; &amp;&amp; grep -o &#x27;&quot;type&quot;:&quot;[a-z_]*&quo
 <ol>
 <li data-lines="1">내 실습 폴더(ch1-loop)의 세션 파일이 있는 폴더를 시간순으로 보여줍니다. 가장 위가 가장 최근 파일입니다.</li>
 <li data-lines="2">가장 최근 .jsonl 파일의 경로를 F 변수에 담습니다. JSONL은 한 줄에 JSON 하나를 적는 텍스트 형식입니다.</li>
-<li data-lines="3">wc -l로 줄 수를 세고, 각 줄의 &quot;type&quot; 값(user, assistant 등)이 몇 번 나오는지 셉니다. 대화가 줄 단위로 쌓인 모습을 볼 수 있습니다.</li>
+<li data-lines="3">wc -l로 줄 수를 세고, 각 줄의 &quot;type&quot; 값(user, assistant 등)이 몇 번 나오는지 세고, 많이 나온 순으로 위 10개만 보여 줍니다. 대화가 줄 단위로 쌓인 모습을 볼 수 있습니다.</li>
 </ol></details>
 
 <p>대화와 도구 결과가 이 PC(ccb-endpoint)에 JSONL로 남아 있습니다. 방금 읽힌 고객 데이터가 세션 파일에 그대로 들어 있는지 세어 봅니다.</p>
