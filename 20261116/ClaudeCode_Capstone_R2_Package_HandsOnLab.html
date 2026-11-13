@@ -847,6 +847,12 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <div class="paste-guide"></div>
 <div class="gl-list"></div>
 
+<div class="r2p-map" id="r2p-map">
+  <p class="body"><strong>무엇을 만드나요?</strong> R1 작업 폴더의 agents와 가드레일 훅에 새 skill을 더해 plugin <code class="inline">my-kit</code> 하나로 묶고, 로컬 마켓플레이스 <code class="inline">capstone-local</code>에 올린 뒤, 아무것도 없는 새 폴더에서 설치 한 줄로 받아 가드레일까지 따라왔는지 확인합니다. 아래 첫 그림은 00~05가 이어지는 순서와 남는 결과물, 둘째 그림은 설치된 my-kit 안에서 skill, agent, 훅, MCP 서버가 각각 맡는 일입니다. 단계 번호를 눌러 넘겨 보세요.</p>
+  <div class="viz" data-viz="pkg-build"></div>
+  <div class="viz" data-viz="pkg-roles"></div>
+</div>
+
 <section class="task" id="task-00" data-min="10">
   <div class="task-head"><span class="task-num">00</span><h2>R1 산출물 확인</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">R1 작업 폴더에 묶을 재료가 있는지 보고, 고른 트랙의 이름들을 <code class="inline">r2.env</code>에 적습니다.</p>
@@ -855,6 +861,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   <p class="body">먼저 이 페이지 전체에서 파일이 어디서 어디로 가는지 그림으로 봅니다.</p>
   <div class="viz" data-viz="package-flow"></div>
   <div class="step-title"><span class="step-no">1</span>재료 확인</div>
+  <div class="viz" data-viz="copy-p-check"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -870,6 +877,7 @@ jq -c '.hooks | keys' .claude/settings.json</code></pre>
   </tbody></table>
   <div class="step-title"><span class="step-no">2</span>트랙 이름 적기: 고른 트랙 블록 하나만</div>
   <p class="body"><code class="inline">r2.env</code>에는 plugin 이름(<code class="inline">KIT</code>), 트랙, <span class="gl" data-gl="mcp">MCP</span> 서버 이름(<code class="inline">SRV</code>), 자료를 모으는 agent(<code class="inline">COLLECT</code>)와 읽기 전용 검토 agent(<code class="inline">REVIEW</code>)를 적습니다. 이 페이지와 R2 미션 페이지의 블록이 모두 이 파일을 읽습니다. plugin 이름을 바꾸려면 <code class="inline">KIT=</code> 줄만 고치고, 세션에 입력하는 명령의 <code class="inline">my-kit</code>도 그 이름으로 바꿔 씁니다(영문 소문자와 <code class="inline">-</code>). agent 이름을 R1에서 바꿨다면 <code class="inline">COLLECT</code>, <code class="inline">REVIEW</code>도 맞춥니다.</p>
+  <div class="viz" data-viz="copy-p-env"></div>
   <details class="solution">
     <summary>트랙 A: 마이데이터</summary>
     <div class="sol-body">
@@ -946,6 +954,7 @@ EOF
   <p class="body">agent는 "누가 하는가", skill은 "어떤 순서로 무엇을 내놓는가"입니다. 아래 두 skill은 R1의 두 agent(모으는 역할과 읽기 전용 검토 역할)에게 일을 나눠 주고, 결과를 늘 같은 형식으로 냅니다. skill 안에서 agent는 plugin 이름이 붙은 <code class="inline">my-kit:agent이름</code>으로 부릅니다. plugin에 들어간 agent와 skill은 plugin 이름 아래로 묶이기 때문입니다 (<a href="https://code.claude.com/docs/en/plugins/components">plugin 구성 요소 공식 문서</a>). frontmatter는 <code class="inline">name</code>과 <code class="inline">description</code>만 씁니다. 이 둘만 쓰면 Claude Code 밖(R2-3의 AgentCore 등)에서도 같은 파일을 그대로 읽을 수 있습니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 절차와 출력 형식을 skill 파일에 적어 두면, 미션마다 프롬프트로 형식을 다시 설명하지 않아도 결과가 늘 같은 형식으로 나옵니다.</p>
   <div class="step-title"><span class="step-no">1</span>정기 분석 리포트: periodic-report (모든 트랙, R2-1)</div>
+  <div class="viz" data-viz="copy-p-periodic"></div>
   <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/skills/periodic-report/SKILL.md">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
@@ -986,6 +995,7 @@ EOF
 head -4 $K/skills/periodic-report/SKILL.md</code></pre>
   </div>
   <div class="step-title"><span class="step-no">2</span>기획안: proposal-draft (R2-2를 고를 때)</div>
+  <div class="viz" data-viz="copy-p-proposal"></div>
   <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/skills/proposal-draft/SKILL.md">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
@@ -1049,6 +1059,7 @@ ls $K/skills</code></pre>
   </tbody></table>
   <p class="body"><strong>왜 필요한가요:</strong> R1 폴더의 agent와 훅은 그 폴더에서만 쓰입니다. plugin 폴더 하나로 모아야 다른 폴더, 다른 사람이 설치 한 줄로 같은 것을 받습니다.</p>
   <div class="step-title"><span class="step-no">1</span>공통: 매니페스트, agents, 스크립트</div>
+  <div class="viz" data-viz="copy-p-manifest"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
@@ -1067,6 +1078,7 @@ grep -H '^tools:' $K/agents/*.md</code></pre>
   </div>
   <p class="body">마지막 줄들은 plugin 안 agent의 <code class="inline">tools</code> 줄입니다. 트랙 B, C는 MCP 도구가 <code class="inline">mcp__plugin_my-kit_…</code>로 바뀌어 있어야 합니다. plugin이 내놓는 MCP 서버의 도구는 이 이름으로 불리므로, 옛 이름이 남아 있으면 agent가 그 도구를 쓰지 못합니다.</p>
   <div class="step-title"><span class="step-no">2</span>공통: README</div>
+  <div class="viz" data-viz="copy-p-readme"></div>
   <div class="code-wrap" data-paste-path="~/claude-lab/capstone/my-kit/README.md">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
@@ -1095,6 +1107,7 @@ cat $K/README.md</code></pre>
   </div>
   <p class="body">첫 줄의 괄호 부분은 직접 고쳐 씁니다. 체크리스트 7번(무엇을 하는지, 설치 한 줄, 필요한 설정, 버전)이 이 파일입니다.</p>
   <div class="step-title"><span class="step-no">3</span>트랙별: 훅 설정과 MCP 설정, 고른 트랙 블록 하나만</div>
+  <div class="viz" data-viz="copy-p-hooks"></div>
   <details class="solution">
     <summary>트랙 A: DLP 훅과 raw/ 차단 훅 (MCP 없음)</summary>
     <div class="sol-body">
@@ -1219,6 +1232,7 @@ claude plugin validate $K | tail -1</code></pre>
   <p class="task-goal">마켓플레이스 폴더에 <code class="inline">my-kit</code>를 복사해 올리고, 카탈로그 <code class="inline">marketplace.json</code>을 만듭니다.</p>
   <p class="body">마켓플레이스는 plugin 목록(카탈로그)과 plugin 파일을 담은 폴더입니다. 카탈로그의 상대 경로 <code class="inline">./plugins/my-kit</code>은 마켓플레이스 폴더 <strong>안</strong>을 가리켜야 하고, <code class="inline">..</code>으로 밖을 가리키면 검증에서 실패하고, 심볼릭 링크로 이은 경로는 읽히지 않습니다 (<a href="https://code.claude.com/docs/en/plugins/marketplace-reference">마켓플레이스 공식 문서</a>). 그래서 원본 <code class="inline">my-kit/</code>을 복사해 올립니다. 복사가 곧 배포입니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 설치 명령 <code class="inline">my-kit@capstone-local</code>의 <code class="inline">@</code> 뒤가 이 마켓플레이스 이름입니다. 마켓플레이스가 있어야 동료가 plugin을 이름으로 설치합니다.</p>
+  <div class="viz" data-viz="copy-p-market"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r2.env
@@ -1250,6 +1264,7 @@ claude plugin validate $M</code></pre>
   <p class="body"><strong>왜 필요한가요:</strong> R1 폴더에는 agent와 훅이 이미 있어서, 거기서는 plugin이 무엇을 싣고 왔는지 알 수 없습니다. 아무것도 없는 새 폴더에 설치해야 가드레일까지 따라오는지 확인됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>동료 폴더 만들기</div>
   <p class="body">동료 폴더에는 데이터에 닿는 데 필요한 것만 둡니다(트랙 A는 <code class="inline">pseudo</code> 링크와 <code class="inline">segments.md</code>). R1 설정 중 plugin에 넣을 수 없었던 권한 deny 규칙과 MCP 허용 목록은 이 폴더의 <code class="inline">.claude/settings.json</code>으로 옮깁니다. 저장소에 함께 두는 설정이라 동료도 같은 규칙을 받습니다.</p>
+  <div class="viz" data-viz="copy-p-tryfolder"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/claude-lab/capstone-try/.claude &amp;&amp; cd ~/claude-lab/capstone-try &amp;&amp; git init -q
@@ -1261,6 +1276,7 @@ ls -A</code></pre>
   </div>
   <p class="body"><code class="inline">ls -A</code>에 <code class="inline">.claude</code>, <code class="inline">.git</code>(트랙 A는 <code class="inline">pseudo</code>, <code class="inline">segments.md</code>도)만 보이면 됩니다. <code class="inline">.claude/</code> 안에는 <code class="inline">agents/</code>도 <code class="inline">skills/</code>도 없습니다.</p>
   <div class="step-title"><span class="step-no">2</span>마켓플레이스 추가와 설치</div>
+  <div class="viz" data-viz="copy-p-install"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; claude</code></pre>
@@ -1287,6 +1303,7 @@ ls -A</code></pre>
   </div>
   <div class="step-title"><span class="step-no">3</span>이 폴더에서는 my-kit만 켜기</div>
   <p class="body">사용자 범위로 설치해 둔 plugin은 이 폴더에서도 켜져 있습니다. Ch4 랩에서 설치한 팀 킷(<code class="inline">asset-team-kit@fsi-local</code>)은 DLP 훅과 agent, skill을 함께 싣고 있어서, 켜진 채로 두면 막힌 장면이나 agent 호출이 my-kit에서 온 것인지 가릴 수 없습니다. 두 번째 터미널에서 아래 블록을 실행하면 my-kit 말고 켜져 있는 plugin을 <strong>이 폴더에서만</strong> 끕니다. <code class="inline">--scope local</code>은 이 폴더의 <code class="inline">.claude/settings.local.json</code>에 끈다는 기록을 남기고, 사용자 설정은 그대로 둡니다. 그래서 다른 폴더(Ch6 랩 등)에서는 그대로 켜져 있습니다 (<a href="https://code.claude.com/docs/en/plugins/cli-reference">plugin 명령 공식 문서</a>).</p>
+  <div class="viz" data-viz="copy-p-only"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; . ~/claude-lab/capstone/r2.env
@@ -1297,6 +1314,7 @@ claude plugin list --json | jq -r '.[] | select(.enabled) | .id'</code></pre>
   <p class="body">마지막 줄에 <code class="inline">my-kit@capstone-local</code> 한 줄만 나와야 합니다. Setup에서 설치한 plugin(superpowers 등)도 이 폴더에서는 꺼집니다. 다시 켜려면 <code class="inline">claude plugin enable 이름@마켓플레이스 --scope local</code>을 씁니다. 열려 있는 세션에는 <code class="inline">/reload-plugins</code>로 반영합니다.</p>
   <div class="step-title"><span class="step-no">4</span>무엇이 설치됐는지 기록하기</div>
   <p class="body">두 번째 터미널에서 실행합니다. 마지막 두 줄은 설치된 plugin의 agent와 skill 파일 지문(sha256)을 <code class="inline">kit.sha</code>에 남깁니다. R2 미션 페이지에서 "agent와 skill을 다시 짜지 않았다"를 이 파일로 확인합니다.</p>
+  <div class="viz" data-viz="copy-p-record"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; . ~/claude-lab/capstone/r2.env
@@ -1326,12 +1344,14 @@ Projected token cost
   <p class="body"><code class="inline">Scope: local</code>, <code class="inline">Status: ✔ enabled</code>와 함께 agent, skill, 훅, MCP 서버의 수가 보입니다. 아래쪽의 <code class="inline">Projected token cost</code>는 이 plugin이 세션마다 늘 차지하는 토큰 추정치로, Ch5에서 본 컨텍스트 비용과 같은 이야기입니다.</p>
   <div class="step-title"><span class="step-no">5</span>가드레일이 따라왔는지</div>
   <p class="body">요청을 보내기 전에 두 번째 터미널에서 Ch2 Lab 2의 managed 훅이 남아 있는지 봅니다. 남아 있으면 아래의 <code class="inline">DLP:</code> 차단이 plugin 훅이 아니라 managed 훅에서 온 것일 수 있어, plugin이 가드레일을 싣고 왔는지 확인되지 않습니다.</p>
+  <div class="viz" data-viz="copy-p-managed"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>sudo jq '{allowManagedHooksOnly, hooks: ((.hooks // {}) | keys)}' /etc/claude-code/managed-settings.json 2&gt;/dev/null</code></pre>
   </div>
   <p class="body"><code class="inline">"hooks": []</code>이고 <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">null</code>이나 <code class="inline">false</code>이거나, 아무것도 나오지 않으면(파일 없음) 그대로 진행합니다. <code class="inline">hooks</code> 목록에 이름이 보이거나 <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">true</code>면 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2</a> TASK 07(전체 원복)을 먼저 하고 세션을 다시 엽니다.</p>
   <p class="body">같은 세션에서 트랙에 맞는 요청을 보냅니다. 앞의 두 요청은 막혀야 하고, 세 번째는 통과해야 합니다. 막힌 화면 하나를 캡처해 두면 출품 양식 4번이 됩니다.</p>
+  <div class="viz" data-viz="copy-p-guard"></div>
   <table class="tbl"><thead><tr><th>트랙</th><th>막혀야 하는 요청</th><th>보이는 메시지</th><th>통과해야 하는 요청</th></tr></thead><tbody>
     <tr><td>A</td><td><code class="inline">고객 900101-1234567 의 가입 이력을 알려 주세요</code><br><code class="inline">~/claude-lab/mydata/raw/customers.csv 의 첫 줄을 보여 주세요</code></td><td><code class="inline">DLP:</code>, <code class="inline">RAW:</code> (또는 권한 거부)</td><td><code class="inline">@my-kit:consult-prep 로 40대 고객 한 명의 상담 준비 노트를 만들어 주세요</code></td></tr>
     <tr><td>B</td><td><code class="inline">curl로 https://example.com 의 첫 줄을 가져와 주세요</code><br><code class="inline">~/.claude.json 파일 내용을 보여 주세요</code></td><td><code class="inline">NET:</code>, <code class="inline">KEY:</code> (또는 권한 거부)</td><td><code class="inline">@my-kit:price-summarizer 로 강남구 202610 시세를 정리해 주세요</code></td></tr>
@@ -1339,6 +1359,7 @@ Projected token cost
   </tbody></table>
   <p class="body">권한 거부는 1에서 옮긴 폴더 설정의 deny 규칙이, <code class="inline">DLP:</code>, <code class="inline">RAW:</code>, <code class="inline">KEY:</code>, <code class="inline">NET:</code>은 plugin 훅이 막은 것입니다. 트랙 C의 <code class="inline">mcp-guard.sh</code>는 폴더의 MCP 허용 목록이 빠졌을 때를 받치는 한 겹이라, 다른 MCP 서버가 보이지 않는 이 폴더에서는 나서지 않습니다.</p>
   <p class="body">마지막으로 <span class="gl" data-gl="failclosed">fail-closed</span>를 봅니다. 두 번째 터미널에서 plugin의 스크립트 폴더를 치우고, 세션에서 아무 명령이나 시킨 뒤, 스크립트를 되돌립니다.</p>
+  <div class="viz" data-viz="copy-p-failclosed"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>. ~/claude-lab/capstone/r2.env &amp;&amp; P=~/claude-lab/capstone/marketplace/plugins/$KIT
@@ -1381,18 +1402,20 @@ mv $P/scripts.off $P/scripts &amp;&amp; ls $P/scripts</code></pre>
   <div class="task-head"><span class="task-num">05</span><h2>(선택) git 저장소로 올리기</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">마켓플레이스 폴더를 git 저장소로 만들어, 다른 컴퓨터의 동료가 저장소 주소로 추가할 수 있게 합니다. R2 미션을 끝내고 시간이 남을 때 합니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 로컬 폴더 마켓플레이스는 내 컴퓨터에서만 보입니다. git 저장소에 올리면 다른 컴퓨터의 동료도 같은 plugin을 받습니다.</p>
+  <div class="viz" data-viz="copy-p-git"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone/marketplace
 git init -q &amp;&amp; git add . &amp;&amp; git status --short
 git config user.name &gt;/dev/null || git config user.name "capstone"
 git config user.email &gt;/dev/null || git config user.email "capstone@example.com"
-jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?) | strings | sub("^Bearer "; "")' ~/.claude.json 2&gt;/dev/null \
-  | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -rlF --exclude-dir=.git -- "$V" . ; done
-echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"
-git commit -qm "my-kit 0.1.0" &amp;&amp; git log --oneline</code></pre>
+HIT=$(jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?) | strings | sub("^Bearer "; "")' ~/.claude.json 2&gt;/dev/null \
+  | while IFS= read -r V; do [ ${#V} -ge 8 ] &amp;&amp; grep -rlF --exclude-dir=.git -- "$V" . ; done)
+if [ -n "$HIT" ]; then echo "키 검사 끝: 키나 토큰이 든 파일이 있어 커밋하지 않았습니다"; echo "$HIT"
+else echo "키 검사 끝: 키가 든 파일 없음"; git commit -qm "my-kit 0.1.0" &amp;&amp; git log --oneline; fi</code></pre>
   </div>
-  <p class="body">키 검사에서 파일 이름이 나오면 커밋하지 말고 그 파일부터 고칩니다. 이 검사는 R1에서 <code class="inline">read -rs</code>로 받아 <code class="inline">~/.claude.json</code>에 등록한 값을 찾습니다. 설치 창(<code class="inline">userConfig</code>)에만 넣은 키는 비밀 저장소에 있어 여기서 찾지 못하므로, 그 키를 직접 붙여 넣은 파일이 없는지는 눈으로도 봅니다. 키는 plugin이 아니라 설치 창과 MCP 등록에만 있어야 합니다. GitHub 계정이 있으면 <strong>비공개</strong> 저장소를 만들고 올립니다(<code class="inline">내계정</code>을 바꿔 씁니다).</p>
+  <p class="body">키나 토큰이 든 파일이 있으면 블록이 커밋하지 않고 그 파일 이름을 보여 줍니다. 그 파일부터 고친 뒤 블록을 다시 실행합니다. 이 검사는 R1에서 <code class="inline">read -rs</code>로 받아 <code class="inline">~/.claude.json</code>에 등록한 값을 찾습니다. 설치 창(<code class="inline">userConfig</code>)에만 넣은 키는 비밀 저장소에 있어 여기서 찾지 못하므로, 그 키를 직접 붙여 넣은 파일이 없는지는 눈으로도 봅니다. 키는 plugin이 아니라 설치 창과 MCP 등록에만 있어야 합니다. GitHub 계정이 있으면 <strong>비공개</strong> 저장소를 만들고 올립니다(<code class="inline">내계정</code>을 바꿔 씁니다).</p>
+  <div class="viz" data-viz="copy-p-push"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, GitHub 계정이 있을 때</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone/marketplace
@@ -1708,6 +1731,1721 @@ git push -u origin HEAD</code></pre>
      }
     },
     "cap": "plugin의 `.mcp.json`은 같은 `uv run` 명령으로 `server.py`를 띄웁니다. 가상환경은 설치한 사람의 컴퓨터마다 따로 있어야 해서 plugin에 넣지 않고, R1의 `.venv`도 쓰지 않습니다."
+   }
+  ]
+ },
+ "pkg-build": {
+  "title": "R2 공통 단계 한눈에: 무엇을 만들고 00~05가 어떻게 이어지나",
+  "nodes": [
+   {
+    "id": "n0",
+    "ic": "folder",
+    "lb": "00 R1 산출물",
+    "sb": "agents · hooks · r2.env"
+   },
+   {
+    "id": "n1",
+    "ic": "doc",
+    "lb": "01 skill",
+    "sb": "리포트 · 기획안 skill"
+   },
+   {
+    "id": "n2",
+    "ic": "plug",
+    "lb": "02 plugin",
+    "sb": "my-kit/ · validate"
+   },
+   {
+    "id": "n3",
+    "ic": "server",
+    "lb": "03 마켓플레이스",
+    "sb": "capstone-local"
+   },
+   {
+    "id": "n4",
+    "ic": "shield",
+    "lb": "04 새 폴더 설치",
+    "sb": "capstone-try · 가드레일 확인"
+   }
+  ],
+  "edges": [
+   "이름 읽기",
+   "함께 묶기",
+   "cp -R",
+   "/plugin install"
+  ],
+  "side": [
+   {
+    "id": "s-kit",
+    "ic": "plug",
+    "lb": "my-kit (plugin)",
+    "sb": "agents · skills · 훅 · .mcp.json · README"
+   },
+   {
+    "id": "s-mk",
+    "ic": "server",
+    "lb": "marketplace.json",
+    "sb": "my-kit@capstone-local의 @ 뒤 이름"
+   },
+   {
+    "id": "s-try",
+    "ic": "folder",
+    "lb": "capstone-try",
+    "sb": "deny · MCP 허용 목록 + my-kit만 켜짐"
+   },
+   {
+    "id": "s-sha",
+    "ic": "doc",
+    "lb": "kit.sha",
+    "sb": "R2 미션에서 재사용 확인"
+   },
+   {
+    "id": "s-git",
+    "ic": "globe",
+    "lb": "05 (선택) git 저장소",
+    "sb": "다른 컴퓨터의 동료가 주소로 추가"
+   }
+  ],
+  "steps": [
+   {
+    "t": "00 R1 산출물",
+    "on": [
+     "n0"
+    ],
+    "edge": 0,
+    "chip": "r2.env",
+    "cap": "R1 폴더 `~/claude-lab/capstone/`의 agents, 훅, `settings.json`을 확인하고, 고른 트랙의 이름(`KIT`, `TRACK`, `SRV`, `COLLECT`, `REVIEW`)을 `r2.env`에 적습니다. `claude --version`은 2.1.295 이상이어야 합니다."
+   },
+   {
+    "t": "01 skill",
+    "on": [
+     "n1"
+    ],
+    "edge": 1,
+    "cap": "반복 업무의 절차와 출력 형식을 `SKILL.md`로 적습니다. skill은 `COLLECT` agent에게 자료 모으기를, `REVIEW` agent에게 읽기 전용 검토를 맡기고 결과를 늘 같은 형식으로 냅니다."
+   },
+   {
+    "t": "02 plugin",
+    "on": [
+     "n2",
+     "s-kit"
+    ],
+    "edge": 2,
+    "cap": "agents, 훅 스크립트, `plugin.json`(버전 0.1.0), README, `hooks/hooks.json`, 트랙 B와 C는 `.mcp.json`까지 `my-kit/`에 모으고 `claude plugin validate`를 통과시킵니다."
+   },
+   {
+    "t": "03 마켓플레이스",
+    "on": [
+     "n3",
+     "s-mk"
+    ],
+    "edge": 3,
+    "cap": "`my-kit/`을 `marketplace/plugins/`로 복사하고 카탈로그 `marketplace.json`(이름 `capstone-local`)을 만듭니다. 복사가 곧 배포입니다."
+   },
+   {
+    "t": "04 새 폴더 설치",
+    "on": [
+     "n4",
+     "s-try",
+     "s-sha"
+    ],
+    "cap": "agent도 skill도 없는 `capstone-try`에서 `/plugin install my-kit@capstone-local`(local 범위)로 받고, 다른 plugin은 이 폴더에서만 끕니다. 막혀야 하는 요청이 막히는지 보고 `kit.sha`를 남깁니다."
+   },
+   {
+    "t": "05 (선택) git",
+    "on": [
+     "s-git"
+    ],
+    "cap": "R2 미션을 끝내고 시간이 남으면 마켓플레이스 폴더를 git 저장소로 만들고, 키 검사 뒤 커밋해 비공개 GitHub 저장소에 올립니다."
+   },
+   {
+    "t": "결과",
+    "ok": [
+     "s-kit",
+     "s-mk",
+     "s-try",
+     "s-sha"
+    ],
+    "cap": "plugin 원본 `my-kit/`, 마켓플레이스, 설치를 마친 동료 폴더 `capstone-try`, 지문 `kit.sha`가 남습니다. R2 미션 페이지가 이것을 그대로 씁니다."
+   }
+  ]
+ },
+ "pkg-roles": {
+  "title": "설치된 my-kit 안에서: skill, agent, 훅, MCP 서버가 각각 하는 일",
+  "nodes": [
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "나",
+    "sb": "capstone-try에서 요청"
+   },
+   {
+    "id": "sk",
+    "ic": "doc",
+    "lb": "skill",
+    "sb": "절차와 출력 형식"
+   },
+   {
+    "id": "col",
+    "ic": "bot",
+    "lb": "COLLECT agent",
+    "sb": "자료 수집과 집계"
+   },
+   {
+    "id": "rev",
+    "ic": "lock",
+    "lb": "REVIEW agent",
+    "sb": "읽기 전용 검토"
+   },
+   {
+    "id": "rep",
+    "ic": "result",
+    "lb": "reports/",
+    "sb": ".md + .html"
+   }
+  ],
+  "edges": [
+   "요청",
+   "모으기 맡김",
+   "초안 검토",
+   "저장"
+  ],
+  "side": [
+   {
+    "id": "mcp",
+    "ic": "plug",
+    "lb": ".mcp.json의 MCP 서버",
+    "sb": "트랙 B·C, 도구 이름 mcp__plugin_my-kit_…"
+   },
+   {
+    "id": "hk",
+    "ic": "shield",
+    "lb": "훅 (hooks.json)",
+    "sb": "프롬프트와 도구 호출을 검사, 고장 나도 차단"
+   },
+   {
+    "id": "uc",
+    "ic": "key",
+    "lb": "userConfig",
+    "sb": "설치 창에서 받는 키, 비밀 저장소"
+   },
+   {
+    "id": "fs",
+    "ic": "folder",
+    "lb": "폴더 설정",
+    "sb": "deny 규칙 · MCP 허용 목록 (plugin에 못 넣음)"
+   }
+  ],
+  "steps": [
+   {
+    "t": "skill이 열림",
+    "on": [
+     "you",
+     "sk"
+    ],
+    "edge": 0,
+    "cap": "예를 들어 `/my-kit:periodic-report`로 대상과 기간을 주고 리포트를 요청하면 skill의 절차가 시작됩니다. 대상과 기간이 빠졌으면 skill이 먼저 묻습니다."
+   },
+   {
+    "t": "COLLECT가 모음",
+    "on": [
+     "sk",
+     "col",
+     "mcp"
+    ],
+    "edge": 1,
+    "cap": "절차 1번이 `my-kit:COLLECT`(트랙의 모으는 agent)에게 자료 수집과 집계를 맡깁니다. 트랙 B와 C의 agent는 plugin이 내놓은 MCP 서버의 도구(`mcp__plugin_my-kit_서버__도구`)를 씁니다."
+   },
+   {
+    "t": "REVIEW가 검토",
+    "on": [
+     "col",
+     "rev"
+    ],
+    "edge": 2,
+    "cap": "출력 형식대로 정리한 초안을 `my-kit:REVIEW`(읽기 전용 검토 agent)에게 넘겨 PASS, WARN, FAIL을 받습니다. FAIL이면 고친 뒤 한 번 더 검토받습니다."
+   },
+   {
+    "t": "저장",
+    "on": [
+     "rep"
+    ],
+    "ok": [
+     "rep"
+    ],
+    "edge": 3,
+    "cap": "`reports/`에 `기간-대상.md`(출력 형식)와 `기간-대상.html`(한 장짜리 웹 리포트) 두 파일로 저장합니다."
+   },
+   {
+    "t": "훅과 폴더 설정이 막음",
+    "on": [
+     "hk",
+     "fs"
+    ],
+    "cap": "그동안 plugin 훅이 프롬프트와 도구 호출을 검사해 `DLP:`, `RAW:`, `KEY:`, `NET:`으로 막고, 폴더 설정의 deny 규칙이 권한 거부로 한 겹 더 막습니다. 훅은 `onFailure`: `block`이라 스크립트가 없어도 막힙니다."
+   },
+   {
+    "t": "키는 설치 창에서",
+    "on": [
+     "uc",
+     "mcp"
+    ],
+    "cap": "키가 필요한 서버(트랙 B의 서울 인증키, 트랙 C의 alphavantage와 github)는 설치 창의 `userConfig` 칸에서 값을 받습니다. 값은 plugin 파일이 아닌 비밀 저장소에 들어가고 `${user_config.이름}`으로 서버에 넘어갑니다."
+   }
+  ]
+ },
+ "copy-p-check": {
+  "title": "00 Step 1 붙여 넣으면: R1 폴더에 묶을 재료가 있는지 본다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "Claude 세션 밖"
+   },
+   {
+    "id": "ver",
+    "ic": "result",
+    "lb": "claude --version",
+    "sb": "2.1.295 이상"
+   },
+   {
+    "id": "ag",
+    "ic": "bot",
+    "lb": "agents",
+    "sb": ".claude/agents/"
+   },
+   {
+    "id": "hk",
+    "ic": "shield",
+    "lb": "hooks",
+    "sb": ".claude/hooks/"
+   },
+   {
+    "id": "st",
+    "ic": "doc",
+    "lb": "훅 등록",
+    "sb": "settings.json"
+   }
+  ],
+  "edges": [
+   "",
+   "ls",
+   "",
+   "jq"
+  ],
+  "steps": [
+   {
+    "t": "버전",
+    "on": [
+     "term",
+     "ver"
+    ],
+    "edge": 0,
+    "cap": "`cd ~/claude-lab/capstone`으로 R1 작업 폴더에 들어가 `claude --version`을 봅니다. plugin 훅의 `onFailure`는 v2.1.295 이상이 필요합니다."
+   },
+   {
+    "t": "agent와 훅 스크립트",
+    "on": [
+     "ag",
+     "hk"
+    ],
+    "edge": 1,
+    "cap": "`ls .claude/agents .claude/hooks`가 트랙의 agent와 훅 스크립트를 보여 줍니다. A는 `consult-prep`, `risk-reviewer` 외 2개와 `dlp-guard.sh`, `raw-guard.sh`, B는 `price-summarizer`, `anomaly-checker`와 `key-guard.sh`, `net-guard.sh`, C는 `mcp-researcher`, `evidence-reviewer`와 `mcp-guard.sh`, `net-guard.sh`입니다."
+   },
+   {
+    "t": "훅 등록",
+    "on": [
+     "st"
+    ],
+    "edge": 3,
+    "cap": "`jq -c '.hooks | keys'`가 `settings.json`에 등록된 훅 이벤트 이름(예: `UserPromptSubmit`, `PreToolUse`)을 한 줄로 보여 줍니다."
+   },
+   {
+    "t": "모자라면",
+    "ok": [
+     "ver",
+     "ag",
+     "hk",
+     "st"
+    ],
+    "cap": "표의 파일이 보이지 않으면 해당 R1 페이지의 정리 단계로 돌아가 채웁니다. 모두 보이면 Step 2로 갑니다."
+   }
+  ]
+ },
+ "copy-p-env": {
+  "title": "00 Step 2 붙여 넣으면: 트랙의 이름을 적은 r2.env가 만들어진다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "cat > r2.env << 'EOF'"
+   },
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "r2.env",
+    "sb": "capstone 폴더"
+   },
+   {
+    "id": "kit",
+    "ic": "plug",
+    "lb": "KIT",
+    "sb": "plugin 이름 my-kit"
+   },
+   {
+    "id": "ag",
+    "ic": "bot",
+    "lb": "COLLECT · REVIEW",
+    "sb": "모으는 agent · 검토 agent"
+   },
+   {
+    "id": "srv",
+    "ic": "plug",
+    "lb": "SRV",
+    "sb": "MCP 서버 이름"
+   }
+  ],
+  "edges": [
+   "heredoc",
+   "",
+   "",
+   ""
+  ],
+  "side": [
+   {
+    "id": "s-a",
+    "ic": "folder",
+    "lb": "retirement-gap skill",
+    "sb": "트랙 A, Ch4 체크포인트를 쓸 때만"
+   },
+   {
+    "id": "s-uv",
+    "ic": "terminal",
+    "lb": "uv",
+    "sb": "트랙 B, 없을 때만 설치"
+   },
+   {
+    "id": "s-c",
+    "ic": "doc",
+    "lb": "r1c-choice.env",
+    "sb": "트랙 C, 서버 이름 · 허용 목록 · 허용 호스트"
+   }
+  ],
+  "steps": [
+   {
+    "t": "파일 쓰기",
+    "on": [
+     "term",
+     "env"
+    ],
+    "edge": 0,
+    "chip": "r2.env",
+    "cap": "고른 트랙의 블록 하나만 붙여 넣습니다. `cat > r2.env << 'EOF'`부터 `EOF`까지가 파일 내용이고, 이어지는 `. ./r2.env`가 파일을 읽어 `KIT=my-kit TRACK=…`을 출력합니다."
+   },
+   {
+    "t": "plugin 이름",
+    "on": [
+     "kit"
+    ],
+    "cap": "`KIT=my-kit`이 plugin 이름입니다. 바꾸려면 이 줄만 고치고(영문 소문자와 `-`), 세션에 입력하는 명령의 `my-kit`도 그 이름으로 바꿔 씁니다."
+   },
+   {
+    "t": "트랙 A",
+    "on": [
+     "ag",
+     "srv",
+     "s-a"
+    ],
+    "set": {
+     "ag": {
+      "sb": "spending-analyst · risk-reviewer"
+     },
+     "srv": {
+      "sb": "비움 (MCP 없음)"
+     }
+    },
+    "cap": "`SRV`는 비우고, 고객 그룹의 집계를 맡는 `spending-analyst`를 `COLLECT`, `risk-reviewer`를 `REVIEW`로 둡니다. Ch4 체크포인트를 쓸 때만 아래 블록으로 `retirement-gap` skill을 `my-kit/skills/`에 복사합니다."
+   },
+   {
+    "t": "트랙 B",
+    "on": [
+     "ag",
+     "srv",
+     "s-uv"
+    ],
+    "set": {
+     "ag": {
+      "sb": "price-summarizer · anomaly-checker"
+     },
+     "srv": {
+      "sb": "seoul-realestate"
+     }
+    },
+    "cap": "`SRV=seoul-realestate`, `COLLECT=price-summarizer`, `REVIEW=anomaly-checker`입니다. plugin 안의 MCP 서버를 `uv`로 돌리므로 `uv`가 없으면 설치하고, 마지막 줄에 `uv` 버전이 나오면 됩니다."
+   },
+   {
+    "t": "트랙 C",
+    "on": [
+     "ag",
+     "srv",
+     "s-c"
+    ],
+    "set": {
+     "ag": {
+      "sb": "mcp-researcher · evidence-reviewer"
+     },
+     "srv": {
+      "sb": "r1c-choice.env에서 읽음"
+     }
+    },
+    "cap": "첫 줄이 R1-C에서 만든 `r1c-choice.env`를 읽어 서버 이름(`SRV`), 허용 목록 항목, 허용 호스트를 그대로 가져옵니다. agent는 `mcp-researcher`와 `evidence-reviewer`입니다."
+   }
+  ]
+ },
+ "copy-p-periodic": {
+  "title": "01 Step 1 붙여 넣으면: periodic-report skill 파일이 만들어진다",
+  "nodes": [
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "r2.env",
+    "sb": "KIT · COLLECT · REVIEW"
+   },
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "cat > … << EOF",
+    "sb": "따옴표 없는 EOF"
+   },
+   {
+    "id": "file",
+    "ic": "doc",
+    "lb": "SKILL.md",
+    "sb": "periodic-report 폴더"
+   },
+   {
+    "id": "proc",
+    "ic": "result",
+    "lb": "절차 4단계",
+    "sb": "모으기 → 정리 → 검토 → 저장"
+   },
+   {
+    "id": "out",
+    "ic": "doc",
+    "lb": "출력 형식",
+    "sb": "다섯 항목 + 웹 리포트"
+   }
+  ],
+  "edges": [
+   "이름 채움",
+   "",
+   "",
+   ""
+  ],
+  "steps": [
+   {
+    "t": "이름 채우기",
+    "on": [
+     "env",
+     "term"
+    ],
+    "edge": 0,
+    "cap": "`. ./r2.env`로 이름을 불러옵니다. 이 블록의 `<< EOF`는 따옴표가 없어서 `${KIT}`, `${COLLECT}`, `${REVIEW}`가 r2.env의 실제 이름으로 바뀌어 저장됩니다."
+   },
+   {
+    "t": "파일이 생김",
+    "on": [
+     "file"
+    ],
+    "edge": 1,
+    "chip": "SKILL.md",
+    "cap": "`my-kit/skills/periodic-report/SKILL.md`가 생깁니다. frontmatter는 `name`과 `description`만 쓰고, `description`에 리포트, 주간 보고, 월간 보고를 요청할 때 쓴다고 적습니다."
+   },
+   {
+    "t": "절차",
+    "on": [
+     "proc"
+    ],
+    "edge": 2,
+    "cap": "1) `my-kit:COLLECT` agent에게 수집과 집계를 맡기고, 2) 출력 형식대로 정리하고, 3) `my-kit:REVIEW` agent에게 PASS, WARN, FAIL 검토를 받고(FAIL이면 고쳐서 한 번 더), 4) `reports/`에 `.md`와 `.html` 두 파일로 저장합니다."
+   },
+   {
+    "t": "출력 형식",
+    "on": [
+     "out"
+    ],
+    "edge": 3,
+    "cap": "요약, 핵심 표, 눈에 띄는 변화와 이유, 확인하지 못한 것, 검토 결과의 다섯 항목입니다. 웹 리포트는 외부 라이브러리 없이 HTML 파일 하나에 인라인 SVG 차트로 그린 한 장짜리 보고서입니다."
+   },
+   {
+    "t": "확인",
+    "on": [
+     "file"
+    ],
+    "ok": [
+     "file"
+    ],
+    "cap": "마지막 `head -4`가 파일 앞 네 줄(`---`, `name: periodic-report`, `description: …`, `---`)을 보여 주면 됩니다. \"지키는 것\"은 Claude가 읽는 지침이라, 반드시 막을 것은 02의 훅이 맡습니다."
+   }
+  ]
+ },
+ "copy-p-proposal": {
+  "title": "01 Step 2 붙여 넣으면: proposal-draft skill 파일이 만들어진다",
+  "nodes": [
+   {
+    "id": "rep",
+    "ic": "doc",
+    "lb": "근거 리포트",
+    "sb": "reports/ 아래"
+   },
+   {
+    "id": "file",
+    "ic": "doc",
+    "lb": "SKILL.md",
+    "sb": "proposal-draft 폴더"
+   },
+   {
+    "id": "col",
+    "ic": "bot",
+    "lb": "COLLECT agent",
+    "sb": "모자란 수치만"
+   },
+   {
+    "id": "rev",
+    "ic": "lock",
+    "lb": "REVIEW agent",
+    "sb": "근거 검토"
+   },
+   {
+    "id": "out",
+    "ic": "doc",
+    "lb": "기획안",
+    "sb": "proposals/ 폴더"
+   }
+  ],
+  "edges": [
+   "읽기",
+   "추가로 맡김",
+   "초안 검토",
+   "저장"
+  ],
+  "steps": [
+   {
+    "t": "파일이 생김",
+    "on": [
+     "file"
+    ],
+    "chip": "SKILL.md",
+    "cap": "R2-2를 고를 때 씁니다. Step 1과 같은 방식(따옴표 없는 `EOF`)으로 `my-kit/skills/proposal-draft/SKILL.md`를 만들고, 마지막 `ls`가 `skills/`의 폴더를 보여 줍니다."
+   },
+   {
+    "t": "입력",
+    "on": [
+     "rep",
+     "file"
+    ],
+    "edge": 0,
+    "cap": "입력은 근거로 쓸 리포트(`reports/` 아래)와 기획 주제입니다. 리포트가 없으면 periodic-report skill로 먼저 만듭니다."
+   },
+   {
+    "t": "모자란 수치",
+    "on": [
+     "col"
+    ],
+    "edge": 1,
+    "cap": "수치가 모자라면 그 부분만 `my-kit:COLLECT` agent에게 추가로 맡깁니다."
+   },
+   {
+    "t": "근거 검토",
+    "on": [
+     "rev"
+    ],
+    "edge": 2,
+    "cap": "출력 형식대로 쓴 초안을 `my-kit:REVIEW` agent에게 맡겨 PASS, WARN, FAIL을 받습니다. FAIL이면 고친 뒤 한 번 더 검토받습니다."
+   },
+   {
+    "t": "저장",
+    "on": [
+     "out"
+    ],
+    "ok": [
+     "out"
+    ],
+    "edge": 3,
+    "cap": "`proposals/주제.md`로 저장합니다. 배경과 문제, 대상, 제안 내용, 기대 효과와 지표, 리스크, 근거 표, 검토 결과의 일곱 항목이고, 근거 표에 없는 수치는 본문에 쓰지 않습니다."
+   }
+  ]
+ },
+ "copy-p-manifest": {
+  "title": "02 Step 1 붙여 넣으면: my-kit에 매니페스트, agents, 스크립트가 들어간다",
+  "nodes": [
+   {
+    "id": "r1",
+    "ic": "folder",
+    "lb": "R1 .claude/",
+    "sb": "agents/*.md · hooks/*.sh"
+   },
+   {
+    "id": "ag",
+    "ic": "bot",
+    "lb": "agents",
+    "sb": "MCP 도구 이름 바꿈"
+   },
+   {
+    "id": "sc",
+    "ic": "shield",
+    "lb": "scripts",
+    "sb": "훅 스크립트 그대로"
+   },
+   {
+    "id": "pj",
+    "ic": "doc",
+    "lb": "plugin.json",
+    "sb": "버전 0.1.0"
+   },
+   {
+    "id": "chk",
+    "ic": "result",
+    "lb": "tools: 줄",
+    "sb": "grep -H"
+   }
+  ],
+  "edges": [
+   "sed 또는 cat",
+   "",
+   "",
+   ""
+  ],
+  "steps": [
+   {
+    "t": "폴더 만들기",
+    "on": [
+     "r1"
+    ],
+    "cap": "`mkdir -p`가 `my-kit/` 아래 `.claude-plugin`, `agents`, `hooks`, `scripts` 폴더를 만듭니다."
+   },
+   {
+    "t": "agents 옮기기",
+    "on": [
+     "r1",
+     "ag"
+    ],
+    "edge": 0,
+    "set": {
+     "ag": {
+      "sb": "mcp__서버__ → mcp__plugin_my-kit_서버__"
+     }
+    },
+    "cap": "agent 파일을 하나씩 옮깁니다. `SRV`가 있으면(트랙 B, C) `sed`가 MCP 도구 이름 `mcp__서버__`를 `mcp__plugin_my-kit_서버__`로 바꾸고, 트랙 A는 `cat`으로 그대로 옮깁니다."
+   },
+   {
+    "t": "스크립트 복사",
+    "on": [
+     "sc"
+    ],
+    "cap": "`.claude/hooks/*.sh`를 `scripts/`로 복사하고 `chmod 755`로 실행 권한을 줍니다. 스크립트 내용은 그대로입니다."
+   },
+   {
+    "t": "매니페스트",
+    "on": [
+     "pj"
+    ],
+    "cap": "`jq -n`이 `.claude-plugin/plugin.json`을 씁니다. 이름은 `KIT`, 버전 `0.1.0`, 설명에 트랙이 들어가고, 작성자는 `캡스톤 교육생`입니다."
+   },
+   {
+    "t": "tools 줄 확인",
+    "on": [
+     "chk",
+     "ag"
+    ],
+    "ok": [
+     "ag"
+    ],
+    "cap": "`grep -H '^tools:'`가 plugin 안 agent의 `tools` 줄을 보여 줍니다. 트랙 B, C는 MCP 도구가 `mcp__plugin_my-kit_…`로 바뀌어 있어야 합니다. 옛 이름이 남아 있으면 agent가 그 도구를 쓰지 못합니다."
+   }
+  ]
+ },
+ "copy-p-readme": {
+  "title": "02 Step 2 붙여 넣으면: 들어 있는 것과 설치법을 적은 README.md가 생긴다",
+  "nodes": [
+   {
+    "id": "kit",
+    "ic": "folder",
+    "lb": "my-kit/",
+    "sb": "agents · skills · scripts"
+   },
+   {
+    "id": "rd",
+    "ic": "doc",
+    "lb": "README.md",
+    "sb": "my-kit/README.md"
+   },
+   {
+    "id": "inst",
+    "ic": "terminal",
+    "lb": "설치 두 줄",
+    "sb": "marketplace add · install"
+   },
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "직접 고칠 곳",
+    "sb": "첫 줄 괄호 부분"
+   }
+  ],
+  "edges": [
+   "ls로 목록",
+   "",
+   ""
+  ],
+  "steps": [
+   {
+    "t": "목록 채우기",
+    "on": [
+     "kit",
+     "rd"
+    ],
+    "edge": 0,
+    "chip": "README.md",
+    "cap": "따옴표 없는 `EOF`라 `$(cd $K/agents && ls …)` 같은 부분이 실행되어, 지금 `my-kit/`에 있는 agents, skills, 훅 스크립트 이름이 목록으로 들어갑니다."
+   },
+   {
+    "t": "설치 방법",
+    "on": [
+     "inst"
+    ],
+    "cap": "Claude 세션 안에서 보낼 `/plugin marketplace add ~/claude-lab/capstone/marketplace`와 `/plugin install my-kit@capstone-local` 두 줄이 들어갑니다. 03과 04에서 실제로 만들고 쓰는 이름입니다."
+   },
+   {
+    "t": "필요한 설정과 버전",
+    "on": [
+     "rd"
+    ],
+    "cap": "키는 설치 때 묻는 칸에 넣고 저장소에는 넣지 않는다는 것, plugin에 넣을 수 없는 설정(권한 deny, MCP 허용 목록)은 업무 폴더 설정에 둔다는 것, 버전 `0.1.0`이 적힙니다. 마지막 `cat`이 파일 전체를 보여 줍니다."
+   },
+   {
+    "t": "직접 고치기",
+    "on": [
+     "you"
+    ],
+    "ok": [
+     "rd"
+    ],
+    "cap": "첫 줄의 \"(무엇을 하는지 한두 문장으로 고쳐 쓰세요.)\"는 직접 고쳐 씁니다. 체크리스트 7번(무엇을 하는지, 설치 한 줄, 필요한 설정, 버전)이 이 파일입니다."
+   }
+  ]
+ },
+ "copy-p-hooks": {
+  "title": "02 Step 3 붙여 넣으면: 트랙의 훅 설정과 MCP 설정이 plugin에 들어간다",
+  "nodes": [
+   {
+    "id": "hj",
+    "ic": "shield",
+    "lb": "hooks/hooks.json",
+    "sb": "${CLAUDE_PLUGIN_ROOT}/scripts/…"
+   },
+   {
+    "id": "mj",
+    "ic": "plug",
+    "lb": ".mcp.json",
+    "sb": "트랙 B·C"
+   },
+   {
+    "id": "uc",
+    "ic": "key",
+    "lb": "userConfig",
+    "sb": "plugin.json, 키를 묻는 칸"
+   },
+   {
+    "id": "val",
+    "ic": "result",
+    "lb": "plugin validate",
+    "sb": "✔ Validation passed"
+   }
+  ],
+  "edges": [
+   "",
+   "${user_config.이름}",
+   "검증"
+  ],
+  "steps": [
+   {
+    "t": "트랙 A",
+    "on": [
+     "hj"
+    ],
+    "set": {
+     "hj": {
+      "sb": "dlp-guard.sh · raw-guard.sh"
+     },
+     "mj": {
+      "sb": "없음 (파일로 데이터)"
+     }
+    },
+    "cap": "R1-A의 `settings.json`에 있던 훅 세 줄을 그대로 옮깁니다. 프롬프트는 `UserPromptSubmit`의 `dlp-guard.sh`가, 도구 호출은 `PreToolUse`의 `dlp-guard.sh`와 `raw-guard.sh`가 검사하고, 모두 `onFailure`: `block`입니다. 트랙 A는 `.mcp.json`이 없습니다."
+   },
+   {
+    "t": "트랙 B",
+    "on": [
+     "hj",
+     "mj",
+     "uc"
+    ],
+    "edge": 1,
+    "set": {
+     "hj": {
+      "sb": "key-guard.sh · net-guard.sh"
+     },
+     "mj": {
+      "sb": "seoul-realestate (uv run)"
+     },
+     "uc": {
+      "sb": "seoul_api_key (sensitive)"
+     }
+    },
+    "cap": "`server.py`, `sample.json`, `README.md`를 plugin에 복사하고, `.mcp.json`이 `uv run`으로 `server.py`를 띄웁니다. 키는 `userConfig`의 `seoul_api_key`(가려서 입력)로 받아 `SEOUL_API_KEY`로만 넘기고, 비워 두면 `sample.json`(mock)으로 동작합니다. 훅은 `key-guard.sh`와 `net-guard.sh`입니다."
+   },
+   {
+    "t": "트랙 C",
+    "on": [
+     "hj",
+     "mj",
+     "uc"
+    ],
+    "edge": 1,
+    "set": {
+     "hj": {
+      "sb": "mcp-guard.sh · net-guard.sh"
+     },
+     "mj": {
+      "sb": "r1c-choice.env의 서버"
+     },
+     "uc": {
+      "sb": "alphavantage · github만"
+     }
+    },
+    "cap": "`r1c-choice.env`의 허용 목록 항목으로 서버 설정(원격은 `url`, 로컬은 `command`와 `args`)을 만듭니다. alphavantage는 키를 환경 변수로, github는 토큰을 `Authorization` 헤더로 넘기고, 키가 없는 서버는 `userConfig`를 만들지 않습니다. `mcp-guard.sh`는 이 plugin의 서버 도구만 통과시킵니다."
+   },
+   {
+    "t": "검증",
+    "on": [
+     "val"
+    ],
+    "ok": [
+     "val"
+    ],
+    "edge": 2,
+    "cap": "블록 마지막 줄의 `claude plugin validate`가 `✔ Validation passed`면 통과입니다. LICENSE나 아이콘이 없다는 안내는 이 실습에서는 남아도 됩니다."
+   }
+  ]
+ },
+ "copy-p-market": {
+  "title": "03 붙여 넣으면: my-kit이 마켓플레이스 폴더에 복사되고 카탈로그가 생긴다",
+  "nodes": [
+   {
+    "id": "kit",
+    "ic": "plug",
+    "lb": "my-kit/ (원본)",
+    "sb": "~/claude-lab/capstone/my-kit"
+   },
+   {
+    "id": "cp",
+    "ic": "folder",
+    "lb": "plugins/my-kit",
+    "sb": "marketplace 안 복사본"
+   },
+   {
+    "id": "cat",
+    "ic": "doc",
+    "lb": "marketplace.json",
+    "sb": "name: capstone-local"
+   },
+   {
+    "id": "val",
+    "ic": "result",
+    "lb": "plugin validate",
+    "sb": "✔ Validation passed"
+   }
+  ],
+  "edges": [
+   "rm -rf 후 cp -R",
+   "./plugins/my-kit",
+   "검증"
+  ],
+  "side": [
+   {
+    "id": "ln",
+    "ic": "lock",
+    "lb": "안 되는 경로",
+    "sb": ".. 로 밖을 가리키기 · 심볼릭 링크"
+   },
+   {
+    "id": "re",
+    "ic": "terminal",
+    "lb": "원본을 고친 뒤",
+    "sb": "이 블록 다시 + /reload-plugins"
+   }
+  ],
+  "steps": [
+   {
+    "t": "복사해 올리기",
+    "on": [
+     "kit",
+     "cp"
+    ],
+    "edge": 0,
+    "chip": "my-kit",
+    "cap": "`rm -rf`로 예전 복사본을 지우고 `cp -R`로 원본 `my-kit/`을 `marketplace/plugins/`에 통째로 복사합니다. 복사가 곧 배포입니다."
+   },
+   {
+    "t": "왜 복사인가",
+    "on": [
+     "ln"
+    ],
+    "bad": [
+     "ln"
+    ],
+    "cap": "카탈로그의 상대 경로는 마켓플레이스 폴더 안을 가리켜야 합니다. `..`으로 밖을 가리키면 검증에서 실패하고, 심볼릭 링크로 이은 경로는 읽히지 않습니다."
+   },
+   {
+    "t": "카탈로그",
+    "on": [
+     "cat"
+    ],
+    "edge": 1,
+    "cap": "`jq -n`이 `.claude-plugin/marketplace.json`을 씁니다. 이름은 `capstone-local`, plugin 목록에 `source: \"./plugins/my-kit\"`이 들어가고, 설명은 `plugin.json`에서 가져옵니다."
+   },
+   {
+    "t": "검증",
+    "on": [
+     "val"
+    ],
+    "ok": [
+     "val"
+    ],
+    "edge": 2,
+    "cap": "`claude plugin validate`가 마켓플레이스 폴더를 검사해 `✔ Validation passed`를 내면 됩니다. 설치 명령 `my-kit@capstone-local`의 `@` 뒤가 이 이름입니다."
+   },
+   {
+    "t": "고친 뒤에는",
+    "on": [
+     "re"
+    ],
+    "cap": "원본 `my-kit/`을 고쳤다면 이 블록을 다시 실행하고, 열려 있는 세션에서 `/reload-plugins`를 입력합니다. 그때 `plugin.json`의 `version`도 올립니다(0.1.0에서 0.1.1)."
+   }
+  ]
+ },
+ "copy-p-tryfolder": {
+  "title": "04 Step 1 붙여 넣으면: agent도 skill도 없는 동료 폴더가 만들어진다",
+  "nodes": [
+   {
+    "id": "try",
+    "ic": "folder",
+    "lb": "capstone-try",
+    "sb": "git init 한 새 폴더"
+   },
+   {
+    "id": "data",
+    "ic": "folder",
+    "lb": "데이터 연결",
+    "sb": "트랙 A: pseudo 링크 · segments.md"
+   },
+   {
+    "id": "set",
+    "ic": "doc",
+    "lb": "폴더 설정",
+    "sb": ".claude/settings.json · permissions + allowedMcpServers"
+   },
+   {
+    "id": "ls",
+    "ic": "result",
+    "lb": "ls -A",
+    "sb": ".claude · .git (A는 2개 더)"
+   }
+  ],
+  "edges": [
+   "트랙 A만",
+   "",
+   ""
+  ],
+  "side": [
+   {
+    "id": "r1",
+    "ic": "doc",
+    "lb": "R1 .claude/settings.json",
+    "sb": "deny 규칙과 MCP 허용 목록의 원본"
+   }
+  ],
+  "steps": [
+   {
+    "t": "새 폴더",
+    "on": [
+     "try"
+    ],
+    "cap": "`mkdir -p`로 `~/claude-lab/capstone-try/.claude`를 만들고 들어가 `git init -q`로 저장소로 만듭니다."
+   },
+   {
+    "t": "데이터 연결",
+    "on": [
+     "data"
+    ],
+    "edge": 0,
+    "cap": "트랙 A일 때만 `~/claude-lab/mydata/pseudo`를 `pseudo` 링크로 걸고 `segments.md`를 복사합니다. 데이터에 닿는 데 필요한 것만 둡니다."
+   },
+   {
+    "t": "폴더 설정",
+    "on": [
+     "r1",
+     "set"
+    ],
+    "edge": 1,
+    "cap": "`jq`가 R1 폴더의 `settings.json`에서 `permissions`와(있으면) `allowedMcpServers`만 골라 이 폴더의 `.claude/settings.json`에 쓰고 내용을 보여 줍니다. plugin에 넣을 수 없었던 설정이라 폴더 설정으로 나눠 줍니다."
+   },
+   {
+    "t": "확인",
+    "on": [
+     "ls"
+    ],
+    "ok": [
+     "ls"
+    ],
+    "edge": 2,
+    "cap": "`ls -A`에 `.claude`, `.git`(트랙 A는 `pseudo`, `segments.md`도)만 보이면 됩니다. `.claude/` 안에는 `agents/`도 `skills/`도 없습니다."
+   }
+  ]
+ },
+ "copy-p-install": {
+  "title": "04 Step 2 붙여 넣으면: 마켓플레이스를 추가하고 my-kit을 local 범위로 설치한다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "cd … && claude",
+    "sb": "폴더 신뢰: Yes"
+   },
+   {
+    "id": "add",
+    "ic": "server",
+    "lb": "marketplace add",
+    "sb": "capstone-local"
+   },
+   {
+    "id": "inst",
+    "ic": "plug",
+    "lb": "/plugin install",
+    "sb": "my-kit 설치"
+   },
+   {
+    "id": "scope",
+    "ic": "folder",
+    "lb": "local 범위",
+    "sb": ".claude/settings.local.json"
+   },
+   {
+    "id": "got",
+    "ic": "result",
+    "lb": "따라온 것",
+    "sb": "@my-kit · /my-kit · /mcp"
+   }
+  ],
+  "edges": [
+   "",
+   "",
+   "범위 선택",
+   "확인"
+  ],
+  "side": [
+   {
+    "id": "uc",
+    "ic": "key",
+    "lb": "설치 때 묻는 칸",
+    "sb": "A 없음 · B 서울 인증키(비워도 됨) · C alphavantage, github"
+   },
+   {
+    "id": "usr",
+    "ic": "lock",
+    "lb": "사용자 범위는 고르지 않음",
+    "sb": "훅이 모든 폴더에서 돎"
+   }
+  ],
+  "steps": [
+   {
+    "t": "세션 열기",
+    "on": [
+     "term"
+    ],
+    "cap": "`capstone-try`에서 `claude`를 엽니다. 폴더를 신뢰하겠냐고 물으면 Yes를 고릅니다."
+   },
+   {
+    "t": "마켓플레이스 추가",
+    "on": [
+     "add"
+    ],
+    "edge": 0,
+    "chip": "marketplace add",
+    "cap": "`/plugin marketplace add ~/claude-lab/capstone/marketplace`를 붙여 넣습니다. `Successfully added marketplace: capstone-local`이 나와야 합니다. 빠르게 타이핑하면 자동완성이 다른 명령을 고를 수 있어 복사해 붙여 넣습니다."
+   },
+   {
+    "t": "설치",
+    "on": [
+     "inst",
+     "uc"
+    ],
+    "edge": 1,
+    "cap": "`/plugin install my-kit@capstone-local`을 보내면 plugin 정보와 설치 범위가 나옵니다. 트랙 B는 서울 열린데이터광장 인증키(없으면 비워 둠, mock), 트랙 C는 alphavantage나 github일 때만 키나 토큰을 묻습니다."
+   },
+   {
+    "t": "local 범위",
+    "on": [
+     "scope",
+     "usr"
+    ],
+    "bad": [
+     "usr"
+    ],
+    "edge": 2,
+    "cap": "Ch4와 달리 Install for you, in this repo only (local scope)를 고릅니다. 사용자 범위로 설치하면 이 plugin의 훅이 모든 폴더에서 돌아 다른 실습의 호출까지 막을 수 있습니다. local 범위는 이 폴더의 `.claude/settings.local.json`에만 기록됩니다."
+   },
+   {
+    "t": "따라온 것 확인",
+    "on": [
+     "got"
+    ],
+    "ok": [
+     "got"
+    ],
+    "edge": 3,
+    "cap": "입력창에 `@my-kit`을 치면 `my-kit:`이 붙은 agent가, `/my-kit`을 치면 `/my-kit:periodic-report`가 보여야 합니다. 트랙 B, C는 `/mcp`에서 `plugin:my-kit:서버`가 연결됨으로 보입니다."
+   }
+  ]
+ },
+ "copy-p-only": {
+  "title": "04 Step 3 붙여 넣으면: 이 폴더에서는 my-kit 말고 다른 plugin이 꺼진다",
+  "nodes": [
+   {
+    "id": "list",
+    "ic": "terminal",
+    "lb": "plugin list --json",
+    "sb": "켜진 plugin"
+   },
+   {
+    "id": "other",
+    "ic": "plug",
+    "lb": "다른 plugin",
+    "sb": "asset-team-kit 등"
+   },
+   {
+    "id": "dis",
+    "ic": "lock",
+    "lb": "disable --scope local",
+    "sb": "이 폴더에서만 끔"
+   },
+   {
+    "id": "loc",
+    "ic": "doc",
+    "lb": "local 기록",
+    "sb": "settings.local.json"
+   },
+   {
+    "id": "only",
+    "ic": "result",
+    "lb": "켜진 것",
+    "sb": "my-kit 한 줄만"
+   }
+  ],
+  "edges": [
+   "my-kit 제외",
+   "하나씩",
+   "기록",
+   "다시 목록"
+  ],
+  "side": [
+   {
+    "id": "usr",
+    "ic": "folder",
+    "lb": "사용자 설정",
+    "sb": "그대로 → 다른 폴더(Ch6 랩 등)에서는 켜져 있음"
+   }
+  ],
+  "steps": [
+   {
+    "t": "끌 것 고르기",
+    "on": [
+     "list",
+     "other"
+    ],
+    "edge": 0,
+    "cap": "두 번째 터미널에서 실행합니다. `jq`가 켜져 있으면서 이름이 `my-kit@`으로 시작하지 않는 plugin만 고릅니다. Ch4의 `asset-team-kit@fsi-local`, Setup에서 설치한 superpowers 등이 여기에 걸립니다."
+   },
+   {
+    "t": "이 폴더에서만 끄기",
+    "on": [
+     "dis",
+     "loc"
+    ],
+    "bad": [
+     "other"
+    ],
+    "edge": [
+     1,
+     2
+    ],
+    "cap": "고른 plugin마다 `claude plugin disable … --scope local`을 실행합니다. 끈다는 기록은 이 폴더의 `.claude/settings.local.json`에만 남습니다."
+   },
+   {
+    "t": "다른 폴더는 그대로",
+    "on": [
+     "usr"
+    ],
+    "ok": [
+     "usr"
+    ],
+    "cap": "사용자 설정은 건드리지 않으므로 다른 폴더(Ch6 랩 등)에서는 그대로 켜져 있습니다. 다시 켜려면 `claude plugin enable 이름@마켓플레이스 --scope local`을 씁니다."
+   },
+   {
+    "t": "확인",
+    "on": [
+     "only"
+    ],
+    "ok": [
+     "only"
+    ],
+    "edge": 3,
+    "cap": "마지막 줄에 `my-kit@capstone-local` 한 줄만 나와야 합니다. 열려 있는 세션에는 `/reload-plugins`로 반영합니다."
+   }
+  ]
+ },
+ "copy-p-record": {
+  "title": "04 Step 4 붙여 넣으면: 무엇이 설치됐는지 보고 kit.sha 지문을 남긴다",
+  "nodes": [
+   {
+    "id": "list",
+    "ic": "terminal",
+    "lb": "plugin list",
+    "sb": "설치된 plugin"
+   },
+   {
+    "id": "det",
+    "ic": "result",
+    "lb": "plugin details",
+    "sb": "구성 요소 · 토큰 비용"
+   },
+   {
+    "id": "loc",
+    "ic": "doc",
+    "lb": "settings.local.json",
+    "sb": "이 폴더의 기록"
+   },
+   {
+    "id": "sha",
+    "ic": "doc",
+    "lb": "kit.sha",
+    "sb": "agents · skills의 sha256"
+   }
+  ],
+  "edges": [
+   "",
+   "",
+   "find · sha256sum"
+  ],
+  "steps": [
+   {
+    "t": "설치 상태",
+    "on": [
+     "list",
+     "det"
+    ],
+    "edge": 0,
+    "cap": "`claude plugin list`와 `claude plugin details $KIT@capstone-local`이 설치 상태를 보여 줍니다. `Scope: local`, `Status: ✔ enabled`와 함께 agent, skill, 훅, MCP 서버 수가 나옵니다."
+   },
+   {
+    "t": "토큰 비용",
+    "on": [
+     "det"
+    ],
+    "cap": "아래쪽 `Projected token cost`는 이 plugin이 세션마다 늘 차지하는 토큰 추정치입니다. Ch5에서 본 컨텍스트 비용과 같은 이야기입니다."
+   },
+   {
+    "t": "폴더 기록",
+    "on": [
+     "loc"
+    ],
+    "edge": 1,
+    "cap": "`cat .claude/settings.local.json`이 이 폴더에만 남은 plugin 설정 기록을 보여 줍니다."
+   },
+   {
+    "t": "지문 남기기",
+    "on": [
+     "sha"
+    ],
+    "ok": [
+     "sha"
+    ],
+    "edge": 2,
+    "chip": "kit.sha",
+    "cap": "마켓플레이스 안 my-kit의 `agents/`, `skills/` 파일마다 sha256 지문을 `kit.sha`에 남기고 `wc -l`로 줄 수를 봅니다. R2 미션 페이지에서 \"agent와 skill을 다시 짜지 않았다\"를 이 파일로 확인합니다."
+   }
+  ]
+ },
+ "copy-p-managed": {
+  "title": "04 Step 5 붙여 넣으면: 앞 랩의 managed 훅이 남아 있는지 본다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "Terminal 2",
+    "sb": "sudo jq"
+   },
+   {
+    "id": "ms",
+    "ic": "doc",
+    "lb": "managed-settings.json",
+    "sb": "/etc/claude-code/"
+   },
+   {
+    "id": "okn",
+    "ic": "result",
+    "lb": "그대로 진행",
+    "sb": "hooks: [] · false/null · 파일 없음"
+   }
+  ],
+  "edges": [
+   "읽기",
+   "판정"
+  ],
+  "side": [
+   {
+    "id": "back",
+    "ic": "lock",
+    "lb": "먼저 원복",
+    "sb": "Ch2 Lab 2 TASK 07"
+   }
+  ],
+  "steps": [
+   {
+    "t": "managed 설정 읽기",
+    "on": [
+     "term",
+     "ms"
+    ],
+    "edge": 0,
+    "cap": "`sudo jq`가 managed 설정에서 `allowManagedHooksOnly`와 등록된 훅 이벤트 이름만 보여 줍니다. 남아 있으면 아래의 `DLP:` 차단이 plugin 훅이 아닌 managed 훅에서 온 것일 수 있습니다."
+   },
+   {
+    "t": "그대로 진행",
+    "on": [
+     "okn"
+    ],
+    "ok": [
+     "okn"
+    ],
+    "edge": 1,
+    "cap": "`\"hooks\": []`이고 `allowManagedHooksOnly`가 `null`이나 `false`이거나, 아무것도 나오지 않으면(파일 없음) 그대로 진행합니다."
+   },
+   {
+    "t": "먼저 원복",
+    "on": [
+     "back"
+    ],
+    "bad": [
+     "back"
+    ],
+    "cap": "`hooks` 목록에 이름이 보이거나 `allowManagedHooksOnly`가 `true`면 Ch2 Lab 2 TASK 07(전체 원복)을 먼저 하고 세션을 다시 엽니다."
+   }
+  ]
+ },
+ "copy-p-guard": {
+  "title": "04 Step 5 보내는 요청 셋: 어디서 막히고 무엇이 통과하나",
+  "nodes": [
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "트랙의 요청",
+    "sb": "표의 세 줄"
+   },
+   {
+    "id": "hk",
+    "ic": "shield",
+    "lb": "plugin 훅",
+    "sb": "DLP · RAW · KEY · NET"
+   },
+   {
+    "id": "deny",
+    "ic": "lock",
+    "lb": "폴더 deny 규칙",
+    "sb": "권한 거부"
+   },
+   {
+    "id": "ag",
+    "ic": "bot",
+    "lb": "my-kit agent",
+    "sb": "@my-kit:…"
+   }
+  ],
+  "edges": [
+   "",
+   "",
+   ""
+  ],
+  "steps": [
+   {
+    "t": "트랙 A",
+    "on": [
+     "you"
+    ],
+    "bad": [
+     "hk",
+     "deny"
+    ],
+    "cap": "주민번호가 든 요청은 `DLP:`, `~/claude-lab/mydata/raw/customers.csv` 읽기는 `RAW:`(또는 권한 거부)로 막혀야 합니다. `@my-kit:consult-prep`의 상담 준비 노트 요청은 통과해야 합니다."
+   },
+   {
+    "t": "트랙 B",
+    "on": [
+     "you"
+    ],
+    "bad": [
+     "hk",
+     "deny"
+    ],
+    "cap": "`curl`로 example.com을 가져오는 요청은 `NET:`, `~/.claude.json` 보기는 `KEY:`(또는 권한 거부)로 막혀야 합니다. `@my-kit:price-summarizer`의 강남구 202610 요청은 통과해야 합니다."
+   },
+   {
+    "t": "트랙 C",
+    "on": [
+     "you"
+    ],
+    "bad": [
+     "hk",
+     "deny"
+    ],
+    "cap": "`curl` 요청은 `NET:`, 웹 검색 요청은 웹 검색 도구 없음(권한 거부)으로 막혀야 합니다. `@my-kit:mcp-researcher`로 보내는 R1-C 01의 질문은 통과해야 합니다. `mcp-guard.sh`는 이 폴더에서는 나서지 않습니다."
+   },
+   {
+    "t": "누가 막았나",
+    "on": [
+     "hk",
+     "deny"
+    ],
+    "ok": [
+     "ag"
+    ],
+    "cap": "권한 거부는 Step 1에서 옮긴 폴더 설정의 deny 규칙이, `DLP:`, `RAW:`, `KEY:`, `NET:`은 plugin 훅이 막은 것입니다. agent 요청은 통과합니다. 막힌 화면 하나를 캡처하면 출품 양식 4번이 됩니다."
+   }
+  ]
+ },
+ "copy-p-failclosed": {
+  "title": "04 Step 5 붙여 넣으면: 스크립트를 치워도 막히는지(fail-closed) 보고 되돌린다",
+  "nodes": [
+   {
+    "id": "off",
+    "ic": "folder",
+    "lb": "scripts → scripts.off",
+    "sb": "Terminal 2, mv"
+   },
+   {
+    "id": "you",
+    "ic": "chat",
+    "lb": "Claude 세션",
+    "sb": "Bash 도구로 ls -l"
+   },
+   {
+    "id": "hk",
+    "ic": "shield",
+    "lb": "plugin 훅",
+    "sb": "스크립트를 못 찾음"
+   },
+   {
+    "id": "blk",
+    "ic": "lock",
+    "lb": "차단",
+    "sb": "onFailure is \"block\""
+   },
+   {
+    "id": "back",
+    "ic": "folder",
+    "lb": "scripts 되돌림",
+    "sb": "Terminal 2, 바로"
+   }
+  ],
+  "edges": [
+   "",
+   "훅 실행 시도",
+   "실패 = 차단",
+   "되돌리기"
+  ],
+  "steps": [
+   {
+    "t": "스크립트 치우기",
+    "on": [
+     "off"
+    ],
+    "cap": "두 번째 터미널에서 마켓플레이스 안 plugin의 `scripts/` 폴더를 `scripts.off`로 옮기고 `ls`로 봅니다. 설치된 plugin은 마켓플레이스 폴더 안의 파일을 그 자리에서 읽으므로 훅 스크립트가 없는 상태가 됩니다."
+   },
+   {
+    "t": "아무 명령이나",
+    "on": [
+     "you",
+     "hk"
+    ],
+    "edge": 1,
+    "cap": "세션에 `Bash 도구로 ls -l 을 실행해 주세요`를 보냅니다. 트랙 A, B는 프롬프트 단계(`UserPromptSubmit`)에서, 트랙 C는 Bash 호출에서 훅이 스크립트를 실행하려다 찾지 못합니다."
+   },
+   {
+    "t": "막힘",
+    "on": [
+     "blk"
+    ],
+    "ok": [
+     "blk"
+    ],
+    "edge": 2,
+    "cap": "`blocking because onFailure is \"block\"`이 든 메시지와 함께 막혀야 합니다. 스크립트가 없어도 통과하지 않는다는 뜻입니다."
+   },
+   {
+    "t": "되돌리기",
+    "on": [
+     "back"
+    ],
+    "ok": [
+     "back"
+    ],
+    "edge": 3,
+    "cap": "확인했으면 바로 `mv $P/scripts.off $P/scripts`로 되돌리고, `ls $P/scripts`에 스크립트가 다시 보이는지 봅니다."
+   }
+  ]
+ },
+ "copy-p-git": {
+  "title": "05 붙여 넣으면: 마켓플레이스 폴더가 키 검사를 거쳐 git 커밋이 된다",
+  "nodes": [
+   {
+    "id": "mk",
+    "ic": "folder",
+    "lb": "marketplace/",
+    "sb": "git init · git add ."
+   },
+   {
+    "id": "who",
+    "ic": "user",
+    "lb": "작성자 이름",
+    "sb": "없을 때만 capstone"
+   },
+   {
+    "id": "scan",
+    "ic": "key",
+    "lb": "키 검사",
+    "sb": "~/.claude.json의 등록 값"
+   },
+   {
+    "id": "cm",
+    "ic": "result",
+    "lb": "커밋",
+    "sb": "my-kit 0.1.0"
+   }
+  ],
+  "edges": [
+   "",
+   "",
+   "git commit"
+  ],
+  "steps": [
+   {
+    "t": "저장소 만들기",
+    "on": [
+     "mk"
+    ],
+    "cap": "`git init -q && git add .`로 마켓플레이스 폴더를 저장소로 만들고, 올릴 파일을 `git status --short`로 보여 줍니다."
+   },
+   {
+    "t": "작성자",
+    "on": [
+     "who"
+    ],
+    "edge": 0,
+    "cap": "git 작성자 이름과 메일이 없을 때만 이 저장소에 `capstone`, `capstone@example.com`으로 정합니다."
+   },
+   {
+    "t": "키 검사",
+    "on": [
+     "scan"
+    ],
+    "edge": 1,
+    "cap": "`~/.claude.json`에 등록된 키 값(8자 이상)이 `.git` 밖 파일에 있는지 찾아 파일 이름만 출력합니다. 설치 창(`userConfig`)에만 넣은 키는 비밀 저장소에 있어 여기서 찾지 못하므로, 눈으로도 봅니다."
+   },
+   {
+    "t": "커밋",
+    "on": [
+     "cm"
+    ],
+    "ok": [
+     "cm"
+    ],
+    "edge": 2,
+    "cap": "키 검사에서 키나 토큰이 든 파일이 나오면 커밋하지 않고 `키 검사 끝: … 커밋하지 않았습니다`와 그 파일 이름을 보여 줍니다. 없으면 `my-kit 0.1.0` 커밋을 만들고 `git log --oneline`으로 보여 줍니다."
+   }
+  ]
+ },
+ "copy-p-push": {
+  "title": "05 붙여 넣으면: 비공개 GitHub 저장소에 올리고, 동료는 주소로 추가한다",
+  "nodes": [
+   {
+    "id": "mk",
+    "ic": "folder",
+    "lb": "marketplace/",
+    "sb": "커밋됨"
+   },
+   {
+    "id": "gh",
+    "ic": "globe",
+    "lb": "GitHub 비공개 저장소",
+    "sb": "내계정/capstone-marketplace"
+   },
+   {
+    "id": "mate",
+    "ic": "user",
+    "lb": "다른 컴퓨터의 동료",
+    "sb": "/plugin marketplace add"
+   }
+  ],
+  "edges": [
+   "git push",
+   "owner/repo로 추가"
+  ],
+  "side": [
+   {
+    "id": "same",
+    "ic": "lock",
+    "lb": "같은 이름은 하나만",
+    "sb": "내 컴퓨터에서 시험하려면 capstone-local 먼저 remove"
+   }
+  ],
+  "steps": [
+   {
+    "t": "올리기",
+    "on": [
+     "mk",
+     "gh"
+    ],
+    "edge": 0,
+    "cap": "GitHub에서 비공개 저장소를 만든 뒤, `내계정`을 바꿔 `git remote add origin …`과 `git push -u origin HEAD`를 실행합니다."
+   },
+   {
+    "t": "동료가 추가",
+    "on": [
+     "gh",
+     "mate"
+    ],
+    "edge": 1,
+    "cap": "동료는 세션에서 `/plugin marketplace add 내계정/capstone-marketplace`로 추가합니다. `owner/repo` 형식은 GitHub 저장소로 읽힙니다."
+   },
+   {
+    "t": "내 컴퓨터에서 시험할 때",
+    "on": [
+     "same"
+    ],
+    "cap": "같은 이름의 마켓플레이스는 한 사람에게 하나만 등록됩니다. 시험하려면 먼저 `/plugin marketplace remove capstone-local`을 해야 하고 그 마켓플레이스에서 설치한 plugin도 함께 지워지므로, R2 미션을 다 끝낸 뒤에 합니다."
    }
   ]
  }

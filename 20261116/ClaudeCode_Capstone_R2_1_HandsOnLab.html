@@ -844,10 +844,17 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <div class="paste-guide"></div>
 <div class="gl-list"></div>
 
+<div class="r21-map" id="r21-map">
+  <p class="body"><strong>무엇을 만드나요?</strong> R2 공통 단계에서 설치한 <code class="inline">my-kit</code> plugin의 <code class="inline">periodic-report</code> skill로 같은 형식의 리포트를 두 번 만들고, 그동안 agent와 skill을 하나도 새로 짜지 않았음을 지문으로 보입니다. 아래 첫 그림은 00~04가 이어지는 순서와 각 구성 요소가 맡는 일, 둘째 그림은 만든 웹 리포트를 여는 두 길(나만 보는 주소, 선택 단계의 공개 주소)입니다. 단계 번호를 눌러 넘겨 보세요.</p>
+  <div class="viz" data-viz="r21-build"></div>
+  <div class="viz" data-viz="r21-view"></div>
+</div>
+
 <section class="task" id="task-00" data-min="5">
   <div class="task-head"><span class="task-num">00</span><h2>시작 전 확인</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">동료 폴더에 plugin이 설치돼 있고, 설치할 때 남긴 agent와 skill 지문이 그대로인지 봅니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> <code class="inline">kit.sha</code>는 설치할 때 남긴 agent와 skill의 지문입니다. 시작할 때 맞아야 03에서 "다시 짜지 않았다"를 이 파일로 보일 수 있습니다.</p>
+  <div class="viz" data-viz="copy-r21-check"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; . ~/claude-lab/capstone/r2.env
@@ -888,6 +895,7 @@ ls -A .claude</code></pre>
   </tbody></table>
   <p class="body">트랙 B는 키를 넣지 않았다면 mock이라 건물명이 "샘플"로 시작합니다. 202609와 202610은 샘플에 모두 들어 있어 두 번째 리포트에서 직전 대비 비교가 됩니다. 트랙 C alphavantage는 무료 키가 하루 25회라 리포트 두 번이면 충분합니다. 도중에 도구 사용 허락을 물으면 허락합니다. 화면에 <code class="inline">my-kit:</code>이 붙은 agent 이름이 지나가는 것을 봅니다.</p>
   <p class="body">끝나면 두 번째 터미널에서 결과의 제목 줄을 봅니다.</p>
+  <div class="viz" data-viz="copy-r21-headings"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try
@@ -896,6 +904,7 @@ for f in reports/*.md; do echo "== $f"; grep -E '^#' "$f" | head -8; done</code>
   </div>
   <p class="body">skill의 출력 형식대로 요약, 핵심 표, 눈에 띄는 변화와 이유, 확인하지 못한 것, 검토 결과의 다섯 항목이 그 순서로 있어야 합니다. 형식이 다르면 skill을 고치지 말고 세션에서 "periodic-report의 출력 형식 그대로 다시 정리해 주세요"라고 요청합니다.</p>
   <p class="body"><code class="inline">reports/</code>에는 같은 이름의 <code class="inline">.html</code>도 있습니다. skill의 웹 리포트 형식대로 만든 한 장짜리 보고서입니다. code-server 편집기는 HTML을 그림으로 보여 주지 않으므로, 폴더를 작은 웹 서버로 띄워 브라우저 탭에서 엽니다.</p>
+  <div class="viz" data-viz="copy-r21-serve"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 웹 리포트 열기</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try
@@ -935,6 +944,7 @@ python3 -m http.server 8000</code></pre>
   <div class="task-head"><span class="task-num">03</span><h2>재사용 확인</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">두 리포트를 만드는 동안 agent와 skill을 하나도 새로 짜지 않았고, 쓴 것이 모두 설치한 plugin에서 왔음을 보입니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 이 미션의 핵심은 "새로 짜지 않고 설치한 plugin으로" 해 냈다는 것입니다. 지문 검사가 그 기준이고, 세션의 답은 보조 증거입니다.</p>
+  <div class="viz" data-viz="copy-r21-reuse"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try &amp;&amp; . ~/claude-lab/capstone/r2.env
@@ -945,6 +955,7 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
   </div>
   <p class="body">네 가지를 봅니다. <code class="inline">sha256sum -c</code>가 모두 <code class="inline">OK</code>면 설치 뒤에 plugin의 agent와 skill이 바뀌지 않았습니다. <code class="inline">find</code>가 아무것도 출력하지 않으면 이 폴더에 따로 만든 agent나 skill이 없습니다. <code class="inline">ls -lt ~/.claude/agents ~/.claude/skills</code>는 사용자 수준의 agent와 skill입니다. 앞선 실습에서 만든 것이 보여도 이 미션의 "새로 짠 것"으로 세지 않습니다. 이름에 <code class="inline">my-kit:</code>이 붙지 않아 세션 답에서도 구분됩니다. 다만 날짜가 오늘 R2 시간대인 파일이 있으면 그것은 이번 업무를 위해 새로 짠 것이니 지우거나 plugin으로 옮깁니다. <code class="inline">claude plugin details</code>의 수는 R2 공통 04에서 본 것과 같아야 합니다.</p>
   <p class="body">세션에서도 물어봅니다.</p>
+  <div class="viz" data-viz="copy-r21-ask"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>이번 세션에서 쓴 skill과 subagent의 이름을 모두 적고, 각각 어디서 왔는지(plugin 이름, 또는 이 폴더) 알려 주세요.</code></pre>
@@ -965,6 +976,7 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
   <div class="task-head"><span class="task-num">04</span><h2>정리</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">리포트에 개인정보 패턴과 키가 없는지 보고, 출품에 쓸 메모를 남깁니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 리포트와 메모는 출품 때 다른 사람에게 보입니다. 올리기 전에 개인정보 패턴과 키가 없는지 확인합니다.</p>
+  <div class="viz" data-viz="copy-r21-scan"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-try
@@ -974,6 +986,7 @@ jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?
 echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토큰이 있습니다)"</code></pre>
   </div>
   <p class="body"><code class="inline">개인정보 패턴 없음</code>과 <code class="inline">키 검사 끝</code> 사이에 파일 이름이 없으면 됩니다. 키 검사는 R1에서 <code class="inline">read -rs</code>로 받아 <code class="inline">~/.claude.json</code>에 등록한 값만 찾습니다. 설치 창(<span class="gl" data-gl="userConfig"><code class="inline">userConfig</code></span>)에만 넣은 키는 비밀 저장소에 있어 찾지 못하니, 그 키를 붙여 넣은 적이 없는지 스스로도 확인합니다. 아래는 트랙 B의 메모 예입니다. 내 트랙에 맞게 바꿔 둡니다.</p>
+  <div class="viz" data-viz="copy-r21-memo"></div>
   <div class="code-wrap" data-paste="slack">
     <div class="code-head"><span class="code-label">출품 메모, 예시</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>[R2-1 정기 분석 리포트]
@@ -982,6 +995,7 @@ plugin: my-kit 0.1.0 (트랙 B), 설치: /plugin install my-kit@capstone-local
 쓴 것: /my-kit:periodic-report, my-kit:price-summarizer, my-kit:anomaly-checker (새로 짠 agent, skill 없음, kit.sha 모두 OK)</code></pre>
   </div>
   <p class="body"><strong>(선택) 웹 리포트를 공개 주소로 공유</strong>. 01의 <code class="inline">/proxy/8000</code> 주소는 내 code-server 로그인이 있어야 열리므로 다른 사람에게 보낼 수 없습니다. 쇼케이스에서 다른 사람이 열게 하려면, 검사를 통과한 <code class="inline">.html</code>만 따로 모아 정적 파일의 표준 배포 패턴인 <strong>비공개 S3 + CloudFront(OAC) + BucketDeployment</strong>로 올립니다. 링크를 아는 누구나 열 수 있는 주소입니다. 트랙 C의 github와 docs처럼 회사 저장소나 내부 문서 내용이 담긴 리포트라면 이 단계를 건너뜁니다. 필수 단계가 아니고, 시간이 남을 때만 합니다.</p>
+  <div class="viz" data-viz="copy-r21-collect"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 올릴 파일만 모으기</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>S=~/claude-lab/r21-share/site
@@ -995,6 +1009,7 @@ echo "올릴 파일:"; ls "$S"</code></pre>
   </div>
   <p class="body">이 블록은 올릴 폴더 <code class="inline">~/claude-lab/r21-share/site</code>를 매번 비우고 새로 만듭니다. 개인정보 패턴이 있는 리포트는 <code class="inline">건너뜀</code>으로 알리고 복사하지 않습니다. R1에서 등록한 키가 든 리포트는 <code class="inline">지움(키 포함)</code>으로 알리고 <code class="inline">site/</code>에서 지웁니다. 건너뛰거나 지운 리포트를 올리고 싶으면 리포트를 고친 뒤 이 블록을 다시 실행합니다. <code class="inline">올릴 파일:</code> 아래에 보이는 <code class="inline">.html</code>만 올라갑니다. 원본 <code class="inline">.md</code>, <code class="inline">kit.sha</code>, 설정 파일은 올라가지 않습니다.</p>
   <p class="body">배포 코드는 <code class="inline">capstone-try</code> 밖의 <code class="inline">~/claude-lab/r21-share</code>에 둡니다. 03의 지문 검사를 하는 폴더를 깨끗하게 두기 위해서입니다. 01부터 열어 둔 Claude 세션을 <code class="inline">/exit</code>로 닫고, 같은 터미널에서 아래 명령으로 그 폴더에서 새로 엽니다. 처음 여는 폴더라 이 폴더를 신뢰하겠냐고 물으면, 기본 선택이 <code class="inline">No, exit</code>이므로 <code class="inline">↓</code>로 <strong>Yes, I trust this folder</strong>를 고른 뒤 <code class="inline">Enter</code>를 누릅니다.</p>
+  <div class="viz" data-viz="copy-r21-cdk"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 세션을 닫은 뒤</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/r21-share &amp;&amp; claude</code></pre>
@@ -1010,6 +1025,7 @@ echo "올릴 파일:"; ls "$S"</code></pre>
 - 주소 확인은 내가 다른 터미널에서 하니, 배포가 끝나면 출력 값만 알려 준다</code></pre>
   </div>
   <p class="body">코드 작성과 bootstrap까지 10~15분 걸립니다. 도구 사용 허락을 물으면, 이 폴더에는 capstone-try에만 켠 my-kit 가드레일과 deny 규칙이 적용되지 않으므로 명령을 평소보다 꼼꼼히 읽고 허락합니다. Claude에게는 출력 값만 받고, 주소 확인은 아래 블록으로 두 번째 터미널에서 합니다.</p>
+  <div class="viz" data-viz="copy-r21-verify"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>R=${AWS_REGION:-$(aws configure get region)}; cd ~/claude-lab/r21-share
@@ -1265,6 +1281,1097 @@ done</code></pre>
      "rev"
     ],
     "cap": "`sha256sum -c`가 모두 `OK`, `find`가 빈 출력, `claude plugin details`의 수가 설치 때와 같으면 agent와 skill을 하나도 새로 짜거나 고치지 않은 것입니다."
+   }
+  ]
+ },
+ "r21-build": {
+  "title": "R2-1 한눈에: 무엇을 만들고 00~04가 어떻게 이어지나",
+  "nodes": [
+   {
+    "id": "n00",
+    "ic": "lock",
+    "lb": "00 확인",
+    "sb": "지문 OK"
+   },
+   {
+    "id": "n01",
+    "ic": "doc",
+    "lb": "01 첫 리포트",
+    "sb": "periodic-report"
+   },
+   {
+    "id": "n02",
+    "ic": "doc",
+    "lb": "02 한 번 더",
+    "sb": "기간만 바꿈"
+   },
+   {
+    "id": "n03",
+    "ic": "shield",
+    "lb": "03 재사용",
+    "sb": "새로 짠 것 없음"
+   },
+   {
+    "id": "n04",
+    "ic": "result",
+    "lb": "04 정리",
+    "sb": "검사 · 메모"
+   }
+  ],
+  "edges": [
+   "지문 OK",
+   "같은 형식",
+   "두 리포트",
+   "출품 준비"
+  ],
+  "side": [
+   {
+    "id": "s-sk",
+    "ic": "doc",
+    "lb": "periodic-report skill",
+    "sb": "my-kit: 절차와 출력 형식 (다섯 항목)"
+   },
+   {
+    "id": "s-col",
+    "ic": "bot",
+    "lb": "모으는 agent",
+    "sb": "my-kit:$COLLECT (자료 수집, 집계)"
+   },
+   {
+    "id": "s-rev",
+    "ic": "bot",
+    "lb": "검토 agent",
+    "sb": "my-kit:$REVIEW (PASS, WARN, FAIL)"
+   },
+   {
+    "id": "s-sha",
+    "ic": "lock",
+    "lb": "kit.sha",
+    "sb": "설치 때 남긴 agent, skill 지문"
+   },
+   {
+    "id": "s-out",
+    "ic": "folder",
+    "lb": "reports/",
+    "sb": "기간-대상.md와 같은 이름의 .html"
+   },
+   {
+    "id": "s-share",
+    "ic": "globe",
+    "lb": "(선택) 공개 주소",
+    "sb": "S3 + CloudFront, 출력 ShareUrl"
+   }
+  ],
+  "steps": [
+   {
+    "t": "00 시작 전 확인",
+    "on": [
+     "n00",
+     "s-sha"
+    ],
+    "edge": 0,
+    "cap": "동료 폴더 `~/claude-lab/capstone-try/`에서 켜진 plugin이 `my-kit` 하나인지, `kit.sha` 지문이 모두 `OK`인지 봅니다. 설치한 그대로에서 시작해야 03에서 \"다시 짜지 않았다\"를 보일 수 있습니다."
+   },
+   {
+    "t": "01 첫 리포트",
+    "on": [
+     "n01",
+     "s-sk",
+     "s-col",
+     "s-rev",
+     "s-out"
+    ],
+    "edge": 1,
+    "chip": "대상 + 기간",
+    "cap": "`/my-kit:periodic-report`에 대상과 기간만 줍니다. skill이 모으는 agent에게 집계를, 검토 agent에게 검토를 맡기고 `reports/`에 `.md`와 `.html`을 저장합니다."
+   },
+   {
+    "t": "02 같은 형식으로 한 번 더",
+    "on": [
+     "n02",
+     "s-sk",
+     "s-out"
+    ],
+    "edge": 2,
+    "cap": "대상이나 기간만 바꿔 같은 명령을 보냅니다. 형식을 설명하지 않았는데 제목 줄이 같은 다섯 항목이면, 형식은 skill에서 온 것입니다."
+   },
+   {
+    "t": "03 재사용 확인",
+    "on": [
+     "n03"
+    ],
+    "ok": [
+     "s-sha",
+     "s-sk",
+     "s-col",
+     "s-rev"
+    ],
+    "edge": 3,
+    "cap": "지문 검사, `find`, `claude plugin details`로 agent와 skill을 하나도 새로 짜거나 고치지 않았음을 보입니다. 세션에 물어본 답은 보조 증거입니다."
+   },
+   {
+    "t": "04 정리 (선택: 공유)",
+    "on": [
+     "n04",
+     "s-out",
+     "s-share"
+    ],
+    "cap": "리포트에 개인정보 패턴과 키가 없는지 보고 출품 메모를 남깁니다. 시간이 남으면 검사를 통과한 `.html`만 S3 + CloudFront로 올려 공개 주소를 만들고, 쇼케이스 뒤 지웁니다."
+   },
+   {
+    "t": "결과: 남는 것",
+    "ok": [
+     "s-out",
+     "n04"
+    ],
+    "cap": "`reports/`에 같은 형식의 리포트 두 개(`.md`와 `.html`), 출품 메모가 남습니다. 공유했다면 `ShareUrl` 주소도 있습니다. 새로 짠 agent와 skill은 없습니다."
+   }
+  ]
+ },
+ "r21-view": {
+  "title": "웹 리포트를 여는 두 길: 나만 보는 주소와 (선택) 공개 주소",
+  "nodes": [
+   {
+    "id": "html",
+    "ic": "doc",
+    "lb": "리포트 .html",
+    "sb": "reports/ 안의 파일"
+   },
+   {
+    "id": "srv",
+    "ic": "server",
+    "lb": "웹 서버",
+    "sb": "python3 -m http.server 8000"
+   },
+   {
+    "id": "gate",
+    "ic": "lock",
+    "lb": "code-server",
+    "sb": "/proxy/8000, 내 로그인 필요"
+   },
+   {
+    "id": "br",
+    "ic": "browser",
+    "lb": "브라우저 탭",
+    "sb": "나만 열 수 있음"
+   }
+  ],
+  "edges": [
+   "파일 제공",
+   "주소 경유",
+   "탭에서 열기"
+  ],
+  "side": [
+   {
+    "id": "s3d",
+    "ic": "lock",
+    "lb": "S3 직접 주소",
+    "sb": "공유할 때도 403으로 막혀야 함"
+   }
+  ],
+  "steps": [
+   {
+    "t": "01: 나만 보는 길",
+    "on": [
+     "html",
+     "srv",
+     "gate",
+     "br"
+    ],
+    "edge": [
+     0,
+     1,
+     2
+    ],
+    "cap": "`reports/` 폴더를 작은 웹 서버로 띄우고, code-server의 `/proxy/8000` 주소로 브라우저 탭에서 엽니다. 이 주소는 내 code-server 로그인이 있어야 열려 다른 사람에게 보낼 수 없습니다."
+   },
+   {
+    "t": "04 (선택): 공개하는 길",
+    "on": [
+     "html",
+     "srv",
+     "gate",
+     "br"
+    ],
+    "edge": [
+     0,
+     1,
+     2
+    ],
+    "set": {
+     "html": {
+      "sb": "r21-share/site/ (검사를 통과한 것만)"
+     },
+     "srv": {
+      "img": "images/aws-icons/Arch_Amazon-Simple-Storage-Service_48.svg",
+      "lb": "비공개 S3 버킷",
+      "sb": "BucketDeployment로 site/만 올림"
+     },
+     "gate": {
+      "ic": "globe",
+      "lb": "CloudFront (OAC)",
+      "sb": "출력 ShareUrl"
+     },
+     "br": {
+      "sb": "링크를 아는 누구나"
+     }
+    },
+    "cap": "쇼케이스용으로는 검사를 통과한 `.html`만 `site/`에 모아 비공개 S3에 올리고, CloudFront가 OAC로만 버킷을 읽게 합니다. `ShareUrl` 뒤에 파일 이름을 붙이면 링크를 아는 누구나 열 수 있습니다."
+   },
+   {
+    "t": "버킷은 잠겨 있다",
+    "on": [
+     "gate"
+    ],
+    "bad": [
+     "s3d"
+    ],
+    "set": {
+     "html": {
+      "sb": "r21-share/site/ (검사를 통과한 것만)"
+     },
+     "srv": {
+      "img": "images/aws-icons/Arch_Amazon-Simple-Storage-Service_48.svg",
+      "lb": "비공개 S3 버킷",
+      "sb": "퍼블릭 접근 모두 막음"
+     },
+     "gate": {
+      "ic": "globe",
+      "lb": "CloudFront (OAC)",
+      "sb": "200: 열림"
+     },
+     "br": {
+      "sb": "링크를 아는 누구나"
+     }
+    },
+    "cap": "같은 파일을 S3 주소로 직접 열면 `403`이 나와야 합니다. 들어오는 길은 CloudFront 하나뿐이라는 뜻입니다. 쇼케이스가 끝나면 스택을 지워 주소를 내립니다."
+   }
+  ]
+ },
+ "copy-r21-check": {
+  "title": "00 붙여 넣으면: 켜진 plugin과 지문을 보기만 한다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "capstone-try + r2.env"
+   },
+   {
+    "id": "list",
+    "ic": "plug",
+    "lb": "켜진 plugin",
+    "sb": "my-kit@capstone-local local"
+   },
+   {
+    "id": "sha",
+    "ic": "lock",
+    "lb": "kit.sha 지문",
+    "sb": "sha256sum -c"
+   },
+   {
+    "id": "dir",
+    "ic": "folder",
+    "lb": ".claude/",
+    "sb": "settings.json, settings.local.json"
+   }
+  ],
+  "edges": [
+   "plugin list",
+   "지문 대조",
+   "ls -A"
+  ],
+  "steps": [
+   {
+    "t": "폴더와 r2.env",
+    "on": [
+     "term"
+    ],
+    "cap": "동료 폴더로 들어가 `r2.env`를 읽습니다. 다음 줄들이 쓰는 plugin 이름 `$KIT` 같은 값이 여기서 옵니다. 이 블록은 아무것도 바꾸지 않습니다."
+   },
+   {
+    "t": "켜진 plugin",
+    "on": [
+     "list"
+    ],
+    "edge": 0,
+    "cap": "켜진 plugin이 `my-kit@capstone-local local` 한 줄만 보여야 합니다. 다른 plugin이 함께 보이면 R2 공통 04의 3번 블록으로 이 폴더에서 끕니다."
+   },
+   {
+    "t": "지문 대조",
+    "on": [
+     "sha"
+    ],
+    "edge": 1,
+    "chip": "kit.sha",
+    "cap": "marketplace 안 plugin 원본의 agent와 skill을 `kit.sha`와 비교합니다. 줄마다 `OK`가 나와야 합니다. `kit.sha`가 없으면 R2 공통 04의 4번 블록을 먼저 실행합니다."
+   },
+   {
+    "t": "준비 끝",
+    "ok": [
+     "list",
+     "sha",
+     "dir"
+    ],
+    "edge": 2,
+    "cap": "`.claude/`에 `settings.json`과 `settings.local.json`만 있고, 위 두 가지가 맞으면 설치한 그대로에서 시작합니다."
+   }
+  ]
+ },
+ "copy-r21-headings": {
+  "title": "01 붙여 넣으면: 두 번째 터미널에서 리포트의 제목 줄만 본다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널 2",
+    "sb": "Claude 세션은 그대로"
+   },
+   {
+    "id": "dir",
+    "ic": "folder",
+    "lb": "reports/",
+    "sb": "ls -l"
+   },
+   {
+    "id": "md",
+    "ic": "doc",
+    "lb": "기간-대상.md",
+    "sb": "# 로 시작하는 줄"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "제목 줄 다섯 항목",
+    "sb": "형식대로면 성공"
+   }
+  ],
+  "edges": [
+   "목록",
+   ".md마다",
+   "head -8"
+  ],
+  "side": [
+   {
+    "id": "five",
+    "ic": "doc",
+    "lb": "다섯 항목 (순서대로)",
+    "sb": "요약 · 핵심 표 · 눈에 띄는 변화와 이유 · 확인하지 못한 것 · 검토 결과"
+   },
+   {
+    "id": "fix",
+    "ic": "chat",
+    "lb": "형식이 다르면",
+    "sb": "skill은 두고 세션에서 다시 정리 요청"
+   }
+  ],
+  "steps": [
+   {
+    "t": "두 번째 터미널",
+    "on": [
+     "term"
+    ],
+    "cap": "리포트를 만든 Claude 세션은 그대로 두고, 두 번째 터미널에서 실행합니다. 파일을 읽기만 합니다."
+   },
+   {
+    "t": "파일 목록",
+    "on": [
+     "dir"
+    ],
+    "edge": 0,
+    "cap": "`ls -l reports/`에 리포트 `.md`가 보입니다. 같은 이름의 `.html`도 함께 있습니다."
+   },
+   {
+    "t": "제목 줄",
+    "on": [
+     "md"
+    ],
+    "edge": 1,
+    "chip": "== reports/….md",
+    "cap": "`.md` 파일마다 `== 파일 이름` 한 줄과 `#`로 시작하는 제목 줄을 8줄까지 보여 줍니다."
+   },
+   {
+    "t": "다섯 항목이면 성공",
+    "ok": [
+     "res",
+     "five"
+    ],
+    "edge": 2,
+    "cap": "skill의 출력 형식대로 요약, 핵심 표, 눈에 띄는 변화와 이유, 확인하지 못한 것, 검토 결과가 그 순서로 있으면 됩니다. 검토 결과(PASS, WARN, FAIL)는 리포트 끝에 있습니다."
+   },
+   {
+    "t": "형식이 다르면",
+    "on": [
+     "fix"
+    ],
+    "cap": "skill을 고치지 말고 세션에서 \"periodic-report의 출력 형식 그대로 다시 정리해 주세요\"라고 요청합니다."
+   }
+  ]
+ },
+ "copy-r21-serve": {
+  "title": "01 붙여 넣으면: 웹 리포트를 작은 웹 서버로 띄워 브라우저 탭에서 연다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널 2",
+    "sb": "capstone-try"
+   },
+   {
+    "id": "html",
+    "ic": "doc",
+    "lb": "reports/*.html",
+    "sb": "외부 주소 개수"
+   },
+   {
+    "id": "srv",
+    "ic": "server",
+    "lb": "웹 서버",
+    "sb": "port 8000"
+   },
+   {
+    "id": "gate",
+    "ic": "lock",
+    "lb": "code-server",
+    "sb": "/proxy/8000/reports/"
+   },
+   {
+    "id": "br",
+    "ic": "browser",
+    "lb": "브라우저 새 탭",
+    "sb": "한 장짜리 보고서"
+   }
+  ],
+  "edges": [
+   "grep -cH",
+   "http.server",
+   "알림",
+   "Open in Browser"
+  ],
+  "steps": [
+   {
+    "t": "외부 주소 세기",
+    "on": [
+     "term",
+     "html"
+    ],
+    "edge": 0,
+    "chip": "…html:0",
+    "cap": "둘째 줄이 리포트마다 `src=\"http…`, `href=\"http…` 개수를 셉니다. 줄 끝 숫자가 모두 `0`이면 파일 하나로 완결된 리포트입니다."
+   },
+   {
+    "t": "작은 웹 서버",
+    "on": [
+     "srv"
+    ],
+    "edge": 1,
+    "cap": "셋째 줄이 `Serving HTTP on 0.0.0.0 port 8000`을 내면 폴더가 웹 서버로 떠 있습니다. 서버가 도는 동안 이 터미널은 다음 줄을 받지 않습니다."
+   },
+   {
+    "t": "브라우저 탭으로",
+    "on": [
+     "gate",
+     "br"
+    ],
+    "edge": [
+     2,
+     3
+    ],
+    "cap": "오른쪽 아래 `Your application running on port 8000 is available.` 알림의 Open in Browser를 누르고, 새 탭에서 `reports/` 안의 `.html`을 누릅니다. 알림을 놓쳤다면 IDE 주소의 도메인 뒤에 `/proxy/8000/reports/`를 붙입니다."
+   },
+   {
+    "t": "보이면 성공",
+    "ok": [
+     "br"
+    ],
+    "cap": "요약 박스, KPI 카드, 막대 차트, 핵심 표가 보이면 됩니다. 다 봤으면 `Ctrl C`로 서버를 끕니다. 이 주소는 내 code-server 로그인이 있어야 열립니다."
+   }
+  ]
+ },
+ "copy-r21-reuse": {
+  "title": "03 붙여 넣으면: 새로 짠 agent와 skill이 없는지 네 가지로 본다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널 2",
+    "sb": "capstone-try + r2.env"
+   },
+   {
+    "id": "sha",
+    "ic": "lock",
+    "lb": "지문 검사",
+    "sb": "sha256sum -c"
+   },
+   {
+    "id": "find",
+    "ic": "folder",
+    "lb": "이 폴더",
+    "sb": "agents/, SKILL.md 찾기"
+   },
+   {
+    "id": "user",
+    "ic": "user",
+    "lb": "사용자 수준",
+    "sb": "~/.claude/agents, skills"
+   },
+   {
+    "id": "det",
+    "ic": "plug",
+    "lb": "plugin details",
+    "sb": "Skills, Agents, Hooks, MCP"
+   }
+  ],
+  "edges": [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "steps": [
+   {
+    "t": "지문 검사",
+    "on": [
+     "term",
+     "sha"
+    ],
+    "edge": 0,
+    "chip": "kit.sha",
+    "cap": "모든 줄이 `OK`면 설치 뒤에 plugin의 agent와 skill이 바뀌지 않았습니다. 이것이 판정 기준입니다."
+   },
+   {
+    "t": "이 폴더",
+    "on": [
+     "find"
+    ],
+    "edge": 1,
+    "cap": "`find`가 이 폴더에서 `agents/` 아래 파일이나 `SKILL.md`를 찾습니다. 아무것도 출력하지 않으면 이 폴더에 따로 만든 agent나 skill이 없습니다."
+   },
+   {
+    "t": "사용자 수준",
+    "on": [
+     "user"
+    ],
+    "edge": 2,
+    "cap": "앞선 실습에서 만든 사용자 수준의 것이 보여도 세지 않습니다(이름에 `my-kit:`이 없음). 날짜가 오늘 R2 시간대인 파일이 있으면 이번에 새로 짠 것이니 지우거나 plugin으로 옮깁니다."
+   },
+   {
+    "t": "plugin 구성 수",
+    "on": [
+     "det"
+    ],
+    "edge": 3,
+    "cap": "`claude plugin details`의 Skills, Agents, Hooks, MCP servers 수가 R2 공통 04에서 본 것과 같아야 합니다."
+   },
+   {
+    "t": "다시 짠 것이 없다",
+    "ok": [
+     "sha",
+     "find",
+     "det"
+    ],
+    "cap": "지문이 모두 `OK`, `find`가 빈 출력, 수가 설치 때와 같으면 두 리포트를 설치한 plugin만으로 만든 것입니다."
+   }
+  ]
+ },
+ "copy-r21-ask": {
+  "title": "03 붙여 넣으면: 이번 세션에서 쓴 skill과 agent의 출처를 묻는다",
+  "nodes": [
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "내 질문",
+    "sb": "이름과 출처"
+   },
+   {
+    "id": "main",
+    "ic": "chat",
+    "lb": "Claude 세션",
+    "sb": "이번 세션의 기록"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "답",
+    "sb": "skill, subagent 목록"
+   }
+  ],
+  "edges": [
+   "질문",
+   "답"
+  ],
+  "side": [
+   {
+    "id": "sk",
+    "ic": "doc",
+    "lb": "my-kit:periodic-report",
+    "sb": "plugin의 skill"
+   },
+   {
+    "id": "ag",
+    "ic": "bot",
+    "lb": "my-kit:… agent",
+    "sb": "plugin의 모으는, 검토 agent"
+   }
+  ],
+  "steps": [
+   {
+    "t": "묻기",
+    "on": [
+     "you",
+     "main"
+    ],
+    "edge": 0,
+    "cap": "이번 세션에서 쓴 skill과 subagent의 이름, 그리고 각각 plugin에서 왔는지 이 폴더에서 왔는지 묻습니다."
+   },
+   {
+    "t": "기대하는 답",
+    "on": [
+     "res"
+    ],
+    "ok": [
+     "sk",
+     "ag"
+    ],
+    "edge": 1,
+    "cap": "답에 `my-kit:periodic-report`와 `my-kit:`이 붙은 agent만 나오면 됩니다."
+   },
+   {
+    "t": "보조 증거",
+    "on": [
+     "res"
+    ],
+    "cap": "이 답은 모델의 설명이라 보조 증거입니다. 판정 기준은 위 블록의 지문 검사입니다."
+   }
+  ]
+ },
+ "copy-r21-scan": {
+  "title": "04 붙여 넣으면: 리포트에 개인정보 패턴과 키가 없는지 찾는다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널 2",
+    "sb": "읽기만 함"
+   },
+   {
+    "id": "files",
+    "ic": "folder",
+    "lb": "reports/",
+    "sb": ".md, .html"
+   },
+   {
+    "id": "pii",
+    "ic": "shield",
+    "lb": "개인정보 패턴",
+    "sb": "주민번호 · 카드 · 휴대폰"
+   },
+   {
+    "id": "key",
+    "ic": "key",
+    "lb": "키 검사",
+    "sb": "~/.claude.json에 등록한 값"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "통과",
+    "sb": "사이에 파일 이름 없음"
+   }
+  ],
+  "edges": [
+   "읽기",
+   "grep -E",
+   "grep -F",
+   "출력"
+  ],
+  "steps": [
+   {
+    "t": "읽기만",
+    "on": [
+     "term",
+     "files"
+    ],
+    "edge": 0,
+    "cap": "`reports/`의 `.md`와 `.html`을 읽기만 합니다. 파일을 고치거나 지우지 않습니다."
+   },
+   {
+    "t": "개인정보 패턴",
+    "on": [
+     "pii"
+    ],
+    "edge": 1,
+    "cap": "주민번호, 카드번호, 휴대폰 번호 모양을 찾습니다. 찾으면 파일 이름과 줄 번호가, 없으면 `개인정보 패턴 없음`이 나옵니다."
+   },
+   {
+    "t": "키 검사",
+    "on": [
+     "key"
+    ],
+    "edge": 2,
+    "cap": "R1에서 `read -rs`로 받아 `~/.claude.json`에 등록한 `SEOUL_API_KEY`, `ALPHA_VANTAGE_API_KEY`, `Authorization` 값을 리포트에서 찾습니다. 들어 있으면 그 파일 이름이 나옵니다."
+   },
+   {
+    "t": "통과",
+    "ok": [
+     "res"
+    ],
+    "edge": 3,
+    "cap": "`개인정보 패턴 없음`과 `키 검사 끝` 사이에 파일 이름이 없으면 됩니다."
+   },
+   {
+    "t": "못 찾는 키",
+    "bad": [
+     "key"
+    ],
+    "cap": "설치 창(`userConfig`)에만 넣은 키는 비밀 저장소에 있어 이 검사로 찾지 못합니다. 그 키를 붙여 넣은 적이 없는지 스스로 확인합니다."
+   }
+  ]
+ },
+ "copy-r21-memo": {
+  "title": "04 붙여 넣으면: 출품에 쓸 메모를 남긴다 (트랙 B 예시)",
+  "nodes": [
+   {
+    "id": "tmpl",
+    "ic": "doc",
+    "lb": "메모 예시",
+    "sb": "트랙 B 서울 부동산"
+   },
+   {
+    "id": "edit",
+    "ic": "user",
+    "lb": "내 것으로 바꾸기",
+    "sb": "plugin, 리포트, agent"
+   },
+   {
+    "id": "memo",
+    "ic": "result",
+    "lb": "출품 메모",
+    "sb": "출품 양식에 옮김"
+   }
+  ],
+  "edges": [
+   "복사",
+   "고쳐 남김"
+  ],
+  "side": [
+   {
+    "id": "l1",
+    "ic": "plug",
+    "lb": "plugin과 설치 명령",
+    "sb": "my-kit 0.1.0, /plugin install my-kit@capstone-local"
+   },
+   {
+    "id": "l2",
+    "ic": "folder",
+    "lb": "같은 형식으로 두 번",
+    "sb": "reports/의 리포트 파일 이름 두 개"
+   },
+   {
+    "id": "l3",
+    "ic": "bot",
+    "lb": "쓴 것",
+    "sb": "skill과 my-kit: agent, kit.sha 모두 OK"
+   }
+  ],
+  "steps": [
+   {
+    "t": "예시 복사",
+    "on": [
+     "tmpl"
+    ],
+    "edge": 0,
+    "cap": "블록은 트랙 B로 채운 예시입니다. 메모는 출품 때 다른 사람에게 보이므로 위 검사를 먼저 끝냅니다."
+   },
+   {
+    "t": "내 트랙으로",
+    "on": [
+     "edit",
+     "l1",
+     "l2",
+     "l3"
+    ],
+    "cap": "plugin 이름과 트랙, `reports/`에 생긴 두 리포트의 파일 이름, 실제로 쓴 skill과 agent 이름으로 바꿉니다."
+   },
+   {
+    "t": "메모 남김",
+    "ok": [
+     "memo"
+    ],
+    "edge": 1,
+    "cap": "고친 메모를 남겨 둡니다. 정식 출품은 개요의 출품 양식으로 합니다."
+   }
+  ]
+ },
+ "copy-r21-collect": {
+  "title": "04 (선택) 붙여 넣으면: 올릴 .html만 site/에 모은다",
+  "nodes": [
+   {
+    "id": "rep",
+    "ic": "folder",
+    "lb": "reports/*.html",
+    "sb": "capstone-try"
+   },
+   {
+    "id": "pii",
+    "ic": "shield",
+    "lb": "개인정보 패턴",
+    "sb": "있으면 건너뜀"
+   },
+   {
+    "id": "site",
+    "ic": "folder",
+    "lb": "r21-share/site/",
+    "sb": "매번 비우고 새로"
+   },
+   {
+    "id": "key",
+    "ic": "key",
+    "lb": "키 검사",
+    "sb": "있으면 지움"
+   },
+   {
+    "id": "list",
+    "ic": "result",
+    "lb": "올릴 파일:",
+    "sb": "남은 .html만"
+   }
+  ],
+  "edges": [
+   "파일마다",
+   "없으면 복사",
+   "복사한 것 중",
+   "ls"
+  ],
+  "steps": [
+   {
+    "t": "site/ 새로 만들기",
+    "on": [
+     "site"
+    ],
+    "cap": "`~/claude-lab/r21-share/site`를 지우고 빈 폴더로 새로 만듭니다. 다시 실행해도 지난번 파일이 남지 않습니다."
+   },
+   {
+    "t": "개인정보 패턴",
+    "on": [
+     "rep",
+     "pii"
+    ],
+    "edge": 0,
+    "cap": "`reports/`의 `.html`마다 개인정보 패턴을 찾습니다. 있으면 `건너뜀(개인정보 패턴)`을 알리고 복사하지 않습니다."
+   },
+   {
+    "t": "통과한 것만 복사",
+    "on": [
+     "site"
+    ],
+    "edge": 1,
+    "chip": "*.html",
+    "cap": "패턴이 없는 `.html`만 `site/`로 복사합니다. 원본 `.md`, `kit.sha`, 설정 파일은 복사하지 않습니다."
+   },
+   {
+    "t": "키가 든 파일 지우기",
+    "on": [
+     "key"
+    ],
+    "edge": 2,
+    "cap": "R1에서 등록한 키 값이 든 파일이 `site/`에 있으면 `지움(키 포함)`을 알리고 지웁니다. 올리고 싶으면 리포트를 고친 뒤 이 블록을 다시 실행합니다."
+   },
+   {
+    "t": "올릴 파일 확인",
+    "ok": [
+     "list"
+    ],
+    "edge": 3,
+    "cap": "`올릴 파일:` 아래 보이는 `.html`만 다음 블록의 배포로 올라갑니다."
+   }
+  ]
+ },
+ "copy-r21-cdk": {
+  "title": "04 (선택) 붙여 넣으면: Claude가 CDK 스택 R21ReportShare를 만들고 배포한다",
+  "nodes": [
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "내 요청",
+    "sb": "r21-share에서 새 세션"
+   },
+   {
+    "id": "cl",
+    "ic": "chat",
+    "lb": "Claude",
+    "sb": "infra/에 TypeScript CDK"
+   },
+   {
+    "id": "cfn",
+    "lb": "CDK 스택",
+    "sb": "R21ReportShare · AWS_REGION 리전",
+    "img": "images/aws-icons/Arch_AWS-CloudFormation_48.svg"
+   },
+   {
+    "id": "s3",
+    "lb": "비공개 S3 버킷",
+    "sb": "site/ 파일만 맨 위에",
+    "img": "images/aws-icons/Arch_Amazon-Simple-Storage-Service_48.svg"
+   },
+   {
+    "id": "cf",
+    "ic": "globe",
+    "lb": "CloudFront (OAC)",
+    "sb": "버킷을 읽는 유일한 길"
+   }
+  ],
+  "edges": [
+   "프롬프트",
+   "배포",
+   "파일 올림",
+   "OAC"
+  ],
+  "side": [
+   {
+    "id": "trust",
+    "ic": "shield",
+    "lb": "폴더 신뢰 질문",
+    "sb": "↓로 Yes, I trust this folder"
+   },
+   {
+    "id": "boot",
+    "ic": "server",
+    "lb": "CDK bootstrap",
+    "sb": "안 돼 있으면 먼저"
+   },
+   {
+    "id": "out",
+    "ic": "result",
+    "lb": "출력 값",
+    "sb": "ShareUrl, BucketName"
+   }
+  ],
+  "steps": [
+   {
+    "t": "세션 옮기기",
+    "on": [
+     "you",
+     "trust"
+    ],
+    "cap": "01부터 연 세션을 `/exit`로 닫고 `~/claude-lab/r21-share`에서 새로 엽니다. capstone-try를 깨끗하게 두기 위해서입니다. 신뢰 질문은 기본이 `No, exit`이니 `↓`로 Yes, I trust this folder를 고르고 `Enter`를 누릅니다."
+   },
+   {
+    "t": "코드 작성",
+    "on": [
+     "cl"
+    ],
+    "edge": 0,
+    "chip": "요구 6줄",
+    "cap": "Claude가 `infra/`에 TypeScript CDK 코드를 씁니다. 이 폴더에는 my-kit 가드레일과 deny 규칙이 없으니, 도구 허락을 물으면 명령을 평소보다 꼼꼼히 읽고 허락합니다."
+   },
+   {
+    "t": "bootstrap과 배포",
+    "on": [
+     "cfn",
+     "boot"
+    ],
+    "edge": 1,
+    "cap": "이 계정과 리전에 CDK bootstrap이 안 돼 있으면 먼저 하고, 스택 `R21ReportShare`를 배포합니다. 코드 작성과 bootstrap까지 10~15분 걸립니다."
+   },
+   {
+    "t": "버킷과 CloudFront",
+    "on": [
+     "s3",
+     "cf"
+    ],
+    "edge": [
+     2,
+     3
+    ],
+    "chip": "site/*.html",
+    "cap": "버킷은 퍼블릭 접근을 모두 막고, `site/` 안의 파일만 버킷 맨 위에 올립니다. CloudFront만 OAC로 버킷을 읽습니다. 스택을 지우면 버킷과 객체도 함께 지워지게(DESTROY + autoDeleteObjects) 만듭니다."
+   },
+   {
+    "t": "출력 값만 받기",
+    "ok": [
+     "out"
+    ],
+    "cap": "배포가 끝나면 Claude가 `ShareUrl`(https://로 시작, 끝에 `/` 없음)과 `BucketName`만 알려 줍니다. 주소 확인은 다음 블록으로 두 번째 터미널에서 합니다."
+   }
+  ]
+ },
+ "copy-r21-verify": {
+  "title": "04 (선택) 붙여 넣으면: CloudFront는 열리고 S3 직접은 막히는지 본다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널 2",
+    "sb": "r21-share"
+   },
+   {
+    "id": "out",
+    "ic": "result",
+    "lb": "스택 출력",
+    "sb": "ShareUrl, BucketName"
+   },
+   {
+    "id": "cf",
+    "ic": "globe",
+    "lb": "CloudFront 주소",
+    "sb": "ShareUrl/파일 이름"
+   }
+  ],
+  "edges": [
+   "describe-stacks",
+   "파일마다 curl"
+  ],
+  "side": [
+   {
+    "id": "s3",
+    "lb": "S3 직접 주소",
+    "sb": "버킷.s3.리전.amazonaws.com",
+    "img": "images/aws-icons/Arch_Amazon-Simple-Storage-Service_48.svg"
+   }
+  ],
+  "steps": [
+   {
+    "t": "출력 읽기",
+    "on": [
+     "term",
+     "out"
+    ],
+    "edge": 0,
+    "cap": "스택 `R21ReportShare`의 출력에서 `ShareUrl`과 `BucketName`을 읽고, 첫 줄에 주소를 보여 줍니다."
+   },
+   {
+    "t": "CloudFront는 200",
+    "ok": [
+     "cf"
+    ],
+    "edge": 1,
+    "chip": "파일 이름",
+    "cap": "`site/`의 `.html`마다 CloudFront 주소로 요청합니다. 줄마다 `200 CloudFront`가 나와야 합니다."
+   },
+   {
+    "t": "S3 직접은 403",
+    "ok": [
+     "cf"
+    ],
+    "bad": [
+     "s3"
+    ],
+    "cap": "같은 파일을 S3 주소로 직접 요청하면 `403 S3 직접`이 나와야 합니다. 버킷은 잠겨 있고, 들어오는 길은 CloudFront 하나뿐이라는 뜻입니다."
+   },
+   {
+    "t": "안 될 때",
+    "on": [
+     "out"
+    ],
+    "cap": "첫 줄이 비고 모든 줄이 `000`이면 출력 이름이 다른 것이니 Claude에게 ShareUrl과 BucketName으로 바꿔 다시 배포해 달라고 합니다. CloudFront가 403이면 2~3분 뒤 다시 실행합니다."
+   },
+   {
+    "t": "공유하고 내리기",
+    "ok": [
+     "cf"
+    ],
+    "cap": "첫 줄 주소 뒤에 파일 이름을 붙여 브라우저에서 열고, 그 주소를 쇼케이스 스레드나 출품 메모에 붙입니다. 쇼케이스가 끝나면 `npx aws-cdk@2 destroy --force`로 지웁니다."
    }
   ]
  }

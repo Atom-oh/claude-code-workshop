@@ -846,6 +846,12 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <div class="paste-guide"></div>
 <div class="gl-list"></div>
 
+<div class="r23-map" id="r23-map">
+  <p class="body"><strong>무엇을 만드나요?</strong> R2에서 마켓플레이스에 올린 my-kit의 agent 두 개 지침과 <code class="inline">SKILL.md</code>를 고치지 않고 AgentCore harness의 시스템 프롬프트에 붙여 내 AWS 계정에 배포합니다. 그다음 Claude 세션 없이 터미널 명령과 작은 Python 앱으로 불러 같은 형식의 리포트를 받고, 만든 리소스를 지웁니다. 아래 첫 그림은 00~05가 이어지는 순서와 남는 결과물, 둘째 그림은 호출할 때 나, harness, Bedrock 모델이 각각 맡는 일입니다. 단계 번호를 눌러 넘겨 보세요.</p>
+  <div class="viz" data-viz="r23-build"></div>
+  <div class="viz" data-viz="r23-roles"></div>
+</div>
+
 <section class="task" id="task-00" data-min="10">
   <div class="task-head"><span class="task-num">00</span><h2>선택 미션 안내와 준비</h2><span class="time-badge">10분</span></div>
   <p class="task-goal">이 미션을 고를지 정하고, AgentCore CLI와 AWS 자격 증명, 근거로 쓸 리포트를 확인합니다.</p>
@@ -874,6 +880,7 @@ echo "region=${AWS_REGION:-$(aws configure get region)}"</code></pre>
   <p class="body"><code class="inline">agentcore --version</code>이 1로 시작하는 버전을 내고, <code class="inline">get-caller-identity</code>가 실습 계정을 보여 주면 됩니다. 리전은 AgentCore harness를 지원하는 곳이어야 합니다. 서울(<code class="inline">ap-northeast-2</code>), 도쿄, 버지니아 북부, 오레곤 등이 지원하고, 목록은 <a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-regions.html">지원 리전 표</a>의 AgentCore harness 줄에서 봅니다.</p>
   <div class="step-title"><span class="step-no">2</span>작업 폴더와 근거 리포트</div>
   <p class="body">AgentCore 프로젝트는 <code class="inline">capstone-try</code> 밖의 새 폴더에 만듭니다. <code class="inline">capstone-try</code>는 R2 공통 04에서 my-kit 말고 다른 plugin을 모두 꺼 두었고, 재사용 확인(<code class="inline">kit.sha</code>, <code class="inline">find</code>)에 다른 파일이 섞이지 않아야 하기 때문입니다. 새 폴더에서는 Setup에서 설치한 <code class="inline">aws-agents</code> plugin이 켜져 있습니다.</p>
+  <div class="viz" data-viz="copy-r23-workdir"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/claude-lab/capstone-agentcore &amp;&amp; cd ~/claude-lab/capstone-agentcore
@@ -898,6 +905,7 @@ claude plugin list --json | jq -r '.[] | select(.id | startswith("aws-agents@"))
   <div class="task-head"><span class="task-num">01</span><h2>가드레일: 지우거나 비용이 드는 AWS 명령은 확인받기</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">Administrator 권한에서는 Claude가 AWS를 바꾸는 명령도 막힘없이 실행됩니다. 배포하기 전에, 이 폴더에서 그런 명령은 매번 묻도록 권한 <code class="inline">ask</code> 규칙을 둡니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 02의 배포와 04의 정리를 Claude에게 맡겨도, 리소스를 만들거나 지우는 순간에는 사람이 명령을 읽고 승인하게 됩니다.</p>
+  <div class="viz" data-viz="copy-r23-ask"></div>
   <div class="code-wrap" data-paste-path="~/claude-lab/capstone-agentcore/.claude/settings.json">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/claude-lab/capstone-agentcore/.claude &amp;&amp; cd ~/claude-lab/capstone-agentcore
@@ -929,6 +937,7 @@ jq -r '.permissions.ask[]' .claude/settings.json</code></pre>
   </tbody></table>
   <p class="body">규칙은 deny, ask, allow 순으로 보고, 맞는 ask 규칙이 있으면 더 좁은 allow 규칙이 있어도 묻습니다. <code class="inline">*</code>는 하위 명령(<code class="inline">deploy</code>, <code class="inline">delete-stack</code>) 뒤에 둡니다. <code class="inline">cd 폴더 &amp;&amp; agentcore deploy</code>처럼 이어 쓴 명령도 부분마다 검사하고, auto 모드에서도 묻습니다. 다만 규칙은 Claude가 쓴 명령 글자를 보는 것이라 <code class="inline">sh -c '…'</code>나 절대 경로 실행처럼 다른 모양은 잡지 못하고, <code class="inline">bypassPermissions</code> 모드에서는 묻지 않습니다. 보안 경계가 아니라 실수를 막는 한 겹입니다 (<a href="https://code.claude.com/docs/en/permissions">권한 공식 문서</a>).</p>
   <p class="body">규칙이 걸리는지 봅니다. 이 폴더에서 세션을 열고 지우는 명령을 시킨 뒤, 확인 창이 뜨면 <strong>No</strong>를 고릅니다.</p>
+  <div class="viz" data-viz="copy-r23-ask-test"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore &amp;&amp; claude</code></pre>
@@ -950,6 +959,7 @@ jq -r '.permissions.ask[]' .claude/settings.json</code></pre>
   <p class="body"><strong>왜 필요한가요:</strong> harness에는 Claude Code의 subagent, 훅, plugin MCP 서버가 없습니다. 그래서 agent 지침과 skill(절차와 출력 형식을 적은 <code class="inline">SKILL.md</code>)을 시스템 프롬프트에 그대로 붙여 같은 지침을 씁니다.</p>
   <div class="step-title"><span class="step-no">1</span>프로젝트와 harness 만들기</div>
   <p class="body">빈 프로젝트(<code class="inline">--template empty</code>)를 만들고 <code class="inline">agentcore add harness</code>로 harness를 더합니다. 메모리는 이 미션에 필요 없으니 끕니다. 모델을 적지 않으면 CLI가 정한 Bedrock 기본 모델이 <code class="inline">harness.yaml</code>에 들어갑니다 (<a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-models.html">모델과 지침 공식 문서</a>).</p>
+  <div class="viz" data-viz="copy-r23-create"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore
@@ -967,6 +977,7 @@ cat agentcore/aws-targets.json</code></pre>
   <p class="body"><code class="inline">app/capstone_app/</code>에 <code class="inline">harness.yaml</code>과 <code class="inline">system-prompt.md</code>가 보여야 합니다. <code class="inline">aws-targets.json</code>의 계정과 리전이 00에서 본 값과 다르면 그 파일의 값을 고칩니다. 리전이 어긋나는 것이 배포 실패의 가장 흔한 원인입니다.</p>
   <div class="step-title"><span class="step-no">2</span>시스템 프롬프트에 agent와 skill 붙이기</div>
   <p class="body">마켓플레이스에 올린 my-kit에서 agent 두 개의 본문(앞머리 frontmatter 제외)과 <code class="inline">SKILL.md</code> 전체를 그대로 이어 붙입니다. 맨 앞 몇 줄은 Claude Code와 다른 점을 알려 주는 안내입니다. skill의 "<code class="inline">my-kit:이름</code> 에이전트에게 맡깁니다" 단계는 이 안내에 따라 같은 이름의 역할 지침으로 직접 수행됩니다.</p>
+  <div class="viz" data-viz="copy-r23-prompt"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore/CapstoneApp &amp;&amp; . ~/claude-lab/capstone/r2.env
@@ -996,6 +1007,7 @@ wc -c app/capstone_app/system-prompt.md</code></pre>
   </div>
   <div class="step-title"><span class="step-no">3</span>키와 개인정보가 없는지 보고 배포</div>
   <p class="body">시스템 프롬프트는 배포하면 AWS에 저장됩니다. 서울 열린데이터 키, Alpha Vantage 키 같은 값이 들어가면 안 됩니다. R2-2 04와 같은 검사를 이 폴더에 돌립니다.</p>
+  <div class="viz" data-viz="copy-r23-scan"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore/CapstoneApp
@@ -1006,6 +1018,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
   </div>
   <p class="body">파일 이름이 나오면 배포하지 말고 그 파일부터 고칩니다. 아무것도 나오지 않았으면 배포합니다. <code class="inline">agentcore deploy</code>는 CDK로 리소스를 만들고, 확인을 물으면 내용을 보고 승인합니다. 처음 배포는 계정에 CDK bootstrap을 하느라 몇 분 걸립니다. 끝나면 상태를 봅니다.</p>
   <p class="body"><code class="inline">agentcore deploy</code>는 추적을 보려고 계정 전체의 CloudWatch Transaction Search를 켭니다. 프로젝트 리소스가 아닌 계정 설정이라 04 정리 뒤에도 켜진 채 남습니다. 공유 계정이라 켜고 싶지 않으면 배포 전에 <code class="inline">agentcore config transactionSearch false</code>를 실행합니다 (<a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-operations.html">harness 관측과 비용 공식 문서</a>).</p>
+  <div class="viz" data-viz="copy-r23-deploy"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore/CapstoneApp
@@ -1035,6 +1048,7 @@ agentcore status</code></pre>
   <p class="task-goal">보낼 자료를 파일로 만들고, AgentCore CLI와 작은 Python 앱으로 harness를 불러 같은 형식의 리포트가 나오는지 봅니다. Claude 세션은 열지 않습니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> Claude 세션 없이 터미널 명령과 다른 프로그램에서도 같은 형식의 리포트가 나와야, 같은 agent와 skill을 Claude Code 밖에서 다시 썼다고 말할 수 있습니다.</p>
   <div class="step-title"><span class="step-no">1</span>보낼 자료 만들기: 고른 트랙 블록 하나만</div>
+  <div class="viz" data-viz="copy-r23-input"></div>
   <details class="solution">
     <summary>트랙 A: 마이데이터 (세그먼트 리포트를 근거로)</summary>
     <div class="sol-body">
@@ -1077,6 +1091,7 @@ wc -c input.txt</code></pre>
       <p class="body">harness에는 R1-C에서 고른 MCP 서버가 붙어 있지 않으므로, 최신 값은 Claude Code의 my-kit으로 모은 리포트에서만 옵니다.</p>
     </div>
   </details>
+  <div class="viz" data-viz="copy-r23-precheck"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 보내기 전 검사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore
@@ -1086,6 +1101,7 @@ jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?
 echo "키 검사 끝 (위에 input.txt가 나오면 보내지 않습니다)"</code></pre>
   </div>
   <div class="step-title"><span class="step-no">2</span>AgentCore CLI로 호출</div>
+  <div class="viz" data-viz="copy-r23-cli"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore/CapstoneApp
@@ -1097,6 +1113,7 @@ grep -c '' ../out-cli.json &amp;&amp; head -c 3000 ../out-cli.json</code></pre>
   <p class="body"><code class="inline">--prompt</code>를 주면 CLI가 응답을 끝까지 모아 대화 내용과 세션 정보를 JSON으로 냅니다 (<a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-get-started.html">harness 시작하기</a>). 응답 본문에 periodic-report의 다섯 항목(요약, 핵심 표, 눈에 띄는 변화와 이유, 확인하지 못한 것, 검토 결과)이 그 순서로 보이면 성공입니다. 검토 결과는 <code class="inline">REVIEW</code> 역할의 지침대로 PASS, WARN, FAIL 중 하나입니다.</p>
   <div class="step-title"><span class="step-no">3</span>작은 Python 앱으로 호출</div>
   <p class="body">같은 harness를 다른 프로그램에서도 부를 수 있는지 봅니다. 공식 문서의 boto3 예제(<code class="inline">invoke_harness</code>)를 파일 하나로 옮긴 것입니다. 02에서 찾은 ARN을 첫 줄에 붙여 넣습니다.</p>
+  <div class="viz" data-viz="copy-r23-app"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, ARN을 바꿔서 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore
@@ -1126,6 +1143,7 @@ set -a; . ./app.env; set +a
 uv run --no-project --quiet --with boto3 python ask_app.py input.txt | tee out-app.md</code></pre>
   </div>
   <p class="body">리포트가 글자 단위로 흘러나오고 <code class="inline">out-app.md</code>에 남습니다. 세션 ID는 33자 이상이어야 해서 UUID를 씁니다. 같은 자료로 CLI와 앱 두 번 불렀으니 내용은 조금 달라도 형식은 같아야 합니다.</p>
+  <div class="viz" data-viz="copy-r23-sha"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 재사용 확인</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>. ~/claude-lab/capstone/r2.env
@@ -1155,6 +1173,7 @@ grep -nE '^#|^[0-9]\.' ~/claude-lab/capstone-agentcore/out-app.md | head -12</co
   </div>
   <p class="body"><strong>왜 필요한가요:</strong> 실습 EC2는 Administrator 권한이라 배포가 막히지 않는 대신, 지우는 일도 직접 해야 합니다. 남겨 둔 리소스는 위 상자처럼 비용이 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>지우기</div>
+  <div class="viz" data-viz="copy-r23-remove"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore/CapstoneApp
@@ -1164,6 +1183,7 @@ agentcore status</code></pre>
   </div>
   <p class="body"><code class="inline">remove all</code>은 프로젝트 명세에서 모든 리소스를 빼고, 이어지는 <code class="inline">deploy</code>가 빈 상태를 보고 배포된 스택을 내립니다 (<a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-get-started-cli.html#agentcore-get-started-cli-cleanup">CLI 정리 공식 문서</a>). 이 두 줄을 Claude 세션에 맡기면 01의 ask 규칙 때문에 줄마다 승인을 묻습니다. 그때는 명령을 읽고 Yes를 고릅니다.</p>
   <div class="step-title"><span class="step-no">2</span>남은 것 확인</div>
+  <div class="viz" data-viz="copy-r23-leftover"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone-agentcore &amp;&amp; set -a; . ./app.env; set +a
@@ -1193,6 +1213,7 @@ aws logs describe-log-groups --region "$REGION" \
   <div class="task-head"><span class="task-num">05</span><h2>출품</h2><span class="time-badge">5분</span></div>
   <p class="task-goal">출품 양식의 3번과 5번에 이 미션의 결과를 적습니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> harness는 04에서 지웠으므로, 출품 양식의 ARN과 캡처가 만들었던 것의 기록이 됩니다.</p>
+  <div class="viz" data-viz="copy-r23-submit"></div>
   <div class="code-wrap" data-paste="slack">
     <div class="code-head"><span class="code-label">출품 양식, R2-3 부분 예시</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>3. 업무 두 가지: reports/(파일) 요약 한 줄 (Claude Code, my-kit:periodic-report)
@@ -1534,6 +1555,1539 @@ aws logs describe-log-groups --region "$REGION" \
      }
     },
     "cap": "`list-harnesses`와 `list-stacks`(CapstoneApp)에 아무 줄도 없으면 정상입니다. 스택을 지워도 남는 로그 그룹은 오늘 만든 것만 지우고, 계정이 함께 쓰는 `CDKToolkit` 스택은 지우지 않습니다. Transaction Search는 계정 설정이라 켜진 채 남습니다."
+   }
+  ]
+ },
+ "r23-build": {
+  "title": "R2-3 한눈에: 무엇을 만들고 00~05가 어떻게 이어지나",
+  "nodes": [
+   {
+    "id": "prep",
+    "ic": "folder",
+    "lb": "00 준비",
+    "sb": "CLI v1 · r2.env · 근거 리포트"
+   },
+   {
+    "id": "ask",
+    "ic": "shield",
+    "lb": "01 ask 규칙",
+    "sb": ".claude/settings.json"
+   },
+   {
+    "id": "hn",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "02 harness 배포",
+    "sb": "capstone_app"
+   },
+   {
+    "id": "call",
+    "ic": "terminal",
+    "lb": "03 밖에서 호출",
+    "sb": "CLI · Python 앱"
+   },
+   {
+    "id": "clean",
+    "ic": "result",
+    "lb": "04 정리",
+    "sb": "remove all · 남은 것 확인"
+   }
+  ],
+  "edges": [
+   "폴더 준비",
+   "묻게 한 뒤 배포",
+   "harness ARN",
+   "캡처 뒤 지우기"
+  ],
+  "side": [
+   {
+    "id": "s-kit",
+    "ic": "folder",
+    "lb": "my-kit (마켓플레이스)",
+    "sb": "agent 두 개 + SKILL.md, 읽기만 함"
+   },
+   {
+    "id": "s-sp",
+    "ic": "doc",
+    "lb": "system-prompt.md",
+    "sb": "지침을 그대로 이어 붙인 시스템 프롬프트"
+   },
+   {
+    "id": "s-bed",
+    "img": "images/aws-icons/Arch_Amazon-Bedrock_48.svg",
+    "lb": "Amazon Bedrock 모델",
+    "sb": "harness가 부르는 모델 (CLI 기본값)"
+   },
+   {
+    "id": "s-out",
+    "ic": "doc",
+    "lb": "out-cli.json · out-app.md",
+    "sb": "periodic-report 형식 리포트"
+   },
+   {
+    "id": "s-form",
+    "ic": "result",
+    "lb": "출품 양식 3번 · 5번",
+    "sb": "업무 한 줄, ARN, 캡처 (05)"
+   }
+  ],
+  "steps": [
+   {
+    "t": "00 준비",
+    "on": [
+     "prep",
+     "s-kit"
+    ],
+    "edge": 0,
+    "cap": "`agentcore --version`(v1), 실습 계정, harness 지원 리전을 확인하고, 새 폴더 `~/claude-lab/capstone-agentcore`에서 `r2.env`의 이름, my-kit의 agent와 skill, `capstone-try/reports/`의 근거 리포트를 봅니다."
+   },
+   {
+    "t": "01 ask 규칙",
+    "on": [
+     "ask"
+    ],
+    "edge": 1,
+    "chip": "ask 규칙",
+    "cap": "`agentcore deploy`, `invoke`, `remove`, `delete-stack`처럼 AWS를 바꾸거나 비용이 드는 명령은 Claude가 실행하려 할 때마다 묻도록 `.claude/settings.json`에 `ask` 규칙을 둡니다."
+   },
+   {
+    "t": "02 harness 배포",
+    "on": [
+     "hn",
+     "s-kit",
+     "s-sp",
+     "s-bed"
+    ],
+    "edge": 2,
+    "chip": "harness ARN",
+    "cap": "빈 프로젝트 `CapstoneApp`에 harness `capstone_app`을 더하고, my-kit의 agent 본문과 `SKILL.md`를 `system-prompt.md`에 그대로 붙입니다. 키와 개인정보 검사 뒤 `agentcore deploy`로 배포하고 ARN을 찾아 둡니다."
+   },
+   {
+    "t": "03 밖에서 호출",
+    "on": [
+     "call",
+     "hn",
+     "s-bed",
+     "s-out"
+    ],
+    "edge": 2,
+    "cap": "고른 트랙의 자료 `input.txt`를 `agentcore invoke`와 Python 앱 `ask_app.py`(boto3)로 보내 periodic-report 형식의 리포트를 받습니다. `kit.sha` 지문이 모두 `OK`면 같은 파일을 썼다는 뜻입니다."
+   },
+   {
+    "t": "04 정리",
+    "on": [
+     "clean",
+     "hn"
+    ],
+    "edge": 3,
+    "cap": "`agentcore remove all --yes`와 `agentcore deploy --yes`로 스택을 내리고, harness, 스택, 오늘 만든 로그 그룹이 남지 않았는지 봅니다. 출품할 캡처는 지우기 전에 받아 둡니다."
+   },
+   {
+    "t": "05 출품",
+    "on": [
+     "s-form"
+    ],
+    "cap": "출품 양식 3번에 AgentCore 쪽 업무 한 줄을, 5번(선택)에 harness ARN과 invoke 결과, 정리 확인 캡처를 적습니다."
+   },
+   {
+    "t": "결과",
+    "ok": [
+     "s-out",
+     "s-form",
+     "clean"
+    ],
+    "cap": "이 미션의 AWS 리소스는 지워지고(계정이 함께 쓰는 `CDKToolkit` 스택과 Transaction Search 설정은 남음), 내 폴더에 `out-cli.json`, `out-app.md`와 출품 기록이 남습니다."
+   }
+  ]
+ },
+ "r23-roles": {
+  "title": "03의 호출: 나, harness, Bedrock 모델이 각각 하는 일",
+  "nodes": [
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "나 (터미널)",
+    "sb": "Claude 세션 없이"
+   },
+   {
+    "id": "cli",
+    "ic": "terminal",
+    "lb": "CLI · Python 앱",
+    "sb": "input.txt를 보냄"
+   },
+   {
+    "id": "hn",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "AgentCore harness",
+    "sb": "capstone_app"
+   },
+   {
+    "id": "bed",
+    "img": "images/aws-icons/Arch_Amazon-Bedrock_48.svg",
+    "lb": "Bedrock 모델",
+    "sb": "답을 만듦"
+   },
+   {
+    "id": "res",
+    "ic": "doc",
+    "lb": "리포트",
+    "sb": "다섯 항목"
+   }
+  ],
+  "edges": [
+   "실행",
+   "invoke",
+   "모델 호출",
+   "응답"
+  ],
+  "side": [
+   {
+    "id": "sp",
+    "ic": "doc",
+    "lb": "시스템 프롬프트",
+    "sb": "COLLECT · REVIEW 역할 지침 + SKILL.md"
+   },
+   {
+    "id": "rt",
+    "ic": "server",
+    "lb": "Runtime 세션 (microVM)",
+    "sb": "세션마다 뜸, 쉬어도 기본 900초 남음"
+   },
+   {
+    "id": "no",
+    "ic": "lock",
+    "lb": "harness에 없는 것",
+    "sb": "subagent · 훅 · MCP 서버 → 자료는 메시지로"
+   }
+  ],
+  "steps": [
+   {
+    "t": "자료를 보냄",
+    "on": [
+     "you",
+     "cli"
+    ],
+    "edge": 0,
+    "chip": "input.txt",
+    "cap": "03에서는 사람이 터미널에서 직접 부릅니다. `agentcore invoke --prompt \"$(cat ../input.txt)\"`나 `ask_app.py input.txt`가 고른 트랙의 자료를 메시지로 담아 보냅니다."
+   },
+   {
+    "t": "harness가 받음",
+    "on": [
+     "cli",
+     "hn",
+     "rt"
+    ],
+    "edge": 1,
+    "cap": "harness `capstone_app`이 Runtime 세션(microVM)을 띄워 메시지를 받습니다. 세션 ID는 33자 이상이어야 해서 UUID를 씁니다."
+   },
+   {
+    "t": "지침대로 모델이 답함",
+    "on": [
+     "hn",
+     "bed",
+     "sp"
+    ],
+    "edge": 2,
+    "cap": "harness는 시스템 프롬프트(my-kit의 `COLLECT`, `REVIEW` 역할 지침과 `SKILL.md`)를 붙여 Bedrock 모델을 부릅니다. skill의 \"에이전트에게 맡깁니다\" 단계는 같은 이름의 역할 지침을 따라 직접 수행합니다."
+   },
+   {
+    "t": "없는 것은 메시지로 대신",
+    "on": [
+     "no"
+    ],
+    "cap": "harness에는 Claude Code의 subagent, 훅, plugin MCP 서버가 없습니다. 그래서 외부 API를 부르지 않고 메시지로 받은 자료만 쓰며, 파일에 저장하는 단계는 응답 본문으로 출력하는 것으로 대신합니다."
+   },
+   {
+    "t": "리포트",
+    "on": [
+     "res"
+    ],
+    "ok": [
+     "res"
+    ],
+    "edge": 3,
+    "cap": "답은 요약, 핵심 표, 눈에 띄는 변화와 이유, 확인하지 못한 것, 검토 결과(PASS, WARN, FAIL) 다섯 항목으로 옵니다. CLI 결과는 `out-cli.json`, 앱 결과는 `out-app.md`에 남습니다."
+   }
+  ]
+ },
+ "copy-r23-workdir": {
+  "title": "00 Step 2 붙여 넣으면: 새 작업 폴더를 만들고 재료가 있는지 본다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "Claude 세션 밖"
+   },
+   {
+    "id": "dir",
+    "ic": "folder",
+    "lb": "새 폴더",
+    "sb": "capstone-agentcore"
+   },
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "r2.env",
+    "sb": "KIT · TRACK · COLLECT · REVIEW"
+   },
+   {
+    "id": "kit",
+    "ic": "folder",
+    "lb": "my-kit 파일",
+    "sb": "agents/ · skills/"
+   },
+   {
+    "id": "rep",
+    "ic": "doc",
+    "lb": "reports/",
+    "sb": "capstone-try의 리포트"
+   }
+  ],
+  "edges": [
+   "mkdir · cd",
+   "불러오기",
+   "ls",
+   "ls -t"
+  ],
+  "side": [
+   {
+    "id": "aw",
+    "ic": "plug",
+    "lb": "aws-agents plugin",
+    "sb": "막혔을 때 쓰는 진단 도구"
+   }
+  ],
+  "steps": [
+   {
+    "t": "새 폴더",
+    "on": [
+     "term",
+     "dir"
+    ],
+    "edge": 0,
+    "cap": "`mkdir -p ~/claude-lab/capstone-agentcore`로 `capstone-try` 밖에 새 폴더를 만들고 들어갑니다. `capstone-try`는 my-kit 말고 다른 plugin을 모두 꺼 두었고, 재사용 확인에 다른 파일이 섞이지 않아야 하기 때문입니다."
+   },
+   {
+    "t": "r2.env 읽기",
+    "on": [
+     "env"
+    ],
+    "edge": 1,
+    "cap": "`. ~/claude-lab/capstone/r2.env`가 R2 공통 단계에서 적은 이름을 불러오고, `KIT=… TRACK=… COLLECT=… REVIEW=…` 한 줄을 출력합니다."
+   },
+   {
+    "t": "agent와 skill",
+    "on": [
+     "kit"
+    ],
+    "edge": 2,
+    "cap": "마켓플레이스에 올린 my-kit의 `agents/`와 `skills/`를 봅니다. agent 파일에 `$COLLECT`, `$REVIEW` 이름이 보여야 합니다."
+   },
+   {
+    "t": "근거 리포트",
+    "on": [
+     "rep"
+    ],
+    "edge": 3,
+    "cap": "`ls -t ~/claude-lab/capstone-try/reports/`에 리포트가 하나 이상 있어야 합니다. 없으면 `capstone-try`의 세션에서 R2-1 01 표의 첫 번째 명령 하나만 먼저 보냅니다."
+   },
+   {
+    "t": "aws-agents 켜짐",
+    "on": [
+     "aw"
+    ],
+    "ok": [
+     "aw"
+    ],
+    "cap": "마지막 줄이 `aws-agents@claude-plugins-official true`여야 합니다. 아니면 Setup 필수 설치로 돌아갑니다."
+   }
+  ]
+ },
+ "copy-r23-ask": {
+  "title": "01 붙여 넣으면: AWS를 바꾸는 명령은 매번 묻는 ask 규칙이 생긴다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "cat > … << 'EOF'"
+   },
+   {
+    "id": "file",
+    "ic": "doc",
+    "lb": "설정 파일",
+    "sb": ".claude/settings.json"
+   },
+   {
+    "id": "rules",
+    "ic": "key",
+    "lb": "ask 규칙",
+    "sb": "permissions.ask 10줄"
+   },
+   {
+    "id": "claude",
+    "ic": "chat",
+    "lb": "Claude가 실행하려 함",
+    "sb": "실행 전에 승인 창"
+   },
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "나",
+    "sb": "명령을 읽고 Yes / No"
+   }
+  ],
+  "edges": [
+   "heredoc",
+   "",
+   "규칙에 맞으면",
+   "묻기"
+  ],
+  "side": [
+   {
+    "id": "limit",
+    "ic": "lock",
+    "lb": "잡지 못하는 것",
+    "sb": "sh -c '…' · 절대 경로 실행 · bypassPermissions 모드"
+   }
+  ],
+  "steps": [
+   {
+    "t": "파일 쓰기",
+    "on": [
+     "term",
+     "file"
+    ],
+    "edge": 0,
+    "chip": "settings.json",
+    "cap": "`cat > .claude/settings.json << 'EOF'`부터 `EOF`까지가 파일 내용입니다. 마지막 `jq` 줄이 ask 규칙 10줄을 출력하면 파일이 제대로 만들어진 것입니다."
+   },
+   {
+    "t": "어떤 명령을 묻나",
+    "on": [
+     "rules"
+    ],
+    "cap": "`agentcore deploy`, `dev`, `invoke`, `remove`, `npx cdk destroy`, `delete-stack`, `delete-log-group`, `bedrock-agentcore-control delete-*`, 그리고 예로 든 `ec2 run-instances`, `terminate-instances`입니다. `*`는 하위 명령 뒤에 둡니다."
+   },
+   {
+    "t": "Claude가 실행하려 하면",
+    "on": [
+     "claude",
+     "you"
+    ],
+    "edge": [
+     2,
+     3
+    ],
+    "cap": "Claude가 이 모양의 명령을 실행하려 하면, 더 좁은 allow 규칙이 있어도 실행 전에 승인 창이 뜹니다. `cd 폴더 && agentcore deploy`처럼 이어 쓴 명령도 부분마다 검사하고, auto 모드에서도 묻습니다."
+   },
+   {
+    "t": "한계",
+    "on": [
+     "limit"
+    ],
+    "cap": "규칙은 Claude가 쓴 명령 글자를 봅니다. `sh -c '…'`나 절대 경로 실행처럼 다른 모양은 잡지 못하고, `bypassPermissions` 모드에서는 묻지 않습니다. 보안 경계가 아니라 실수를 막는 한 겹입니다."
+   }
+  ]
+ },
+ "copy-r23-ask-test": {
+  "title": "01 붙여 넣으면: 지우는 명령을 시키고, 승인 창에서 No로 막는다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "cd … && claude"
+   },
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "Claude 세션 입력",
+    "sb": "지우는 명령을 시킴"
+   },
+   {
+    "id": "claude",
+    "ic": "chat",
+    "lb": "Claude",
+    "sb": "Bash로 실행하려 함"
+   },
+   {
+    "id": "ask",
+    "ic": "shield",
+    "lb": "ask 규칙",
+    "sb": "Bash(agentcore remove *)"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "결과",
+    "sb": "아무것도 바뀌지 않음"
+   }
+  ],
+  "edges": [
+   "세션 열기",
+   "요청",
+   "실행 전 검사",
+   "No"
+  ],
+  "steps": [
+   {
+    "t": "세션 열기",
+    "on": [
+     "term"
+    ],
+    "edge": 0,
+    "cap": "`cd ~/claude-lab/capstone-agentcore && claude`로 이 폴더에서 세션을 엽니다. 그래야 이 폴더의 `.claude/settings.json` 규칙이 적용됩니다."
+   },
+   {
+    "t": "지우는 명령 시키기",
+    "on": [
+     "you",
+     "claude"
+    ],
+    "edge": 1,
+    "chip": "agentcore remove all --yes",
+    "cap": "`Bash 도구로 agentcore remove all --yes 를 실행해 주세요.`를 보냅니다. Claude가 이 명령을 Bash 도구로 실행하려 합니다."
+   },
+   {
+    "t": "승인 창",
+    "on": [
+     "claude",
+     "ask"
+    ],
+    "edge": 2,
+    "cap": "명령이 `Bash(agentcore remove *)` 규칙에 맞으므로 실행하기 전에 승인을 묻는 창이 떠야 합니다."
+   },
+   {
+    "t": "No로 막기",
+    "on": [
+     "res"
+    ],
+    "ok": [
+     "res",
+     "ask"
+    ],
+    "edge": 3,
+    "cap": "No를 고르면 아무것도 바뀌지 않습니다. `/permissions`를 입력하면 ask 규칙 목록과 그 규칙이 든 파일(`.claude/settings.json`)이 보입니다. 확인했으면 세션을 닫습니다."
+   }
+  ]
+ },
+ "copy-r23-create": {
+  "title": "02 Step 1 붙여 넣으면: 빈 AgentCore 프로젝트에 harness 하나가 생긴다",
+  "nodes": [
+   {
+    "id": "proj",
+    "ic": "folder",
+    "lb": "프로젝트",
+    "sb": "CapstoneApp · create --template empty"
+   },
+   {
+    "id": "hn",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "harness",
+    "sb": "capstone_app · add harness"
+   },
+   {
+    "id": "yaml",
+    "ic": "doc",
+    "lb": "모델 설정",
+    "sb": "harness.yaml · maxTokens"
+   },
+   {
+    "id": "sp",
+    "ic": "doc",
+    "lb": "지침 파일",
+    "sb": "임시 지침 (Step 2에서 바꿈)"
+   },
+   {
+    "id": "tg",
+    "ic": "doc",
+    "lb": "배포 대상",
+    "sb": "계정과 리전"
+   }
+  ],
+  "edges": [
+   "add harness",
+   "app/capstone_app/",
+   "",
+   "agentcore/"
+  ],
+  "side": [
+   {
+    "id": "bed",
+    "img": "images/aws-icons/Arch_Amazon-Bedrock_48.svg",
+    "lb": "Bedrock 기본 모델",
+    "sb": "모델을 적지 않으면 CLI가 정함"
+   },
+   {
+    "id": "mem",
+    "ic": "lock",
+    "lb": "메모리 꺼짐",
+    "sb": "--memory '{\"mode\":\"disabled\"}'"
+   }
+  ],
+  "steps": [
+   {
+    "t": "빈 프로젝트",
+    "on": [
+     "proj"
+    ],
+    "cap": "`agentcore create --name CapstoneApp --template empty`가 빈 프로젝트 폴더 `CapstoneApp`을 만들고, `cd CapstoneApp`으로 들어갑니다. AWS에 리소스를 만드는 것은 Step 3의 `agentcore deploy`입니다."
+   },
+   {
+    "t": "harness 더하기",
+    "on": [
+     "hn",
+     "mem",
+     "bed"
+    ],
+    "edge": 0,
+    "cap": "`agentcore add harness --name capstone_app`이 harness를 더합니다. 시스템 프롬프트는 임시 문장으로 두고, 메모리는 이 미션에 필요 없어 끕니다. 모델을 적지 않았으므로 CLI가 정한 Bedrock 기본 모델이 `harness.yaml`에 들어갑니다."
+   },
+   {
+    "t": "출력 한도 올리기",
+    "on": [
+     "yaml"
+    ],
+    "edge": 1,
+    "set": {
+     "yaml": {
+      "sb": "# maxTokens: 4096 → maxTokens: 16000"
+     }
+    },
+    "cap": "`sed` 줄이 `harness.yaml`에 주석으로 있던 `maxTokens`를 켜서 16000으로 올립니다. 기본값으로 두면 긴 리포트가 `Model stopped generating due to maximum token limit`로 끊깁니다. `grep`이 `maxTokens: 16000` 한 줄을 보여야 합니다."
+   },
+   {
+    "t": "만들어진 파일",
+    "on": [
+     "yaml",
+     "sp"
+    ],
+    "edge": [
+     1,
+     2
+    ],
+    "cap": "`ls app/capstone_app`에 `harness.yaml`과 `system-prompt.md`가 보여야 합니다."
+   },
+   {
+    "t": "계정과 리전",
+    "on": [
+     "tg"
+    ],
+    "edge": 3,
+    "cap": "`cat agentcore/aws-targets.json`의 계정과 리전이 00에서 본 값과 같은지 봅니다. 다르면 이 파일의 값을 고칩니다. 리전이 어긋나는 것이 배포 실패의 가장 흔한 원인입니다."
+   }
+  ]
+ },
+ "copy-r23-prompt": {
+  "title": "02 Step 2 붙여 넣으면: my-kit 지침을 이어 붙인 system-prompt.md가 만들어진다",
+  "nodes": [
+   {
+    "id": "hd",
+    "ic": "doc",
+    "lb": "맨 앞 안내",
+    "sb": "Claude Code와 다른 점"
+   },
+   {
+    "id": "ag",
+    "ic": "bot",
+    "lb": "역할: COLLECT · REVIEW",
+    "sb": "agent 본문 (frontmatter 제외)"
+   },
+   {
+    "id": "sk",
+    "ic": "doc",
+    "lb": "skill 파일",
+    "sb": "SKILL.md 전체"
+   },
+   {
+    "id": "sp",
+    "ic": "doc",
+    "lb": "지침 파일",
+    "sb": "system-prompt.md"
+   },
+   {
+    "id": "chk",
+    "ic": "result",
+    "lb": "확인",
+    "sb": "## 줄 · 크기"
+   }
+  ],
+  "edges": [
+   "+",
+   "+",
+   "{ … } >",
+   "grep · wc"
+  ],
+  "side": [
+   {
+    "id": "kit",
+    "ic": "folder",
+    "lb": "my-kit (마켓플레이스)",
+    "sb": "읽기만 함 → kit.sha 그대로"
+   }
+  ],
+  "steps": [
+   {
+    "t": "맨 앞 안내",
+    "on": [
+     "hd"
+    ],
+    "cap": "`{ … }` 안의 `echo` 줄이 안내를 씁니다. 이 환경에는 subagent, 훅, MCP 도구가 없으니 \"에이전트에게 맡깁니다\" 단계는 \"역할:\" 절의 지침으로 직접 하고, 자료는 메시지로 받은 것만 쓰고, 파일 저장과 HTML 대신 마크다운으로 응답하라는 내용입니다."
+   },
+   {
+    "t": "agent 두 개의 본문",
+    "on": [
+     "ag",
+     "kit"
+    ],
+    "edge": 0,
+    "cap": "`for a in \"$COLLECT\" \"$REVIEW\"` 반복이 `## 역할: ${KIT}:이름` 제목을 달고, `awk`로 agent 파일의 두 번째 `---` 뒤 본문만 붙입니다. 그래서 `tools:` 줄이 든 frontmatter는 빠집니다."
+   },
+   {
+    "t": "skill 파일",
+    "on": [
+     "sk",
+     "kit"
+    ],
+    "edge": 1,
+    "cap": "`skills/*/SKILL.md`마다 `## skill 파일: 폴더이름/SKILL.md` 제목을 달고 파일 전체를 `cat`으로 붙입니다."
+   },
+   {
+    "t": "한 파일로 저장",
+    "on": [
+     "sp"
+    ],
+    "edge": 2,
+    "chip": "system-prompt.md",
+    "cap": "모든 출력이 `> app/capstone_app/system-prompt.md`로 들어가 Step 1의 임시 지침을 덮어씁니다."
+   },
+   {
+    "t": "확인",
+    "on": [
+     "chk"
+    ],
+    "ok": [
+     "chk",
+     "kit"
+    ],
+    "edge": 3,
+    "cap": "`grep`에 `## 역할:` 줄 두 개와 `## skill 파일:` 줄(R2 공통 01에서 만든 skill 수만큼)이 보이면 됩니다. 원본은 읽기만 했으므로 지문(`kit.sha`)은 그대로입니다."
+   }
+  ]
+ },
+ "copy-r23-scan": {
+  "title": "02 Step 3 붙여 넣으면: 배포 전에 키와 개인정보가 없는지 본다",
+  "nodes": [
+   {
+    "id": "files",
+    "ic": "folder",
+    "lb": "배포할 파일",
+    "sb": "app/ · aws-targets.json"
+   },
+   {
+    "id": "pii",
+    "ic": "shield",
+    "lb": "개인정보 패턴",
+    "sb": "주민번호 · 카드 · 휴대폰"
+   },
+   {
+    "id": "keys",
+    "ic": "key",
+    "lb": "등록된 키 값",
+    "sb": "~/.claude.json"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "판정",
+    "sb": "파일 이름이 나오면 멈춤"
+   }
+  ],
+  "edges": [
+   "grep -nE",
+   "",
+   "값 대조"
+  ],
+  "steps": [
+   {
+    "t": "개인정보 패턴",
+    "on": [
+     "files",
+     "pii"
+    ],
+    "edge": 0,
+    "cap": "`grep -nE`가 `app/capstone_app/`의 파일에서 주민번호, 카드 번호, 휴대폰 번호 모양을 찾습니다. 없으면 `개인정보 패턴 없음`이 나옵니다."
+   },
+   {
+    "t": "등록된 키 꺼내기",
+    "on": [
+     "keys"
+    ],
+    "cap": "`jq`가 `~/.claude.json`에 등록된 `SEOUL_API_KEY`, `ALPHA_VANTAGE_API_KEY`, `Authorization` 값(앞의 `Bearer ` 제외)을 꺼냅니다. 값 자체는 화면에 나오지 않습니다."
+   },
+   {
+    "t": "같은 글자 찾기",
+    "on": [
+     "keys",
+     "files"
+    ],
+    "cap": "8자 이상인 값마다 `grep -rlF`로 `app/`와 `agentcore/aws-targets.json`에 같은 글자가 있는지 찾고, 있으면 그 파일 이름만 출력합니다."
+   },
+   {
+    "t": "판정",
+    "on": [
+     "res"
+    ],
+    "ok": [
+     "res"
+    ],
+    "edge": 2,
+    "cap": "마지막에 `키 검사 끝`이 나옵니다. 그 위에 파일 이름이 하나도 없어야 배포합니다. 나오면 배포하지 말고 그 파일부터 고칩니다."
+   }
+  ]
+ },
+ "copy-r23-deploy": {
+  "title": "02 Step 3 붙여 넣으면: agentcore deploy가 내 계정에 harness를 만든다",
+  "nodes": [
+   {
+    "id": "proj",
+    "ic": "folder",
+    "lb": "CapstoneApp",
+    "sb": "harness.yaml · system-prompt.md"
+   },
+   {
+    "id": "cfn",
+    "img": "images/aws-icons/Arch_AWS-CloudFormation_48.svg",
+    "lb": "CloudFormation 스택",
+    "sb": "CDK로 만듦"
+   },
+   {
+    "id": "hn",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "harness capstone_app",
+    "sb": "Runtime · 실행 역할 · 로그"
+   },
+   {
+    "id": "st",
+    "ic": "terminal",
+    "lb": "agentcore status",
+    "sb": "harness ARN"
+   }
+  ],
+  "edges": [
+   "agentcore deploy",
+   "리소스 생성",
+   "상태 보기"
+  ],
+  "side": [
+   {
+    "id": "boot",
+    "ic": "server",
+    "lb": "CDK bootstrap 스택",
+    "sb": "처음 배포할 때만"
+   },
+   {
+    "id": "ts",
+    "ic": "globe",
+    "lb": "Transaction Search",
+    "sb": "계정 전체 설정, 04 뒤에도 남음"
+   }
+  ],
+  "steps": [
+   {
+    "t": "배포 시작",
+    "on": [
+     "proj",
+     "cfn",
+     "boot"
+    ],
+    "edge": 0,
+    "cap": "`agentcore deploy`가 CDK로 CloudFormation 스택을 만듭니다. 확인을 물으면 내용을 보고 승인합니다. 처음 배포는 계정에 CDK bootstrap을 하느라 몇 분 걸립니다."
+   },
+   {
+    "t": "Transaction Search",
+    "on": [
+     "ts"
+    ],
+    "cap": "`agentcore deploy`는 추적을 보려고 계정 전체의 CloudWatch Transaction Search를 켭니다. 공유 계정이라 켜고 싶지 않으면 배포 전에 `agentcore config transactionSearch false`를 실행합니다."
+   },
+   {
+    "t": "harness가 생김",
+    "on": [
+     "cfn",
+     "hn"
+    ],
+    "edge": 1,
+    "cap": "스택이 harness와 그것을 돌리는 Runtime, 실행 역할(IAM), CloudWatch 로그를 만듭니다."
+   },
+   {
+    "t": "ARN 찾아 두기",
+    "on": [
+     "st"
+    ],
+    "ok": [
+     "hn"
+    ],
+    "edge": 2,
+    "chip": "harness ARN",
+    "cap": "`agentcore status` 출력에서 harness ARN(`arn:aws:bedrock-agentcore:리전:계정:harness/…`)을 찾아 둡니다. 03과 04에서 씁니다."
+   }
+  ]
+ },
+ "copy-r23-input": {
+  "title": "03 Step 1 붙여 넣으면: harness에 보낼 자료 input.txt가 만들어진다",
+  "nodes": [
+   {
+    "id": "src",
+    "ic": "doc",
+    "lb": "자료",
+    "sb": "트랙마다 다름"
+   },
+   {
+    "id": "req",
+    "ic": "chat",
+    "lb": "요청 문장",
+    "sb": "periodic-report 절차와 형식대로"
+   },
+   {
+    "id": "in",
+    "ic": "doc",
+    "lb": "input.txt",
+    "sb": "capstone-agentcore/"
+   },
+   {
+    "id": "chk",
+    "ic": "result",
+    "lb": "크기 확인",
+    "sb": "wc -c 또는 wc -l"
+   }
+  ],
+  "edges": [
+   "+",
+   "{ … } > input.txt",
+   "wc"
+  ],
+  "steps": [
+   {
+    "t": "트랙 A: 직전 리포트",
+    "on": [
+     "src"
+    ],
+    "set": {
+     "src": {
+      "lb": "직전 리포트",
+      "sb": "capstone-try/reports/ 최신 .md"
+     }
+    },
+    "cap": "`ls -t …/reports/*.md | head -1`로 가장 최근 리포트를 고르고 `근거:` 줄로 보여 줍니다. 그 리포트 전체를 자료로 붙입니다."
+   },
+   {
+    "t": "트랙 B: sample.json",
+    "on": [
+     "src"
+    ],
+    "set": {
+     "src": {
+      "lb": "sample.json (mock)",
+      "sb": "강남구 거래, 6개 필드"
+     }
+    },
+    "cap": "`jq`로 `sample.json`에서 강남구 거래만 골라 `CGG_NM`, `STDG_NM`, `CTRT_DAY`, `THING_AMT`, `ARCH_AREA`, `BLDG_USG` 여섯 필드만 한 줄씩 넣습니다. 건물명과 번지 필드는 빼고, 값은 지어낸 합성 데이터(mock)입니다."
+   },
+   {
+    "t": "트랙 C: 직전 리포트",
+    "on": [
+     "src"
+    ],
+    "set": {
+     "src": {
+      "lb": "직전 리포트",
+      "sb": "R2에서 만든 리포트"
+     }
+    },
+    "cap": "트랙 C도 최근 리포트를 자료로 붙입니다. harness에는 R1-C에서 고른 MCP 서버가 없으므로, 최신 값은 Claude Code의 my-kit으로 모은 이 리포트에서만 옵니다."
+   },
+   {
+    "t": "요청 문장",
+    "on": [
+     "req"
+    ],
+    "edge": 0,
+    "cap": "맨 앞 `echo` 줄이 요청입니다. \"아래 자료만 써서 periodic-report skill의 절차와 출력 형식대로\" 리포트를 만들어 달라고 하고, 트랙 A와 C는 자료에 없는 값을 \"확인하지 못한 것\"에, 트랙 B는 202609 거래를 직전 값으로 비교하라고 덧붙입니다."
+   },
+   {
+    "t": "input.txt",
+    "on": [
+     "in",
+     "chk"
+    ],
+    "ok": [
+     "in"
+    ],
+    "edge": [
+     1,
+     2
+    ],
+    "chip": "input.txt",
+    "cap": "요청과 자료가 함께 `input.txt`로 저장되고, 마지막 줄이 크기(트랙 A와 C는 `wc -c` 바이트 수, 트랙 B는 `wc -l` 줄 수)를 보여 줍니다. 고른 트랙 블록 하나만 실행합니다."
+   }
+  ]
+ },
+ "copy-r23-precheck": {
+  "title": "03 Step 1 붙여 넣으면: 보내기 전에 input.txt를 검사한다",
+  "nodes": [
+   {
+    "id": "in",
+    "ic": "doc",
+    "lb": "input.txt",
+    "sb": "보낼 자료"
+   },
+   {
+    "id": "pii",
+    "ic": "shield",
+    "lb": "개인정보 패턴",
+    "sb": "주민번호 · 카드 · 휴대폰"
+   },
+   {
+    "id": "keys",
+    "ic": "key",
+    "lb": "등록된 키 값",
+    "sb": "~/.claude.json"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "판정",
+    "sb": "input.txt가 나오면 보내지 않음"
+   }
+  ],
+  "edges": [
+   "grep -nE",
+   "",
+   "grep -lF"
+  ],
+  "steps": [
+   {
+    "t": "개인정보 패턴",
+    "on": [
+     "in",
+     "pii"
+    ],
+    "edge": 0,
+    "cap": "02 Step 3과 같은 패턴 검사를 이번에는 `input.txt`에 돌립니다. 없으면 `개인정보 패턴 없음`이 나옵니다."
+   },
+   {
+    "t": "키 값 대조",
+    "on": [
+     "keys",
+     "in"
+    ],
+    "cap": "`~/.claude.json`에 등록된 키 값(8자 이상)이 `input.txt`에 그대로 들어 있으면 파일 이름 `input.txt`가 출력됩니다."
+   },
+   {
+    "t": "판정",
+    "on": [
+     "res"
+    ],
+    "ok": [
+     "res"
+    ],
+    "edge": 2,
+    "cap": "`키 검사 끝` 위에 `input.txt`가 나오지 않아야 보냅니다. 나오면 보내지 않습니다."
+   }
+  ]
+ },
+ "copy-r23-cli": {
+  "title": "03 Step 2 붙여 넣으면: AgentCore CLI가 harness를 불러 out-cli.json에 담는다",
+  "nodes": [
+   {
+    "id": "in",
+    "ic": "doc",
+    "lb": "input.txt",
+    "sb": "Step 1의 자료"
+   },
+   {
+    "id": "cli",
+    "ic": "terminal",
+    "lb": "agentcore invoke",
+    "sb": "--harness capstone_app"
+   },
+   {
+    "id": "hn",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "harness",
+    "sb": "capstone_app"
+   },
+   {
+    "id": "bed",
+    "img": "images/aws-icons/Arch_Amazon-Bedrock_48.svg",
+    "lb": "Bedrock 모델",
+    "sb": "토큰 비용"
+   },
+   {
+    "id": "out",
+    "ic": "doc",
+    "lb": "out-cli.json",
+    "sb": "대화 내용 + 세션 정보"
+   }
+  ],
+  "edges": [
+   "--prompt",
+   "새 세션 ID",
+   "지침 + 자료",
+   "응답"
+  ],
+  "steps": [
+   {
+    "t": "자료를 메시지로",
+    "on": [
+     "in",
+     "cli"
+    ],
+    "edge": 0,
+    "cap": "`--prompt \"$(cat ../input.txt)\"`가 Step 1에서 만든 자료를 통째로 메시지로 넣습니다. `--session-id \"$(uuidgen)\"`로 부를 때마다 새 세션을 씁니다."
+   },
+   {
+    "t": "harness 호출",
+    "on": [
+     "cli",
+     "hn"
+    ],
+    "edge": 1,
+    "cap": "CLI가 `capstone_app` harness를 부릅니다. 사람이 터미널에서 직접 부르므로 01의 ask 규칙은 묻지 않습니다. 그 규칙은 Claude가 부르려 할 때만 묻습니다."
+   },
+   {
+    "t": "모델이 답함",
+    "on": [
+     "hn",
+     "bed"
+    ],
+    "edge": 2,
+    "cap": "harness는 02에서 붙인 시스템 프롬프트와 메시지로 Bedrock 모델을 부릅니다. 호출마다 모델 토큰 비용(시스템 프롬프트 포함)이 듭니다."
+   },
+   {
+    "t": "out-cli.json",
+    "on": [
+     "out"
+    ],
+    "ok": [
+     "out"
+    ],
+    "edge": 3,
+    "chip": "out-cli.json",
+    "cap": "`--prompt`를 주면 CLI가 응답을 끝까지 모아 JSON으로 냅니다. 마지막 줄이 줄 수와 앞 3000자를 보여 줍니다. 요약, 핵심 표, 눈에 띄는 변화와 이유, 확인하지 못한 것, 검토 결과가 그 순서로 보이면 성공입니다."
+   }
+  ]
+ },
+ "copy-r23-app": {
+  "title": "03 Step 3 붙여 넣으면: 작은 Python 앱이 같은 harness를 부른다",
+  "nodes": [
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "app.env",
+    "sb": "HARNESS_ARN=…"
+   },
+   {
+    "id": "py",
+    "ic": "doc",
+    "lb": "ask_app.py",
+    "sb": "invoke_harness 호출"
+   },
+   {
+    "id": "uv",
+    "ic": "terminal",
+    "lb": "uv run --with boto3",
+    "sb": "그 실행에만 쓰는 환경"
+   },
+   {
+    "id": "hn",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "harness",
+    "sb": "ARN으로 찾음"
+   },
+   {
+    "id": "out",
+    "ic": "doc",
+    "lb": "out-app.md",
+    "sb": "tee: 화면과 파일"
+   }
+  ],
+  "edges": [
+   "읽음",
+   "실행",
+   "invoke_harness",
+   "스트림"
+  ],
+  "steps": [
+   {
+    "t": "ARN 넣기",
+    "on": [
+     "env"
+    ],
+    "set": {
+     "env": {
+      "sb": "ARN을 내 값으로 바꿈"
+     }
+    },
+    "cap": "첫 줄의 `arn:aws:bedrock-agentcore:리전:계정:harness/여기에-ID`를 02에서 찾은 ARN으로 바꿔 붙여 넣습니다. 값은 `app.env`에 저장되고, 04 정리에서도 리전을 이 파일에서 읽습니다."
+   },
+   {
+    "t": "앱 파일",
+    "on": [
+     "py"
+    ],
+    "cap": "`cat > ask_app.py << 'EOF'`가 파일 하나짜리 앱을 씁니다. ARN에서 리전을 떼어 boto3 클라이언트를 만들고, 인자로 받은 파일(`input.txt`)을 메시지로 보냅니다."
+   },
+   {
+    "t": "uv로 실행",
+    "on": [
+     "env",
+     "py",
+     "uv"
+    ],
+    "edge": [
+     0,
+     1
+    ],
+    "cap": "`set -a; . ./app.env; set +a`로 `HARNESS_ARN`을 환경 변수로 올리고, `uv run --no-project --quiet --with boto3`가 boto3를 받은 그 실행 전용 환경에서 앱을 돌립니다. 시스템 Python에는 설치하지 않습니다."
+   },
+   {
+    "t": "harness 호출",
+    "on": [
+     "uv",
+     "hn"
+    ],
+    "edge": 2,
+    "cap": "`invoke_harness`가 새 UUID 세션 ID(33자 이상이어야 함)로 harness를 부릅니다. 오류 이벤트가 오면 `Error:` 줄을 출력합니다."
+   },
+   {
+    "t": "out-app.md",
+    "on": [
+     "out"
+    ],
+    "ok": [
+     "out"
+    ],
+    "edge": 3,
+    "chip": "out-app.md",
+    "cap": "응답이 글자 단위로 흘러나오고, `tee`가 화면에 보여 주면서 `out-app.md`에 남깁니다. CLI와 내용은 조금 달라도 형식은 같아야 합니다."
+   }
+  ]
+ },
+ "copy-r23-sha": {
+  "title": "03 Step 3 붙여 넣으면: 같은 파일을 썼는지 kit.sha로 확인한다",
+  "nodes": [
+   {
+    "id": "kit",
+    "ic": "folder",
+    "lb": "my-kit (마켓플레이스)",
+    "sb": "agents/ · skills/"
+   },
+   {
+    "id": "sha",
+    "ic": "doc",
+    "lb": "kit.sha",
+    "sb": "R2 공통 04에서 남긴 지문"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "sha256sum -c",
+    "sb": "파일마다 OK"
+   }
+  ],
+  "edges": [
+   "sha256sum -c",
+   "결과"
+  ],
+  "side": [
+   {
+    "id": "out",
+    "ic": "doc",
+    "lb": "out-app.md",
+    "sb": "제목과 번호 줄"
+   }
+  ],
+  "steps": [
+   {
+    "t": "지문 비교",
+    "on": [
+     "kit",
+     "sha"
+    ],
+    "edge": 0,
+    "cap": "`sha256sum -c ~/claude-lab/capstone-try/kit.sha`가 마켓플레이스 my-kit의 `agents/`, `skills/` 파일을 R2 공통 04에서 남긴 지문과 비교합니다."
+   },
+   {
+    "t": "모두 OK",
+    "on": [
+     "res"
+    ],
+    "ok": [
+     "res",
+     "kit"
+    ],
+    "edge": 1,
+    "cap": "모든 줄이 `OK`면 Claude Code 안과 밖이 같은 agent 지침과 skill 파일을 썼다는 뜻입니다. 02에서는 읽기만 했으므로 그대로여야 합니다."
+   },
+   {
+    "t": "리포트 형식",
+    "on": [
+     "out"
+    ],
+    "cap": "마지막 줄이 `out-app.md`의 제목과 번호 줄(최대 12줄)을 보여 줍니다. 출품 양식 3번의 표에 \"업무 2: AgentCore harness에서 periodic-report, 새로 짠 것 없음\"으로 적습니다."
+   }
+  ]
+ },
+ "copy-r23-remove": {
+  "title": "04 Step 1 붙여 넣으면: 명세를 비우고 다시 배포해 스택을 내린다",
+  "nodes": [
+   {
+    "id": "spec",
+    "ic": "doc",
+    "lb": "프로젝트 명세",
+    "sb": "CapstoneApp"
+   },
+   {
+    "id": "cfn",
+    "img": "images/aws-icons/Arch_AWS-CloudFormation_48.svg",
+    "lb": "CloudFormation 스택",
+    "sb": "배포된 리소스"
+   },
+   {
+    "id": "hn",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "harness capstone_app",
+    "sb": "스택이 만든 것"
+   },
+   {
+    "id": "st",
+    "ic": "terminal",
+    "lb": "agentcore status",
+    "sb": "상태 보기"
+   }
+  ],
+  "edges": [
+   "deploy --yes",
+   "함께 내려감",
+   "확인"
+  ],
+  "side": [
+   {
+    "id": "ask",
+    "ic": "shield",
+    "lb": "ask 규칙 (01)",
+    "sb": "Claude에게 맡기면 줄마다 승인"
+   }
+  ],
+  "steps": [
+   {
+    "t": "명세에서 빼기",
+    "on": [
+     "spec"
+    ],
+    "set": {
+     "spec": {
+      "sb": "remove all: 모든 리소스를 뺌"
+     }
+    },
+    "cap": "`agentcore remove all --yes`는 AWS를 바로 지우지 않고, 프로젝트 명세에서 모든 리소스를 뺍니다."
+   },
+   {
+    "t": "빈 명세로 배포",
+    "on": [
+     "spec",
+     "cfn"
+    ],
+    "edge": 0,
+    "cap": "이어지는 `agentcore deploy --yes`가 빈 명세를 보고 배포된 스택을 내립니다."
+   },
+   {
+    "t": "harness도 내려감",
+    "on": [
+     "cfn",
+     "hn"
+    ],
+    "edge": 1,
+    "set": {
+     "hn": {
+      "sb": "스택과 함께 지워짐"
+     }
+    },
+    "cap": "스택이 내려가면서 스택이 만든 harness와 Runtime이 함께 지워집니다. 로그 그룹은 스택을 지워도 남으므로 Step 2에서 봅니다."
+   },
+   {
+    "t": "상태 확인",
+    "on": [
+     "st",
+     "ask"
+    ],
+    "edge": 2,
+    "cap": "`agentcore status`로 상태를 봅니다. 이 줄들을 Claude 세션에 맡기면 01의 ask 규칙 때문에 줄마다 승인을 묻습니다. 그때는 명령을 읽고 Yes를 고릅니다."
+   }
+  ]
+ },
+ "copy-r23-leftover": {
+  "title": "04 Step 2 붙여 넣으면: harness, 스택, 로그 그룹이 남았는지 본다",
+  "nodes": [
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "app.env",
+    "sb": "HARNESS_ARN에서 리전"
+   },
+   {
+    "id": "hl",
+    "img": "images/aws-icons/AgentCore_dark-purple.png",
+    "lb": "list-harnesses",
+    "sb": "capstone_app"
+   },
+   {
+    "id": "sk",
+    "img": "images/aws-icons/Arch_AWS-CloudFormation_48.svg",
+    "lb": "list-stacks",
+    "sb": "CapstoneApp"
+   },
+   {
+    "id": "lg",
+    "ic": "doc",
+    "lb": "로그 그룹",
+    "sb": "describe-log-groups"
+   }
+  ],
+  "edges": [
+   "REGION",
+   "",
+   ""
+  ],
+  "side": [
+   {
+    "id": "cdk",
+    "ic": "server",
+    "lb": "CDKToolkit 스택",
+    "sb": "다른 CDK 배포가 함께 씀, 지우지 않음"
+   }
+  ],
+  "steps": [
+   {
+    "t": "리전 정하기",
+    "on": [
+     "env"
+    ],
+    "edge": 0,
+    "cap": "`app.env`의 ARN에서 네 번째 칸(리전)을 떼어 `REGION`으로 씁니다. `region=` 줄로 확인합니다."
+   },
+   {
+    "t": "harness",
+    "on": [
+     "hl"
+    ],
+    "ok": [
+     "hl"
+    ],
+    "set": {
+     "hl": {
+      "sb": "아무 줄도 없으면 정상"
+     }
+    },
+    "cap": "`list-harnesses`에 `capstone_app`이 든 줄이 하나도 없어야 합니다. `DELETING`이면 몇 분 뒤 다시 보고, `DELETE_FAILED`이거나 30분 넘게 `DELETING`이면 그 줄을 운영진에게 보여 줍니다."
+   },
+   {
+    "t": "스택",
+    "on": [
+     "sk"
+    ],
+    "ok": [
+     "sk"
+    ],
+    "set": {
+     "sk": {
+      "sb": "아무 줄도 없으면 정상"
+     }
+    },
+    "cap": "`list-stacks`에 `DELETE_COMPLETE`가 아니면서 이름에 `CapstoneApp`이 든 스택이 없어야 합니다. 남아 있으면 `agentcore deploy --yes`를 한 번 더, 그래도 남으면 `delete-stack`(ask 규칙이 묻습니다) 후 같은 확인을 반복합니다."
+   },
+   {
+    "t": "로그 그룹",
+    "on": [
+     "lg"
+    ],
+    "cap": "`/aws/bedrock-agentcore/`로 시작하는 로그 그룹 목록입니다. 스택을 지워도 로그 그룹은 남으니, 오늘 이 미션에서 만든 것만 `aws logs delete-log-group`으로 지웁니다. 다른 실습의 로그 그룹은 건드리지 않습니다."
+   },
+   {
+    "t": "지우지 않는 것",
+    "on": [
+     "cdk"
+    ],
+    "cap": "계정의 CDK bootstrap 스택(`CDKToolkit`)은 다른 CDK 배포가 함께 쓰므로 지우지 않습니다."
+   }
+  ]
+ },
+ "copy-r23-submit": {
+  "title": "05 붙여 넣으면: 출품 양식 3번과 5번에 R2-3 결과가 들어간다",
+  "nodes": [
+   {
+    "id": "rep",
+    "ic": "doc",
+    "lb": "reports/ 요약",
+    "sb": "업무 1: Claude Code"
+   },
+   {
+    "id": "app",
+    "ic": "doc",
+    "lb": "out-app.md 요약",
+    "sb": "업무 2: AgentCore harness"
+   },
+   {
+    "id": "shot",
+    "ic": "result",
+    "lb": "캡처",
+    "sb": "ARN · invoke 결과 · 정리 확인"
+   },
+   {
+    "id": "form",
+    "ic": "chat",
+    "lb": "출품 양식",
+    "sb": "3번 · 5번(선택)"
+   }
+  ],
+  "edges": [
+   "같은 지침과 SKILL.md",
+   "",
+   "적기"
+  ],
+  "steps": [
+   {
+    "t": "3번: 업무 두 가지",
+    "on": [
+     "rep",
+     "app",
+     "form"
+    ],
+    "edge": 0,
+    "cap": "하나는 Claude Code의 `my-kit:periodic-report`로 만든 `reports/` 리포트, 다른 하나는 같은 agent 지침과 `SKILL.md`를 쓴 AgentCore harness `capstone_app`의 `out-app.md`입니다. 각각 요약 한 줄과 화면 캡처를 적습니다."
+   },
+   {
+    "t": "5번(선택): AgentCore 앱",
+    "on": [
+     "shot",
+     "form"
+    ],
+    "edge": 2,
+    "cap": "harness ARN(계정 번호는 가려도 됨), invoke 결과 캡처, 04 정리 확인 출력 캡처를 적습니다. harness는 04에서 지웠으므로 ARN은 만들었던 것의 기록입니다."
+   },
+   {
+    "t": "캡처 점검",
+    "on": [
+     "shot"
+    ],
+    "ok": [
+     "form"
+    ],
+    "cap": "캡처에 키, 토큰, `~/.claude.json` 내용, 고객이나 거래를 특정할 수 있는 정보가 보이지 않는지 확인합니다."
    }
   ]
  }

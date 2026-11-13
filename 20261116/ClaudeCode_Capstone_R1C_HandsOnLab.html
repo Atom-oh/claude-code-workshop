@@ -844,12 +844,19 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <div class="paste-guide"></div>
 <div class="gl-list"></div>
 
+<div class="r1c-map" id="r1c-map">
+  <p class="body"><strong>무엇을 만드나요?</strong> MCP 서버를 직접 만들지 않고, 제공처가 공식으로 내놓은 서버 하나를 골라 이 폴더에 연결합니다. 그 서버의 읽기 도구만 쓰는 조사 agent <code class="inline">mcp-researcher</code>와 근거 검토 agent <code class="inline">evidence-reviewer</code>를 만들고, 붙을 수 있는 서버(<code class="inline">allowedMcpServers</code>), 부를 수 있는 도구(<code class="inline">mcp-guard.sh</code>), 부를 수 있는 호스트(<code class="inline">net-guard.sh</code>)를 묶는 가드레일을 세운 뒤 막히는지 직접 확인합니다. 아래 첫 그림은 00~04가 이어지는 순서와 남는 결과물, 둘째 그림은 두 subagent가 고른 서버로 하는 일입니다. 단계 번호를 눌러 넘겨 보세요.</p>
+  <div class="viz" data-viz="r1c-build"></div>
+  <div class="viz" data-viz="r1c-roles"></div>
+</div>
+
 <section class="task" id="task-00" data-min="20">
   <div class="task-head"><span class="task-num">00</span><h2>고르기와 연결</h2><span class="time-badge">20분</span></div>
   <p class="task-goal">MCP 서버 하나를 고르고, 작업 폴더에서 Claude Code에 연결해 도구가 불리는 것까지 확인합니다.</p>
   <p class="body">먼저 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다. 등록은 모두 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더 <code class="inline">~/claude-lab/capstone</code>에서 합니다. 범위를 주지 않으면 <span class="gl" data-gl="local">local 범위</span>(이 폴더에서만 보이고 <code class="inline">~/.claude.json</code>에 저장)로 등록됩니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
   <p class="body"><strong>왜 필요한가요:</strong> 01의 agent와 02의 가드레일이 모두 여기서 고른 서버 하나와 <code class="inline">r1c-choice.env</code>의 값을 기준으로 만들어집니다. 그래서 연결과 도구 호출이 되는 것을 먼저 확인합니다.</p>
   <div class="step-title"><span class="step-no">1</span>작업 폴더와 도구 점검</div>
+  <div class="viz" data-viz="copy-r1c-prep"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/claude-lab/capstone/.claude/agents ~/claude-lab/capstone/.claude/hooks
@@ -894,6 +901,7 @@ for c in jq npx uvx; do command -v "$c" &gt;/dev/null &amp;&amp; echo "OK   $c" 
   </details>
   <div class="step-title"><span class="step-no">3</span>고른 서버 하나를 연결</div>
   <p class="body">고른 서버의 블록 <strong>하나만</strong> 실행합니다. 각 블록은 먼저 <code class="inline">r1c-choice.env</code>(고른 서버 이름, 허용 목록 항목, 허용 호스트, agent에 줄 도구 이름)를 만들고 서버를 등록합니다. 이 파일에는 키를 넣지 않습니다. 01과 02의 블록이 이 파일을 읽어서 같은 값을 씁니다.</p>
+  <div class="viz" data-viz="copy-connect"></div>
   <details class="solution">
     <summary>alphavantage: 시세, 환율, 경제지표 (무료 키)</summary>
     <div class="sol-body">
@@ -1040,6 +1048,7 @@ claude mcp list</code></pre>
     </div>
   </details>
   <p class="body"><code class="inline">claude mcp list</code>에서 고른 서버 줄에 <code class="inline">✔ Connected</code>가 나와야 합니다. 이어서 세션에서 도구를 불러 봅니다.</p>
+  <div class="viz" data-viz="copy-r1c-first-call"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; claude</code></pre>
@@ -1063,6 +1072,7 @@ claude mcp list</code></pre>
   <p class="body">agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일입니다. <code class="inline">tools</code>에는 고른 서버의 도구를 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code>으로 적고, 적지 않은 도구(쓰기, Bash, 웹, 다른 MCP 서버)는 쓸 수 없습니다. 아래 블록은 <code class="inline">r1c-choice.env</code>의 <code class="inline">SRV</code>와 <code class="inline">TOOLS</code>를 채워 두 파일을 만듭니다. 이름과 기준은 예시이고, 같은 틀 안에서 고쳐도 됩니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 조사와 검토를 두 agent로 나누고 <code class="inline">tools</code>를 고른 서버의 읽기 도구로 좁히면, 각 agent는 그 밖의 도구를 쓸 수 없습니다. 이 두 agent가 R2에서 plugin에 그대로 들어갑니다.</p>
   <div class="step-title"><span class="step-no">1</span>조사 agent와 검토 agent</div>
+  <div class="viz" data-viz="copy-agents"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env &amp;&amp; echo "SRV=$SRV"
@@ -1122,6 +1132,7 @@ ls .claude/agents</code></pre>
   </tbody></table>
   <div class="step-title"><span class="step-no">2</span>첫 호출</div>
   <p class="body"><code class="inline">.claude/agents/</code>를 이번에 처음 만들었다면 세션을 다시 열어야 agent를 읽습니다(<code class="inline">/exit</code> 후 <code class="inline">claude</code>). 고른 서버에 맞는 질문 하나를 보냅니다.</p>
+  <div class="viz" data-viz="r1c-roles"></div>
   <table class="tbl"><thead><tr><th>서버</th><th>질문 예</th></tr></thead><tbody>
     <tr><td><code class="inline">alphavantage</code></td><td>최근 한 달 USD/KRW 환율 흐름과 미국 기준금리(FEDERAL_FUNDS_RATE) 최근 값을 정리해 주세요</td></tr>
     <tr><td><code class="inline">aws-knowledge</code></td><td>서울 리전(ap-northeast-2)에서 Amazon Bedrock을 쓸 수 있는지와, 금융권 보안 요건에 참고할 AWS 공식 문서를 정리해 주세요</td></tr>
@@ -1164,6 +1175,7 @@ ls .claude/agents</code></pre>
   <p class="body">허용 목록 항목은 원격 서버를 <code class="inline">serverUrl</code>(주소, <code class="inline">*</code> 가능)로, 로컬 서버를 <code class="inline">serverCommand</code>(명령과 인자 배열, 순서까지 정확히 같아야 함)로 맞춥니다. <code class="inline">serverName</code>(등록 이름)은 누구나 아무 이름이나 붙일 수 있어서 공식 문서도 보안 통제가 아니라고 적습니다. 그래서 이 랩은 주소와 명령으로 적습니다.</p>
   <div class="step-title"><span class="step-no">2</span>도구 훅: mcp-guard.sh</div>
   <p class="body">MCP 도구 호출(<code class="inline">mcp__</code>로 시작)마다 실행됩니다. 인자로 받은 서버의 도구만 통과시키고, 그 서버의 도구라도 이름에 create, update, delete, write, push, merge, add 같은 말이 든 쓰기 성격 도구는 막습니다. 이름 기준의 예시 패턴이니 고른 서버의 도구 이름을 보고 조정합니다.</p>
+  <div class="viz" data-viz="copy-mcp-guard"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -1193,6 +1205,7 @@ chmod +x .claude/hooks/mcp-guard.sh</code></pre>
   </div>
   <div class="step-title"><span class="step-no">3</span>호출 대상 훅: net-guard.sh</div>
   <p class="body">Bash 명령과 WebFetch의 입력에서 <code class="inline">http(s)://</code> 호스트를 뽑아, 인자로 받은 호스트가 아니면 막습니다. 인자는 <code class="inline">r1c-choice.env</code>의 <code class="inline">NET_ALLOW</code>(고른 서비스의 호스트, docs는 없음)입니다.</p>
+  <div class="viz" data-viz="copy-net-guard"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -1217,6 +1230,7 @@ EOF
 chmod +x .claude/hooks/net-guard.sh</code></pre>
   </div>
   <div class="step-title"><span class="step-no">4</span>스크립트 직접 시험</div>
+  <div class="viz" data-viz="copy-hook-test"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
@@ -1231,6 +1245,7 @@ echo '{"tool_input":{"command":"ls -l"}}' | $G/net-guard.sh $NET_ALLOW; echo "ex
   <p class="body">앞의 네 줄(목록 밖 서버의 도구, 고른 서버의 쓰기 성격 도구, 해석할 수 없는 입력, 다른 호스트 호출)은 <code class="inline">exit=2</code>와 <code class="inline">MCP:</code>, <code class="inline">NET:</code>로 시작하는 메시지가, 뒤의 두 줄(고른 서버의 읽기 도구, URL 없는 명령)은 <code class="inline">exit=0</code>이 나와야 합니다. 세 번째 줄에는 jq의 해석 오류 메시지가 함께 보입니다.</p>
   <div class="step-title"><span class="step-no">5</span>프로젝트 설정에 허용 목록, 훅, deny 규칙 등록</div>
   <p class="body"><code class="inline">r1c-choice.env</code>의 값으로 <code class="inline">.claude/settings.json</code>을 만듭니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(v2.1.295+, <a href="https://code.claude.com/docs/en/hooks">공식 훅 문서</a>, Ch2 Lab 2 TASK 02). <code class="inline">permissions.deny</code>의 <code class="inline">WebSearch</code>는 웹 검색 도구를 없애고, <code class="inline">Read(~/.claude.json)</code>는 키나 토큰이 저장된 사용자 설정 파일 읽기를 막습니다. <code class="inline">Read(~/.config/gh/**)</code>는 github 서버를 <code class="inline">gh</code>로 등록할 때 로그인 토큰이 든 폴더를 Claude의 파일 읽기 도구에서 막습니다. 두 규칙 모두 파일 읽기 도구에만 걸리고 Bash 명령은 막지 않으니, 키를 보여 주는 명령은 허락하지 않습니다. 다른 트랙에서 만든 <code class="inline">settings.json</code>이 있으면 덮어쓰게 되니, 한 트랙만 진행합니다.</p>
+  <div class="viz" data-viz="copy-settings"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
@@ -1297,6 +1312,7 @@ jq -n --arg srv "$SRV" --arg net "$NET_ALLOW" --arg h "$H" --argjson entry "$ALL
   <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>목록 밖 서버 연결 시도</div>
   <p class="body">Claude 세션 밖의 터미널에서, 허용 목록에 없는 원격 서버 하나와, docs 서버와 같은 패키지지만 <code class="inline">--read-only</code> 없이 홈 폴더 전체를 여는 로컬 서버 하나를 등록해 봅니다. 혹시 등록되더라도 작업 폴더의 <code class="inline">.mcp.json</code>에만 들어가도록 project 범위로 시도합니다.</p>
+  <div class="viz" data-viz="copy-not-listed"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
@@ -1316,6 +1332,7 @@ exit=1
   </div>
   <p class="body">메시지의 "enterprise policy"는 프로젝트 설정의 허용 목록에도 같은 문구가 쓰입니다. <code class="inline">claude mcp list</code>에는 고른 서버만 보여야 합니다(같은 주소의 서버를 사용자 범위나 plugin으로 따로 갖고 있다면 그 서버도 보입니다). 두 번째 시도처럼 같은 패키지라도 인자가 하나 다르면 막히는 것이 <code class="inline">serverCommand</code>의 정확 일치입니다. <code class="inline">.mcp.json</code>이 생겼다면 허용 목록이 동작하지 않은 것이니 아래 점검표를 봅니다(파일은 지웁니다).</p>
   <div class="step-title"><span class="step-no">2</span>세션에서 막혀야 하는 요청</div>
+  <div class="viz" data-viz="check-session"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; claude</code></pre>
@@ -1333,6 +1350,7 @@ exit=1
   <p class="body">고른 서버의 읽기 도구와 agent 경로는 그대로 통과해야 합니다. 설정에 등록한 PreToolUse 훅은 subagent의 도구 호출에도 실행되므로(공식 훅 문서), agent가 부르는 MCP 도구도 mcp-guard의 검사를 받습니다.</p>
   <div class="step-title"><span class="step-no">4</span>고장 난 훅도 막는지 (fail-closed)</div>
   <p class="body">세션을 <code class="inline">/exit</code>로 나온 뒤, net-guard.sh를 잠깐 치우고 Bash 도구 호출이 필요한 무해한 요청을 보냅니다. <code class="inline">ls</code>는 원래 허락 없이 도는 읽기 전용 명령이라, 막힌다면 훅의 <code class="inline">onFailure</code> 때문입니다. 마지막 줄에서 반드시 되돌립니다.</p>
+  <div class="viz" data-viz="copy-failclosed"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -1364,6 +1382,7 @@ ls .claude/hooks</code></pre>
   <p class="task-goal">CLAUDE.md를 짧게 정리하고, 작업 폴더에 키나 토큰이 없는지 확인한 뒤 쇼케이스 1 공유 문구를 준비합니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> R2는 이 폴더를 그대로 plugin으로 묶습니다. 키나 토큰이 어떤 파일에 남아 있으면 plugin에 따라 들어가므로, 묶기 전에 확인합니다.</p>
   <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게, 그리고 키 검사</div>
+  <div class="viz" data-viz="copy-claudemd"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone &amp;&amp; . ./r1c-choice.env
@@ -1787,6 +1806,1435 @@ agents: mcp-researcher(조사와 출처), evidence-reviewer(근거 검토, 읽�
      }
     },
     "cap": "03 Step 4처럼 `net-guard.sh`를 치우면 훅이 시작조차 못 합니다. 이때도 `onFailure`: `block`이 차단으로 끝냅니다. 이것이 fail-closed입니다. 확인 뒤 스크립트를 바로 되돌립니다."
+   }
+  ]
+ },
+ "r1c-build": {
+  "title": "R1-C 한눈에: 무엇을 만들고 00~04가 어떻게 이어지나",
+  "nodes": [
+   {
+    "id": "c00",
+    "ic": "plug",
+    "lb": "00 고르고 연결",
+    "sb": "MCP 서버 하나 · r1c-choice.env"
+   },
+   {
+    "id": "c01",
+    "ic": "bot",
+    "lb": "01 agent 2개",
+    "sb": "조사 · 근거 검토"
+   },
+   {
+    "id": "c02",
+    "ic": "shield",
+    "lb": "02 가드레일",
+    "sb": "허용 목록 · mcp-guard · net-guard"
+   },
+   {
+    "id": "c03",
+    "ic": "result",
+    "lb": "03 막히는 것 확인",
+    "sb": "등록 차단 · NET 차단 · 통과"
+   },
+   {
+    "id": "c04",
+    "ic": "folder",
+    "lb": "04 R1 정리",
+    "sb": "CLAUDE.md · 키 검사"
+   }
+  ],
+  "edges": [
+   "SRV · TOOLS",
+   "같은 env 값",
+   "세션 다시 열기",
+   "정리"
+  ],
+  "side": [
+   {
+    "id": "s-srv",
+    "ic": "plug",
+    "lb": "고른 MCP 서버",
+    "sb": "추천 6개 중 하나 또는 직접 고름"
+   },
+   {
+    "id": "s-env",
+    "ic": "doc",
+    "lb": "r1c-choice.env",
+    "sb": "SRV · ALLOW_ENTRY · NET_ALLOW · TOOLS (키 없음)"
+   },
+   {
+    "id": "s-rs",
+    "ic": "bot",
+    "lb": "mcp-researcher",
+    "sb": "조사, 답마다 출처"
+   },
+   {
+    "id": "s-ev",
+    "ic": "lock",
+    "lb": "evidence-reviewer (읽기 전용)",
+    "sb": "근거 재확인, PASS/WARN/FAIL"
+   },
+   {
+    "id": "s-g",
+    "ic": "shield",
+    "lb": "허용 목록 · mcp-guard · net-guard",
+    "sb": "서버 · 도구 · 호스트를 묶음"
+   },
+   {
+    "id": "s-out",
+    "ic": "folder",
+    "lb": "~/claude-lab/capstone/",
+    "sb": "agents · hooks · settings.json · CLAUDE.md → R2 재료"
+   }
+  ],
+  "steps": [
+   {
+    "t": "00 고르기와 연결",
+    "on": [
+     "c00",
+     "s-srv",
+     "s-env"
+    ],
+    "chip": "r1c-choice.env",
+    "cap": "추천 표에서 서버 하나를 골라 그 블록만 실행합니다. 블록이 `r1c-choice.env` 네 줄을 만들고 `claude mcp add`로 이 폴더에 등록합니다. 키나 토큰이 필요한 서버는 그 값을 화면과 셸 기록에 남기지 않고 `~/.claude.json`에만 넣습니다."
+   },
+   {
+    "t": "01 자기 agent 2개",
+    "on": [
+     "c01",
+     "s-rs",
+     "s-ev"
+    ],
+    "edge": 0,
+    "chip": "TOOLS",
+    "cap": "`r1c-choice.env`의 `SRV`와 `TOOLS`를 채워 조사 agent와 검토 agent를 만듭니다. `tools`가 고른 서버의 읽기 도구와 `Read`(검토자는 `Grep`도)뿐이라 쓰기, Bash, 웹, 다른 MCP 서버는 쓸 수 없습니다."
+   },
+   {
+    "t": "02 가드레일",
+    "on": [
+     "c02",
+     "s-g"
+    ],
+    "edge": 1,
+    "chip": "settings.json",
+    "cap": "`allowedMcpServers`는 어떤 서버가 연결될 수 있는지, `mcp-guard.sh`는 그 서버의 어떤 도구를 부를 수 있는지, `net-guard.sh`는 Bash와 WebFetch가 어느 호스트를 부를 수 있는지 정합니다. 모두 fail-closed입니다."
+   },
+   {
+    "t": "03 막히는 것 확인",
+    "on": [
+     "c03",
+     "c02"
+    ],
+    "edge": 2,
+    "cap": "목록 밖 서버 두 개의 등록은 `not allowed by enterprise policy`로, `curl https://example.com`은 `NET:`으로 막히고, `mcp-researcher` 요청은 통과해야 합니다. 훅 스크립트를 치워도 막히면 fail-closed입니다."
+   },
+   {
+    "t": "04 R1 정리",
+    "on": [
+     "c04"
+    ],
+    "ok": [
+     "s-out",
+     "c01",
+     "c02"
+    ],
+    "edge": 3,
+    "cap": "`CLAUDE.md`를 짧게 쓰고 작업 폴더에 키나 토큰이 없는지 검사합니다. agent 2개, 훅 2개, `settings.json`, `CLAUDE.md`, `r1c-choice.env`가 R2에서 plugin으로 묶을 재료입니다."
+   }
+  ]
+ },
+ "r1c-roles": {
+  "title": "01의 첫 호출: 조사 agent와 검토 agent가 고른 서버로 무엇을 하나",
+  "nodes": [
+   {
+    "id": "you",
+    "ic": "user",
+    "lb": "나",
+    "sb": "Claude 세션 입력"
+   },
+   {
+    "id": "main",
+    "ic": "chat",
+    "lb": "메인 Claude",
+    "sb": "일을 나눠 맡김"
+   },
+   {
+    "id": "agent",
+    "ic": "bot",
+    "lb": "subagent",
+    "sb": "차례로 둘"
+   },
+   {
+    "id": "srv",
+    "ic": "plug",
+    "lb": "고른 MCP 서버",
+    "sb": "TOOLS의 읽기 도구"
+   },
+   {
+    "id": "out",
+    "ic": "result",
+    "lb": "결과",
+    "sb": "근거 표 · 판정"
+   }
+  ],
+  "edges": [
+   "요청",
+   "Agent 호출",
+   "MCP 도구",
+   "응답"
+  ],
+  "side": [
+   {
+    "id": "s-env",
+    "ic": "doc",
+    "lb": "r1c-choice.env",
+    "sb": "SRV · TOOLS가 agent 파일에 채워짐"
+   },
+   {
+    "id": "s-no",
+    "ic": "lock",
+    "lb": "쓰지 않는 것",
+    "sb": "쓰기 · Bash · 웹 · 다른 MCP 서버"
+   }
+  ],
+  "steps": [
+   {
+    "t": "요청",
+    "on": [
+     "you",
+     "main"
+    ],
+    "edge": 0,
+    "cap": "TASK 01 Step 2의 입력입니다. 표에서 고른 서버에 맞는 질문을 넣습니다. 메인 Claude가 요청에 적힌 이름을 보고 `mcp-researcher`부터 부릅니다."
+   },
+   {
+    "t": "조사",
+    "on": [
+     "main",
+     "agent",
+     "srv"
+    ],
+    "edge": [
+     1,
+     2
+    ],
+    "chip": "mcp__<서버>__<도구>",
+    "set": {
+     "agent": {
+      "lb": "mcp-researcher",
+      "sb": "조사 담당"
+     }
+    },
+    "cap": "`mcp-researcher`는 고른 서버의 도구만으로 찾고, 찾은 내용마다 출처(문서 제목과 주소, 파일 경로, 데이터 이름과 기준일)를 남깁니다. 도구가 돌려준 내용에 없는 사실은 쓰지 않습니다."
+   },
+   {
+    "t": "조사 결과",
+    "on": [
+     "agent"
+    ],
+    "ok": [
+     "out"
+    ],
+    "edge": 3,
+    "set": {
+     "agent": {
+      "lb": "mcp-researcher",
+      "sb": "조사 담당"
+     },
+     "out": {
+      "lb": "조사 결과",
+      "sb": "결론 · 근거 표 · 확인 못 한 것"
+     }
+    },
+    "cap": "결론을 세 줄 이내로 먼저 쓰고, 근거 표(주장, 출처, 기준일)와 확인하지 못한 것을 붙입니다."
+   },
+   {
+    "t": "근거 검토",
+    "on": [
+     "main",
+     "agent",
+     "srv"
+    ],
+    "edge": [
+     1,
+     2
+    ],
+    "chip": "mcp__<서버>__<도구>",
+    "set": {
+     "agent": {
+      "lb": "evidence-reviewer",
+      "sb": "읽기 전용 검토"
+     }
+    },
+    "cap": "이어서 `evidence-reviewer`가 주장마다 출처를 같은 서버로 다시 찾아 확인, 불일치, 출처 없음 중 하나로 판정합니다. 새로운 조사는 하지 않습니다."
+   },
+   {
+    "t": "판정",
+    "on": [
+     "agent"
+    ],
+    "ok": [
+     "out"
+    ],
+    "edge": 3,
+    "set": {
+     "agent": {
+      "lb": "evidence-reviewer",
+      "sb": "읽기 전용 검토"
+     },
+     "out": {
+      "lb": "PASS / WARN / FAIL",
+      "sb": "마지막 줄"
+     }
+    },
+    "cap": "검토 결과의 마지막 줄에 PASS(모두 확인), WARN(출처 없음이나 오래된 수치), FAIL(불일치 또는 민감 정보) 중 하나가 나오면 됩니다."
+   },
+   {
+    "t": "쓰지 않는 것",
+    "on": [
+     "s-env"
+    ],
+    "bad": [
+     "s-no"
+    ],
+    "cap": "두 agent의 `tools`에 없는 도구(쓰기, Bash, 웹, 다른 MCP 서버)는 쓸 수 없습니다. 저장이 필요하면 메인이 합니다. alphavantage는 하루 25회 한도가 있어 질문을 좁힙니다."
+   }
+  ]
+ },
+ "copy-r1c-prep": {
+  "title": "00 Step 1 붙여 넣으면: 작업 폴더가 생기고 필요한 도구를 점검한다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "mkdir · claude --version"
+   },
+   {
+    "id": "dir",
+    "ic": "folder",
+    "lb": "~/claude-lab/capstone/",
+    "sb": ".claude/agents · .claude/hooks"
+   },
+   {
+    "id": "chk",
+    "ic": "result",
+    "lb": "OK / 없음",
+    "sb": "jq · npx · uvx 한 줄씩"
+   }
+  ],
+  "edges": [
+   "mkdir -p",
+   "command -v"
+  ],
+  "side": [
+   {
+    "id": "jq",
+    "ic": "shield",
+    "lb": "jq",
+    "sb": "02 가드레일에 꼭 필요"
+   },
+   {
+    "id": "npx",
+    "ic": "terminal",
+    "lb": "npx (Node.js)",
+    "sb": "docs 서버에만"
+   },
+   {
+    "id": "uvx",
+    "ic": "terminal",
+    "lb": "uvx",
+    "sb": "alphavantage 서버에만"
+   }
+  ],
+  "steps": [
+   {
+    "t": "폴더 만들기",
+    "on": [
+     "term",
+     "dir"
+    ],
+    "edge": 0,
+    "cap": "`mkdir -p`로 작업 폴더와 agent, 훅을 둘 `.claude/agents`, `.claude/hooks`를 만들고 그 폴더로 들어갑니다. 이미 있으면 그대로 둡니다."
+   },
+   {
+    "t": "버전 보기",
+    "on": [
+     "term"
+    ],
+    "cap": "`claude --version`이 Claude Code 버전을 보여 줍니다. 02에서 쓰는 `onFailure: block`은 v2.1.295 이상에서 동작합니다."
+   },
+   {
+    "t": "도구 점검",
+    "on": [
+     "chk"
+    ],
+    "ok": [
+     "jq"
+    ],
+    "edge": 1,
+    "cap": "세 도구마다 있으면 `OK   jq`, 없으면 `없음 uvx`처럼 한 줄씩 나옵니다. `jq`는 꼭 있어야 하고, `npx`와 `uvx`는 고를 서버에 따라 필요합니다."
+   },
+   {
+    "t": "uvx가 없으면",
+    "on": [
+     "uvx"
+    ],
+    "cap": "alphavantage를 고르는데 `없음 uvx`가 나오면 바로 아래 블록으로 uv를 설치합니다. 그 아래 그림이 무엇을 내려받는지 보여 줍니다."
+   }
+  ]
+ },
+ "copy-connect": {
+  "title": "00 Step 3 붙여 넣으면: r1c-choice.env가 생기고 고른 서버가 등록된다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "고른 서버의 블록 하나"
+   },
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "r1c-choice.env",
+    "sb": "SRV · ALLOW_ENTRY · NET_ALLOW · TOOLS"
+   },
+   {
+    "id": "cfg",
+    "ic": "doc",
+    "lb": "~/.claude.json",
+    "sb": "local 범위 등록"
+   },
+   {
+    "id": "list",
+    "ic": "result",
+    "lb": "claude mcp list",
+    "sb": "✔ Connected"
+   }
+  ],
+  "edges": [
+   "값 파일",
+   "등록",
+   "확인"
+  ],
+  "side": [
+   {
+    "id": "sec",
+    "ic": "key",
+    "lb": "키 · 토큰",
+    "sb": "read -rs로 받아 --env나 -H로만"
+   },
+   {
+    "id": "rem",
+    "ic": "globe",
+    "lb": "원격 HTTP",
+    "sb": "aws-knowledge · microsoft-learn · deepwiki · github"
+   },
+   {
+    "id": "loc",
+    "ic": "terminal",
+    "lb": "로컬 stdio",
+    "sb": "alphavantage (uvx) · docs (npx)"
+   },
+   {
+    "id": "gh",
+    "ic": "user",
+    "lb": "github: gh 로그인",
+    "sb": "브라우저 로그인 토큰, 8시간 만료"
+   }
+  ],
+  "steps": [
+   {
+    "t": "값 파일 만들기",
+    "on": [
+     "term",
+     "env"
+    ],
+    "edge": 0,
+    "chip": "r1c-choice.env",
+    "cap": "블록 첫 부분이 `r1c-choice.env` 네 줄을 씁니다. 서버 이름 `SRV`, 허용 목록 항목 `ALLOW_ENTRY`, 허용 호스트 `NET_ALLOW`, agent에 줄 도구 이름 `TOOLS`입니다. 키는 넣지 않습니다. 01과 02의 블록이 이 파일을 읽습니다."
+   },
+   {
+    "t": "키 · 토큰 받기",
+    "on": [
+     "sec"
+    ],
+    "cap": "alphavantage와 github(기본 블록)는 `read -rs`로 키나 토큰을 받습니다. 화면과 셸 기록에 남지 않고, 등록 뒤 `unset`으로 지웁니다. 나머지 서버는 인증이 없어 이 줄이 없습니다."
+   },
+   {
+    "t": "등록",
+    "on": [
+     "env",
+     "cfg",
+     "rem",
+     "loc"
+    ],
+    "edge": 1,
+    "cap": "`claude mcp add`가 서버를 이 폴더 전용(local 범위)으로 `~/.claude.json`에 적습니다. 원격 서버는 `--transport http`와 주소, 로컬 서버는 `--transport stdio`와 `--` 뒤의 실행 명령입니다. 키는 `--env`, 토큰은 `-H` 헤더로 함께 저장됩니다."
+   },
+   {
+    "t": "연결 확인",
+    "on": [
+     "cfg"
+    ],
+    "ok": [
+     "list"
+    ],
+    "edge": 2,
+    "cap": "`claude mcp list`에서 고른 서버 줄에 `✔ Connected`가 나오면 됩니다. 수업 당일 연결이 안 되면 표의 다른 서버로 바꿉니다."
+   },
+   {
+    "t": "microsoft-learn만",
+    "on": [
+     "cfg",
+     "rem"
+    ],
+    "cap": "microsoft-learn을 골랐고 Setup에서 `microsoft-docs` plugin을 설치했다면, 이 폴더에서만 그 plugin을 끄는 블록(`claude plugin disable … --scope local`)을 한 번 더 실행합니다."
+   },
+   {
+    "t": "github: gh 로그인 대안",
+    "on": [
+     "gh",
+     "cfg"
+    ],
+    "cap": "토큰을 만들 시간이 없으면 기본 블록 대신 `gh auth login`으로 브라우저 로그인을 하고 그 토큰을 헤더에 넣는 블록을 씁니다. 두 블록 중 하나만 실행하고, 실습이 끝나면 `gh auth logout`을 합니다."
+   }
+  ]
+ },
+ "copy-r1c-first-call": {
+  "title": "00 Step 3 이어서 붙여 넣으면: 세션에서 고른 서버의 도구가 처음 불린다",
+  "nodes": [
+   {
+    "id": "you",
+    "ic": "chat",
+    "lb": "Claude 세션 입력",
+    "sb": "도구 목록 + 한 번 호출"
+   },
+   {
+    "id": "cl",
+    "ic": "bot",
+    "lb": "Claude",
+    "sb": "읽기 도구 하나를 고름"
+   },
+   {
+    "id": "srv",
+    "ic": "plug",
+    "lb": "고른 MCP 서버",
+    "sb": "mcp__<서버>__<도구>"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "도구 목록 · 답",
+    "sb": "간단한 질문의 결과"
+   }
+  ],
+  "edges": [
+   "요청",
+   "MCP 도구 호출",
+   "응답"
+  ],
+  "side": [
+   {
+    "id": "mcp",
+    "ic": "terminal",
+    "lb": "/mcp",
+    "sb": "서버 상태와 도구 이름"
+   },
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "r1c-choice.env의 TOOLS",
+    "sb": "이름이 다르면 고침"
+   }
+  ],
+  "steps": [
+   {
+    "t": "세션 열기",
+    "on": [
+     "you"
+    ],
+    "cap": "`cd ~/claude-lab/capstone && claude`. local 범위로 등록했으니 이 폴더에서 열어야 고른 서버가 보입니다."
+   },
+   {
+    "t": "요청과 허락",
+    "on": [
+     "you",
+     "cl",
+     "srv"
+    ],
+    "edge": [
+     0,
+     1
+    ],
+    "cap": "도구 목록을 보여 주고 읽기 도구 하나를 간단히 불러 달라는 요청입니다. 처음 부를 때 도구 사용 허락을 묻습니다."
+   },
+   {
+    "t": "결과",
+    "ok": [
+     "res"
+    ],
+    "edge": 2,
+    "cap": "도구 목록과 한 번의 호출 결과가 나오면 00 CHECKPOINT의 둘째 줄이 채워집니다."
+   },
+   {
+    "t": "이름 맞추기",
+    "on": [
+     "mcp",
+     "env"
+    ],
+    "cap": "`/mcp`에서 서버 상태와 도구 이름을 보고, `r1c-choice.env`의 `TOOLS`와 다르면 파일을 고칩니다. 01의 agent가 이 이름을 그대로 씁니다."
+   }
+  ]
+ },
+ "copy-agents": {
+  "title": "01 Step 1 붙여 넣으면: r1c-choice.env 값으로 agent 파일 두 개가 만들어진다",
+  "nodes": [
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "r1c-choice.env",
+    "sb": "SRV · TOOLS"
+   },
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "cat > … << EOF"
+   },
+   {
+    "id": "rs",
+    "ic": "bot",
+    "lb": "mcp-researcher.md",
+    "sb": "tools: TOOLS, Read"
+   },
+   {
+    "id": "ev",
+    "ic": "lock",
+    "lb": "evidence-reviewer.md",
+    "sb": "tools: TOOLS, Read, Grep"
+   },
+   {
+    "id": "ls",
+    "ic": "result",
+    "lb": "ls .claude/agents",
+    "sb": "파일 두 개"
+   }
+  ],
+  "edges": [
+   "값 읽기",
+   "값 채움",
+   "",
+   "확인"
+  ],
+  "steps": [
+   {
+    "t": "값 읽기",
+    "on": [
+     "env",
+     "term"
+    ],
+    "edge": 0,
+    "chip": "SRV · TOOLS",
+    "cap": "첫 줄의 `. ./r1c-choice.env`가 00에서 만든 값을 셸로 읽고 `SRV=…`를 보여 줍니다. 고른 서버 이름이 맞는지 여기서 봅니다."
+   },
+   {
+    "t": "조사 agent",
+    "on": [
+     "term",
+     "rs"
+    ],
+    "edge": 1,
+    "chip": "mcp-researcher.md",
+    "cap": "`<< EOF`에 따옴표가 없어서 본문의 `${SRV}`와 `${TOOLS}`가 실제 값으로 바뀌어 파일에 들어갑니다. `mcp-researcher`의 `tools`는 고른 서버의 읽기 도구와 `Read`이고, 답마다 출처를 붙이게 했습니다."
+   },
+   {
+    "t": "검토 agent",
+    "on": [
+     "ev"
+    ],
+    "cap": "`evidence-reviewer`는 `Grep`이 더해진 읽기 전용 검토자입니다. 주장마다 같은 서버로 근거를 다시 찾아 확인, 불일치, 출처 없음으로 판정하고 마지막 줄에 PASS, WARN, FAIL을 적습니다."
+   },
+   {
+    "t": "확인",
+    "ok": [
+     "ls"
+    ],
+    "edge": 3,
+    "cap": "`ls .claude/agents`에 두 파일이 보이면 됩니다. Step 2에서 세션을 다시 열면(`/exit` 후 `claude`) 두 agent를 부를 수 있습니다."
+   }
+  ]
+ },
+ "copy-mcp-guard": {
+  "title": "02 Step 2 붙여 넣으면: mcp-guard.sh가 고른 서버의 읽기 도구만 통과시킨다",
+  "nodes": [
+   {
+    "id": "in",
+    "ic": "chat",
+    "lb": "MCP 도구 호출",
+    "sb": "tool_name: mcp__…"
+   },
+   {
+    "id": "mg",
+    "ic": "shield",
+    "lb": "mcp-guard.sh <SRV>",
+    "sb": "도구 이름으로 판정"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "판정",
+    "sb": "exit 0 / exit 2"
+   }
+  ],
+  "edges": [
+   "stdin",
+   "판정"
+  ],
+  "side": [
+   {
+    "id": "a",
+    "ic": "plug",
+    "lb": "고른 서버의 읽기 도구",
+    "sb": "exit 0"
+   },
+   {
+    "id": "b",
+    "ic": "lock",
+    "lb": "고른 서버의 쓰기 성격 도구",
+    "sb": "create · delete … → exit 2"
+   },
+   {
+    "id": "c",
+    "ic": "lock",
+    "lb": "다른 서버의 도구",
+    "sb": "mcp__other-server__… → exit 2"
+   },
+   {
+    "id": "d",
+    "ic": "terminal",
+    "lb": "MCP가 아닌 도구",
+    "sb": "관여하지 않음 → exit 0"
+   }
+  ],
+  "steps": [
+   {
+    "t": "스크립트 만들기",
+    "on": [
+     "mg"
+    ],
+    "cap": "`mcp-guard.sh`를 쓰고 실행 권한을 줍니다. 허용할 서버 이름은 스크립트 안이 아니라 Step 5의 설정에서 인자(`mcp-guard.sh <SRV>`)로 넘깁니다."
+   },
+   {
+    "t": "오류 경로",
+    "on": [
+     "in",
+     "mg"
+    ],
+    "edge": 0,
+    "cap": "`jq`가 없거나, 인자가 없거나, `tool_name`을 읽지 못하면 `exit 2`(차단)입니다. 고장 나도 통과시키지 않는 fail-closed입니다."
+   },
+   {
+    "t": "MCP가 아닌 도구",
+    "ok": [
+     "d"
+    ],
+    "cap": "도구 이름이 `mcp__`로 시작하지 않으면 바로 `exit 0`입니다. Bash와 WebFetch는 Step 3의 net-guard가 맡습니다."
+   },
+   {
+    "t": "고른 서버의 읽기 도구",
+    "ok": [
+     "a"
+    ],
+    "edge": 1,
+    "cap": "도구 이름이 `mcp__<SRV>__`로 시작하고 쓰기 성격의 말이 없으면 `exit 0`으로 통과합니다."
+   },
+   {
+    "t": "쓰기 성격 도구",
+    "bad": [
+     "b"
+    ],
+    "cap": "고른 서버의 도구라도 이름에 create, update, delete, remove, write, edit, move, push, merge, add가 들어 있으면 `MCP: 쓰기 성격 도구(…)는 차단됩니다`입니다. 이름 기준의 예시 패턴이니 고른 서버의 도구 이름을 보고 조정합니다."
+   },
+   {
+    "t": "다른 서버의 도구",
+    "bad": [
+     "c"
+    ],
+    "cap": "어느 허용 서버로도 시작하지 않으면 `MCP: 허용 목록 밖의 MCP 도구(…)`로 `exit 2`입니다."
+   }
+  ]
+ },
+ "copy-net-guard": {
+  "title": "02 Step 3 붙여 넣으면: net-guard.sh가 고른 서비스 밖 호출을 막는다",
+  "nodes": [
+   {
+    "id": "in",
+    "ic": "chat",
+    "lb": "Bash · WebFetch 입력",
+    "sb": "명령, URL"
+   },
+   {
+    "id": "ng",
+    "ic": "shield",
+    "lb": "net-guard.sh <NET_ALLOW>",
+    "sb": "http(s):// 호스트 추출"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "판정",
+    "sb": "exit 0 / exit 2"
+   }
+  ],
+  "edges": [
+   "stdin",
+   "호스트 비교"
+  ],
+  "side": [
+   {
+    "id": "a",
+    "ic": "globe",
+    "lb": "NET_ALLOW의 호스트",
+    "sb": "예: knowledge-mcp.global.api.aws"
+   },
+   {
+    "id": "b",
+    "ic": "globe",
+    "lb": "그 밖의 호스트",
+    "sb": "예: example.com → exit 2"
+   },
+   {
+    "id": "c",
+    "ic": "terminal",
+    "lb": "URL 없는 명령",
+    "sb": "예: ls -l → 통과"
+   },
+   {
+    "id": "dd",
+    "ic": "folder",
+    "lb": "docs를 고른 경우",
+    "sb": "허용 호스트 없음"
+   }
+  ],
+  "steps": [
+   {
+    "t": "스크립트 만들기",
+    "on": [
+     "ng"
+    ],
+    "cap": "`net-guard.sh`를 쓰고 실행 권한을 줍니다. 허용할 호스트는 Step 5의 설정에서 인자(`r1c-choice.env`의 `NET_ALLOW`)로 넘깁니다."
+   },
+   {
+    "t": "호스트 뽑기",
+    "on": [
+     "in",
+     "ng"
+    ],
+    "edge": 0,
+    "chip": "https://…",
+    "cap": "입력의 문자열에서 `http://`나 `https://`로 시작하는 주소를 찾아 호스트만 남깁니다. 앞의 사용자 정보(`…@`)와 포트는 떼고 소문자로 바꿉니다."
+   },
+   {
+    "t": "허용 호스트",
+    "ok": [
+     "a"
+    ],
+    "edge": 1,
+    "cap": "호스트가 인자로 받은 호스트 가운데 하나면 통과입니다."
+   },
+   {
+    "t": "다른 호스트",
+    "bad": [
+     "b"
+    ],
+    "cap": "하나라도 다른 호스트가 있으면 `NET: 허용되지 않은 호출 대상(…)`으로 `exit 2`입니다."
+   },
+   {
+    "t": "URL 없는 명령과 docs",
+    "ok": [
+     "c"
+    ],
+    "bad": [
+     "dd"
+    ],
+    "cap": "주소가 없는 명령은 통과합니다. docs를 골랐다면 `NET_ALLOW`가 비어 있어 주소가 든 Bash, WebFetch 호출은 모두 막힙니다."
+   }
+  ]
+ },
+ "copy-hook-test": {
+  "title": "02 Step 4 붙여 넣으면: 두 훅에 시험 입력 6줄을 넣어 본다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": "echo '{…}' | 훅"
+   },
+   {
+    "id": "hooks",
+    "ic": "shield",
+    "lb": "mcp-guard · net-guard",
+    "sb": "SRV, NET_ALLOW를 인자로"
+   },
+   {
+    "id": "test",
+    "ic": "result",
+    "lb": "exit 값",
+    "sb": "줄마다 exit=0 또는 2"
+   }
+  ],
+  "edges": [
+   "가짜 입력",
+   "끝 코드"
+  ],
+  "side": [
+   {
+    "id": "t1",
+    "ic": "lock",
+    "lb": "mcp__other-server__search",
+    "sb": "mcp-guard → exit=2"
+   },
+   {
+    "id": "t2",
+    "ic": "lock",
+    "lb": "mcp__<SRV>__create_item",
+    "sb": "mcp-guard → exit=2"
+   },
+   {
+    "id": "t3",
+    "ic": "doc",
+    "lb": "not json",
+    "sb": "mcp-guard → exit=2"
+   },
+   {
+    "id": "t4",
+    "ic": "globe",
+    "lb": "curl -s https://example.com/",
+    "sb": "net-guard → exit=2"
+   },
+   {
+    "id": "t5",
+    "ic": "plug",
+    "lb": "mcp__<SRV>__search",
+    "sb": "mcp-guard → exit=0"
+   },
+   {
+    "id": "t6",
+    "ic": "terminal",
+    "lb": "ls -l",
+    "sb": "net-guard → exit=0"
+   }
+  ],
+  "steps": [
+   {
+    "t": "직접 실행",
+    "on": [
+     "term",
+     "hooks"
+    ],
+    "edge": 0,
+    "cap": "첫 줄이 `r1c-choice.env`를 읽어 `SRV`와 `NET_ALLOW`를 준비합니다. 각 줄은 가짜 훅 입력(JSON)을 스크립트에 넣고 `exit=` 값을 보여 줍니다. Claude Code 없이 스크립트만 시험합니다."
+   },
+   {
+    "t": "막혀야 하는 4줄",
+    "on": [
+     "test"
+    ],
+    "bad": [
+     "t1",
+     "t2",
+     "t3",
+     "t4"
+    ],
+    "edge": 1,
+    "cap": "목록 밖 서버의 도구, 고른 서버의 쓰기 성격 도구, 해석할 수 없는 입력, 다른 호스트 호출은 `exit=2`와 `MCP:`나 `NET:` 메시지가 나와야 합니다. 셋째 줄에는 jq의 해석 오류 메시지도 함께 보입니다."
+   },
+   {
+    "t": "통과해야 하는 2줄",
+    "on": [
+     "test"
+    ],
+    "ok": [
+     "t5",
+     "t6"
+    ],
+    "cap": "고른 서버의 읽기 도구와 URL 없는 명령은 `exit=0`이어야 합니다."
+   }
+  ]
+ },
+ "copy-settings": {
+  "title": "02 Step 5 붙여 넣으면: jq가 r1c-choice.env 값으로 settings.json을 만든다",
+  "nodes": [
+   {
+    "id": "env",
+    "ic": "doc",
+    "lb": "r1c-choice.env",
+    "sb": "SRV · NET_ALLOW · ALLOW_ENTRY"
+   },
+   {
+    "id": "jq",
+    "ic": "terminal",
+    "lb": "jq -n",
+    "sb": "값을 JSON에 채움"
+   },
+   {
+    "id": "set",
+    "ic": "doc",
+    "lb": "settings.json",
+    "sb": ".claude/ 안 · cat으로 출력"
+   },
+   {
+    "id": "ok",
+    "ic": "result",
+    "lb": "settings OK",
+    "sb": "마지막 줄"
+   }
+  ],
+  "edges": [
+   "값 넘기기",
+   "파일로 저장",
+   "확인"
+  ],
+  "side": [
+   {
+    "id": "al",
+    "ic": "plug",
+    "lb": "allowedMcpServers",
+    "sb": "[ALLOW_ENTRY] 고른 서버 하나"
+   },
+   {
+    "id": "mg",
+    "ic": "shield",
+    "lb": "PreToolUse mcp__.*",
+    "sb": "mcp-guard.sh <SRV>"
+   },
+   {
+    "id": "ng",
+    "ic": "shield",
+    "lb": "PreToolUse Bash|WebFetch",
+    "sb": "net-guard.sh <NET_ALLOW>"
+   },
+   {
+    "id": "dn",
+    "ic": "lock",
+    "lb": "permissions.deny",
+    "sb": "WebSearch · ~/.claude.json · ~/.config/gh/"
+   },
+   {
+    "id": "fl",
+    "ic": "key",
+    "lb": "onFailure: block",
+    "sb": "스크립트가 없거나 멈춰도 차단"
+   }
+  ],
+  "steps": [
+   {
+    "t": "값 채우기",
+    "on": [
+     "env",
+     "jq"
+    ],
+    "edge": 0,
+    "cap": "`. ./r1c-choice.env`로 값을 읽고, `jq -n`이 `--arg`(문자열)와 `--argjson`(`ALLOW_ENTRY`는 JSON 그대로)으로 받아 설정을 조립합니다. 다른 트랙에서 만든 `settings.json`이 있으면 덮어씁니다."
+   },
+   {
+    "t": "허용 목록",
+    "on": [
+     "set",
+     "al"
+    ],
+    "edge": 1,
+    "chip": "settings.json",
+    "cap": "`allowedMcpServers`에 고른 서버의 항목 하나만 들어갑니다. 원격 서버는 `serverUrl`, 로컬 서버는 `serverCommand`입니다. 세션을 다시 열면 이 폴더에서는 주소나 명령이 이 항목과 같은 서버만 연결됩니다."
+   },
+   {
+    "t": "훅 두 개",
+    "on": [
+     "mg",
+     "ng",
+     "fl"
+    ],
+    "cap": "MCP 도구 호출(`mcp__.*`)마다 `mcp-guard.sh <SRV>`가, Bash와 WebFetch마다 `net-guard.sh <NET_ALLOW>`가 돕니다. 둘 다 `onFailure: block`입니다."
+   },
+   {
+    "t": "deny 규칙",
+    "on": [
+     "dn"
+    ],
+    "cap": "`WebSearch`를 없애고, 키나 토큰이 든 `~/.claude.json`과 `~/.config/gh/` 읽기를 Claude의 파일 읽기 도구에서 막습니다. Bash 명령은 막지 않으니 키를 보여 주는 명령은 허락하지 않습니다."
+   },
+   {
+    "t": "확인",
+    "ok": [
+     "ok"
+    ],
+    "edge": 2,
+    "cap": "`cat`이 만든 설정을 화면에 보여 주고 마지막에 `settings OK`가 나옵니다. `allowedMcpServers`에 고른 서버 하나만 있는지 봅니다."
+   }
+  ]
+ },
+ "copy-not-listed": {
+  "title": "03 Step 1 붙여 넣으면: 허용 목록 밖 서버 두 개의 등록이 막힌다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "claude mcp add",
+    "sb": "--scope project 로 시도"
+   },
+   {
+    "id": "al",
+    "ic": "shield",
+    "lb": "allowedMcpServers",
+    "sb": ".claude/settings.json"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "출력",
+    "sb": "not allowed by enterprise policy"
+   }
+  ],
+  "edges": [
+   "등록 시도",
+   "판정"
+  ],
+  "side": [
+   {
+    "id": "o1",
+    "ic": "globe",
+    "lb": "not-listed (원격)",
+    "sb": "목록 밖 주소"
+   },
+   {
+    "id": "o2",
+    "ic": "terminal",
+    "lb": "not-listed-2 (로컬)",
+    "sb": "--read-only 없이 $HOME"
+   },
+   {
+    "id": "mj",
+    "ic": "doc",
+    "lb": ".mcp.json",
+    "sb": "생기지 않아야 함"
+   },
+   {
+    "id": "ls",
+    "ic": "result",
+    "lb": "claude mcp list",
+    "sb": "고른 서버만"
+   }
+  ],
+  "steps": [
+   {
+    "t": "다른 주소 고르기",
+    "on": [
+     "term",
+     "o1"
+    ],
+    "cap": "`OTHER`에 허용 목록 밖의 원격 주소를 넣습니다. 기본은 deepwiki 주소이고, deepwiki를 골랐다면 microsoft-learn 주소입니다. project 범위로 시도해 혹시 등록돼도 작업 폴더의 `.mcp.json`에만 들어가게 합니다."
+   },
+   {
+    "t": "원격 서버 차단",
+    "on": [
+     "term",
+     "al"
+    ],
+    "bad": [
+     "o1",
+     "res"
+    ],
+    "edge": [
+     0,
+     1
+    ],
+    "cap": "`Cannot add MCP server \"not-listed\": not allowed by enterprise policy`와 `exit=1`이 나와야 합니다. 프로젝트 설정의 허용 목록에도 \"enterprise policy\"라는 같은 문구가 쓰입니다."
+   },
+   {
+    "t": "로컬 서버 차단",
+    "on": [
+     "term",
+     "al"
+    ],
+    "bad": [
+     "o2",
+     "res"
+    ],
+    "edge": [
+     0,
+     1
+    ],
+    "cap": "같은 filesystem 패키지라도 `--read-only` 없이 홈 폴더 전체를 여는 명령은 `serverCommand`와 정확히 같지 않아 `not-listed-2`도 같은 메시지로 막힙니다."
+   },
+   {
+    "t": "확인",
+    "ok": [
+     "mj",
+     "ls"
+    ],
+    "set": {
+     "mj": {
+      "lb": ".mcp.json 없음",
+      "sb": "등록되지 않음"
+     }
+    },
+    "cap": "`.mcp.json 없음 (등록되지 않음)`이 나오고 `claude mcp list`에 고른 서버만 보이면 됩니다. 같은 주소의 서버를 사용자 범위나 plugin으로 따로 갖고 있으면 그것도 보입니다. `.mcp.json`이 생겼다면 점검표를 보고 파일을 지웁니다."
+   }
+  ]
+ },
+ "check-session": {
+  "title": "03 Step 2~3 붙여 넣는 요청 둘: 하나는 막히고 하나는 통과한다",
+  "nodes": [
+   {
+    "id": "q",
+    "ic": "chat",
+    "lb": "Claude 세션 입력",
+    "sb": "요청을 차례로"
+   },
+   {
+    "id": "cl",
+    "ic": "bot",
+    "lb": "Claude",
+    "sb": "도구를 고름"
+   },
+   {
+    "id": "hook",
+    "ic": "shield",
+    "lb": "PreToolUse 훅",
+    "sb": "net-guard · mcp-guard"
+   },
+   {
+    "id": "res",
+    "ic": "result",
+    "lb": "결과",
+    "sb": "막힘 또는 답"
+   }
+  ],
+  "edges": [
+   "요청",
+   "도구 호출",
+   "실행"
+  ],
+  "steps": [
+   {
+    "t": "세션 다시 열기",
+    "on": [
+     "q"
+    ],
+    "cap": "`cd ~/claude-lab/capstone && claude`. 02의 설정은 세션을 다시 열어야 적용됩니다."
+   },
+   {
+    "t": "다른 호스트 호출",
+    "on": [
+     "q",
+     "cl"
+    ],
+    "bad": [
+     "hook",
+     "res"
+    ],
+    "edge": [
+     0,
+     1
+    ],
+    "chip": "curl https://example.com",
+    "set": {
+     "hook": {
+      "lb": "net-guard.sh",
+      "sb": "Bash · WebFetch"
+     },
+     "res": {
+      "lb": "차단 (exit 2)",
+      "sb": "NET: …"
+     }
+    },
+    "cap": "Claude가 Bash로 `curl`을 부르려는 순간 `NET: 허용되지 않은 호출 대상(example.com)`으로 막힙니다. 웹 검색은 02의 deny 규칙으로 이미 빠져 있습니다."
+   },
+   {
+    "t": "정상 요청은 통과",
+    "on": [
+     "q",
+     "cl",
+     "hook"
+    ],
+    "ok": [
+     "res"
+    ],
+    "edge": [
+     0,
+     1,
+     2
+    ],
+    "chip": "mcp__<서버>__<도구>",
+    "set": {
+     "hook": {
+      "lb": "mcp-guard.sh",
+      "sb": "고른 서버의 읽기 도구"
+     }
+    },
+    "cap": "`mcp-researcher 에이전트로 …`는 고른 서버의 읽기 도구를 부르고, `mcp-guard.sh`가 통과시켜 결과가 나와야 합니다. PreToolUse 훅은 subagent의 도구 호출에도 실행됩니다."
+   }
+  ]
+ },
+ "copy-failclosed": {
+  "title": "03 Step 4 붙여 넣으면: 훅 스크립트를 치워도 막히는지 본다",
+  "nodes": [
+   {
+    "id": "off",
+    "ic": "terminal",
+    "lb": "mv … .off",
+    "sb": "net-guard.sh를 잠시 치움"
+   },
+   {
+    "id": "run",
+    "ic": "chat",
+    "lb": "claude -p …",
+    "sb": "Bash로 ls -l .claude/hooks"
+   },
+   {
+    "id": "hook",
+    "ic": "shield",
+    "lb": "PreToolUse (Bash)",
+    "sb": "스크립트 없음 → onFailure: block"
+   },
+   {
+    "id": "back",
+    "ic": "terminal",
+    "lb": "mv 되돌리기",
+    "sb": "ls .claude/hooks로 확인"
+   }
+  ],
+  "edges": [
+   "",
+   "Bash 호출",
+   ""
+  ],
+  "steps": [
+   {
+    "t": "스크립트 치우기",
+    "on": [
+     "off"
+    ],
+    "cap": "둘째 줄이 `net-guard.sh`의 이름을 `.off`로 바꿉니다. 훅이 실행할 파일이 없는 고장 상황을 일부러 만듭니다. 세션 밖 터미널에서 합니다."
+   },
+   {
+    "t": "무해한 요청",
+    "on": [
+     "run"
+    ],
+    "edge": 1,
+    "cap": "`claude -p`로 Bash 도구를 써서 `ls -l .claude/hooks`를 실행해 달라고 합니다. `ls`는 원래 허락 없이 도는 읽기 전용 명령이라, 막힌다면 훅의 `onFailure` 때문입니다."
+   },
+   {
+    "t": "그래도 막힘",
+    "bad": [
+     "hook"
+    ],
+    "cap": "파일 목록이 나오지 않고 훅 오류와 차단을 알리는 메시지가 보이면 fail-closed입니다. 문구는 버전마다 다를 수 있어 실제로 나온 문구를 적어 둡니다."
+   },
+   {
+    "t": "되돌리기",
+    "ok": [
+     "back"
+    ],
+    "cap": "넷째 줄이 이름을 되돌리고 `ls .claude/hooks`에 `net-guard.sh`가 다시 보여야 합니다. 되돌리지 않으면 이후 Bash와 WebFetch 호출이 계속 막힙니다."
+   }
+  ]
+ },
+ "copy-claudemd": {
+  "title": "04 Step 1 붙여 넣으면: CLAUDE.md가 생기고 키와 토큰이 없는지 검사한다",
+  "nodes": [
+   {
+    "id": "term",
+    "ic": "terminal",
+    "lb": "터미널",
+    "sb": ". ./r1c-choice.env · cat > CLAUDE.md"
+   },
+   {
+    "id": "md",
+    "ic": "doc",
+    "lb": "CLAUDE.md",
+    "sb": "SRV, NET_ALLOW가 채워진 짧은 규칙"
+   },
+   {
+    "id": "scan",
+    "ic": "key",
+    "lb": "키 · 토큰 검사",
+    "sb": "~/.claude.json의 값을 폴더에서 찾기"
+   },
+   {
+    "id": "list",
+    "ic": "folder",
+    "lb": "find 결과",
+    "sb": "docs/ 제외 파일 목록"
+   }
+  ],
+  "edges": [
+   "heredoc",
+   "grep -rlF",
+   "find"
+  ],
+  "side": [
+   {
+    "id": "a",
+    "ic": "bot",
+    "lb": ".claude/agents/ 2개",
+    "sb": "mcp-researcher · evidence-reviewer"
+   },
+   {
+    "id": "h",
+    "ic": "shield",
+    "lb": ".claude/hooks/ 2개",
+    "sb": "mcp-guard.sh · net-guard.sh"
+   },
+   {
+    "id": "s",
+    "ic": "doc",
+    "lb": ".claude/settings.json",
+    "sb": "허용 목록 + 훅 + deny"
+   },
+   {
+    "id": "e",
+    "ic": "doc",
+    "lb": "r1c-choice.env",
+    "sb": "등록 정보 (키 없음)"
+   }
+  ],
+  "steps": [
+   {
+    "t": "짧은 규칙 파일",
+    "on": [
+     "term",
+     "md"
+    ],
+    "edge": 0,
+    "chip": "CLAUDE.md",
+    "cap": "`<< EOF`에 따옴표가 없어 `${SRV}`와 `${NET_ALLOW}`가 실제 값으로 들어갑니다(docs는 `없음`). 이 폴더에서 Claude를 열 때마다 읽히는 규칙입니다."
+   },
+   {
+    "t": "키 · 토큰 검사",
+    "on": [
+     "md",
+     "scan"
+    ],
+    "edge": 1,
+    "cap": "`~/.claude.json`에서 `ALPHA_VANTAGE_API_KEY`와 `Authorization` 헤더 값(앞의 `Bearer ` 제외)을 꺼내, 8자 이상이면 작업 폴더(`docs/` 제외)에서 같은 문자열을 찾습니다. 파일 이름이 하나도 나오지 않아야 합니다. 인증이 없는 서버를 골랐으면 찾을 것이 없습니다."
+   },
+   {
+    "t": "재료 확인",
+    "on": [
+     "list"
+    ],
+    "ok": [
+     "a",
+     "h",
+     "s",
+     "e",
+     "md"
+    ],
+    "edge": 2,
+    "cap": "목록에 agent 2개, 훅 2개, `settings.json`, `CLAUDE.md`, `r1c-choice.env`가 보이면 R2에서 plugin으로 묶을 재료가 갖춰진 것입니다."
    }
   ]
  }
