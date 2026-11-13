@@ -72,8 +72,8 @@ the chapter's own folder to `~/claude-lab/.catchup-backup/`, removes the Ch4 plu
 Ch2-Ch4, and fills earlier-chapter material from `checkpoints/` (Ch4: Ch3 agents,
 `segments.md`, DLP hook; Ch5: asset-team-kit). Labs Ch2-Ch6 show it at the top of TASK 00.
 
-The Workshop Studio stack installs it as `~/.local/bin/catchup`. Pages publishes the same
-file, so a PC without it runs
+Pages publishes the file. Once the Workshop Studio stack installs it as `~/.local/bin/catchup`,
+learners type `catchup ch4`; until then, and on any PC without it, the lab callout's second block runs
 `curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch4`.
 `tests/test_catchup.py` runs it against a fake HOME with stubbed `sudo`, `claude`, `aws` and
 `use_bedrock_direct` (`CATCHUP_ETC` and `CATCHUP_DLP` redirect `/etc/claude-code` and `/opt/dlp`).

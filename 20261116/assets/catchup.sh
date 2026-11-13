@@ -16,9 +16,10 @@
 #
 # Source of truth: 20261116/assets/catchup.sh in the claude-code-workshop repo, published at
 #   https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh
-# The Workshop Studio stack installs it as ~/.local/bin/catchup. On a PC without it:
-#   curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch4 Test hooks: CATCHUP_ETC and
-# CATCHUP_DLP override /etc/claude-code and /opt/dlp.
+# Once the Workshop Studio stack installs it as ~/.local/bin/catchup, `catchup ch4` works directly.
+# Until then (or on any PC without it):
+#   curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch4
+# Test hooks: CATCHUP_ETC and CATCHUP_DLP override /etc/claude-code and /opt/dlp.
 set -euo pipefail
 
 L="$HOME/claude-lab"
@@ -48,6 +49,12 @@ esac
 N=${T#ch}; N=${N%%-*}
 
 say() { echo "[catchup] $*"; }
+BK="$L/.catchup-backup"
+stamp() { date +%Y%m%d-%H%M%S; }
+# plugin/marketplace listings are captured first, so pipefail never sees grep -q close the pipe
+plugins() { claude plugin list 2>/dev/null || true; }
+markets() { claude plugin marketplace list 2>/dev/null || true; }
+has() { case "$1" in *"$2"*) return 0 ;; *) return 1 ;; esac; }
 
 # 1. kit
 if [ ! -d "$K/pseudo" ]; then
@@ -66,15 +73,17 @@ say "정책 초기화: managed-settings.json = {}, managed-settings.d 조각 삭
 S="$HOME/.claude/settings.json"
 if [ -s "$S" ] && jq -e 'type == "object"' "$S" >/dev/null 2>&1; then
   RAW='claude-lab/(mydata|ch2)/raw'
-  if jq -e --arg r "$RAW" '[.permissions // {} | (.allow, .deny, .ask) // [] | .[] | select(test($r))] | length > 0' "$S" >/dev/null; then
+  if jq -e --arg r "$RAW" '[(.permissions // {}) | (.allow, .deny, .ask) | (. // [])[] | strings | select(test($r))] | length > 0' "$S" >/dev/null 2>&1; then
     cp "$S" "$S.before-catchup"
     jq --arg r "$RAW" '
       if .permissions then
         .permissions |= (with_entries(if (.key == "allow" or .key == "deny" or .key == "ask")
-                                       then .value |= map(select(test($r) | not)) else . end)
+                                       then .value |= ((. // []) | map(select(type != "string" or (test($r) | not))))
+                                       else . end)
                          | with_entries(select(.value != [])))
         | if .permissions == {} then del(.permissions) else . end
-      else . end' "$S.before-catchup" > "$S"
+      else . end' "$S.before-catchup" > "$S.tmp"
+    mv "$S.tmp" "$S"
     say "사용자 설정에서 Ch2 Lab 1의 raw 읽기 규칙을 지웠습니다 (이전 파일: $S.before-catchup)"
   fi
 fi
@@ -83,21 +92,27 @@ say "기본 모드(use_bedrock_direct)로 맞췄습니다"
 
 # 4. the chapter's own folder
 if [ -e "$L/$DIR" ]; then
-  B="$L/.catchup-backup/$DIR-$(date +%Y%m%d-%H%M%S)"
-  mkdir -p "$L/.catchup-backup"
+  B="$BK/$DIR-$(stamp)"
+  mkdir -p "$BK"
   mv "$L/$DIR" "$B"
-  say "작업 폴더 ~/claude-lab/$DIR 를 $B 로 옮겼습니다"
+  say "작업 폴더 ~/claude-lab/$DIR → $B (지우지 않고 옮김)"
 fi
 
 # 5. Ch4 has not installed its plugin yet at the start of Ch2-Ch4
 if [ "$N" -le 4 ] && [ "$N" -ge 2 ]; then
-  if claude plugin list 2>/dev/null | grep -q asset-team-kit; then
-    claude plugin uninstall asset-team-kit@fsi-local >/dev/null 2>&1 || true
-    say "asset-team-kit 플러그인을 제거했습니다"
+  if has "$(plugins)" asset-team-kit; then
+    if claude plugin uninstall asset-team-kit@fsi-local >/dev/null 2>&1; then
+      say "Ch4에서 설치하는 asset-team-kit 플러그인을 제거했습니다 (이 장을 시작할 때는 없는 상태)"
+    else
+      say "경고: asset-team-kit 제거에 실패했습니다. claude plugin list로 범위(scope)를 확인하고 직접 제거하세요" >&2
+    fi
   fi
-  if claude plugin marketplace list 2>/dev/null | grep -q fsi-local; then
-    claude plugin marketplace remove fsi-local >/dev/null 2>&1 || true
-    say "fsi-local 마켓플레이스 등록을 지웠습니다"
+  if has "$(markets)" fsi-local; then
+    if claude plugin marketplace remove fsi-local >/dev/null 2>&1; then
+      say "fsi-local 마켓플레이스 등록을 지웠습니다"
+    else
+      say "경고: fsi-local 마켓플레이스를 지우지 못했습니다" >&2
+    fi
   fi
 fi
 
@@ -109,15 +124,22 @@ if [ "$T" = ch4 ]; then
     [ -f "$L/ch3/.claude/agents/$a.md" ] || { cp "$CP/ch3/agents/$a.md" "$L/ch3/.claude/agents/"; say "Ch3 에이전트 기준본: $a"; }
   done
   [ -f "$L/ch3/segments.md" ] || { cp "$CP/ch3/segments.md" "$L/ch3/"; say "Ch3 segments.md 기준본"; }
+  ln -sfn "$K/pseudo" "$L/ch3/pseudo"   # Ch4 TASK 06 opens Claude in ch3 and reads pseudo/
   if ! cmp -s "$CP/ch2/dlp-guard.sh" "$DLP/dlp-guard.sh" 2>/dev/null; then
     sudo mkdir -p "$DLP" && sudo install -m 755 "$CP/ch2/dlp-guard.sh" "$DLP/dlp-guard.sh"
-    say "DLP 훅 기준본을 $DLP/dlp-guard.sh 에 설치했습니다"
+    say "DLP 훅 기준본을 설치했습니다: $DLP/dlp-guard.sh"
   fi
 fi
-if [ "$T" = ch5 ] && ! claude plugin list 2>/dev/null | grep -q asset-team-kit; then
+if [ "$T" = ch5 ] && ! has "$(plugins)" asset-team-kit; then
   M="$L/ch4/marketplace"
   mkdir -p "$M/.claude-plugin" "$M/plugins"
-  [ -d "$M/plugins/asset-team-kit" ] || cp -r "$CP/ch4/asset-team-kit" "$M/plugins/"
+  # not installed means Ch4 did not finish: a half-built plugin folder is moved aside, not installed
+  if [ -e "$M/plugins/asset-team-kit" ]; then
+    mkdir -p "$BK"
+    mv "$M/plugins/asset-team-kit" "$BK/asset-team-kit-$(stamp)"
+    say "Ch4에서 만들다 만 asset-team-kit 폴더를 $BK 로 옮겼습니다"
+  fi
+  cp -r "$CP/ch4/asset-team-kit" "$M/plugins/"
   cat > "$M/.claude-plugin/marketplace.json" << 'EOF'
 {
   "name": "fsi-local",
@@ -129,7 +151,12 @@ if [ "$T" = ch5 ] && ! claude plugin list 2>/dev/null | grep -q asset-team-kit; 
 EOF
   claude plugin marketplace add "$M" >/dev/null 2>&1 || true
   claude plugin install asset-team-kit@fsi-local >/dev/null
-  say "Ch4 asset-team-kit 기준본을 설치했습니다"
+  P="$(plugins)"
+  if has "$P" asset-team-kit && ! has "$P" "failed to load"; then
+    say "Ch4 asset-team-kit 기준본을 설치했습니다"
+  else
+    say "경고: asset-team-kit 설치를 확인하지 못했습니다. claude plugin list를 확인하세요" >&2
+  fi
 fi
 
 case "$T" in

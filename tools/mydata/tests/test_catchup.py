@@ -111,7 +111,7 @@ class CatchupTest(unittest.TestCase):
         self.assertEqual(len(kept), 1)
         self.assertEqual(kept[0].read_text(), "mine")
         self.assertTrue((self.lab / "ch4").is_dir(), "other chapters' folders stay")
-        self.assertIn("옮겼습니다", r.stdout)
+        self.assertIn("지우지 않고 옮김", r.stdout)
 
     def test_ch2_lab_names_and_folders(self):
         self.run_catchup("ch6")
@@ -181,6 +181,48 @@ class CatchupTest(unittest.TestCase):
         self.run_catchup("ch5")
         self.assertNotIn("plugin install", self.log.read_text(), "already installed: no reinstall")
         self.assertNotIn("uninstall", self.log.read_text())
+
+    def test_ch5_replaces_half_built_ch4_plugin_with_reference(self):
+        self.run_catchup("ch6")
+        half = self.lab / "ch4" / "marketplace" / "plugins" / "asset-team-kit"
+        (half / "agents").mkdir(parents=True)
+        (half / "agents" / "mine.md").write_text("half built")
+        r = self.run_catchup("ch5")
+        self.assertTrue((half / ".claude-plugin" / "plugin.json").is_file(), "reference copy installed")
+        self.assertFalse((half / "agents" / "mine.md").exists())
+        kept = list((self.lab / ".catchup-backup").glob("asset-team-kit-*/agents/mine.md"))
+        self.assertEqual(len(kept), 1, "learner's half-built plugin is kept, not deleted")
+        self.assertIn("기준본을 설치했습니다", r.stdout)
+
+    def test_ch5_warns_when_plugin_fails_to_load(self):
+        stub = self.bin / "claude"
+        stub.write_text(stub.read_text().replace(
+            'echo "asset-team-kit@fsi-local" > "$STUB_STATE/plugins"',
+            'printf "asset-team-kit@fsi-local\\n  Status: failed to load\\n" > "$STUB_STATE/plugins"'))
+        r = self.run_catchup("ch5")
+        self.assertIn("경고", r.stderr)
+        self.assertNotIn("기준본을 설치했습니다", r.stdout)
+
+    def test_uninstall_failure_is_reported_not_claimed(self):
+        (self.state / "plugins").write_text("asset-team-kit@fsi-local\n")
+        stub = self.bin / "claude"
+        stub.write_text(stub.read_text().replace(
+            '"plugin uninstall "*) : > "$STUB_STATE/plugins" ;;', '"plugin uninstall "*) exit 1 ;;'))
+        r = self.run_catchup("ch3")
+        self.assertIn("제거에 실패", r.stderr)
+        self.assertNotIn("플러그인을 제거했습니다", r.stdout)
+
+    def test_null_permission_lists_do_not_break_settings(self):
+        s = self.home / ".claude" / "settings.json"
+        s.parent.mkdir()
+        s.write_text(json.dumps({"permissions": {"deny": None, "allow": ["Read(~/claude-lab/ch2/raw/**)"]}}))
+        self.run_catchup("ch3")
+        got = json.loads(s.read_text())
+        self.assertNotIn("allow", got.get("permissions", {}))
+
+    def test_ch4_links_pseudo_into_ch3_for_task_06(self):
+        self.run_catchup("ch4")
+        self.assertTrue((self.lab / "ch3" / "pseudo" / "customers.csv").is_file())
 
     def test_ch6_leaves_plugin_alone(self):
         (self.state / "plugins").write_text("asset-team-kit@fsi-local\n")
