@@ -673,7 +673,7 @@ claude plugin validate $M</code></pre></div>
 
 <p>Claude가 먼저 <code>plugin-authoring</code> 스킬을 불러온 뒤 고칩니다. 새 명령은 <code>session.start</code>에서 등록되므로, hot reload만으로는 <code>/tally-reset</code>이 목록에 나타나지 않습니다. <code>/exit</code> 후 같은 명령으로 다시 열면 보입니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>작업 폴더 밖 읽기 확인 창이 뜨면</strong></p>
-<p>mod 폴더(<code>~/claude-lab/ch4/first-mod</code>)는 세션을 연 동료 폴더 밖이라 <strong>Read outside the working directories</strong> 확인 창이 뜰 수 있습니다. 실습에 필요한 읽기이므로 <strong>Yes, but ask again next time</strong>을 고르면 이번만 허용하고 다음에는 다시 묻습니다. 파일을 고칠 때 같은 창이 한 번 더 뜨면 같은 항목을 고릅니다.</p></div></div>
+<p>mod 폴더(<code>~/claude-lab/ch4/first-mod</code>)는 세션을 연 동료 폴더 밖이라 <strong>Read outside the working directories</strong> 확인 창이 뜰 수 있습니다. 실습에 필요한 읽기이므로 <strong>Yes, but ask again next time</strong>을 고르면 이번만 허용하고 다음에는 다시 묻습니다. 파일을 고칠 때 편집 확인 창이 뜨면 이번만 허용하는 Yes 항목을 고릅니다.</p></div></div>
 
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>mod에는 샌드박스가 없습니다</strong></p>
 <p>mod는 사용자 권한으로 파일, 프로세스, 네트워크, 비밀값에 닿을 수 있습니다. 남이 만든 mod는 <code>calls:</code> 줄에 <code>$.process.run</code>이나 <code>$.http.fetch</code>가 있는지부터 확인하세요.</p></div></div>
