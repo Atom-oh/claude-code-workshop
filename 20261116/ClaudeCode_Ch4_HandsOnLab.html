@@ -515,7 +515,7 @@ claude</code></pre></div>
 <li data-lines="6">저장 뒤 risk-reviewer에게 근거와 개인정보 노출을 점검받습니다.</li>
 </ol></details>
 
-<p>2~4분 뒤 <code>pension-report.html</code>이 생깁니다. risk-reviewer가 인원 수끼리 빼서 5명 미만 집단이 드러나는 조합을 찾으면 Claude가 그 숫자를 빼고 다시 저장하기도 합니다. 저장이 끝나면 외부 주소와 식별자가 없는지 확인합니다.</p>
+<p>3~5분 뒤 <code>pension-report.html</code>이 생깁니다. risk-reviewer가 인원 수끼리 빼서 5명 미만 집단이 드러나는 조합을 찾으면 Claude가 그 숫자를 빼고 다시 저장하기도 합니다. 저장이 끝나면 외부 주소와 식별자가 없는지 확인합니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>!grep -cE &#x27;src=&quot;https?://|href=&quot;https?://&#x27; pension-report.html; grep -nE &#x27;(^|[^0-9A-Fa-f#])C[0-9]{4}([^0-9A-Fa-f]|$)|고객[0-9]{4}|CI_&#x27; pension-report.html || echo &quot;식별자 없음&quot;</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
@@ -672,6 +672,9 @@ claude plugin validate $M</code></pre></div>
 </ol></details>
 
 <p>Claude가 먼저 <code>plugin-authoring</code> 스킬을 불러온 뒤 고칩니다. 새 명령은 <code>session.start</code>에서 등록되므로, hot reload만으로는 <code>/tally-reset</code>이 목록에 나타나지 않습니다. <code>/exit</code> 후 같은 명령으로 다시 열면 보입니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>작업 폴더 밖 읽기 확인 창이 뜨면</strong></p>
+<p>mod 폴더(<code>~/claude-lab/ch4/first-mod</code>)는 세션을 연 동료 폴더 밖이라 <strong>Read outside the working directories</strong> 확인 창이 뜰 수 있습니다. 실습에 필요한 읽기이므로 <strong>Yes, but ask again next time</strong>을 고르면 이번만 허용하고 다음에는 다시 묻습니다. 파일을 고칠 때 같은 창이 한 번 더 뜨면 같은 항목을 고릅니다.</p></div></div>
+
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>mod에는 샌드박스가 없습니다</strong></p>
 <p>mod는 사용자 권한으로 파일, 프로세스, 네트워크, 비밀값에 닿을 수 있습니다. 남이 만든 mod는 <code>calls:</code> 줄에 <code>$.process.run</code>이나 <code>$.http.fetch</code>가 있는지부터 확인하세요.</p></div></div>
 

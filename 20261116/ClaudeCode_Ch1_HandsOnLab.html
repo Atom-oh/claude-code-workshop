@@ -222,12 +222,12 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>ls -lt ~/.claude/projects/*ch1-loop*/ | head -5
 F=$(ls -t ~/.claude/projects/*ch1-loop*/*.jsonl | head -1)
-wc -l &quot;$F&quot; &amp;&amp; grep -o &#x27;&quot;type&quot;:&quot;[a-z_]*&quot;&#x27; &quot;$F&quot; | sort | uniq -c | head</code></pre></div>
+wc -l &quot;$F&quot; &amp;&amp; grep -o &#x27;&quot;type&quot;:&quot;[a-z_]*&quot;&#x27; &quot;$F&quot; | sort | uniq -c | sort -rn | head</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
 <li data-lines="1">내 실습 폴더(ch1-loop)의 세션 파일이 있는 폴더를 시간순으로 보여줍니다. 가장 위가 가장 최근 파일입니다.</li>
 <li data-lines="2">가장 최근 .jsonl 파일의 경로를 F 변수에 담습니다. JSONL은 한 줄에 JSON 하나를 적는 텍스트 형식입니다.</li>
-<li data-lines="3">wc -l로 줄 수를 세고, 각 줄의 &quot;type&quot; 값(user, assistant 등)이 몇 번 나오는지 셉니다. 대화가 줄 단위로 쌓인 모습을 볼 수 있습니다.</li>
+<li data-lines="3">wc -l로 줄 수를 세고, 각 줄의 &quot;type&quot; 값(user, assistant 등)이 몇 번 나오는지 세고, 많이 나온 순으로 위 10개만 보여 줍니다. 대화가 줄 단위로 쌓인 모습을 볼 수 있습니다.</li>
 </ol></details>
 
 <p>대화와 도구 결과가 이 PC(ccb-endpoint)에 JSONL로 남아 있습니다. 방금 읽힌 고객 데이터가 세션 파일에 그대로 들어 있는지 세어 봅니다.</p>
@@ -273,7 +273,7 @@ grep -o &#x27;고객0&#x27; &quot;$F&quot; | wc -l</code></pre></div>
 <li data-lines="1">plan 모드에서 입력합니다. plan 모드는 파일을 고치지 않고 계획만 세우는 모드입니다. 소득구간별 보유율을 더하는 계획이 나오는지 확인하세요.</li>
 </ol></details>
 
-<p>계획만 확인하고 승인하지 않은 채 <code>/exit</code>로 나옵니다.</p>
+<p>계획 전에 Claude가 "표를 어떤 모양으로 만들까요?"처럼 선택지를 먼저 물을 수 있습니다. 추천 항목을 고르면 계획이 이어서 나옵니다. 계획만 확인하고 승인하지 않은 채 <code>/exit</code>로 나옵니다.</p>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span><code>/rewind</code>로 파일 편집을 되돌렸다</span></label></li>
