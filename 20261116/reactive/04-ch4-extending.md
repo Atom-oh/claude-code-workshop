@@ -23,12 +23,12 @@ AWS Korea
 • 개인이 쌓은 설정을 팀의 플랫폼으로 묶어 배포하는 챕터
 • 2026년 11월, Claude Code v2.1.319 (2026-11-08 리허설 검증), Amazon Bedrock 기준
 
-둘째 날 첫 챕터, Claude Code 확장하기를 시작하겠습니다. 도구는 Plugins와 Mods입니다.
-어제 Ch2에서 만든 DLP 훅과 Ch3에서 만든 Subagent를 오늘은 플러그인 하나로 묶어서 팀 전체에 배포합니다.
-그리고 Claude Code 안에서 직접 도는 코드인 mod까지 다룹니다.
+둘째 날 첫 챕터입니다. 오늘은 Claude Code 확장하기예요. 도구는 Plugins와 Mods입니다.
+어제 Ch2에서 DLP 훅을 만들고 Ch3에서 Subagent도 만들었잖아요. 오늘은 그걸 플러그인 하나로 묶어서 팀 전체에 배포합니다.
+그리고 Claude Code 안에서 직접 도는 코드, mod까지 다룰 거예요.
 
 {cue: transition}
-순서를 보기 전에, 사전 설문 결과부터 보겠습니다.
+순서 보기 전에, 사전 설문 결과부터 잠깐 볼게요.
 :::
 
 ---
@@ -72,14 +72,14 @@ AWS Korea
 • 기대 주제 2위, 복수 선택
 • 그 표준을 플러그인 하나로 묶어 배포하는 것이 이 챕터의 목표
 
-사전 설문에서 138분 중 58분이 팀 표준화를 기대 주제로 고르셨습니다. 설정, 권한, 훅, MCP를 팀이 똑같이 쓰는 방법이고, 복수 선택에서 2위였습니다.
-어제까지 각자 만든 것들을 오늘은 플러그인 하나로 묶어, 설치 한 줄로 동료가 같은 환경을 갖게 만드는 것이 목표입니다.
+사전 설문에서 138분 중 58분이 팀 표준화를 기대 주제로 골라주셨어요. 설정, 권한, 훅, MCP를 팀에서 똑같이 쓰는 방법이죠. 복수 선택에서는 2위였습니다.
+어제까지는 각자 만들었잖아요. 오늘은 그걸 플러그인 하나로 묶어서, 동료도 설치 한 줄로 같은 환경을 갖게 해보려는 거예요.
 
 [출처]
 • 이번 워크숍 사전 설문, 참가 확정자 138명 기준
 
 {cue: transition}
-이 목표에 맞춘 오늘의 순서입니다.
+그럼 이 목표에 맞춰 짠 오늘 순서부터 갈게요.
 :::
 
 ---
@@ -110,9 +110,9 @@ AWS Korea
 • 진행자 메모: 강의 35분 + 랩 약 61분으로 약 95분, 90분 슬롯보다 5분 정도 김. 모자라면 TASK 07~08(mod 통제와 체크리스트, 약 10분)을 Capstone R2 시작 때 진행
 • 더 알아보기는 질문이 나오면 펼침
 
-오늘은 세 Part로 진행합니다. 첫째, 플러그인이 무엇이고 어떻게 생겼는지, 둘째, 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 셋째, Claude Code 안에서 도는 코드인 mod입니다.
-강의 35분이 끝나면 약 60분 동안 Super Lab에서 직접 팀 스타터 킷을 만들어 봅니다. 선택 TASK 06은 12분이 더 걸립니다.
-진행자 메모입니다. 강의와 랩을 합치면 약 95분이라 90분 슬롯보다 5분 정도 깁니다. 시간이 모자라면 TASK 07과 08, mod 통제와 체크리스트 약 10분은 Capstone Round 2를 시작할 때 진행합니다.
+오늘은 세 Part로 갑니다. 첫 번째는 플러그인이 뭔지, 어떻게 생겼는지예요. 두 번째는 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 세 번째는 Claude Code 안에서 도는 코드인 mod입니다.
+강의 35분이 끝나면 약 60분 동안 Super Lab에서 팀 스타터 킷을 직접 만들어 볼 거예요. 선택 TASK 06은 12분이 더 걸리고요.
+진행자 메모인데요. 강의랑 랩을 합치면 약 95분이라 90분 슬롯보다 5분 정도 길어요. 시간이 모자라면 TASK 07과 08, mod 통제와 체크리스트 약 10분은 Capstone Round 2를 시작할 때 진행합니다.
 :::
 
 ---
@@ -133,8 +133,8 @@ AWS Korea
 [요약]
 • 스킬, Subagent, 훅, MCP, mod를 한 번에 배포하는 단위가 플러그인
 
-이 챕터의 한 문장입니다. 스킬, Subagent, 훅, MCP, 그리고 mod까지 한 번에 배포한다.
-흩어져 있던 확장 수단을 하나의 배포 단위로 묶는 것, 그게 플러그인입니다.
+이 챕터에서 가져가실 한 문장이에요. 스킬, Subagent, 훅, MCP, 그리고 mod까지 한 번에 배포한다.
+흩어져 있던 확장 수단을 하나의 배포 단위로 묶는 거죠. 그게 플러그인입니다.
 
 [약어]
 • MCP: Model Context Protocol
@@ -163,7 +163,7 @@ AWS Korea
 [요약]
 • Part 1은 플러그인: 확장 방법, 구조, 설치와 갱신
 
-첫 번째 Part, 플러그인입니다. 무엇으로 확장할 수 있는지 지도를 먼저 보고, 플러그인 폴더가 어떻게 생겼는지, 어떻게 설치하고 갱신하는지 보겠습니다.
+첫 번째 Part는 플러그인입니다. 무엇으로 확장할 수 있는지 지도부터 보고, 그다음 플러그인 폴더가 어떻게 생겼는지, 어떻게 설치하고 갱신하는지 보겠습니다.
 :::
 
 ---
@@ -214,11 +214,11 @@ AWS Korea
 • CLAUDE.md는 managed CLAUDE.md나 저장소로, 나머지 5종은 한 디렉터리에 담아 플러그인으로 배포
 • 무엇을 쓸지는 "언제, 누가, 무엇을 바꾸는가"로 고름
 
-Claude Code를 확장하는 방법은 여섯 가지입니다.
+Claude Code를 확장하는 방법은 여섯 가지예요.
 {cue: demo}
-아래 화살표로 하나씩 열어 보겠습니다. CLAUDE.md는 항상 알아야 할 짧은 지침, 스킬은 같은 지시를 반복할 때 필요할 때만 불러오는 것, Subagent는 역할과 도구를 나눠 맡길 때, 훅은 이벤트에 스크립트로 막거나 기록할 때, MCP는 외부 시스템에 닿아야 할 때, 그리고 mod는 화면이나 커맨드, 이벤트 자체를 바꿀 때 씁니다.
-CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 가지를 한 디렉터리에 담아 배포하는 단위가 플러그인입니다.
-어떤 것을 고를지는 언제, 누가, 무엇을 바꾸는가를 기준으로 생각하시면 됩니다.
+아래 화살표로 하나씩 열어 볼게요. CLAUDE.md는 항상 알아야 할 짧은 지침입니다. 스킬은 같은 지시를 반복할 때, 필요할 때만 불러오는 거고요. Subagent는 역할과 도구를 나눠 맡길 때 씁니다. 훅은 이벤트에 맞춰 스크립트로 막거나 기록할 때 씁니다. MCP는 외부 시스템에 닿아야 할 때 쓰고요. 그리고 mod는 화면이나 커맨드, 이벤트 자체를 바꿀 때 씁니다.
+CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 가지를 한 디렉터리에 담아서 배포하는 단위가 플러그인입니다.
+어떤 걸 고를지는 언제, 누가, 무엇을 바꾸는가를 기준으로 생각하시면 돼요.
 
 [약어]
 • MCP: Model Context Protocol
@@ -271,12 +271,12 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 �
 • mod도 같은 hooks/ 아래, 버전으로 변경 이력 관리
 • 설치 한 줄로 동료가 같은 환경
 
-플러그인은 디렉터리 하나입니다. 오늘 랩에서 만들 asset-team-kit을 예로 보겠습니다.
+플러그인은 디렉터리 하나예요. 오늘 랩에서 만들 asset-team-kit으로 볼게요.
 {cue: demo}
-맨 위 .claude-plugin 아래 plugin.json에는 이름, 버전, 설명이 들어가고, 이것만 필수입니다.
-skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을, agents에는 Ch3에서 만든 spending-analyst, portfolio-analyst, risk-reviewer를 넣습니다. Ch3 파일이 없으면 랩 TASK 00에서 키트 기준본으로 채웁니다. hooks의 hooks.json에는 Ch2의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
-점선으로 표시한 commands와 .mcp.json도 넣을 수 있습니다. 특히 .mcp.json은 외부로 나가는 길이라 반출 채널 검토 대상입니다.
-버전으로 변경 이력을 관리하고, 설치 한 줄이면 동료가 같은 환경을 갖게 됩니다.
+맨 위 .claude-plugin 아래 plugin.json에는 이름, 버전, 설명이 들어가요. 필수인 건 이것뿐입니다.
+skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을 넣고, agents에는 Ch3에서 만든 spending-analyst, portfolio-analyst, risk-reviewer를 넣습니다. Ch3 파일이 없으면 랩 TASK 00에서 키트 기준본으로 채우시면 돼요. hooks의 hooks.json에는 Ch2의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
+점선으로 표시한 commands랑 .mcp.json도 넣을 수 있어요. 특히 .mcp.json은 외부로 나가는 길이니까 반출 채널 검토 대상입니다.
+버전으로 변경 이력을 관리하고, 설치 한 줄이면 동료도 같은 환경을 갖게 됩니다.
 
 [약어]
 • DLP: Data Loss Prevention
@@ -348,11 +348,11 @@ skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을, agen
 • 4 갱신: autoUpdate 또는 수동 update
 
 {cue: demo}
-플러그인이 동료의 세션까지 가는 길을 네 단계로 보겠습니다.
-첫째, 마켓플레이스 등록입니다. /plugin marketplace add로 등록하고, 소스는 로컬 경로, GitHub 저장소, 사내 git URL을 쓸 수 있습니다. 오늘 랩은 로컬 경로를 씁니다.
-둘째, 설치는 이름 골뱅이 마켓플레이스 형식입니다. 랩에서는 asset-team-kit@fsi-local로 설치합니다.
-셋째, /reload-plugins로 바로 적용하거나 다음 세션부터 적용됩니다.
-넷째, 갱신은 autoUpdate로 자동으로 받거나 수동으로 합니다. 금융권에서는 버전을 고정하고 검토한 버전만 올리는 쪽을 권합니다.
+그럼 플러그인이 동료의 세션까지 가는 길은 네 단계예요.
+첫 번째는 마켓플레이스 등록이에요. /plugin marketplace add로 등록하고, 소스는 로컬 경로, GitHub 저장소, 사내 git URL을 쓸 수 있습니다. 오늘 랩에서는 로컬 경로를 써요.
+두 번째는 설치인데요. 이름 골뱅이 마켓플레이스 형식입니다. 랩에서는 asset-team-kit@fsi-local로 설치해요.
+세 번째는 적용이에요. /reload-plugins로 바로 적용하거나 다음 세션부터 적용됩니다.
+네 번째는 갱신입니다. autoUpdate로 자동으로 받거나 수동으로 해요. 금융권에서는 버전을 고정하고, 검토한 버전만 올리시길 권합니다.
 :::
 
 ---
@@ -378,7 +378,7 @@ skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을, agen
 [요약]
 • Part 2는 사내 배포: 강제 설치, 출처 제한, 망분리, 측정
 
-두 번째 Part, 사내 배포입니다. 개인이 골라 설치하는 것이 아니라, 회사가 설치를 강제하고 출처를 제한하는 방법을 보겠습니다.
+두 번째 Part는 사내 배포입니다. 개인이 골라서 설치하는 게 아니라, 회사가 설치를 강제하고 출처를 제한하는 방법을 볼게요.
 :::
 
 ---
@@ -445,11 +445,11 @@ managed-settings.json 네 개 키로 사내 마켓플레이스를 강제
 • disableSideloadFlags가 --plugin-dir을 거부
 
 {cue: demo}
-회사가 플러그인 배포를 강제하는 설정입니다. 오른쪽 managed-settings.json의 키 네 개를 하나씩 보겠습니다.
-첫째, strictKnownMarketplaces는 허용 목록입니다. 여기에 적는다고 등록되지는 않는다는 점을 꼭 기억해 주세요. hostPattern으로 사내 git 호스트를 허용할 수 있고, skills-dir을 넣으면 로컬 스킬 플러그인은 계속 쓸 수 있습니다.
-둘째, extraKnownMarketplaces가 실제 등록입니다. 사용자가 직접 등록하지 않아도 됩니다.
-셋째, enabledPlugins에 true를 주면 강제로 설치되고 사용자가 해제할 수 없습니다. 반대로 false로 바꾸면 즉시 차단되니 롤백도 이 키입니다.
-넷째, disableSideloadFlags는 --plugin-dir로 로컬 폴더를 직접 싣는 길을 막습니다.
+회사가 플러그인 배포를 강제할 때 쓰는 설정이에요. 오른쪽 managed-settings.json의 키 네 개를 하나씩 볼게요.
+첫 번째, strictKnownMarketplaces는 허용 목록입니다. 근데 여기에 적는다고 등록까지 되는 건 아니에요. 꼭 기억해 주세요. hostPattern으로 사내 git 호스트를 허용할 수 있고, skills-dir을 넣으면 로컬 스킬 플러그인은 계속 쓸 수 있습니다.
+두 번째는 extraKnownMarketplaces예요. 이게 실제 등록이라 사용자가 직접 등록하지 않아도 됩니다.
+세 번째, enabledPlugins에 true를 주면 강제로 설치되고 사용자가 해제할 수 없어요. 반대로 false로 바꾸면 즉시 차단되니까 롤백도 이 키로 합니다.
+네 번째, disableSideloadFlags는 --plugin-dir로 로컬 폴더를 직접 싣는 길을 막아요.
 :::
 
 ---
@@ -483,9 +483,9 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 정답 B, 허용 목록만으로는 --plugin-dir이 막히지 않음
 • 사이드로드는 disableSideloadFlags로만 막음
 
-퀴즈입니다. strictKnownMarketplaces 허용 목록만 설정하면, --plugin-dir로 로컬 폴더를 싣는 것은 어떻게 될까요?
+여기서 퀴즈 하나 갈게요. strictKnownMarketplaces 허용 목록만 설정하면, --plugin-dir로 로컬 폴더를 싣는 건 어떻게 될까요?
 {cue: pause}
-정답은 B, 막히지 않습니다. 허용 목록은 마켓플레이스를 거르는 키이고, 사이드로드는 disableSideloadFlags로만 막습니다. 그래서 두 키를 함께 거는 것입니다.
+정답은 B예요. 막히지 않습니다. 허용 목록은 마켓플레이스를 거르는 키고요. 사이드로드는 disableSideloadFlags로만 막거든요. 그래서 두 키를 함께 거는 겁니다.
 :::
 
 ---
@@ -547,12 +547,12 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 런타임: CLAUDE_CODE_PLUGIN_SEED_DIR=/opt/claude-seed, 읽기 전용
 • 자동 업데이트는 꺼지고 허용, 차단 목록은 그대로 적용
 
-금융권에서 꼭 나오는 질문, 망분리 환경입니다.
+금융권에서 꼭 나오는 질문이죠. 망분리 환경은 어떻게 할까요?
 {cue: demo}
-망분리 PC나 외부 접근이 없는 CI 러너에서는 git clone으로 플러그인을 받아 올 수 없습니다.
-그래서 이미지를 빌드하는 시점에 CLAUDE_CODE_PLUGIN_CACHE_DIR을 seed 디렉터리로 지정하고 플러그인을 설치해 둡니다.
-런타임에는 CLAUDE_CODE_PLUGIN_SEED_DIR로 같은 디렉터리를 가리키면 읽기 전용으로 씁니다.
-이렇게 쓰면 자동 업데이트는 꺼지지만, 허용과 차단 목록은 그대로 적용됩니다. 갱신은 이미지를 다시 빌드해서 합니다.
+망분리 PC나 외부 접근이 없는 CI 러너에서는 git clone으로 플러그인을 받아 올 수 없어요.
+그래서 이미지를 빌드할 때 CLAUDE_CODE_PLUGIN_CACHE_DIR을 seed 디렉터리로 지정하고, 플러그인을 미리 설치해 둡니다.
+런타임에는 CLAUDE_CODE_PLUGIN_SEED_DIR로 같은 디렉터리를 가리키면 돼요. 읽기 전용으로 쓰는 거죠.
+이렇게 쓰면 자동 업데이트는 꺼져요. 그래도 허용과 차단 목록은 그대로 적용됩니다. 갱신할 때는 이미지를 다시 빌드합니다.
 
 [약어]
 • CI: Continuous Integration, 코드 변경마다 빌드와 테스트를 자동으로 돌리는 파이프라인
@@ -594,10 +594,10 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 서드파티 이름은 OTEL_LOG_TOOL_DETAILS=1일 때만 표시
 • OTel 설정 자체는 Ch6에서 다룸
 
-배포했다면 무엇이 설치되고 실제로 쓰이는지 봐야 합니다. Ch6에서 다룰 OTel로 봅니다.
+배포했으면 무엇이 설치됐고 실제로 쓰이는지도 봐야겠죠. Ch6에서 다룰 OTel로 봅니다.
 {cue: demo}
-plugin_installed는 설치할 때마다, plugin_loaded는 세션이 시작될 때 켜진 플러그인을 기록합니다. 설치만 되고 안 쓰이는 플러그인을 찾을 수 있습니다.
-그리고 서드파티 플러그인 이름은 기본으로 가려지고, OTEL_LOG_TOOL_DETAILS를 1로 줄 때만 보입니다.
+plugin_installed는 설치할 때마다 기록하고, plugin_loaded는 세션이 시작될 때 켜진 플러그인을 기록합니다. 그러면 설치만 되고 안 쓰이는 플러그인을 찾을 수 있어요.
+그리고 서드파티 플러그인 이름은 기본으로 가려져요. OTEL_LOG_TOOL_DETAILS를 1로 줄 때만 보입니다.
 
 [약어]
 • OTel: OpenTelemetry
@@ -626,7 +626,7 @@ plugin_installed는 설치할 때마다, plugin_loaded는 세션이 시작될 �
 [요약]
 • Part 3은 mod: 할 수 있는 것, 구조와 예시, 조직 통제
 
-세 번째 Part, mod입니다. Claude Code 안에서 직접 도는 코드라 할 수 있는 일이 많고, 그만큼 통제도 중요합니다.
+세 번째 Part는 mod예요. Claude Code 안에서 직접 도는 코드라 할 수 있는 일이 많거든요. 그만큼 통제도 중요합니다.
 :::
 
 ---
@@ -651,8 +651,8 @@ plugin_installed는 설치할 때마다, plugin_loaded는 세션이 시작될 �
 • Bedrock에서도 동작
 
 {cue: pause}
-mod를 한 줄로 정의하면, 플러그인 안의 이벤트 핸들러입니다. v2.1.287부터 들어온 새 기능입니다.
-도구 호출, 프롬프트, 커맨드, 화면 그리기 같은 이벤트를 관찰하고, 바꾸고, 대신 처리할 수 있습니다.
+mod를 한 줄로 말씀드리면, 플러그인 안의 이벤트 핸들러예요. v2.1.287부터 들어온 새 기능입니다.
+도구 호출, 프롬프트, 커맨드, 화면 그리기 같은 이벤트를 관찰하고, 바꾸고, 대신 처리할 수 있어요.
 그리고 Bedrock에서도 똑같이 동작합니다.
 :::
 
@@ -722,12 +722,12 @@ mod를 한 줄로 정의하면, 플러그인 안의 이벤트 핸들러입니다
 • 파일은 plugin.json, hooks.json, register.js 세 개, 바깥 작업은 $ API로만
 
 {cue: demo}
-가장 작은 mod를 단계별로 보겠습니다. 도구 호출 수를 스피너 옆에 띄우는 예시입니다.
-첫째, mod는 register 함수를 내보내고, 넘겨받은 on으로 이벤트에 핸들러를 겁니다.
-둘째, tool.call 이벤트에서는 calls를 하나 올리고 next(e)로 원래 이벤트를 넘깁니다. 그래서 도구는 그대로 실행됩니다. 이게 관찰입니다.
-셋째, $.ui.invalidate로 화면을 다시 그리게 하면 ui.render 핸들러가 불립니다. 바깥에 하는 일은 모두 $ API를 거칩니다.
-넷째, ui.render에서는 Spinner의 props에 suffix를 더해서 넘깁니다. 이게 변경입니다.
-파일은 세 개, 원칙은 두 가지입니다. 관찰, 변경, 대신 처리를 하고, 바깥 작업은 $ API로만 합니다. 배포는 일반 플러그인과 같습니다.
+가장 작은 mod부터 하나씩 볼게요. 도구 호출 수를 스피너 옆에 띄우는 예시입니다.
+첫 번째로, mod는 register 함수를 내보내고, 넘겨받은 on으로 이벤트에 핸들러를 겁니다.
+두 번째, tool.call 이벤트에서는 calls를 하나 올리고 next(e)로 원래 이벤트를 넘겨요. 그러니까 도구는 그대로 실행되는 거죠. 이게 관찰입니다.
+세 번째, $.ui.invalidate로 화면을 다시 그리게 하면 ui.render 핸들러가 불려요. 바깥에 하는 일은 모두 $ API를 거칩니다.
+네 번째, ui.render에서는 Spinner의 props에 suffix를 더해서 넘깁니다. 이게 변경이에요.
+파일은 세 개고, 원칙은 두 가지예요. 관찰, 변경, 대신 처리를 하고, 바깥 작업은 $ API로만 합니다. 배포는 일반 플러그인과 같고요.
 :::
 
 ---
@@ -768,11 +768,11 @@ mod와 다른 확장 비교, 바꿀 수 있는 것과 작성 언어
 • Skill: Claude가 아는 것을 Markdown으로, MCP: 쓰는 도구를 아무 언어로
 • 이미 다른 수단으로 되면 mod를 쓰지 않음
 
-mod는 강력하지만, 원칙은 이미 다른 수단으로 되면 mod를 쓰지 않는다는 것입니다.
+mod는 강력하죠. 그래도 이미 다른 수단으로 되는 일이라면 mod를 쓰지 않는 게 원칙입니다.
 {cue: demo}
-mod는 도구 호출부터 화면까지 바꿀 수 있고 JS나 TS로 씁니다. 패널, 즉시 실행되는 커맨드, 이벤트 재작성이 필요할 때 고릅니다.
-막거나 기록하는 것은 Settings 훅으로 충분합니다. Claude가 알아야 할 것은 Skill, 써야 할 도구는 MCP입니다.
-화면이나 이벤트 자체를 바꿔야 할 때만 mod를 고르시면 됩니다.
+mod는 도구 호출부터 화면까지 바꿀 수 있고, JS나 TS로 써요. 패널, 즉시 실행되는 커맨드, 이벤트 재작성이 필요할 때 고릅니다.
+막거나 기록하는 건 Settings 훅으로 충분해요. Claude가 알아야 할 건 Skill, 써야 할 도구는 MCP고요.
+그래서 화면이나 이벤트 자체를 바꿔야 할 때만 mod를 고르시면 됩니다.
 
 [약어]
 • JS/TS: JavaScript, TypeScript
@@ -815,9 +815,9 @@ claude-code-playground 저장소, 공식 지원 대상은 아님
 • blast-radius: 위험 명령을 붙잡고 영향 범위를 보여 준 뒤 진행 또는 취소
 • replay-theater: /replay로 지난 턴의 편집을 단계별 재생
 
-mod로 무엇을 할 수 있는지 공식 샘플 세 개로 감을 잡아 보겠습니다. claude-code-playground 저장소에 있고, 공식 지원 대상은 아닙니다.
+mod로 무엇을 할 수 있는지 공식 샘플 세 개로 감을 잡아볼게요. claude-code-playground 저장소에 있고, 공식 지원 대상은 아닙니다.
 {cue: demo}
-token-weather는 컨텍스트 사용량을 날씨 예보처럼 보여 주고, blast-radius는 rm -rf나 force push 같은 위험 명령을 붙잡아 영향 범위를 보여 준 다음 진행할지 묻습니다. replay-theater는 지난 턴의 파일 편집을 단계별로 재생합니다.
+token-weather는 컨텍스트 사용량을 날씨 예보처럼 보여 줘요. blast-radius는 rm -rf나 force push 같은 위험 명령을 붙잡아서 영향 범위를 보여 주고, 그다음 진행할지 묻습니다. replay-theater는 지난 턴의 파일 편집을 단계별로 재생하고요.
 :::
 
 ---
@@ -876,10 +876,10 @@ token-weather는 컨텍스트 사용량을 날씨 예보처럼 보여 주고, bl
 • mod가 띄운 프로세스는 샌드박스 밖이라 정책으로 로드 자체를 통제, 설치 전 validate
 
 {cue: demo}
-설치 전에 꼭 알아야 할 신뢰 모델입니다.
-첫째, mod는 사용자 권한으로 돕니다. 사용자가 닿는 곳이면 mod도 닿습니다. 비밀값과 모든 프롬프트까지요. mod에는 샌드박스가 없습니다.
-둘째, 그래도 조직의 managed deny 규칙과 managed PreToolUse 차단, 그리고 권한 프롬프트 화면은 mod가 넘지 못합니다.
-셋째, mod가 띄운 프로세스는 샌드박스 밖이기 때문에, 결국 통제는 로드 자체를 막는 것입니다. 설치 전에는 claude plugin validate로 무엇에 끼어들고 무엇을 호출하는지 확인합니다.
+설치 전에 이 신뢰 모델은 꼭 알고 가셔야 해요.
+첫 번째, mod는 사용자 권한으로 돌아요. 사용자가 닿는 곳이면 mod도 닿습니다. 비밀값이랑 모든 프롬프트까지요. mod에는 샌드박스가 없거든요.
+두 번째, 그래도 조직의 managed deny 규칙과 managed PreToolUse 차단, 그리고 권한 프롬프트 화면은 mod가 넘지 못합니다.
+세 번째, mod가 띄운 프로세스는 샌드박스 밖이에요. 그래서 결국 로드 자체를 막아야 통제할 수 있습니다. 설치 전에는 claude plugin validate로 무엇에 끼어들고 무엇을 호출하는지 확인하세요.
 :::
 
 ---
@@ -943,11 +943,11 @@ allowManagedModsOnly와 claude plugin validate 읽는 법
 • 파일, MDM 정책이면 Bedrock에서도 똑같이 적용
 
 {cue: demo}
-mod의 조직 통제입니다.
-첫째, managed-settings.json에서 내장 보안 플러그인의 allowManagedModsOnly를 켜면 조직이 배포한 mod만 로드되고 사용자가 설치한 mod는 로드되지 않습니다.
-둘째, 조직 mod는 로컬 디렉터리 마켓플레이스에 두고 prependPlugins로 싣습니다.
-셋째, 설치 전에는 claude plugin validate를 돌려 두 줄을 읽습니다. hooks는 언제 끼어드는지, calls는 바깥에 무엇을 하는지입니다. calls에 프로세스 실행이나 http fetch가 보이면 정밀 검토 대상입니다.
-넷째, 파일이나 MDM으로 배포한 정책이라 Bedrock 사용자에게도 똑같이 적용됩니다.
+그럼 조직에서 mod를 어떻게 통제할까요?
+첫 번째, managed-settings.json에서 내장 보안 플러그인의 allowManagedModsOnly를 켜세요. 그러면 조직이 배포한 mod만 로드되고, 사용자가 설치한 mod는 로드되지 않습니다.
+두 번째, 조직 mod는 로컬 디렉터리 마켓플레이스에 두고 prependPlugins로 싣습니다.
+세 번째, 설치 전에 claude plugin validate를 돌려서 두 줄을 읽어요. hooks는 언제 끼어드는지, calls는 바깥에 무엇을 하는지 보여 줍니다. calls에 프로세스 실행이나 http fetch가 보이면 정밀 검토 대상이에요.
+네 번째, 파일이나 MDM으로 배포한 정책이니까 Bedrock 사용자에게도 똑같이 적용됩니다.
 
 [약어]
 • MDM: Mobile Device Management, 회사 단말에 설정과 파일을 배포하는 관리 도구
@@ -986,7 +986,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 
 퀴즈입니다. Bedrock 사용자 PC에 managed settings가 없다면, 방금 본 내장 guard, sec-default는 어떻게 될까요?
 {cue: pause}
-정답은 B, 로드되지 않습니다. Bedrock이나 API 키 사용자는 managed settings가 있는 머신에서만 guard가 로드됩니다. 그래서 Ch2에서 managed settings를 배포하는 것이 모든 통제의 전제입니다.
+정답은 B예요. 로드되지 않습니다. Bedrock이나 API 키 사용자는 managed settings가 있는 머신에서만 guard가 로드되거든요. 그래서 Ch2에서 managed settings를 배포하는 게 모든 통제의 전제입니다.
 :::
 
 ---
@@ -1020,9 +1020,9 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 정답 B, managed settings의 disableSideloadFlags와 allowManagedModsOnly
 • CLAUDE.md 문구나 사용자 설정은 정책을 이기지 못함
 
-이번 Part 마지막 퀴즈입니다. 사용자가 --plugin-dir로 mod를 실어도 로드되지 않게 하려면 무엇을 해야 할까요?
+이번 Part 마지막 퀴즈예요. 사용자가 --plugin-dir로 mod를 실어도 로드되지 않게 하려면 무엇을 해야 할까요?
 {cue: pause}
-정답은 B, managed settings에 disableSideloadFlags와 allowManagedModsOnly를 함께 거는 것입니다. CLAUDE.md의 금지 문구는 지침일 뿐이고, 사용자 설정은 정책을 이기지 못합니다.
+정답은 B입니다. managed settings에 disableSideloadFlags와 allowManagedModsOnly를 함께 걸어야 해요. CLAUDE.md의 금지 문구는 지침일 뿐이고, 사용자 설정은 정책을 이기지 못합니다.
 :::
 
 ---
@@ -1055,12 +1055,12 @@ SUPER LAB, 팀 스타터 킷 플러그인 + mod
 • 선택 TASK 06은 Bedrock용 idle compaction mod, 12분
 
 {cue: demo}
-강의를 마치면 약 60분 Super Lab을 합니다.
-Ch3의 고객자산 분석 담당자가 반복한 분석을 팀 자산으로 만드는 흐름입니다. TASK 00에서 Ch3의 에이전트 세 개와 segments.md, Ch2 Lab 2의 DLP 스크립트를 확인하고, 없는 것은 키트 기준본으로 채웁니다.
-TASK 01에서 노후 연금 격차 계산을 retirement-gap 스킬로 고정하고, TASK 02에서 에이전트 세 개와 이 스킬, DLP 훅을 asset-team-kit 하나로 묶습니다. TASK 03에서 로컬 디렉터리 마켓플레이스 fsi-local을 등록해 /plugin install asset-team-kit@fsi-local로 동료 폴더에 설치하고, TASK 04에서 그 킷으로 연금상품 기획서 pension-product.md를 쓰고 플러그인 훅이 주민등록번호 형식 프롬프트를 막는지 봅니다.
-TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 추가하게 시킵니다. TASK 07은 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복합니다. 마지막 TASK 08은 배포 전 체크리스트입니다.
-시간이 남으면 12분짜리 선택 TASK 06, Bedrock용 idle compaction mod를 해 보세요.
-골격은 복사해 붙이고, 나머지는 Claude에게 시키시면 됩니다.
+강의가 끝나면 약 60분 동안 Super Lab을 합니다.
+Ch3에서 고객자산 분석 담당자로 반복한 분석을 이제 팀 자산으로 만드는 거예요. TASK 00에서 Ch3의 에이전트 세 개와 segments.md, Ch2 Lab 2의 DLP 스크립트를 확인하고, 없는 건 키트 기준본으로 채웁니다.
+TASK 01에서 노후 연금 격차 계산을 retirement-gap 스킬로 고정하고, TASK 02에서 에이전트 세 개랑 이 스킬, DLP 훅을 asset-team-kit 하나로 묶습니다. TASK 03에서는 로컬 디렉터리 마켓플레이스 fsi-local을 등록해서 /plugin install asset-team-kit@fsi-local로 동료 폴더에 설치해요. TASK 04에서는 그 킷으로 연금상품 기획서 pension-product.md를 쓰고, 플러그인 훅이 주민등록번호 형식 프롬프트를 막는지 봅니다.
+TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를 추가하게 시킵니다. TASK 07은 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복하세요. 마지막 TASK 08은 배포 전 체크리스트예요.
+시간 남으시면 12분짜리 선택 TASK 06, Bedrock용 idle compaction mod를 해 보세요.
+골격은 복사해서 붙이고, 나머지는 Claude한테 시키시면 됩니다.
 
 [출처]
 • 원본 강의자료(Ch5 PDF) p23
@@ -1112,9 +1112,9 @@ TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 
 • 허용 목록(strictKnownMarketplaces + disableSideloadFlags), 망분리는 seed 디렉터리
 • plugin_loaded로 측정, enabledPlugins false로 롤백
 
-플러그인을 사내 마켓플레이스에 올리기 전 체크리스트입니다. 오늘 Part 1부터 3까지 본 내용이 한 장에 모여 있습니다.
+플러그인을 사내 마켓플레이스에 올리기 전 체크리스트예요. 오늘 Part 1부터 3까지 본 내용을 한 장에 모아뒀습니다.
 {cue: demo}
-카드를 누르거나 아래 화살표로 하나씩 체크하겠습니다. validate를 통과하고 hooks와 calls를 보안팀과 리뷰했는지, 버전을 고정하고 stable과 latest 채널을 나눴는지, 허용 목록과 사이드로드 금지를 걸었는지, 망분리 경로가 필요하면 seed 디렉터리를 준비했는지, plugin_loaded로 측정하는지, 그리고 enabledPlugins를 false로 바꿔 즉시 롤백할 수 있는지입니다.
+카드를 누르거나 아래 화살표로 하나씩 체크할게요. validate를 통과하고 hooks와 calls를 보안팀과 리뷰했는지 보세요. 버전을 고정하고 stable과 latest 채널을 나눴는지, 허용 목록과 사이드로드 금지를 걸었는지도 확인하고요. 망분리 경로가 필요하면 seed 디렉터리를 준비했는지, plugin_loaded로 측정하는지도 봅니다. 그리고 enabledPlugins를 false로 바꿔 즉시 롤백할 수 있는지까지 확인하세요.
 :::
 
 ---
@@ -1144,7 +1144,7 @@ TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 
 • 더 알아보기 여섯 주제: 폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, 남이 만든 mod 리뷰, 운영 지표
 • 플러그인 폴더 구성은 본문 Part 1 구조 장표에 합쳐 둠
 
-여기부터는 더 알아보기입니다. 질문이 나오거나 시간이 남으면 펼칩니다. 플러그인 폴더 구성은 앞의 Part 1 구조 장표에 합쳐 두었습니다.
+여기부터는 더 알아보기예요. 질문이 나오거나 시간이 남으면 펼쳐 볼 거예요. 플러그인 폴더 구성은 앞의 Part 1 구조 장표에 합쳐뒀습니다.
 :::
 
 ---
@@ -1185,9 +1185,9 @@ TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 
 • git URL: 사내 GitLab 등
 • seed 디렉터리: 망분리, 이미지에 미리 심기
 
-마켓플레이스 소스는 네 가지입니다.
+마켓플레이스 소스는 네 가지예요.
 {cue: demo}
-로컬 경로는 오늘 랩처럼 개발과 테스트에, GitHub 저장소는 owner/repo 형식으로 공개나 사내 GitHub에, git URL은 사내 GitLab 같은 곳에, seed 디렉터리는 망분리 환경에 씁니다.
+로컬 경로는 오늘 랩처럼 개발과 테스트에 써요. GitHub 저장소는 owner/repo 형식으로 공개나 사내 GitHub에, git URL은 사내 GitLab 같은 곳에 씁니다. seed 디렉터리는 망분리 환경에 쓰고요.
 :::
 
 ---
@@ -1230,8 +1230,8 @@ TASK 05는 공식 first-mod를 만들고 Claude에게 /tally-reset 커맨드를 
 • 함께 거는 잠금: strictKnownMarketplaces(hostPattern으로 사내 git 허용), disableSideloadFlags, allowManagedModsOnly
 • 문제 시 enabledPlugins를 false로
 
-Part 2의 예시는 GitHub였는데, 사내 git으로 등록하면 이런 모양입니다. extraKnownMarketplaces에 git 소스와 URL을 주고, enabledPlugins로 강제 설치합니다.
-오른쪽은 함께 거는 잠금입니다. strictKnownMarketplaces에 hostPattern을 넣어 사내 git을 허용하고, 사이드로드를 금지하고, 사용자 mod를 차단합니다. 그리고 문제가 생기면 enabledPlugins를 false로 바꿔 즉시 막습니다.
+Part 2에서는 GitHub 예시를 봤잖아요. 사내 git으로 등록하면 이런 모양입니다. extraKnownMarketplaces에 git 소스와 URL을 주고, enabledPlugins로 강제 설치해요.
+오른쪽은 함께 거는 잠금이에요. strictKnownMarketplaces에 hostPattern을 넣어서 사내 git을 허용하고, 사이드로드를 금지하고, 사용자 mod를 차단합니다. 문제가 생기면 enabledPlugins를 false로 바꿔서 즉시 막고요.
 :::
 
 ---
@@ -1284,10 +1284,10 @@ Part 2의 예시는 GitHub였는데, 사내 git으로 등록하면 이런 모양
 • 위험 신호는 프로세스 실행과 네트워크 호출
 • 남이 만든 mod 리뷰: 출처, calls, 버전 고정, 배포 경로, 차단 정책, 모니터링
 
-남이 만든 mod에는 샌드박스가 없기 때문에 리뷰가 필수입니다.
+남이 만든 mod도 샌드박스가 없으니까, 리뷰는 꼭 하셔야 해요.
 {cue: demo}
-첫 탭은 validate 출력 읽는 법입니다. first-mod 예시에서 hooks 줄은 session.start, tool.call처럼 언제 끼어드는지, command.run이나 ui.render처럼 커맨드와 화면을 바꾸는지 보여 주고, calls 줄은 바깥에 무엇을 하는지 보여 줍니다. 프로세스 실행이나 네트워크 호출이 보이면 보안 리뷰 대상입니다.
-두 번째 탭은 리뷰 여섯 항목입니다. 출처, calls, 버전 고정, 배포 경로, 차단 정책, 모니터링입니다.
+첫 탭은 validate 출력을 읽는 방법이에요. first-mod 예시에서 hooks 줄은 session.start, tool.call처럼 언제 끼어드는지, command.run이나 ui.render처럼 커맨드와 화면을 바꾸는지 보여 줍니다. calls 줄은 바깥에 무엇을 하는지 보여 주고요. 프로세스 실행이나 네트워크 호출이 보이면 보안 리뷰 대상입니다.
+두 번째 탭은 리뷰 여섯 항목이에요. 출처, calls, 버전 고정, 배포 경로, 차단 정책, 모니터링입니다.
 :::
 
 ---
@@ -1315,8 +1315,8 @@ Part 2의 예시는 GitHub였는데, 사내 git으로 등록하면 이런 모양
 • 스킬, 에이전트 호출(skill_activated, subagent_completed 이벤트): 어떤 구성요소가 효과적인가
 • 버전 분포(설치 캐시, 이벤트 속성): 구버전 잔존 여부
 
-배포 후에 볼 지표 네 가지입니다.
-plugin_installed로 누가 설치했는지, plugin_loaded로 실제로 쓰이는지, skill_activated와 subagent_completed 이벤트로 어떤 스킬과 에이전트가 효과적인지, 그리고 설치 캐시와 이벤트 속성으로 구버전이 남아 있는지 봅니다. OTel 수집 설정은 Ch6에서 다룹니다.
+배포하고 나서 볼 지표는 네 가지예요.
+plugin_installed로 누가 설치했는지, plugin_loaded로 실제로 쓰이는지 봅니다. skill_activated와 subagent_completed 이벤트로는 어떤 스킬과 에이전트가 효과적인지 보고요. 설치 캐시와 이벤트 속성으로 구버전이 남아 있는지도 확인해요. OTel 수집 설정은 Ch6에서 다룹니다.
 :::
 
 ---
@@ -1348,11 +1348,11 @@ Chapter 4 Key Takeaways
 • mod는 JS 핸들러, 샌드박스가 없으니 validate와 allowManagedModsOnly
 • Bedrock 사용자는 managed settings가 있어야 guard 로드
 
-Chapter 4를 여섯 줄로 정리하겠습니다.
+자, Chapter 4를 여섯 줄로 정리해 볼게요.
 {cue: pause}
-플러그인은 스킬, Subagent, 훅, MCP, mod를 묶은 배포 단위입니다. 조직 배포는 허용 목록, 등록, 강제 설치, 사이드로드 금지를 함께 걸고, 망분리는 seed 디렉터리로 합니다.
-mod는 Claude Code 안에서 도는 JS 핸들러라 화면까지 바꾸지만 샌드박스가 없으니 validate와 allowManagedModsOnly로 통제합니다.
-그리고 Bedrock 사용자는 managed settings가 있어야 내장 guard가 로드됩니다.
+플러그인은 스킬, Subagent, 훅, MCP, mod를 묶은 배포 단위예요. 조직 배포에서는 허용 목록, 등록, 강제 설치, 사이드로드 금지를 함께 걸고요. 망분리는 seed 디렉터리로 합니다.
+mod는 Claude Code 안에서 도는 JS 핸들러라 화면까지 바꿔요. 다만 샌드박스가 없으니까 validate와 allowManagedModsOnly로 통제합니다.
+그리고 Bedrock 사용자는 managed settings가 있어야 내장 guard가 로드된다는 것까지 기억해 주세요.
 :::
 
 ---
@@ -1369,6 +1369,6 @@ mod는 Claude Code 안에서 도는 JS 핸들러라 화면까지 바꾸지만 �
 • 다음은 점심, 이어서 Chapter 5 비용 효율적으로 쓰기
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 이제 Super Lab을 진행하고, 점심 뒤에 Chapter 5 비용 효율적으로 쓰기로 이어 가겠습니다.
+감사합니다. 이제 Super Lab을 진행하고요. 점심 뒤에는 Chapter 5 비용 효율적으로 쓰기로 이어 갈게요.
 질문은 Slack 워크숍 채널에 언제든 편하게 남겨 주세요.
 :::
