@@ -39,8 +39,8 @@ window.__c3codepick = function (F, name, preId, lines, map) {
 • 핵심 메시지: 키는 나눠 주지 않고, 정책은 파일로 강제하고, 막을 것은 앞에서 막는다
 • 깊은 내용은 Ch2 Lab 1과 Lab 2에서 직접 다룸
 
-Chapter 2, Bedrock 위에서 안전하게 쓰기를 시작하겠습니다. Bedrock에 연결하는 법, 회사 정책을 내려보내는 법, 그리고 무엇을 못 하게 막을지까지입니다.
-오늘은 핵심 기능만 쉽게 훑고, 자세한 설정은 실습에서 손으로 해 보겠습니다.
+이번 시간은 Chapter 2, Bedrock 위에서 안전하게 쓰기입니다. Bedrock에 어떻게 연결하고, 회사 정책을 어떻게 내려보내고, 무엇을 못 하게 막을지까지 볼 거예요.
+오늘은 핵심 기능만 쉽게 훑고요, 자세한 설정은 실습에서 직접 해 보겠습니다.
 :::
 ---
 <!-- Slide 2: Agenda -->
@@ -71,10 +71,10 @@ Chapter 2, Bedrock 위에서 안전하게 쓰기를 시작하겠습니다. Bedro
 • 강의는 핵심 기능 위주, IAM 세부, auto mode, 샌드박스, 게이트웨이 같은 깊은 내용은 실습으로
 • 실습은 점심 뒤 13:00 통합 랩 60분에서 Preflight, Ch1 Lab에 이어 Ch2 Lab 1과 Lab 2
 
-오늘 순서는 세 Part입니다.
-첫째, Bedrock에 어떻게 붙는지, 둘째, 회사 정책을 어떻게 파일로 내려보내는지, 셋째, 위험한 동작을 어떻게 막고 기록하는지입니다.
+오늘은 세 Part로 갑니다.
+첫 번째는 Bedrock에 어떻게 붙는지예요. 두 번째는 회사 정책을 어떻게 파일로 내려보내는지, 세 번째는 위험한 동작을 어떻게 막고 기록하는지입니다.
 {cue: pause}
-처음 보시는 분이 많아서 강의는 꼭 알아야 할 기능만 짚습니다. IAM 정책 세부, auto mode, 샌드박스, 게이트웨이 같은 깊은 내용은 Ch2 Lab 1과 Lab 2에서 직접 해 보면서 익히겠습니다.
+처음 보시는 분이 많아서 강의에서는 꼭 알아야 할 기능만 짚을게요. IAM 정책 세부, auto mode, 샌드박스, 게이트웨이 같은 깊은 내용은 Ch2 Lab 1과 Lab 2에서 직접 해 보면서 익히시면 됩니다.
 :::
 ---
 <!-- Slide 3: Why Bedrock -->
@@ -104,11 +104,11 @@ Chapter 2, Bedrock 위에서 안전하게 쓰기를 시작하겠습니다. Bedro
 • AWS 청구서, Cost Explorer, Budgets로 청구 일원화
 • 대신 관리 콘솔, Analytics, 정책 서버가 없어서 파일, MDM, OTel로 직접 채움
 
-금융권 고객께서 Claude Code를 Bedrock으로 쓰시는 이유는 크게 세 가지입니다.
-첫째, 추론이 내 AWS 계정 경계 안에서 일어납니다. 다만 처리 리전은 추론 프로필 범위를 따르고, global 프로필은 리전 밖에서 처리될 수 있습니다.
-둘째, 이미 쓰고 계신 IAM, Identity Center, CloudTrail, Organizations를 그대로 씁니다. 셋째, 청구가 AWS 청구서 하나로 모입니다.
+금융권 고객께서 Claude Code를 Bedrock으로 쓰시는 이유는 크게 세 가지예요.
+첫 번째는 추론이 내 AWS 계정 경계 안에서 일어난다는 겁니다. 다만 처리 리전은 추론 프로필 범위를 따르고요. global 프로필이면 리전 밖에서 처리될 수도 있어요.
+두 번째는 이미 쓰고 계신 IAM, Identity Center, CloudTrail, Organizations를 그대로 쓴다는 거예요. 세 번째는 청구가 AWS 청구서 하나로 모인다는 거고요.
 {cue: pause}
-대신 잃는 것도 있습니다. claude.ai의 관리 콘솔, Analytics, 정책 서버가 없습니다. 그 빈자리를 정책은 파일과 MDM으로, 관측은 OTel로 채우는 것이 이 챕터와 Ch6의 내용입니다.
+대신 빠지는 것도 있어요. claude.ai의 관리 콘솔, Analytics, 정책 서버는 없습니다. 그래서 정책은 파일과 MDM으로, 관측은 OTel로 그 빈자리를 채워야 해요. 이번 챕터와 Ch6에서 볼 내용입니다.
 
 [약어]
 • IAM: Identity and Access Management
@@ -139,7 +139,7 @@ Chapter 2, Bedrock 위에서 안전하게 쓰기를 시작하겠습니다. Bedro
 • Part 1: Bedrock에 연결하기
 • 환경변수 두 개, SSO로 로그인, 모델 고정과 팀별 비용
 
-첫 번째 Part, Bedrock에 연결하기입니다. Claude Code가 Bedrock을 처음 부르기까지 무엇이 필요한지, 그리고 여러 명이 쓸 때 꼭 정해야 할 두 가지, 로그인 방식과 모델을 보겠습니다.
+첫 번째 Part는 Bedrock에 연결하기예요. Claude Code가 Bedrock을 처음 부르려면 뭐가 필요한지부터 볼게요. 그다음 여러 명이 쓸 때 꼭 정해야 할 두 가지, 로그인 방식과 모델을 보겠습니다.
 :::
 ---
 <!-- Slide 5: Manual setup and region order -->
@@ -203,11 +203,11 @@ Chapter 2, Bedrock 위에서 안전하게 쓰기를 시작하겠습니다. Bedro
 • 리전 결정 순서: AWS_REGION, AWS_DEFAULT_REGION, 활성 프로필의 region, 기본 us-east-1
 • /status에서 출처까지 확인
 
-수동 설정은 환경변수 두 개면 됩니다. CLAUDE_CODE_USE_BEDROCK=1, 그리고 프로필에 리전이 없을 때 AWS_REGION입니다. 사내 엔드포인트나 게이트웨이를 쓰면 ANTHROPIC_BEDROCK_BASE_URL을 추가합니다.
+수동 설정은 환경변수 두 개면 돼요. CLAUDE_CODE_USE_BEDROCK=1, 그리고 프로필에 리전이 없을 때는 AWS_REGION입니다. 사내 엔드포인트나 게이트웨이를 쓰시면 ANTHROPIC_BEDROCK_BASE_URL을 추가하고요.
 {cue: demo}
-헷갈리는 건 리전이 어디서 정해지느냐입니다. 오른쪽 순서는 위가 먼저입니다. AWS_REGION, AWS_DEFAULT_REGION, 활성 프로필의 region, 그리고 마지막이 기본값 us-east-1입니다.
-버튼이나 아래 화살표로 위에서부터 하나씩 빼 보겠습니다. 세 값이 다 있으면 1번 AWS_REGION이 이기고, AWS_REGION을 빼면 2번 AWS_DEFAULT_REGION, 그것도 빼면 3번 프로필의 region, 아무것도 없으면 4번 기본값 us-east-1입니다.
-실제 환경에서는 /status에서 리전과 그 출처를 꼭 확인해 주세요.
+여기서 헷갈리는 게 리전을 어디서 정하느냐인데요. 오른쪽에서 위에 있는 게 먼저예요. AWS_REGION, AWS_DEFAULT_REGION, 활성 프로필의 region, 마지막이 기본값 us-east-1입니다.
+버튼이나 아래 화살표로 위에서부터 하나씩 빼 볼게요. 세 값이 다 있으면 1번 AWS_REGION이 이기죠. AWS_REGION을 빼면 2번 AWS_DEFAULT_REGION, 그것도 빼면 3번 프로필의 region을 씁니다. 아무것도 없으면 4번 기본값 us-east-1이고요.
+실제 환경에서는 /status를 열어서 리전과 그 출처를 꼭 확인해 주세요.
 :::
 ---
 <!-- Slide 6: Five credential methods -->
@@ -250,10 +250,10 @@ Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
 • AWS CLI 설정은 장기 액세스 키를 디스크에 저장해 비권장, 콘솔 자격증명은 보조 수단
 • Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
 
-자격증명 방식은 다섯 가지이고, 이 중 Bedrock API 키만 AWS SDK 기본 체인을 거치지 않습니다.
+자격증명 방식은 다섯 가지예요. 이 중에서 Bedrock API 키만 AWS SDK 기본 체인을 거치지 않습니다.
 {cue: demo}
-하나씩 보면, aws configure는 장기 액세스 키를 디스크에 저장하니 비권장, 액세스 키 환경변수와 Bedrock API 키도 장기 키라 비권장, aws login 콘솔 자격증명은 보조 수단입니다.
-금융권 권장은 SSO 프로필 하나입니다. aws sso login으로 받은 짧은 수명의 자격증명을 AWS_PROFILE로 씁니다.
+하나씩 볼게요. aws configure는 장기 액세스 키를 디스크에 저장해서 권하지 않아요. 액세스 키 환경변수와 Bedrock API 키도 장기 키라 권하지 않고요. aws login 콘솔 자격증명은 보조 수단입니다.
+금융권에서 권하는 건 SSO 프로필 하나예요. aws sso login으로 받은 짧은 수명의 자격증명을 AWS_PROFILE로 쓰시면 됩니다.
 
 [약어]
 • SSO: Single Sign-On
@@ -323,11 +323,11 @@ SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport
 • 프록시 경유, TLS 검사 프록시 지원, 무한 로그인 탭이면 awsAuthRefresh 제거
 
 {cue: demo}
-SSO를 쓰면 자격증명이 만료되는 게 문제인데요, Claude Code가 대신 로그인해 줍니다. 단계별로 보겠습니다.
-첫째, 세션 시작에 SDK 체인으로 자격증명을 찾고 만료 5분 전까지 캐시합니다.
-둘째, 만료되면 GetCallerIdentity로 확인하고 awsAuthRefresh에 넣은 aws sso login을 실행합니다. 브라우저에서 로그인하면 세션이 그대로 이어집니다.
-셋째, 교차 계정이라면 awsCredentialExport를 씁니다. 세션 시작마다 실행되고 자격증명을 JSON으로 내놓습니다.
-넷째, 로그인 탭이 계속 열린다면 awsAuthRefresh를 빼고 원인을 보시면 됩니다.
+SSO를 쓰면 자격증명이 만료되잖아요. 이때 Claude Code가 대신 로그인해 줍니다. 어떻게 이어지는지 하나씩 볼게요.
+첫 번째는 세션 시작이에요. SDK 체인으로 자격증명을 찾고 만료 5분 전까지 캐시합니다.
+두 번째, 만료되면 GetCallerIdentity로 확인하고 awsAuthRefresh에 넣은 aws sso login을 실행해요. 브라우저에서 로그인하시면 세션은 그대로 이어집니다.
+세 번째는 교차 계정인데요. 이때는 awsCredentialExport를 씁니다. 세션 시작마다 실행되고, 자격증명을 JSON으로 내놓아요.
+네 번째, 로그인 탭이 계속 열리면 awsAuthRefresh를 빼고 원인을 보시면 돼요.
 
 [약어]
 • TLS: Transport Layer Security
@@ -365,9 +365,9 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 고정하지 않으면 Opus 단가로 청구
 • 그래서 여러 사용자에게 배포할 때는 반드시 고정
 
-퀴즈입니다. 모델을 고정하지 않은 Bedrock 배포에서 기본 주 모델은 무엇일까요? 손을 들어 주세요.
+여기서 퀴즈 하나 갈게요. 모델을 고정하지 않은 Bedrock 배포에서 기본 주 모델은 뭘까요? 손 들어서 답해 주세요.
 {cue: pause}
-정답은 B, Opus 5.5입니다. 고정하지 않으면 모든 사용자가 Opus 단가로 청구됩니다. 그래서 다음 슬라이드처럼 반드시 고정합니다.
+정답은 B, Opus 5.5예요. 고정하지 않으면 모든 사용자가 Opus 단가로 청구되거든요. 그래서 다음 슬라이드처럼 반드시 고정해야 합니다.
 
 [출처]
 • code.claude.com/docs amazon-bedrock 문서
@@ -426,10 +426,10 @@ ANTHROPIC_DEFAULT_*와 리전에 따른 prefix 규칙
 • prefix 규칙: us-*는 us., eu-*는 eu., ap-*(서울 포함)는 apac., 그 외는 global.
 • 허용값 us, eu, apac, jp, au, global, 계정에 있는 profile ID로 채움
 
-여러 사용자에게 배포할 때는 managed settings의 env에서 세 가지 모델을 반드시 고정합니다. ANTHROPIC_DEFAULT_OPUS, SONNET, HAIKU_MODEL입니다.
+방금 퀴즈에서 봤죠. 여러 사용자에게 배포할 때는 managed settings의 env에서 세 가지 모델을 반드시 고정해야 해요. ANTHROPIC_DEFAULT_OPUS, SONNET, HAIKU_MODEL입니다.
 {cue: demo}
-모델 ID 앞의 prefix는 리전에 따라 달라집니다. 오른쪽에서 골라 보면, us 리전은 us., eu 리전은 eu., 서울을 포함한 ap 리전은 apac., 그 밖은 global.입니다.
-모델을 하나하나 고정하는 대신 ANTHROPIC_BEDROCK_REGION_PREFIX로 prefix만 바꾸는 방법도 있습니다. 어느 쪽이든 실제 값은 고객님 계정에 있는 profile ID로 채워 주세요.
+모델 ID 앞의 prefix는 리전에 따라 달라져요. 오른쪽에서 골라 볼게요. us 리전은 us., eu 리전은 eu., 서울을 포함한 ap 리전은 apac., 그 밖은 global.입니다.
+모델을 하나하나 고정하는 대신 ANTHROPIC_BEDROCK_REGION_PREFIX로 prefix만 바꿀 수도 있어요. 어느 쪽이든 실제 값은 고객님 계정에 있는 profile ID로 채워 주세요.
 :::
 ---
 <!-- Slide 10: Team cost tagging -->
@@ -488,11 +488,11 @@ Application inference profile로 경로와 비용 경계를 고정
 • 팀마다 프로필 하나가 비용, 쿼터, 로그의 경계
 
 {cue: demo}
-팀별로 비용을 나누는 방법입니다. 세 단계로 보겠습니다.
-첫째, 원본 프로필을 copyFrom으로 복사해 팀 A용 Application inference profile을 만들고 team, costcenter 태그를 답니다.
-둘째, 그 ARN을 managed settings의 modelOverrides에 연결합니다. 사용자가 /model에서 고르는 모델도 이 ARN으로 라우팅되고, availableModels로 고를 수 있는 모델 자체를 제한합니다.
-셋째, 태그로 Cost Explorer에서 팀별 비용을 봅니다. 여기서 자주 놓치시는 게, Billing에서 비용 할당 태그로 활성화해야 보인다는 점입니다.
-팀마다 프로필 하나가 비용, 쿼터, 로그의 경계가 되고, IAM에서도 이 ARN 단위로 허용할 수 있습니다.
+그럼 팀별로 비용은 어떻게 나눌까요? 세 단계로 볼게요.
+첫 번째는 원본 프로필을 copyFrom으로 복사하는 거예요. 팀 A용 Application inference profile을 만들고 team, costcenter 태그를 답니다.
+두 번째는 그 ARN을 managed settings의 modelOverrides에 연결하는 겁니다. 사용자가 /model에서 고르는 모델도 이 ARN으로 라우팅돼요. availableModels로 고를 수 있는 모델 자체를 제한하고요.
+세 번째, 태그로 Cost Explorer에서 팀별 비용을 봅니다. 여기서 자주 놓치시는데요. Billing에서 비용 할당 태그로 활성화해야 보여요.
+이렇게 팀마다 프로필 하나가 비용, 쿼터, 로그의 경계가 됩니다. IAM에서도 이 ARN 단위로 허용할 수 있고요.
 
 [약어]
 • ARN: Amazon Resource Name
@@ -521,7 +521,7 @@ Application inference profile로 경로와 비용 경계를 고정
 • Part 2: 정책은 파일로
 • managed settings 파일, 같은 키는 위가 이긴다, /status로 확인
 
-두 번째 Part, 정책은 파일로입니다. Bedrock에는 claude.ai 같은 관리 콘솔이 없습니다. 그래서 회사 정책을 파일 한 장으로 단말에 내려보내고, 그것이 실제로 적용됐는지 확인하는 흐름을 보겠습니다.
+두 번째 Part는 정책은 파일로입니다. Bedrock에는 claude.ai 같은 관리 콘솔이 없잖아요. 그래서 회사 정책을 파일 한 장으로 단말에 내려보내야 해요. 그다음 실제로 적용됐는지까지 확인해 보겠습니다.
 :::
 ---
 <!-- Slide 12: Policy delivery channels -->
@@ -600,11 +600,11 @@ Bedrock에서 정책이 도달하는 길과 병합 규칙
 • managed 소스가 여럿이면 기본은 서버, MDM, 파일 순으로 하나만, managedSourcesBehavior "merge"로 모두 합침
 
 {cue: demo}
-정책이 단말에 닿는 길을 단계별로 보겠습니다.
-claude.ai 콘솔의 서버 관리 설정은 Bedrock에서 쓸 수 없습니다. Team, Enterprise 조직이 필요하고, 비공식 호스트를 쓰면 꺼지기 때문입니다.
-대신 MDM으로 plist와 레지스트리를 내려보내거나, OS마다 정해진 경로에 managed-settings.json을 둡니다.
-여러 팀이 정책을 나눠 관리한다면 파일 옆 managed-settings.d 디렉터리에 조각을 두시면 이름순으로 합쳐집니다.
-마지막으로 주의할 점, managed 소스가 여럿이면 기본은 하나만 적용됩니다. 모두 합치려면 managedSourcesBehavior를 merge로 둡니다.
+그럼 정책을 단말까지 어떻게 내려보내는지 볼게요.
+claude.ai 콘솔의 서버 관리 설정은 Bedrock에서 쓸 수 없어요. Team, Enterprise 조직이 필요하고, 비공식 호스트를 쓰면 꺼지거든요.
+대신 MDM으로 plist와 레지스트리를 내려보내거나, OS마다 정해진 경로에 managed-settings.json을 두시면 됩니다.
+여러 팀이 정책을 나눠 관리한다면 파일 옆 managed-settings.d 디렉터리에 조각을 두세요. 그러면 이름순으로 합쳐져요.
+마지막으로 하나 챙기셔야 해요. managed 소스가 여럿이어도 기본은 하나만 적용됩니다. 모두 합치려면 managedSourcesBehavior를 merge로 두시면 돼요.
 :::
 ---
 <!-- Slide 13: Settings precedence -->
@@ -662,10 +662,10 @@ claude.ai 콘솔의 서버 관리 설정은 Bedrock에서 쓸 수 없습니다. 
 • CLI 인자는 이번 세션에만, Local은 개인 미커밋, Project는 팀 공유, User는 내 PC 전체
 
 {cue: demo}
-설정은 다섯 층에서 올 수 있고, 같은 키가 충돌하면 위가 이깁니다. 다섯 층에 모두 값을 넣고 위에서부터 하나씩 빼 보겠습니다.
-처음에는 1번 Managed가 이깁니다. 관리자가 Managed에 값을 두면 아래 어떤 층도 덮어쓰지 못하고, 이것이 사용자가 되돌릴 수 없는 정책의 원리입니다.
-Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 팀이 커밋한 Project, 마지막에 5번 User 값이 쓰입니다.
-화면의 모델 값은 설명용 예시입니다.
+설정은 다섯 층에서 올 수 있어요. 같은 키가 충돌하면 위가 이기고요. 다섯 층에 모두 값을 넣고, 위에서부터 하나씩 빼 볼게요.
+처음에는 1번 Managed가 이깁니다. 관리자가 Managed에 값을 두면 아래 어떤 층도 덮어쓰지 못해요. 그러니까 사용자가 정책을 되돌릴 수 없는 거죠.
+Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local을 씁니다. 그다음은 4번 팀이 커밋한 Project, 마지막이 5번 User 값이고요.
+화면에 보이는 모델 값은 설명용 예시예요.
 :::
 ---
 <!-- Slide 14: Verification -->
@@ -694,10 +694,10 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 �
 • 3 /model에 허용한 모델만 보이는지
 • 4 .env 읽기 요청이 거부되는지
 
-정책은 배포했다고 끝이 아니라 적용됐는지 확인해야 합니다. 네 단계입니다.
+정책을 배포했으면 실제로 적용됐는지도 봐야 하잖아요. 네 단계로 확인합니다.
 {cue: demo}
-첫째, /status의 Setting sources에 Enterprise managed settings가 보여야 합니다. 둘째, 개인 설정 파일에서 같은 키를 바꿔도 적용되지 않아야 합니다.
-셋째, /model에 허용한 모델만 보여야 하고, 넷째, .env를 읽어 달라고 했을 때 거부돼야 합니다. 랩에서 이 네 가지를 그대로 해 봅니다.
+첫 번째, /status의 Setting sources에 Enterprise managed settings가 보여야 해요. 두 번째는 개인 설정 파일에서 같은 키를 바꿔 보는 겁니다. 바꿔도 적용되지 않아야 하죠.
+세 번째는 /model에 허용한 모델만 보이는지예요. 네 번째, .env를 읽어 달라고 하면 거부돼야 합니다. 랩에서 이 네 가지를 그대로 해 볼 거예요.
 :::
 ---
 <!-- Slide 15: Part 03 divider -->
@@ -723,7 +723,7 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 �
 • Part 3: 무엇을 못 하게 할 것인가
 • deny가 항상 이긴다, 훅은 exit 2만 차단, DLP 다섯 겹과 남는 기록
 
-세 번째 Part, 무엇을 못 하게 할 것인가입니다. 사전 설문에서 가장 많이 고른 주제였습니다. 권한 규칙, 훅, 그리고 여러 겹을 쌓는 DLP를 순서대로 보겠습니다.
+세 번째 Part는 무엇을 못 하게 할 것인가입니다. 사전 설문에서 가장 많이 고르신 주제였어요. 권한 규칙부터 보고, 그다음 훅, 그리고 여러 겹을 쌓는 DLP 순서로 갈게요.
 :::
 ---
 <!-- Slide 16: Pre-survey -->
@@ -768,8 +768,8 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 �
 • 규제, 감사 대응 44명, 팀 표준화 58명 (복수 선택)
 
 {cue: pause}
-사전 설문에서 138명 중 51명이 망분리와 보안, 특히 DLP와 감사로그를 기대 주제로 골라 주셨습니다. 규제와 감사 대응도 44명이었습니다.
-이 챕터는 그 질문에 답하는 시간입니다. 무엇을 막을 수 있는지, 그리고 막지 못한 것은 무엇으로 기록이 남는지까지 정리하겠습니다.
+사전 설문에서 138명 중 51명이 망분리와 보안, 특히 DLP와 감사로그를 기대 주제로 골라 주셨어요. 규제와 감사 대응도 44명이었고요.
+이번 챕터에서 그 질문에 답해 보려고 합니다. 무엇을 막을 수 있는지, 그럼 막지 못한 것은 어떤 기록으로 남는지까지 정리해 볼게요.
 
 [출처]
 • 이번 워크숍 사전 설문, 참가 확정자 138명, 복수 선택
@@ -849,12 +849,12 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local, 그다음 4번 �
 • Bash 패턴은 우회가 쉬우니 샌드박스와 함께, 복잡한 판단은 훅으로
 
 {cue: demo}
-권한 규칙이 어떻게 평가되는지 단계별로 보겠습니다.
-첫째, 규칙은 여러 스코프에 적혀 있지만 평가 전에 한 목록으로 합쳐집니다. 그래서 어느 파일에 있느냐보다 무엇이 있느냐가 중요합니다.
-둘째, deny에 일치하면 바로 거부입니다. user에 allow가 있어도 managed에 deny가 있으면 거부됩니다.
-셋째, ask에 일치하면 사람에게 묻고, 넷째, allow에 일치하면 묻지 않고 실행합니다.
+권한 규칙을 어떤 순서로 평가하는지 하나씩 볼게요.
+첫 번째, 규칙은 여러 스코프에 적혀 있어도 평가 전에 한 목록으로 합쳐져요. 그래서 어느 파일에 있느냐보다 어떤 규칙이 있느냐를 보셔야 합니다.
+두 번째, deny에 일치하면 바로 거부예요. user에 allow가 있어도 managed에 deny가 있으면 거부됩니다.
+세 번째, ask에 일치하면 사람에게 물어봐요. 네 번째, allow에 일치하면 묻지 않고 실행하고요.
 마지막으로 어디에도 일치하지 않으면 현재 권한 모드의 기본 동작을 따릅니다.
-오른쪽 문법을 보시면 형식은 Tool 괄호 지정자 하나입니다. 현장에서 자주 걸리는 지점은 Bash 패턴이 우회가 쉽다는 것인데요, 그래서 뒤에서 볼 샌드박스와 함께 씁니다.
+오른쪽 문법은 Tool 괄호 지정자 하나예요. 현장에서 자주 걸리는 게 Bash 패턴인데, 우회하기가 쉽거든요. 그래서 뒤에서 볼 샌드박스와 함께 씁니다.
 
 [약어]
 • MCP: Model Context Protocol, 외부 시스템을 도구로 붙이는 표준
@@ -891,9 +891,9 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 정답 C, 거부
 • 규칙은 합쳐진 뒤 deny가 먼저 평가되므로 user의 allow는 의미 없음
 
-퀴즈입니다. user settings에는 curl을 허용하는 allow가, managed에는 같은 패턴의 deny가 있습니다. 결과는 무엇일까요?
+퀴즈 하나 해 볼게요. user settings에는 curl을 허용하는 allow가 있고, managed에는 같은 패턴의 deny가 있어요. 어떻게 될까요?
 {cue: pause}
-정답은 C, 거부입니다. 방금 본 것처럼 규칙은 먼저 합쳐지고 deny가 가장 먼저 평가됩니다. 나중에 적은 설정이 이기는 방식이 아닙니다.
+정답은 C, 거부예요. 방금 본 것처럼 규칙은 먼저 합쳐지고, deny부터 평가하거든요. 나중에 적은 설정이 이기는 방식은 아닙니다.
 :::
 ---
 <!-- Slide 19: DLP 5 layers -->
@@ -969,12 +969,12 @@ DLP 5층과 층마다의 설정
 • 5 반출 채널: 웹, MCP, 플러그인, mod를 허용 목록으로, WebFetch 사전 검사는 skipWebFetchPreflight
 
 {cue: demo}
-DLP 5층을 한 층씩 보겠습니다. 위에서 아래로 내려갈수록 앞 층이 놓친 것을 잡는 구조입니다.
-1층 권한 규칙은 민감 파일 읽기와 위험 명령을 막지만, Bash로 모양을 바꾸면 쉽게 우회됩니다.
-그래서 2층 샌드박스가 있습니다. Claude가 실행하는 Bash를 OS 수준에서 격리하고, allowManagedDomainsOnly를 켜면 목록 밖 도메인으로는 연결 자체가 안 됩니다. failIfUnavailable과 비격리 재시도 금지로 샌드박스를 우회하는 길도 막습니다. 단, mod가 띄운 프로세스는 샌드박스 밖이라는 점은 Ch4에서 다시 봅니다.
-3층 훅은 내용을 봅니다. 프롬프트와 도구 인자에서 주민번호나 카드번호 같은 패턴을 찾아 exit 2로 막는 예제입니다.
-4층 Bedrock Guardrails는 유일하게 AWS 계정 쪽에서 동작합니다. 사용자 정의 헤더로 Guardrail을 지정하면 모델로 가는 내용의 PII를 거릅니다. 호출 역할에는 bedrock:ApplyGuardrail 권한이 필요하고, 조직이 강제하려면 IAM 조건 bedrock:GuardrailIdentifier를 씁니다.
-5층은 웹, MCP, 플러그인, mod처럼 다른 통로를 허용 목록으로 닫는 것입니다. 하나 알아 두실 점은 WebFetch의 사전 검사가 호스트명을 Anthropic으로 보낸다는 것인데, skipWebFetchPreflight로 끌 수 있습니다.
+DLP 5층을 한 층씩 볼게요. 위에서 아래로 내려가면서 앞 층이 놓친 것을 잡는 구조예요.
+1층 권한 규칙은 민감 파일 읽기와 위험 명령을 막습니다. 근데 Bash로 모양을 바꾸면 쉽게 우회돼요.
+그래서 2층 샌드박스가 있는 거죠. Claude가 실행하는 Bash를 OS 수준에서 격리합니다. allowManagedDomainsOnly를 켜면 목록 밖 도메인으로는 연결 자체가 안 돼요. failIfUnavailable과 비격리 재시도 금지로 샌드박스를 우회하는 길도 막고요. 다만 mod가 띄운 프로세스는 샌드박스 밖입니다. 이건 Ch4에서 다시 볼게요.
+3층 훅은 내용을 봐요. 프롬프트와 도구 인자에서 주민번호나 카드번호 같은 패턴을 찾아서 exit 2로 막는 예제입니다.
+4층 Bedrock Guardrails만 AWS 계정 쪽에서 동작해요. 사용자 정의 헤더로 Guardrail을 지정하면 모델로 가는 내용의 PII를 거릅니다. 호출 역할에는 bedrock:ApplyGuardrail 권한이 필요하고요. 조직이 강제하려면 IAM 조건 bedrock:GuardrailIdentifier를 씁니다.
+5층은 웹, MCP, 플러그인, mod처럼 다른 통로를 허용 목록으로 닫는 거예요. 여기서 알아 두실 게 하나 있어요. WebFetch의 사전 검사는 호스트명을 Anthropic으로 보내거든요. skipWebFetchPreflight로 끌 수 있습니다.
 
 [약어]
 • PII: Personally Identifiable Information, 개인 식별 정보
@@ -1042,12 +1042,12 @@ DLP 5층을 한 층씩 보겠습니다. 위에서 아래로 내려갈수록 앞 
 • 패턴은 탐지 예시, 운영 룰은 사내 DLP 기준
 
 {cue: demo}
-3층 훅을 스크립트로 보겠습니다.
-첫 번째 경우, 민감 패턴이 없으면 exit 0으로 통과합니다. 훅은 UserPromptSubmit에서는 프롬프트를, PreToolUse에서는 도구 인자를 검사합니다.
-두 번째, 테스트용 가짜 주민번호가 들어오면 grep이 걸리고 exit 2로 막습니다. 이때 차단 사유는 프롬프트 단계라면 사용자에게, 도구 실행 전 단계라면 stderr 메시지가 Claude에게 갑니다.
+방금 본 3층 훅을 스크립트로 볼게요.
+첫 번째 경우는 민감 패턴이 없을 때예요. exit 0으로 통과합니다. 훅은 UserPromptSubmit에서는 프롬프트를, PreToolUse에서는 도구 인자를 검사하고요.
+두 번째, 테스트용 가짜 주민번호가 들어오면 grep이 걸리고 exit 2로 막아요. 이때 차단 사유는 프롬프트 단계라면 사용자에게 갑니다. 도구 실행 전 단계라면 stderr 메시지가 Claude에게 가고요.
 {cue: pause}
-세 번째가 핵심입니다. 이 예제 그대로는 jq가 실패하면 검사 없이 통과합니다. 또 훅이 exit 2가 아닌 다른 코드로 끝나면 비차단 오류라 그대로 진행됩니다. fail-open입니다.
-그래서 네 번째 수정본은 jq 해석 실패를 exit 2로 막고, grep이 1, 즉 불일치일 때만 통과시킵니다. 일치든 실행 오류든 나머지는 전부 차단합니다. 랩에서 이 두 상태를 직접 확인합니다.
+근데 세 번째를 보세요. 이 예제 그대로는 jq가 실패하면 검사 없이 통과해요. 또 훅이 exit 2가 아닌 다른 코드로 끝나면 비차단 오류라 그대로 진행됩니다. 이게 fail-open이에요.
+그래서 네 번째 수정본에서는 jq 해석 실패를 exit 2로 막습니다. grep이 1, 즉 불일치일 때만 통과시키고요. 일치든 실행 오류든 나머지는 전부 차단해요. 랩에서 이 두 상태를 직접 확인할 겁니다.
 :::
 ---
 <!-- Slide 21: Quick check 3 -->
@@ -1081,9 +1081,9 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 정답 B, 통과
 • exit 2만 차단, 그 외 0이 아닌 종료는 비차단 오류로 진행
 
-방금 본 내용을 퀴즈로 확인하겠습니다. DLP 훅이 jq 미설치로 exit 127로 끝나면 어떻게 될까요?
+방금 본 내용으로 퀴즈 하나 갈게요. DLP 훅이 jq 미설치로 exit 127로 끝나면 어떻게 될까요?
 {cue: pause}
-정답은 B, 통과입니다. 많은 분이 A를 고르시는데요, 훅은 exit 2만 차단으로 봅니다. 그래서 오류 경로에도 exit 2를 꼭 넣어야 합니다.
+정답은 B, 통과예요. 많은 분이 A를 고르시는데요. 훅은 exit 2만 차단으로 보거든요. 그래서 오류 경로에도 exit 2를 꼭 넣어야 합니다.
 :::
 ---
 <!-- Slide 22: What remains as records -->
@@ -1121,10 +1121,10 @@ QUICK CHECK, 손을 들어 답해 주세요
 • ZDR은 AWS 계약 조건
 • 세션 로그도 고객 데이터를 담을 수 있음
 
-감사에서 근거가 되는 기록은 네 곳에 남습니다.
-PC에는 세션 JSONL이 남고, AWS에는 CloudTrail의 Bedrock 호출 이력이 남습니다. 선택으로 Bedrock model invocation logging을 켜면 프롬프트 원문까지 남고, OTel로 사용자별 토큰과 비용, 도구 사용을 모읍니다.
+감사에서 근거로 쓸 기록은 네 곳에 남아요.
+PC에는 세션 JSONL이 남고요. AWS에는 CloudTrail의 Bedrock 호출 이력이 남습니다. 선택으로 Bedrock model invocation logging을 켜면 프롬프트 원문까지 남아요. OTel로는 사용자별 토큰과 비용, 도구 사용을 모읍니다.
 {cue: pause}
-주의할 점은, invocation logging은 원문이 저장되니 그 저장소 자체가 민감 데이터가 된다는 것입니다. 세션 로그도 마찬가지로 고객 데이터를 담을 수 있습니다. 그리고 Anthropic 텔레메트리는 Bedrock에서 기본으로 꺼져 있지만, WebFetch의 사전 검사는 호스트명을 api.anthropic.com으로 보냅니다. 끄려면 skipWebFetchPreflight를 씁니다.
+여기서 invocation logging은 원문이 저장되니까 그 저장소 자체가 민감 데이터가 돼요. 세션 로그도 고객 데이터를 담을 수 있고요. 그리고 Anthropic 텔레메트리는 Bedrock에서 기본으로 꺼져 있어요. 다만 WebFetch의 사전 검사는 호스트명을 api.anthropic.com으로 보냅니다. 끄려면 skipWebFetchPreflight를 쓰시면 돼요.
 :::
 ---
 <!-- Slide 23: Deeper topics move to the labs -->
@@ -1156,11 +1156,11 @@ PC에는 세션 JSONL이 남고, AWS에는 CloudTrail의 Bedrock 호출 이력�
 • Ch2 Lab 2: DLP 훅 강제와 fail-open 수정, auto mode, 선택으로 샌드박스, Guardrails, 확장 통제
 • 망분리 준비물, OS 차이, 쿼터는 PDF 덱의 더 알아보기
 
-오늘 강의에서는 일부러 깊이 들어가지 않은 주제가 있습니다. 그 내용은 실습에서 직접 해 보시면 훨씬 빨리 익숙해집니다.
+오늘 강의에서 일부러 깊이 들어가지 않은 주제들이 있죠. 그 내용은 실습에서 직접 해 보시면 훨씬 빨리 익숙해져요.
 {cue: pause}
-Lab 1에서는 지금 연결을 읽으면서 최소 IAM 정책과 비교하고, 정책 파일을 배포한 뒤 개인 설정으로 뚫어 봅니다. 정책 조각과 깨진 JSON, 게이트웨이 그룹 정책도 여기서 봅니다.
-Lab 2에서는 DLP 훅을 만들어 정책으로 강제하고, 일부러 고장 내서 fail-open을 확인한 뒤 고칩니다. auto mode, 샌드박스, Guardrails도 실습으로 다룹니다.
-망분리 환경 준비물이나 OS별 차이 같은 운영 주제는 PDF 덱의 더 알아보기를 참고해 주세요.
+Lab 1에서는 지금 연결을 읽으면서 최소 IAM 정책과 비교합니다. 정책 파일을 배포한 뒤에는 개인 설정으로 뚫어 볼 거예요. 정책 조각과 깨진 JSON, 게이트웨이 그룹 정책도 여기서 보고요.
+Lab 2에서는 DLP 훅을 만들어서 정책으로 강제합니다. 그다음 일부러 고장 내서 fail-open을 확인하고 고쳐 볼 거예요. auto mode, 샌드박스, Guardrails도 실습으로 다룹니다.
+망분리 환경 준비물이나 OS별 차이 같은 운영 주제는 PDF 덱의 더 알아보기를 참고하시면 돼요.
 :::
 ---
 <!-- Slide 24: Key Takeaways -->
@@ -1191,11 +1191,11 @@ Chapter 2 Key Takeaways
 • 정책은 managed-settings.json, managed가 이기고 /status로 확인
 • deny가 먼저, 훅은 exit 2만 차단, DLP는 다섯 겹과 기록
 
-오늘 50분을 여섯 줄로 정리하겠습니다.
+자, 오늘 50분을 여섯 줄로 정리해 볼게요.
 {cue: pause}
-연결은 환경변수 두 개면 되고, 로그인은 장기 키 대신 SSO 프로필과 awsAuthRefresh입니다. 모델은 반드시 고정하고, 팀별 비용은 프로필 ARN으로 나눕니다.
-정책은 managed-settings.json 파일로 내리고, 같은 키가 부딪히면 managed가 이깁니다. 배포한 뒤에는 /status로 꼭 확인합니다.
-권한 규칙은 deny가 먼저이고, 훅은 exit 2일 때만 막으니 오류 경로도 exit 2로 닫습니다. DLP 기능이 따로 있는 게 아니라 다섯 겹을 쌓고, 못 막은 것은 기록으로 답합니다.
+연결은 환경변수 두 개면 돼요. 로그인은 장기 키 대신 SSO 프로필과 awsAuthRefresh를 쓰고요. 모델은 반드시 고정하고, 팀별 비용은 프로필 ARN으로 나눕니다.
+정책은 managed-settings.json 파일로 내려요. 같은 키가 부딪히면 managed가 이기죠. 배포한 뒤에는 /status로 꼭 확인하세요.
+권한 규칙은 deny가 먼저예요. 훅은 exit 2일 때만 막으니까 오류 경로도 exit 2로 닫아야 합니다. DLP 기능이 따로 있는 게 아니라 다섯 겹을 쌓는 거고요. 못 막은 것은 기록으로 답합니다.
 :::
 ---
 <!-- Slide 25: Thank you -->
@@ -1211,6 +1211,6 @@ Chapter 2 Key Takeaways
 • 다음은 점심, 13:00 통합 랩에서 Preflight와 Ch1 Lab, 이어서 Ch2 Lab 1과 Lab 2
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 이제 점심이고, 13시 통합 랩에서 Preflight와 Ch1 Lab을 마친 뒤 오늘 본 정책과 훅을 Ch2 Lab 1과 Lab 2에서 직접 배포하고 뚫어 보겠습니다.
-질문은 Slack 채널에 언제든 편하게 남겨 주세요.
+감사합니다. 이제 점심 시간이에요. 13시 통합 랩에서 Preflight와 Ch1 Lab을 마치고 나면, 오늘 본 정책과 훅을 Ch2 Lab 1과 Lab 2에서 직접 배포하고 뚫어 볼 거예요.
+질문 있으시면 Slack 채널에 언제든 편하게 남겨 주세요.
 :::
