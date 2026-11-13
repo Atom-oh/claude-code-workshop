@@ -51,8 +51,8 @@ AWS Korea
 • OTel 계측, modelPricing, 게이트웨이 지출 한도
 • 랩 TASK 01 6분, TASK 02와 03 22분, 선택 TASK 04
 
-오늘 순서예요. Bedrock에서 비용을 어떻게 보는지부터 시작해서 OTel 대시보드, 계약 단가와 AWS 쪽 도구를 보고요. 그다음 Claude Apps Gateway의 그룹 정책과 지출 한도입니다.
-강의와 데모는 20분 남짓이고요. 랩은 TASK 01이 6분, TASK 02와 03이 22분입니다. 선택 TASK 04는 시간이 남으면 해 보세요.
+오늘 순서예요. Bedrock에서 비용을 어떻게 보는지부터 시작해서 OTel 대시보드, 계약 단가와 AWS 쪽 도구를 보고, 그다음 Claude Apps Gateway의 그룹 정책과 지출 한도입니다.
+강의와 데모는 20분 남짓이고, 랩은 TASK 01이 6분, TASK 02와 03이 22분입니다. 선택 TASK 04는 시간이 남으면 해 보세요.
 :::
 ---
 <!-- Slide 3: Part 02 divider -->
@@ -80,7 +80,7 @@ AWS Korea
 • Bedrock 비용 보기, OTel 대시보드, modelPricing과 AWS 도구, Claude Apps Gateway 실습
 
 다시 모였네요. Chapter 6, 조직의 비용 통제입니다. 점심 직후 Chapter 5에서는 개인이 덜 쓰는 법을 봤잖아요. 지금은 조직이 쓴 만큼 보고, 넘치면 막는 법이에요.
-Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와 AWS 쪽 도구를 보고요. 마지막으로 Claude Apps Gateway를 직접 실습합니다.
+Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와 AWS 쪽 도구를 보고, 마지막으로 Claude Apps Gateway를 직접 실습합니다.
 :::
 ---
 <!-- Slide 4: Cost by setup -->
@@ -119,7 +119,7 @@ Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와
 셋업마다 비용을 보는 방법이 달라요. 이번 워크숍은 첫 줄에 있는 Bedrock 셋업입니다.
 Bedrock에서는 지출은 AWS 청구 콘솔로 보고, 지출 한도는 AWS 예산 도구로 봅니다. 사용자별로는 IAM principal과 CUR 2.0 태그가 있는데요. 사람 단위로 보려면 OTel과 게이트웨이처럼 계측을 직접 설치해야 해요.
 {cue: demo}
-아래 화살표로 비교해 볼게요. Claude Team이나 Enterprise는 조직 Analytics와 관리 콘솔 지출 한도가 있고요. Console은 Workspace limit과 Analytics API가 있습니다. 근데 Bedrock에는 이런 화면이 없거든요. 다음 장에서 그 얘기를 할게요.
+아래 화살표로 비교해 볼게요. Claude Team이나 Enterprise는 조직 Analytics와 관리 콘솔 지출 한도가 있고, Console은 Workspace limit과 Analytics API가 있습니다. 근데 Bedrock에는 이런 화면이 없거든요. 다음 장에서 그 얘기를 할게요.
 :::
 ---
 <!-- Slide 5: Bedrock reality -->
@@ -249,9 +249,9 @@ DEMO 10분, 강사 대시보드 (URL은 현장 안내)
 • 가장 비용이 컸던 패턴을 Ch5의 원리로 해석
 • 화면에는 참가자 ID만, 회사별 사용량은 노출하지 않음
 
-자, 데모로 볼게요. 참가 안내문에 고지한 대로, 이 랩 환경은 Day 1부터 OTel을 수집하고 있어요. 이틀간 여러분이 쓴 토큰을 같이 보겠습니다.
-전체 추이에서 Capstone 구간의 피크를 보고요. 모델별과 도구별 분포, 캐시 적중률도 봅니다. 그다음 각자 참가자 ID로 본인 사용량을 찾아보세요.
-마지막으로 가장 비용이 컸던 패턴을 Chapter 5의 원리로 해석해 볼게요. 화면에는 참가자 ID만 나오고, 회사별 사용량은 보여 드리지 않습니다.
+데모부터 갈게요. 참가 안내문에 고지한 대로, 이 랩 환경은 Day 1부터 OTel을 수집하고 있어요. 이틀간 여러분이 쓴 토큰을 같이 보겠습니다.
+전체 추이에서 Capstone 구간의 피크를 보고, 모델별과 도구별 분포, 캐시 적중률도 봅니다. 그다음 각자 참가자 ID로 본인 사용량을 찾아보세요.
+마지막으로 가장 비용이 컸던 패턴을 Chapter 5의 원리로 해석해 보겠습니다. 화면에는 참가자 ID만 나오고, 회사별 사용량은 보여 드리지 않습니다.
 :::
 ---
 <!-- Slide 8: modelPricing -->
@@ -313,7 +313,7 @@ DEMO 10분, 강사 대시보드 (URL은 현장 안내)
 /usage와 대시보드에 나오는 비용은 목록가 기준 추정치예요. 계약 단가가 다르면 숫자가 청구서와 어긋나죠. 그래서 modelPricing이 있는 겁니다.
 {cue: demo}
 슬라이더로 multiplier를 바꿔 볼게요. 원리 1에서 본 0.55달러 세션에 0.9를 곱하면 0.50달러로 표시됩니다. 1보다 작으면 할인, 크면 할증이고요. 모델별로 다르면 overrides를 씁니다.
-근데 여기서 바뀌는 건 표시뿐이에요. 청구는 그대로입니다. 실제 정산은 AWS 청구서로 대사하셔야 하고요. managed settings에서만 유효합니다.
+근데 여기서 바뀌는 건 표시뿐이에요. 청구는 그대로입니다. 실제 정산은 AWS 청구서로 대사하셔야 해요. managed settings에서만 유효합니다.
 :::
 ---
 <!-- Slide 9: AWS side tools -->
@@ -435,10 +435,10 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 • ccb-endpoint는 참가자 실습 PC, use_gateway는 모드 전환 스크립트
 
 {cue: demo}
-이제 막는 쪽을 볼게요. Claude Apps Gateway는 Bedrock 앞단에 직접 운영하는 게이트웨이예요. claude 바이너리에 들어 있습니다.
-공식 AWS 예제 구성을 하나씩 보면요. 개발자는 /login으로 디바이스 인증을 하고 그룹 정책을 받습니다. 중간에는 internal ALB와 Route 53 사설 존이 있고요. 게이트웨이는 ECS Fargate와 RDS PostgreSQL, OIDC IdP로 돌고, Bedrock은 IAM 역할 하나로 호출합니다.
-여기서 꼭 기억하실 제약이 사설망 전용이라는 거예요. /login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만 통과합니다. 로그인 브라우저도 사설망 안에 있어야 하고요.
-마지막은 이번 랩 구성입니다. 여러분 계정마다 VPC 안에 게이트웨이가 한 대씩 있고요. alice와 bob, 두 사용자로 실습할 거예요.
+이제 막는 쪽으로 갈게요. Claude Apps Gateway는 Bedrock 앞단에 직접 운영하는 게이트웨이예요. claude 바이너리에 들어 있습니다.
+공식 AWS 예제 구성을 하나씩 보면요. 개발자는 /login으로 디바이스 인증을 하고 그룹 정책을 받습니다. 중간에는 internal ALB와 Route 53 사설 존이 있고, 게이트웨이는 ECS Fargate와 RDS PostgreSQL, OIDC IdP로 돌고, Bedrock은 IAM 역할 하나로 호출합니다.
+여기서 꼭 기억하실 제약이 사설망 전용이라는 거예요. /login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만 통과합니다. 로그인 브라우저도 사설망 안에 있어야 해요.
+마지막은 이번 랩 구성입니다. 여러분 계정마다 VPC 안에 게이트웨이가 한 대씩 있고, alice와 bob, 두 사용자로 실습할 거예요.
 
 [약어]
 • SSO: Single Sign-On
@@ -511,9 +511,9 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 
 {cue: demo}
 게이트웨이의 핵심 기능은 사용자별 지출 한도예요. 왼쪽 막대를 아래 화살표로 40%, 75%, 95%, 100% 순서로 올려 볼게요.
-75%와 95%에서 사전 경고가 나오고요. 100%에 닿으면 다음 요청은 429 billing_error와 리셋 시각을 받습니다.
+75%와 95%에서 사전 경고가 나오고, 100%에 닿으면 다음 요청은 429 billing_error와 리셋 시각을 받습니다.
 오른쪽 규칙을 보시면 범위는 사용자, 그룹, 조직이에요. 그룹과 조직 한도는 공유 풀이 아니라 1인당 기본값입니다. 기간은 일, 주, 월이고 UTC 기준으로 리셋돼요.
-이 설정은 Admin API로 합니다. gateway.yaml에 하는 게 아니에요. 여기 많이 헷갈리시거든요.
+이 설정은 Admin API로 합니다. gateway.yaml에 하는 게 아니에요. 이 부분을 많이 헷갈려 하세요.
 :::
 ---
 <!-- Slide 12: Two decisions before operation -->
@@ -558,7 +558,7 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 
 {cue: question}
 운영 전에 꼭 정해 두셔야 할 게 두 가지예요. 기본값이 금융권에서 기대하시는 것과 다를 수 있거든요.
-첫 번째는 저장소에 장애가 났을 때예요. 버튼으로 바꿔 볼게요. 기본은 fail-open이라 요청을 통과시키고 경고만 남깁니다. fail_closed_on_error를 켜면 차단하고요. 그러니까 추론이 멈추는 것과 계측되지 않는 지출, 둘 중 무엇을 감수할지 고르는 겁니다.
+첫 번째는 저장소에 장애가 났을 때예요. 버튼으로 바꿔 보겠습니다. 기본은 fail-open이라 요청을 통과시키고 경고만 남깁니다. fail_closed_on_error를 켜면 차단해요. 그러니까 추론이 멈추는 것과 계측되지 않는 지출, 둘 중 무엇을 감수할지 고르는 겁니다.
 두 번째는 개인정보입니다. 게이트웨이는 이메일과 이름, 그룹을 저장하고 기본 90일 보존해요. 퇴사나 열람 요청 때 해당 행을 지우는 절차를 미리 정해 두세요.
 :::
 ---
@@ -624,7 +624,7 @@ LAB, Chapter 6 TASK 01
 
 {cue: demo}
 첫 번째 랩은 6분이에요. Chapter 6 TASK 01을 열어 주세요.
-settings.json의 OTEL 환경 변수를 읽고요. otelcol과 fanout 타이머가 돌고 있는지 확인한 뒤, 프롬프트 본문을 지우는 scrub_logs 규칙과 두 곳으로 보내는 exporters를 찾아보세요. 아까 OTel 그림에서 본 마지막 단계를 직접 확인하는 겁니다.
+settings.json의 OTEL 환경 변수를 읽고, otelcol과 fanout 타이머가 돌고 있는지 확인한 뒤, 프롬프트 본문을 지우는 scrub_logs 규칙과 두 곳으로 보내는 exporters를 찾아보세요. 아까 OTel 그림에서 본 마지막 단계를 직접 확인하는 겁니다.
 :::
 ---
 <!-- Slide 15: Lab TASK 02 to 03 -->
@@ -656,7 +656,7 @@ LAB, 게이트웨이 실습 Chapter 6 TASK 02부터 03까지
 
 {cue: demo}
 마지막 랩은 22분입니다. 각자 계정의 게이트웨이로 진행할게요.
-alice로 로그인하면 /model에 Opus가 보이고요. bob으로 다시 로그인하면 Opus가 없죠. 이게 그룹 정책이에요. 그다음 두 번째 터미널에서 Admin API로 bob에게 1센트 한도를 걸고, bob의 다음 요청이 거절되는 걸 보세요. 방금 퀴즈의 정답을 직접 확인하는 겁니다.
+alice로 로그인하면 /model에 Opus가 보이고, bob으로 다시 로그인하면 Opus가 없죠. 이게 그룹 정책이에요. 그다음 두 번째 터미널에서 Admin API로 bob에게 1센트 한도를 걸고, bob의 다음 요청이 거절되는 걸 보세요. 방금 퀴즈의 정답을 직접 확인하는 겁니다.
 끝나면 꼭 한도를 지우고 use_bedrock_direct로 원복해 주세요. 게이트웨이에 문제가 있는 팀은 제 화면을 보시면 돼요.
 :::
 ---
@@ -685,7 +685,7 @@ alice로 로그인하면 /model에 Opus가 보이고요. bob으로 다시 로그
 • 선택 LAB 10분, Chapter 6 선택 TASK 04, 각자 Bedrock 직결
 • modelPricing.multiplier 병합, /usage configured rates 확인, 대시보드 전후 비교, 백업으로 원복
 
-시간이 남는 분들은 선택 랩을 해 보세요. Bedrock 직결 상태에서 managed settings에 modelPricing을 넣고요. /usage에 configured rates가 표시되는지, 대시보드에서는 어떻게 보이는지 비교해 보세요. 끝나면 백업으로 원복합니다.
+시간이 남는 분들은 선택 랩을 해 보세요. Bedrock 직결 상태에서 managed settings에 modelPricing을 넣고, /usage에 configured rates가 표시되는지, 대시보드에서는 어떻게 보이는지 비교해 보세요. 끝나면 백업으로 원복합니다.
 :::
 ---
 <!-- Slide 17: Deep dive FAQ -->
@@ -742,7 +742,7 @@ alice로 로그인하면 /model에 Opus가 보이고요. bob으로 다시 로그
 
 여기는 자주 받는 질문을 모아뒀어요. 시간이 남거나 질문이 나오면 펼쳐 볼게요.
 {cue: demo}
-첫 번째로 대시보드 숫자는 이 지표들에서 와요. token.usage의 type 속성으로 캐시 효율을 보고요. cost.usage는 추정 비용입니다.
+첫 번째로 대시보드 숫자는 이 지표들에서 와요. token.usage의 type 속성으로 캐시 효율을 봐요. cost.usage는 추정 비용입니다.
 두 번째는 이상 징후예요. 예를 들어 cacheRead 비율이 낮으면 긴 휴식 후 재개나 자주 바뀌는 접두부를 의심하고, 세션 위생으로 처방합니다. Opus 비중이 높으면 기본 모델이 고정되지 않은 거고요. 분류기 호출 비중이 크면 Ch2 Lab 2에서 본 auto mode 분류기 모델을 명시합니다.
 세 번째는 Admin API로 그룹 기본값을 걸고 예외 사용자를 두는 겁니다. amount는 US 센트 문자열이라 하루 50달러는 5000이에요.
 :::
@@ -771,9 +771,9 @@ Chapter 6 Key Takeaways
 • modelPricing으로 계약 단가 표시, 정산은 AWS와 대사
 • 막기: 게이트웨이의 SSO, 그룹 정책, 지출 한도, 사설망 전용
 
-자, Chapter 6을 세 줄로 정리해 볼게요.
+Chapter 6을 세 줄로 정리할게요.
 {cue: pause}
-보기는 OTel을 정책으로 켜고, modelPricing으로 청구서에 가깝게 맞추는 거예요. 막기는 게이트웨이의 그룹 정책과 지출 한도고요.
+보기는 OTel을 정책으로 켜고, modelPricing으로 청구서에 가깝게 맞추는 거예요. 막기는 게이트웨이의 그룹 정책과 지출 한도예요.
 Chapter 5의 덜 쓰기까지 합치면 덜 쓰고, 보고, 막기죠. 여기까지가 이틀 과정의 마지막 챕터입니다.
 :::
 ---

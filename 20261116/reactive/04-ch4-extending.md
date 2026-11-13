@@ -25,7 +25,7 @@ AWS Korea
 
 둘째 날 첫 챕터입니다. 오늘은 Claude Code 확장하기예요. 도구는 Plugins와 Mods입니다.
 어제 Ch2에서 DLP 훅을 만들고 Ch3에서 Subagent도 만들었잖아요. 오늘은 그걸 플러그인 하나로 묶어서 팀 전체에 배포합니다.
-그리고 Claude Code 안에서 직접 도는 코드, mod까지 다뤄볼게요.
+그리고 Claude Code 안에서 직접 도는 코드, mod까지 다룰 거예요.
 
 {cue: transition}
 순서 보기 전에, 사전 설문 결과부터 잠깐 볼게요.
@@ -79,7 +79,7 @@ AWS Korea
 • 이번 워크숍 사전 설문, 참가 확정자 138명 기준
 
 {cue: transition}
-그럼 이 목표에 맞춰 짠 오늘 순서를 볼게요.
+그럼 이 목표에 맞춰 짠 오늘 순서부터 갈게요.
 :::
 
 ---
@@ -163,7 +163,7 @@ AWS Korea
 [요약]
 • Part 1은 플러그인: 확장 방법, 구조, 설치와 갱신
 
-첫 번째 Part는 플러그인입니다. 무엇으로 확장할 수 있는지 지도부터 보고요. 그다음 플러그인 폴더가 어떻게 생겼는지, 어떻게 설치하고 갱신하는지 볼게요.
+첫 번째 Part는 플러그인입니다. 무엇으로 확장할 수 있는지 지도부터 보고, 그다음 플러그인 폴더가 어떻게 생겼는지, 어떻게 설치하고 갱신하는지 보겠습니다.
 :::
 
 ---
@@ -217,7 +217,7 @@ AWS Korea
 Claude Code를 확장하는 방법은 여섯 가지예요.
 {cue: demo}
 아래 화살표로 하나씩 열어 볼게요. CLAUDE.md는 항상 알아야 할 짧은 지침입니다. 스킬은 같은 지시를 반복할 때, 필요할 때만 불러오는 거고요. Subagent는 역할과 도구를 나눠 맡길 때 씁니다. 훅은 이벤트에 맞춰 스크립트로 막거나 기록할 때 씁니다. MCP는 외부 시스템에 닿아야 할 때 쓰고요. 그리고 mod는 화면이나 커맨드, 이벤트 자체를 바꿀 때 씁니다.
-CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고요. 나머지 다섯 가지를 한 디렉터리에 담아서 배포하는 단위가 플러그인입니다.
+CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고, 나머지 다섯 가지를 한 디렉터리에 담아서 배포하는 단위가 플러그인입니다.
 어떤 걸 고를지는 언제, 누가, 무엇을 바꾸는가를 기준으로 생각하시면 돼요.
 
 [약어]
@@ -274,9 +274,9 @@ CLAUDE.md는 managed CLAUDE.md나 저장소로 배포하고요. 나머지 다섯
 플러그인은 디렉터리 하나예요. 오늘 랩에서 만들 asset-team-kit으로 볼게요.
 {cue: demo}
 맨 위 .claude-plugin 아래 plugin.json에는 이름, 버전, 설명이 들어가요. 필수인 건 이것뿐입니다.
-skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을 넣고요. agents에는 Ch3에서 만든 spending-analyst, portfolio-analyst, risk-reviewer를 넣습니다. Ch3 파일이 없으면 랩 TASK 00에서 키트 기준본으로 채우시면 돼요. hooks의 hooks.json에는 Ch2의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
+skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을 넣고, agents에는 Ch3에서 만든 spending-analyst, portfolio-analyst, risk-reviewer를 넣습니다. Ch3 파일이 없으면 랩 TASK 00에서 키트 기준본으로 채우시면 돼요. hooks의 hooks.json에는 Ch2의 DLP 훅을 등록하고, 실제 검사 스크립트는 scripts에 둡니다.
 점선으로 표시한 commands랑 .mcp.json도 넣을 수 있어요. 특히 .mcp.json은 외부로 나가는 길이니까 반출 채널 검토 대상입니다.
-버전으로 변경 이력을 관리하고요. 설치 한 줄이면 동료도 같은 환경을 갖게 됩니다.
+버전으로 변경 이력을 관리하고, 설치 한 줄이면 동료도 같은 환경을 갖게 됩니다.
 
 [약어]
 • DLP: Data Loss Prevention
@@ -348,7 +348,7 @@ skills에는 노후 연금 격차를 계산하는 retirement-gap 스킬을 넣�
 • 4 갱신: autoUpdate 또는 수동 update
 
 {cue: demo}
-그럼 플러그인이 동료의 세션까지 가는 길을 네 단계로 볼게요.
+그럼 플러그인이 동료의 세션까지 가는 길은 네 단계예요.
 첫 번째는 마켓플레이스 등록이에요. /plugin marketplace add로 등록하고, 소스는 로컬 경로, GitHub 저장소, 사내 git URL을 쓸 수 있습니다. 오늘 랩에서는 로컬 경로를 써요.
 두 번째는 설치인데요. 이름 골뱅이 마켓플레이스 형식입니다. 랩에서는 asset-team-kit@fsi-local로 설치해요.
 세 번째는 적용이에요. /reload-plugins로 바로 적용하거나 다음 세션부터 적용됩니다.
@@ -596,7 +596,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 
 배포했으면 무엇이 설치됐고 실제로 쓰이는지도 봐야겠죠. Ch6에서 다룰 OTel로 봅니다.
 {cue: demo}
-plugin_installed는 설치할 때마다 기록하고요. plugin_loaded는 세션이 시작될 때 켜진 플러그인을 기록합니다. 그러면 설치만 되고 안 쓰이는 플러그인을 찾을 수 있어요.
+plugin_installed는 설치할 때마다 기록하고, plugin_loaded는 세션이 시작될 때 켜진 플러그인을 기록합니다. 그러면 설치만 되고 안 쓰이는 플러그인을 찾을 수 있어요.
 그리고 서드파티 플러그인 이름은 기본으로 가려져요. OTEL_LOG_TOOL_DETAILS를 1로 줄 때만 보입니다.
 
 [약어]
@@ -723,7 +723,7 @@ mod를 한 줄로 말씀드리면, 플러그인 안의 이벤트 핸들러예요
 
 {cue: demo}
 가장 작은 mod부터 하나씩 볼게요. 도구 호출 수를 스피너 옆에 띄우는 예시입니다.
-첫 번째로, mod는 register 함수를 내보내고요. 넘겨받은 on으로 이벤트에 핸들러를 겁니다.
+첫 번째로, mod는 register 함수를 내보내고, 넘겨받은 on으로 이벤트에 핸들러를 겁니다.
 두 번째, tool.call 이벤트에서는 calls를 하나 올리고 next(e)로 원래 이벤트를 넘겨요. 그러니까 도구는 그대로 실행되는 거죠. 이게 관찰입니다.
 세 번째, $.ui.invalidate로 화면을 다시 그리게 하면 ui.render 핸들러가 불려요. 바깥에 하는 일은 모두 $ API를 거칩니다.
 네 번째, ui.render에서는 Spinner의 props에 suffix를 더해서 넘깁니다. 이게 변경이에요.
@@ -815,7 +815,7 @@ claude-code-playground 저장소, 공식 지원 대상은 아님
 • blast-radius: 위험 명령을 붙잡고 영향 범위를 보여 준 뒤 진행 또는 취소
 • replay-theater: /replay로 지난 턴의 편집을 단계별 재생
 
-mod로 무엇을 할 수 있는지 공식 샘플 세 개로 감을 잡아볼게요. claude-code-playground 저장소에 있고요. 공식 지원 대상은 아닙니다.
+mod로 무엇을 할 수 있는지 공식 샘플 세 개로 감을 잡아볼게요. claude-code-playground 저장소에 있고, 공식 지원 대상은 아닙니다.
 {cue: demo}
 token-weather는 컨텍스트 사용량을 날씨 예보처럼 보여 줘요. blast-radius는 rm -rf나 force push 같은 위험 명령을 붙잡아서 영향 범위를 보여 주고, 그다음 진행할지 묻습니다. replay-theater는 지난 턴의 파일 편집을 단계별로 재생하고요.
 :::
@@ -1022,7 +1022,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 
 이번 Part 마지막 퀴즈예요. 사용자가 --plugin-dir로 mod를 실어도 로드되지 않게 하려면 무엇을 해야 할까요?
 {cue: pause}
-정답은 B입니다. managed settings에 disableSideloadFlags와 allowManagedModsOnly를 함께 걸어야 해요. CLAUDE.md의 금지 문구는 지침일 뿐이고요. 사용자 설정은 정책을 이기지 못합니다.
+정답은 B입니다. managed settings에 disableSideloadFlags와 allowManagedModsOnly를 함께 걸어야 해요. CLAUDE.md의 금지 문구는 지침일 뿐이고, 사용자 설정은 정책을 이기지 못합니다.
 :::
 
 ---
@@ -1056,8 +1056,8 @@ SUPER LAB, 팀 스타터 킷 플러그인 + mod
 
 {cue: demo}
 강의가 끝나면 약 60분 동안 Super Lab을 합니다.
-Ch3에서 고객자산 분석 담당자로 반복한 분석을 이제 팀 자산으로 만드는 거예요. TASK 00에서 Ch3의 에이전트 세 개와 segments.md, Ch2 Lab 2의 DLP 스크립트를 확인하고요. 없는 건 키트 기준본으로 채웁니다.
-TASK 01에서 노후 연금 격차 계산을 retirement-gap 스킬로 고정하고요. TASK 02에서 에이전트 세 개랑 이 스킬, DLP 훅을 asset-team-kit 하나로 묶습니다. TASK 03에서는 로컬 디렉터리 마켓플레이스 fsi-local을 등록해서 /plugin install asset-team-kit@fsi-local로 동료 폴더에 설치해요. TASK 04에서는 그 킷으로 연금상품 기획서 pension-product.md를 쓰고, 플러그인 훅이 주민등록번호 형식 프롬프트를 막는지 봅니다.
+Ch3에서 고객자산 분석 담당자로 반복한 분석을 이제 팀 자산으로 만드는 거예요. TASK 00에서 Ch3의 에이전트 세 개와 segments.md, Ch2 Lab 2의 DLP 스크립트를 확인하고, 없는 건 키트 기준본으로 채웁니다.
+TASK 01에서 노후 연금 격차 계산을 retirement-gap 스킬로 고정하고, TASK 02에서 에이전트 세 개랑 이 스킬, DLP 훅을 asset-team-kit 하나로 묶습니다. TASK 03에서는 로컬 디렉터리 마켓플레이스 fsi-local을 등록해서 /plugin install asset-team-kit@fsi-local로 동료 폴더에 설치해요. TASK 04에서는 그 킷으로 연금상품 기획서 pension-product.md를 쓰고, 플러그인 훅이 주민등록번호 형식 프롬프트를 막는지 봅니다.
 TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를 추가하게 시킵니다. TASK 07은 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복하세요. 마지막 TASK 08은 배포 전 체크리스트예요.
 시간 남으시면 12분짜리 선택 TASK 06, Bedrock용 idle compaction mod를 해 보세요.
 골격은 복사해서 붙이고, 나머지는 Claude한테 시키시면 됩니다.
@@ -1144,7 +1144,7 @@ TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를
 • 더 알아보기 여섯 주제: 폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, 남이 만든 mod 리뷰, 운영 지표
 • 플러그인 폴더 구성은 본문 Part 1 구조 장표에 합쳐 둠
 
-여기부터는 더 알아보기예요. 질문이 나오거나 시간이 남으면 펼쳐볼게요. 플러그인 폴더 구성은 앞의 Part 1 구조 장표에 합쳐뒀습니다.
+여기부터는 더 알아보기예요. 질문이 나오거나 시간이 남으면 펼쳐 볼 거예요. 플러그인 폴더 구성은 앞의 Part 1 구조 장표에 합쳐뒀습니다.
 :::
 
 ---
@@ -1286,7 +1286,7 @@ Part 2에서는 GitHub 예시를 봤잖아요. 사내 git으로 등록하면 이
 
 남이 만든 mod도 샌드박스가 없으니까, 리뷰는 꼭 하셔야 해요.
 {cue: demo}
-첫 탭에서는 validate 출력을 어떻게 읽는지 볼게요. first-mod 예시에서 hooks 줄은 session.start, tool.call처럼 언제 끼어드는지, command.run이나 ui.render처럼 커맨드와 화면을 바꾸는지 보여 줍니다. calls 줄은 바깥에 무엇을 하는지 보여 주고요. 프로세스 실행이나 네트워크 호출이 보이면 보안 리뷰 대상입니다.
+첫 탭은 validate 출력을 읽는 방법이에요. first-mod 예시에서 hooks 줄은 session.start, tool.call처럼 언제 끼어드는지, command.run이나 ui.render처럼 커맨드와 화면을 바꾸는지 보여 줍니다. calls 줄은 바깥에 무엇을 하는지 보여 주고요. 프로세스 실행이나 네트워크 호출이 보이면 보안 리뷰 대상입니다.
 두 번째 탭은 리뷰 여섯 항목이에요. 출처, calls, 버전 고정, 배포 경로, 차단 정책, 모니터링입니다.
 :::
 
