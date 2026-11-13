@@ -30,8 +30,9 @@ Option chord. It patches the framework at run time because `common/` is rebuilt.
 Option chords still work. In the presenter window the pen keys, 1-9 and C work (they drive
 the same pen); its other keys are the presenter view's own navigation. N and G also accept the
 Korean jamo (ㅜ, ㅎ); the pen keys match the physical key, so they work with any input method.
-If a compiler update changes what the script patches, P and O keep their old framework meaning
-and the browser console shows a `[deck-keys]` warning.
+If a compiler update breaks either patch, the single-key pen shortcuts turn off and P and O keep
+their old framework meaning (presenter view, overview); the browser console shows a `[deck-keys]`
+warning naming what is missing.
 
 The Ch3 deck loads `assets/ch4.css`, and Ch4 loads `ch5.css`. The style files
 kept the pre-renumbering chapter names (see the chapter table in
