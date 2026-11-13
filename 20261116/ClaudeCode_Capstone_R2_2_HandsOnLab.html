@@ -2287,7 +2287,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
   function nodeHtml(n) {
     var ic = n.img ? '<img class="ic' + (n.tile ? " tile" : "") + '" src="' + esc(n.img) + '" alt="">' : shape(n.ic);
     var links = (n.links || []).map(function (l) { return '<a href="' + esc(l[1]) + '">' + esc(l[0]) + "</a>"; }).join("");
-    return ic + '<span><span class="lb">' + esc(n.lb).replace(/\//g, "/<wbr>") + "</span>" + (n.sb ? '<span class="sb">' + esc(n.sb) + "</span>" : "") +
+    return ic + '<span><span class="lb">' + esc(n.lb).replace(/(\S)(\/+)/g, "$1$2<wbr>").replace(/:(?=\w)/g, ":<wbr>") + "</span>" + (n.sb ? '<span class="sb">' + esc(n.sb) + "</span>" : "") +
       (links ? '<span class="lk">' + links + "</span>" : "") + "</span>";
   }
   document.querySelectorAll(".viz[data-viz]").forEach(function (host) {
