@@ -68,7 +68,7 @@ fi
 
 # 2. managed policy (anything non-empty is copied to the backup folder first)
 MS="$ETC/managed-settings.json"
-if ! sudo jq -e 'del(.forceLoginMethod, .forceLoginGatewayUrl) == {}' "$MS" >/dev/null 2>&1 </dev/null \
+if { sudo test -e "$MS" </dev/null && ! sudo jq -e 'del(.forceLoginMethod, .forceLoginGatewayUrl) == {}' "$MS" >/dev/null 2>&1 </dev/null; } \
    || ls "$ETC"/managed-settings.d/*.json >/dev/null 2>&1; then
   P="$BK/policy-$(stamp)"
   mkdir -p "$P"
@@ -147,13 +147,13 @@ if [ "$T" = ch4 ]; then
   RR="$L/ch3/.claude/agents/risk-reviewer.md"
   if [ -f "$RR.bak" ]; then
     mv "$RR.bak" "$RR"
-    say "Ch3 TASK 02의 원복(mv .bak)을 대신 했습니다"
+    say "Ch3 TASK 02의 원복(mv .bak)을 대신했습니다"
   fi
   # checked after the restore too: a sed run twice leaves Write in the .bak itself
   if ! grep -qx 'tools: Read, Grep, Glob' "$RR"; then
     mkdir -p "$BK" && cp "$RR" "$BK/risk-reviewer-$(stamp).md"
     cp "$CP/ch3/agents/risk-reviewer.md" "$RR"
-    say "risk-reviewer의 tools가 읽기 전용이 아니라 기준본으로 바꿨습니다 (이전 파일은 $BK)"
+    say "risk-reviewer의 tools가 읽기 전용이 아니어서 기준본으로 바꿨습니다 (이전 파일은 $BK)"
   else
     say "risk-reviewer: 읽기 전용(tools: Read, Grep, Glob) 확인"
   fi
