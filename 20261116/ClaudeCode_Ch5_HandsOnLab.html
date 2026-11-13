@@ -119,6 +119,14 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 </tbody>
 </table>
 <h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</h2>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Ch4까지 마치지 못했다면, 먼저 catchup</strong></p>
+<p>앞 랩이 중간에 실패했거나 건너뛰었다면, 아래 한 줄로 이 랩을 시작할 수 있는 상태를 맞춘 뒤 TASK 00 블록을 실행합니다. 앞 랩을 마쳤다면 건너뜁니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>catchup ch5</code></pre></div>
+<details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
+<ol>
+<li data-lines="1">실습 PC에 준비된 <code>catchup</code> 명령이 남은 정책(managed-settings)을 비우고, Ch2 Lab 1이 사용자 설정에 넣은 raw 읽기 규칙을 지우고, 기본 모드(<code>use_bedrock_direct</code>)로 돌립니다. 이 랩의 작업 폴더가 이미 있으면 지우지 않고 <code>~/claude-lab/.catchup-backup/</code>으로 옮깁니다. 앞 랩에서 만들었어야 할 재료는 키트의 기준본으로 채웁니다. 실행 중인 <code>claude</code>는 먼저 종료합니다.</li>
+</ol></details>
+<p><code>catchup: command not found</code>가 나오면 <code>curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch5</code>로 같은 일을 합니다.</p></div></div>
 <p>이번 챕터의 작업 폴더는 <code>~/claude-lab/ch5</code>이고, 분석 데이터는 가명 처리된 <code>pseudo/</code>만 씁니다. Ch4에서 만든 <code>asset-team-kit</code>이 설치되어 있으면 그대로 쓰고, 없을 때만 키트의 기준본으로 설치합니다. 키트를 이미 받았다면 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <p>그림은 Preflight에서 본 키트 내려받기 전체입니다. 아래 블록의 3-4번째 줄은 그중 복사와 풀기만 하고, 이미 받았다면 아무것도 하지 않습니다.</p>
 <figure class="viz" data-viz="kit-download">
