@@ -347,6 +347,13 @@
     document.head.appendChild(dk);
   }
 
+  // Presenter view shows the spoken script first, [요약] and [출처] below (loaded once).
+  if (!window.__fsiPresenterNotes && !document.querySelector('script[src$="assets/presenter-notes.js"]')) {
+    const pn = document.createElement('script');
+    pn.src = 'assets/presenter-notes.js';
+    document.head.appendChild(pn);
+  }
+
   const q = window.__fsiq || [];
   window.__fsiq = { push: fn => { try { fn(api); } catch (e) { console.error('[FSI]', e); } } };
   q.forEach(fn => window.__fsiq.push(fn));
