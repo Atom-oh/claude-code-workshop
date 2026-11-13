@@ -344,7 +344,7 @@ sudo jq . /etc/claude-code/managed-settings.json &amp;&amp; ls -l /etc/claude-co
 <li data-lines="1"><strong>Setting sources</strong>에 <code>Enterprise managed settings</code>가 보이면 managed-settings.json이 읽혔다는 뜻입니다.</li>
 </ol></details>
 
-<p><strong>Setting sources</strong>에 <code>Enterprise managed settings</code>가 보이면 정책이 적용된 것입니다. 시작 화면의 모델 표시가 <code>Sonnet 5.5 · Amazon Bedrock</code>으로 바뀌었는지 보고, <code>/model</code>을 열어 Opus가 선택지에서 빠졌는지 확인합니다.</p>
+<p><strong>Setting sources</strong>에 <code>Enterprise managed settings</code>가 보이면 정책이 적용된 것입니다. 시작 화면의 모델 표시가 <code>Sonnet 5.5 · Amazon Bedrock</code>으로 바뀌었는지 보고, <code>/model</code>을 열어 Opus가 선택지에서 빠졌는지 확인합니다. 목록 맨 위 <strong>Default</strong> 줄의 설명에 "currently Sonnet 4.5"처럼 다른 버전이 보여도, 실제로 쓰는 모델은 시작 화면과 <code>/status</code>에 보이는 Sonnet 5.5입니다.</p>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span><code>/status</code>에 Enterprise managed settings가 보인다</span></label></li>
