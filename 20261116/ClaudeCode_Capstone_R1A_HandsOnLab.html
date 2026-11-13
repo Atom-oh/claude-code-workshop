@@ -1505,7 +1505,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
   ]
  },
  "r1a-build": {
-  "title": "R1-A 한눈에: 무엇을 만들고 1~4가 어떻게 이어지나",
+  "title": "R1-A 한눈에: 무엇을 만들고 00~04가 어떻게 이어지나",
   "nodes": [
    {
     "id": "ckpt",
@@ -1736,7 +1736,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     "ok": [
      "pseudo"
     ],
-    "cap": "두 agent 모두 `pseudo/`만 읽습니다. `raw/`는 시스템 프롬프트로 금지했고, 03에서 훅과 `deny` 규칙으로 실제로 막습니다. 04에서 agent를 거쳐 `raw/`를 시도해 막히는 것을 봅니다."
+    "cap": "`consult-prep`은 시스템 프롬프트로 `raw/`를 열지 않게 했고, `risk-reviewer`는 `pseudo/`의 근거만 확인합니다. 프롬프트만으로는 막지 못하므로, 03의 훅과 `deny` 규칙이 두 agent 모두의 도구 호출을 실제로 막습니다. 04에서 agent를 거쳐 `raw/`를 시도해 봅니다."
    }
   ]
  },
@@ -2010,26 +2010,26 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
    {
     "id": "ups",
     "ic": "chat",
-    "lb": "UserPromptSubmit → dlp-guard.sh",
-    "sb": "프롬프트를 모델에 보내기 전"
+    "lb": "UserPromptSubmit → dlp-guard",
+    "sb": "프롬프트를 모델에 보내기 전 (dlp-guard.sh)"
    },
    {
     "id": "pre1",
     "ic": "shield",
-    "lb": "PreToolUse(Bash|Write|Edit|WebFetch) → dlp-guard.sh",
-    "sb": "도구 입력의 개인정보 패턴"
+    "lb": "PreToolUse → dlp-guard",
+    "sb": "Bash|Write|Edit|WebFetch · 도구 입력의 개인정보 패턴"
    },
    {
     "id": "pre2",
     "ic": "shield",
-    "lb": "PreToolUse(Read|Grep|Glob|Bash|Write|Edit) → raw-guard.sh",
-    "sb": "도구 입력의 raw/ 경로"
+    "lb": "PreToolUse → raw-guard",
+    "sb": "Read|Grep|Glob|Bash|Write|Edit · 도구 입력의 raw/ 경로"
    },
    {
     "id": "deny",
     "ic": "lock",
-    "lb": "deny: Read(~/claude-lab/mydata/raw/**)",
-    "sb": "Read 도구 거부 규칙"
+    "lb": "deny 규칙",
+    "sb": "Read(~/claude-lab/mydata/raw/**) · Read 도구 거부"
    },
    {
     "id": "fail",
@@ -2182,7 +2182,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     "bad": [
      "pre"
     ],
-    "cap": "Step 3에서 `raw-guard.sh`를 잠시 `.off`로 바꾸고 도구 호출을 보내면 `onFailure: block`으로 막혀야 합니다(fail-closed). 마지막 줄에서 반드시 되돌립니다."
+    "cap": "Step 3에서 `raw-guard.sh`를 잠시 `.off`로 바꾸고 도구 호출을 보내면 `onFailure: block`으로 막혀야 합니다(fail-closed). 넷째 줄에서 반드시 이름을 되돌립니다."
    }
   ]
  },
@@ -2295,7 +2295,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "you"
     ],
     "edge": 2,
-    "cap": "질문에 짧게 답합니다. 잘 모르겠으면 \"초안대로\"라고 답해도 됩니다. 이 단계에서는 파일을 만들지 않습니다."
+    "cap": "질문에 짧게 답합니다. 잘 모르겠으면 \"추천해 주신 대로\"라고 답해도 됩니다. 이 단계에서는 agent나 훅 파일을 만들지 않습니다. Claude가 정리를 파일로 저장하거나 plan으로 넘어가자고 하면 \"파일과 plan은 만들지 말고 화면에 정리만 해 주세요\"라고 답합니다."
    },
    {
     "t": "결정 세 가지",
@@ -2345,7 +2345,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     "on": [
      "off"
     ],
-    "cap": "첫 줄이 `raw-guard.sh`의 이름을 `.off`로 바꿉니다. 훅이 실행할 파일이 없는 고장 상황을 일부러 만듭니다."
+    "cap": "둘째 줄(`mv … .off`)이 `raw-guard.sh`의 이름을 `.off`로 바꿉니다. 훅이 실행할 파일이 없는 고장 상황을 일부러 만듭니다."
    },
    {
     "t": "무해한 요청",
