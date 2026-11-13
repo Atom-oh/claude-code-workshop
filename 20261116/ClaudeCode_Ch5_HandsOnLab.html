@@ -124,13 +124,13 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>catchup ch5</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
-<li data-lines="1"><code>catchup ch5</code>는 남은 정책(managed-settings)을 비우고, Ch2 Lab 1이 사용자 설정에 넣은 raw 읽기 규칙을 지우고(이전 파일은 <code>settings.json.before-catchup</code>으로 남김), 기본 모드(<code>use_bedrock_direct</code>)로 돌립니다. 이 랩의 작업 폴더 <code>~/claude-lab/ch5</code>가 이미 있으면 지우지 않고 <code>~/claude-lab/.catchup-backup/</code>으로 옮깁니다. asset-team-kit 플러그인이 설치되어 있지 않으면, Ch4에서 만들다 만 플러그인 폴더를 <code>~/claude-lab/.catchup-backup/</code>으로 옮기고 키트의 기준본을 <code>~/claude-lab/ch4/marketplace</code>에 넣어 설치합니다. 이미 설치되어 있으면 그대로 씁니다.</li>
+<li data-lines="1"><code>catchup ch5</code>는 남은 정책(managed-settings)을 <code>~/claude-lab/.catchup-backup/</code>에 복사해 둔 뒤 비우고, 사용자 설정에서 Ch2 Lab 1의 raw 읽기 규칙과 Ch2 Lab 2의 <code>permissions.ask</code>·<code>autoMode</code>를 지우고(이전 파일은 <code>settings.json.before-catchup</code>으로 남김), 기본 모드(<code>use_bedrock_direct</code>)로 돌립니다. 이 랩의 작업 폴더 <code>~/claude-lab/ch5</code>가 이미 있으면 지우지 않고 <code>~/claude-lab/.catchup-backup/</code>으로 옮깁니다. asset-team-kit 플러그인이 설치되어 있지 않으면, Ch4에서 만들다 만 플러그인 폴더를 <code>~/claude-lab/.catchup-backup/</code>으로 옮기고 키트의 기준본을 <code>~/claude-lab/ch4/marketplace</code>에 넣어 설치합니다. 이미 설치되어 있으면 그대로 씁니다.</li>
 </ol></details>
 <p><code>catchup: command not found</code>가 나오면 아래 블록으로 같은 스크립트를 받아 실행합니다.</p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch5</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>bash &lt;(curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh) ch5</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
-<li data-lines="1"><code>curl -fsSL</code>이 워크숍 사이트에서 catchup 스크립트를 받고(<code>-f</code>는 오류 페이지를 받지 않음, <code>-sSL</code>은 진행 표시를 숨기고 리디렉션을 따라감), <code>bash -s ch5</code>가 받은 스크립트를 <code>ch5</code>를 인자로 실행합니다. 하는 일은 위 블록과 같습니다.</li>
+<li data-lines="1"><code>curl -fsSL</code>이 워크숍 사이트에서 catchup 스크립트를 받고(<code>-f</code>는 오류 페이지를 받지 않음, <code>-s</code>는 진행 표시를 숨기되 <code>-S</code>로 오류는 보여 주고, <code>-L</code>은 리디렉션을 따라감), <code>bash &lt;(…) ch5</code>가 받은 스크립트를 <code>ch5</code>를 인자로 실행합니다. <code>&lt;( )</code>는 명령의 출력을 파일처럼 넘기는 bash 문법이라, 스크립트 안의 <code>sudo</code>나 <code>claude</code>가 입력을 읽어도 스크립트가 중간에 끊기지 않습니다. 하는 일은 위 블록과 같습니다.</li>
 </ol></details></div></div>
 <p>이번 챕터의 작업 폴더는 <code>~/claude-lab/ch5</code>이고, 분석 데이터는 가명 처리된 <code>pseudo/</code>만 씁니다. Ch4에서 만든 <code>asset-team-kit</code>이 설치되어 있으면 그대로 쓰고, 없을 때만 키트의 기준본으로 설치합니다. 키트를 이미 받았다면 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <p>그림은 Preflight에서 본 키트 내려받기 전체입니다. 아래 블록의 3-4번째 줄은 그중 복사와 풀기만 하고, 이미 받았다면 아무것도 하지 않습니다.</p>
@@ -143,7 +143,7 @@ claude --version
 KIT=${WS_KIT:-s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip}
 [ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
 sudo jq -e &#x27;del(.forceLoginMethod, .forceLoginGatewayUrl) == {}&#x27; /etc/claude-code/managed-settings.json &gt;/dev/null \
-  &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. Ch2 Lab 1 TASK 00의 &#x27;정책 초기화&#x27;를 실행하세요&quot;
+  &amp;&amp; echo &quot;정책 상태: 깨끗함&quot; || echo &quot;경고: 이전 챕터 정책이 남아 있습니다. catchup ch5를 실행한 뒤 이 블록을 다시 실행하세요&quot;
 rm -rf ~/claude-lab/ch5 2&gt;/dev/null
 mkdir -p ~/claude-lab/ch5 &amp;&amp; cd ~/claude-lab/ch5
 ln -sfn ~/claude-lab/mydata/pseudo pseudo

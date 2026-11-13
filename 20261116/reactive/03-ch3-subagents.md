@@ -96,7 +96,7 @@ AWS Korea
   <div class="fsi-grid-4">
     <div class="pick"><span class="k">PART 01 / 10분</span><span class="t">Subagent란</span><span class="d">네 가지 속성, 분기와 컨텍스트 이동, 정의 파일</span></div>
     <div class="pick"><span class="k">PART 02 / 12분</span><span class="t">호출과 비용</span><span class="d">위임, 비용, 레거시 분석과 claude -p</span></div>
-    <div class="pick"><span class="k">PART 03 / 7분</span><span class="t">병렬의 확장</span><span class="d">Agent teams, Workflows, Worktrees, Bedrock 기본값</span></div>
+    <div class="pick"><span class="k">PART 03 / 7분</span><span class="t">병렬의 확장</span><span class="d">Agent teams, Workflows, Worktrees, Bedrock에서 미리 챙길 것</span></div>
     <div class="pick"><span class="k">PART 04 / 6분</span><span class="t">심화</span><span class="d">정의 필드, 내장 Subagent, 스킬과의 경계, CI, 병렬의 비용</span></div>
   </div>
   <div class="fsi-grid-2">
@@ -555,7 +555,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      nodes:[{id:'u',x:60,y:80,w:300,h:90,t:'사용자 요청',s:'@ 입력 후 선택',c:'warning'},M,S('a',60,'spending-analyst',''),S('b',440,'portfolio-analyst',''),S('c',820,'risk-reviewer','지목됨')],
      hot:['u','m','c'],
      edges:[{f:'u',t:'m',c:'warning',o:0},{f:'m',t:'c',c:'warning',l:'@ 멘션',o:1}],
-     snip:{hd:'명시 호출',path:'예시 대화',lines:['> @"risk-reviewer (agent)" pseudo/ CSV에','  식별자 형태의 값이 남았는지 점검해 줘','','# 사용자가 지목, 판단 생략','risk-reviewer 실행'],hl:[1,2],note:'랩 패턴 B는 <b>risk-reviewer 에이전트를 사용해서</b>처럼 이름을 적어 지정하고, <b>@agent-portfolio-analyst</b>처럼 쓰는 형태도 봅니다. 누가 했는지가 분명해서 감사 관점에서 설명하기 쉽습니다.'}},
+     snip:{hd:'명시 호출',path:'예시 대화',lines:['> @"risk-reviewer (agent)" pseudo/ CSV에','  식별자 형태의 값이 남았는지 점검해 줘','','# 사용자가 지목, 판단 생략','risk-reviewer 실행'],hl:[1,2],note:'랩 패턴 B는 <b>risk-reviewer 에이전트를 사용해서</b>처럼 이름을 적어 지정합니다. 반드시 그 에이전트가 해야 하면 @멘션으로 지목합니다. 누가 했는지가 분명해서 감사 관점에서 설명하기 쉽습니다.'}},
     {kicker:'3 병렬 디스패치', title:'여러 Subagent를 동시에 실행',
      body:'메인이 <b>여러 Subagent를 동시에</b> 실행합니다. 각자 자기 창에서 돌고, 메인에는 요약이 모입니다.',
      facts:['동시에 실행','각자 자기 컨텍스트','결과는 요약으로 모임'],
@@ -1274,14 +1274,14 @@ LAB, 필수 TASK 00부터 04 (40분)와 선택 05 (7분), 첫 Subagent와 권한
 :::html
 <div class="fsi c4-lab">
   <ol class="steps">
-    <li><b>TASK 00</b><span>사전 준비 확인, 작업 폴더와 가명 데이터 연결</span><em>3분</em></li>
+    <li><b>TASK 00</b><span>사전 준비 확인, 앞 챕터 정책 초기화와 작업 폴더 준비</span><em>3분</em></li>
     <li><b>TASK 01</b><span>첫 Subagent, spending-analyst 만들기</span><em>10분, 강의 Part 1 연계</em></li>
     <li><b>TASK 02</b><span>도구 권한 격리 체험, 읽기 전용 risk-reviewer</span><em>7분, 강의 Part 1 연계</em></li>
     <li><b>TASK 03</b><span>에이전트 3종 완성, portfolio-analyst 추가</span><em>8분</em></li>
     <li><b>TASK 04</b><span>Task 디스패치 3패턴 (자동, 명시, 병렬), segments.md 완성</span><em>12분, 강의 Part 2 연계</em></li>
     <li class="opt"><b>선택 05</b><span>claude -p로 대화 없이 실행, segments.json</span><em>7분, 강의 Part 2 연계</em></li>
   </ol>
-  <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 가명 데이터 pseudo/만 읽고, 여기서 만든 에이전트 3종과 segments.md를 Ch4에서 씁니다.</p>
+  <p class="where">Hands-on Lab 포털에서 Chapter 3을 열고 TASK 00 사전 준비부터 진행합니다. 가명 데이터 pseudo/만 읽고, TASK 02부터는 두 번째 터미널을 함께 씁니다. 여기서 만든 에이전트 3종과 segments.md를 Ch4에서 씁니다.</p>
 </div>
 :::
 
