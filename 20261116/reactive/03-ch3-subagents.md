@@ -330,6 +330,7 @@ Subagent, Fork, 세션 분기를 git branch처럼 한 장에
 {cue: demo}
 앞 장의 네 가지 속성을 git branch 그림 한 장으로 다시 보겠습니다. 가로줄이 메인 대화이고, 갈라지는 선이 일을 맡기는 방식입니다. 선의 굵기가 들고 가는 컨텍스트의 양입니다.
 아래 화살표를 누르면 첫 번째, Subagent입니다. 가는 선 하나로 갈라집니다. 빈 창에서 시작해서 전용 프롬프트, CLAUDE.md, 그리고 Claude가 쓴 위임 메시지만 들고 갑니다. 메인 대화의 기록은 보지 못합니다. 안에서 Read, Grep 같은 중간 출력이 쌓여도 그건 그 창에 남고, 메인에는 요약만 합류합니다.
+끝난 Subagent도 사라지지 않습니다. '아까 그 분석 이어서 해 줘'라고 하면 같은 Subagent가 이전 기록을 그대로 갖고 다시 일합니다. 단, 내장 Explore와 Plan은 일회성이라 이어서 시킬 수 없습니다.
 두 번째, Fork입니다. 굵은 선이죠. 지금까지의 대화를 통째로 물려받습니다. 같은 시스템 프롬프트, 도구, 모델에 프롬프트 캐시도 공유합니다. 그래서 맥락을 다시 설명할 필요가 없는 곁가지 작업에 맞습니다. /subtask로 직접 시작할 수 있고, 이 버전에서는 Claude가 스스로 쓰기도 합니다. 돌아올 때는 결과만 합류합니다.
 세 번째, 세션 분기입니다. /branch나 --resume에 --fork-session을 붙이면 대화를 복사해서 새 세션으로 갈라집니다. 이건 다시 합쳐지지 않습니다. 같은 지점에서 다른 방향을 시험해 볼 때 씁니다.
 한 번 더 누르면 전체 그림으로 돌아옵니다. 정리하면 질문은 하나입니다. 무엇을 들고 가고, 무엇을 돌려받는가. 오른쪽 표가 그 답입니다.
@@ -549,7 +550,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      snip:{hd:'자동 위임',path:'랩 TASK 04 패턴 A',lines:['> 40~55세 고소득 고객이 IRP를 얼마나','  갖고 있는지, 노후 준비 격차를 분석해 줘','','# Claude가 description을 보고 판단','portfolio-analyst 에게 위임'],hl:[1,2,5],note:'description이 모호하면 <b>엉뚱한 에이전트</b>에게 가거나, 메인이 직접 처리하고 아무에게도 맡기지 않습니다.'}},
     {kicker:'2 @ 멘션 지목', title:'@ 입력 후 목록에서 에이전트 선택',
      body:'<b>@</b>를 입력하면 등록된 에이전트 목록이 나오고, 골라서 지목합니다. 입력란에는 <b>@"risk-reviewer (agent)"</b>처럼 들어갑니다. 규제 작업처럼 <b>반드시 그 에이전트가 해야 하는 일</b>에 씁니다.',
-     facts:['판단 주체: 사용자','@ 입력으로 등록된 에이전트 확인','규제 작업은 명시 호출'],
+     facts:['판단 주체: 사용자','자연어 지정은 제안, @멘션은 보장','규제 작업은 명시 호출'],
      zones:Z,
      nodes:[{id:'u',x:60,y:80,w:300,h:90,t:'사용자 요청',s:'@ 입력 후 선택',c:'warning'},M,S('a',60,'spending-analyst',''),S('b',440,'portfolio-analyst',''),S('c',820,'risk-reviewer','지목됨')],
      hot:['u','m','c'],
@@ -866,7 +867,7 @@ Worktrees는 git worktree로 브랜치마다 작업 공간을 나눠서, 여러 
 @type: content
 @fit: off
 
-## 같은 기능, Bedrock에서는 다른 기본값
+## Bedrock에서 미리 챙길 네 가지
 비용 예상과 사전 확인에 반영할 네 가지
 
 :::html
@@ -874,7 +875,7 @@ Worktrees는 git worktree로 브랜치마다 작업 공간을 나눠서, 여러 
   <div class="hd"><span>항목</span><span>Bedrock 동작</span><span>조치</span></div>
   <div class="rw"><span class="a">내장 Explore</span><span class="b">메인 모델을 그대로 씀: 메인이 Opus 5.5면 Explore도 Opus 5.5</span><span class="c">model: haiku 탐색 에이전트를 따로 정의해 절감</span></div>
   <div class="rw"><span class="a">Haiku 지정</span><span class="b">계정과 리전에 활성화돼 있어야 함</span><span class="c">사전 확인</span></div>
-  <div class="rw"><span class="a">세션 간 메시지</span><span class="b">같은 머신 안에서만 (v2.1.248+)</span><span class="c">해당 없음</span></div>
+  <div class="rw"><span class="a">세션 간 메시지</span><span class="b">같은 머신 안에서만 (v2.1.248+)</span><span class="c">다른 머신, 클라우드 세션과는 불가 (Remote Control에 claude.ai 로그인 필요)</span></div>
   <div class="rw"><span class="a">Agent teams</span><span class="b">동작하지만 기본 꺼짐</span><span class="c">정책으로 허용 여부 결정</span></div>
 </div>
 :::
@@ -887,7 +888,7 @@ Worktrees는 git worktree로 브랜치마다 작업 공간을 나눠서, 여러 
 • 세션 간 메시지: 같은 머신 안에서만(v2.1.248+)
 • Agent teams: 동작하지만 기본 꺼짐, 정책으로 허용 여부 결정
 
-같은 기능이라도 Bedrock에서는 기본값이 다른 것이 네 가지 있습니다.
+Bedrock에서 미리 챙길 것이 네 가지 있습니다.
 내장 Explore는 메인 모델을 그대로 씁니다. 메인이 Opus 5.5면 Explore도 Opus 5.5로 돕니다. 탐색은 model: haiku로 고정한 탐색 에이전트를 따로 정의하면 비용을 줄일 수 있습니다.
 Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미리 확인하시고, 세션 간 메시지는 같은 머신 안에서만 동작합니다. Agent teams는 동작하지만 기본 꺼짐이라, 회사 정책으로 허용 여부를 정하시면 됩니다.
 :::
@@ -960,7 +961,7 @@ Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미�
 @fit: off
 
 ## 정의 없이도 이미 사용 중
-내장 Subagent 세 가지
+대표 내장 Subagent 세 가지
 
 :::html
 <div class="fsi c4-builtin">
@@ -969,7 +970,7 @@ Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미�
     <div class="card3"><span class="k">PLAN</span><span class="t">Plan</span><span class="d">plan 모드에서 조사. 변경 없이 설계 근거를 수집합니다.</span></div>
     <div class="card3"><span class="k">GENERAL</span><span class="t">general-purpose</span><span class="d">여러 단계 작업. 복잡한 검색과 실행을 맡습니다.</span></div>
   </div>
-  <p class="cap">Bedrock에서는 Explore가 메인 모델을 그대로 씁니다 (Part 3).</p>
+  <p class="cap">Bedrock에서는 Explore가 메인 모델을 그대로 씁니다 (Part 3). Explore, Plan은 일회성이라 이어서 시킬 수 없습니다. 이어 갈 일은 커스텀 에이전트로.</p>
 </div>
 :::
 
@@ -980,7 +981,7 @@ Haiku를 지정하려면 계정과 리전에 활성화돼 있어야 하니 미�
 • Plan: plan 모드에서 조사, 변경 없이 설계 근거 수집
 • general-purpose: 여러 단계 작업, 복잡한 검색과 실행
 
-정의하지 않아도 이미 쓰고 있는 내장 Subagent가 세 가지 있습니다.
+정의하지 않아도 이미 쓰고 있는 대표 내장 Subagent 세 가지입니다.
 Explore는 읽기 전용으로 코드를 넓게 찾고 결론만 돌려줍니다. Plan은 plan 모드에서 변경 없이 설계 근거를 모으고, general-purpose는 여러 단계 작업을 맡습니다.
 Bedrock에서는 Explore가 메인 모델을 그대로 쓴다는 점, 앞에서 보신 대로 비용 예상에 반영하시면 됩니다.
 :::
@@ -1010,6 +1011,7 @@ Bedrock에서는 Explore가 메인 모델을 그대로 쓴다는 점, 앞에서 
     <div class="pt" data-g="3">이름과 설명만 항상 실리고, 본문은 필요할 때</div>
   </div>
   <div class="ctrl"><button class="btn btn-primary" data-cycle>다음 비교</button><span class="lbl" id="c4-vs-lbl"></span></div>
+  <p class="cap" style="grid-column: 1 / -1; margin: 0; font-size: var(--fs-card); color: var(--text-secondary);">메인이 나은 일: 잦은 주고받기, 작은 수정 / Subagent가 꼭 필요한 일: 권한 강제</p>
 </div>
 :::
 
@@ -1030,11 +1032,21 @@ Bedrock에서는 Explore가 메인 모델을 그대로 쓴다는 점, 앞에서 
 • Subagent: 별도 컨텍스트, 도구와 모델 따로, 장황한 조사와 리뷰, 비용 합산
 • 스킬: 메인 컨텍스트에 절차를 불러옴, 도구 권한은 메인과 같음, 반복 절차와 팀 규칙
 • 스킬은 이름과 설명만 항상 실리고 본문은 필요할 때
+• 메인이 나은 일: 주고받기가 잦은 일, 계획부터 테스트까지 맥락을 많이 공유하는 일, 빠른 수정, 지연이 중요한 일
+• Subagent가 나은 일: 장황한 출력, 도구와 권한 강제, 독립적이고 요약만 받으면 되는 일
+• 강한 모델일수록 잘게 나눠 맡길 필요는 줄지만, 권한 강제는 메인이 대신할 수 없음
 
 자주 받는 질문이 Subagent와 스킬의 차이입니다. 버튼으로 네 가지 기준을 차례로 비교하겠습니다.
 {cue: demo}
 컨텍스트를 보면 Subagent는 별도 창이고 스킬은 메인 컨텍스트에 절차를 불러옵니다. 도구와 권한은 Subagent가 따로 정할 수 있고, 스킬은 메인과 같습니다.
 그래서 장황한 조사나 리뷰는 Subagent에, 반복 절차나 팀 규칙은 스킬에 맞습니다. 비용은 Subagent는 요청이 따로 나가 합산되고, 스킬은 이름과 설명만 항상 실립니다.
+그럼 Subagent는 늘 쓰는 게 좋을까요? 공식 문서는 상황에 따라 고르라고 안내합니다. 주고받기가 잦은 일, 계획부터 테스트까지 맥락을 많이 공유하는 일, 빠른 수정, 지연이 중요한 일은 메인 대화가 낫습니다. 장황한 출력이 나오거나, 도구와 권한을 강제해야 하거나, 독립적으로 요약만 받으면 되는 일은 Subagent가 낫습니다.
+Fable 같은 강한 모델에 대해서는 평소라면 여러 조각으로 나눴을 일도 통째로 맡기라고 안내합니다. 긴 세션에서도 흐름을 잃지 않기 때문입니다. 모델이 강해질수록 잘게 나눠 맡길 필요는 줄어듭니다.
+하지만 읽기 전용 risk-reviewer처럼 권한을 강제하는 일은 모델이 좋아져도 메인 세션이 대신할 수 없습니다. 금융권에서 Subagent를 쓰는 가장 확실한 이유가 이것입니다.
+
+[출처]
+• code.claude.com/docs/en/sub-agents (Choose between subagents and main conversation)
+• code.claude.com/docs/en/model-config (Work with Fable)
 :::
 
 ---
@@ -1171,10 +1183,10 @@ QUICK CHECK, 손을 들어 답해 주세요
   <p class="q">tools를 지정하지 않은 Subagent는?</p>
   <div class="opts three">
     <button class="opt"><b>A</b>읽기 도구만 쓴다</button>
-    <button class="opt right"><b>B</b>메인 세션의 도구를 모두 상속한다</button>
+    <button class="opt right"><b>B</b>메인 세션의 도구를 상속한다</button>
     <button class="opt"><b>C</b>도구 없이 답만 한다</button>
   </div>
-  <p class="ans">정답 B. 최소 권한을 원하면 tools를 명시합니다.</p>
+  <p class="ans">정답 B. MCP 도구까지 상속되므로 최소 권한은 tools로 명시합니다.</p>
 </div>
 :::
 
@@ -1186,12 +1198,12 @@ QUICK CHECK, 손을 들어 답해 주세요
 {timing: 0.5min}
 {cue: poll}
 [요약]
-• 정답 B, 메인 세션의 도구를 모두 상속
+• 정답 B, 메인 세션의 도구를 상속(MCP 도구 포함)
 • 최소 권한을 원하면 tools를 명시
 
 마지막 퀴즈입니다. tools를 지정하지 않은 Subagent는 어떤 도구를 쓸까요?
 {cue: pause}
-정답은 B, 메인 세션의 도구를 모두 상속합니다. 읽기 전용이 기본이 아니라는 점이 함정입니다. 최소 권한을 원하시면 tools를 꼭 명시하세요.
+정답은 B, 메인 세션의 도구를 MCP 도구까지 상속합니다. 읽기 전용이 기본이 아니라는 점이 함정입니다. 최소 권한을 원하시면 tools를 꼭 명시하세요.
 :::
 
 ---
