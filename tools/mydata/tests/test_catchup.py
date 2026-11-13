@@ -248,6 +248,8 @@ class CatchupTest(unittest.TestCase):
         self.assertEqual((agents / "risk-reviewer.md").read_text(), ro)
         self.assertIn("기준본으로 바꿨습니다", r.stdout)
         self.assertNotIn("읽기 전용(tools: Read, Grep, Glob) 확인", r.stdout)
+        self.assertFalse((agents / "risk-reviewer.md.bak").exists())
+        self.assertEqual(len(list((self.lab / ".catchup-backup").glob("risk-reviewer-*.md"))), 1)
 
     def test_ch4_reports_read_only_when_already_fine(self):
         r = self.run_catchup("ch4")
@@ -272,10 +274,23 @@ class CatchupTest(unittest.TestCase):
         self.assertNotIn("autoMode", got)
         self.assertEqual(got["permissions"], {"allow": ["Bash(ls)"]})
 
+    def test_missing_policy_file_gives_no_warning(self):
+        r = self.run_catchup("ch3")
+        self.assertNotIn("경고", r.stderr)
+        self.assertNotIn("복사해 두었습니다", r.stdout)
+        self.assertEqual(list((self.lab / ".catchup-backup").glob("policy-*")), [])
+
+    def test_clean_policy_file_gives_no_backup_message(self):
+        (self.etc / "managed-settings.json").write_text("{}")
+        r = self.run_catchup("ch3")
+        self.assertNotIn("경고", r.stderr)
+        self.assertNotIn("복사해 두었습니다", r.stdout)
+
     def test_leftover_policy_is_backed_up_before_clearing(self):
         (self.etc / "managed-settings.json").write_text('{"model": "x"}')
         (self.etc / "managed-settings.d" / "10-security.json").write_text('{"y": 1}')
-        self.run_catchup("ch3")
+        r = self.run_catchup("ch3")
+        self.assertIn("복사해 두었습니다", r.stdout)
         pol = list((self.lab / ".catchup-backup").glob("policy-*"))
         self.assertEqual(len(pol), 1)
         self.assertEqual(json.loads((pol[0] / "managed-settings.json").read_text()), {"model": "x"})
