@@ -340,6 +340,13 @@
     document.head.appendChild(hs);
   }
 
+  // Shortcuts without Option: N notes, G overview, P/O/I/U/Y pen tools, C clear, 1-9 (loaded once).
+  if (!window.__fsiDeckKeys && !document.querySelector('script[src$="assets/deck-keys.js"]')) {
+    const dk = document.createElement('script');
+    dk.src = 'assets/deck-keys.js';
+    document.head.appendChild(dk);
+  }
+
   const q = window.__fsiq || [];
   window.__fsiq = { push: fn => { try { fn(api); } catch (e) { console.error('[FSI]', e); } } };
   q.forEach(fn => window.__fsiq.push(fn));
