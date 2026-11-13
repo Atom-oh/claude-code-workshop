@@ -235,6 +235,24 @@ class CatchupTest(unittest.TestCase):
         self.assertEqual((agents / "risk-reviewer.md").read_text(), ro)
         self.assertFalse((agents / "risk-reviewer.md.bak").exists())
 
+    def test_ch4_checks_tools_even_after_restoring_a_write_bak(self):
+        # TASK 02's sed run twice: the .bak already has Write
+        self.run_catchup("ch6")
+        agents = self.lab / "ch3" / ".claude" / "agents"
+        agents.mkdir(parents=True)
+        ro = (CHECKPOINTS / "ch3" / "agents" / "risk-reviewer.md").read_text()
+        rw = ro.replace("tools: Read, Grep, Glob", "tools: Read, Grep, Glob, Write")
+        (agents / "risk-reviewer.md.bak").write_text(rw)
+        (agents / "risk-reviewer.md").write_text(rw.replace("Write", "Write, Write"))
+        r = self.run_catchup("ch4")
+        self.assertEqual((agents / "risk-reviewer.md").read_text(), ro)
+        self.assertIn("기준본으로 바꿨습니다", r.stdout)
+        self.assertNotIn("읽기 전용(tools: Read, Grep, Glob) 확인", r.stdout)
+
+    def test_ch4_reports_read_only_when_already_fine(self):
+        r = self.run_catchup("ch4")
+        self.assertIn("읽기 전용(tools: Read, Grep, Glob) 확인", r.stdout)
+
     def test_ch4_replaces_write_capable_risk_reviewer_without_bak(self):
         self.run_catchup("ch6")
         agents = self.lab / "ch3" / ".claude" / "agents"

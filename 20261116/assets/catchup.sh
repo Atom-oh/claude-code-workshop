@@ -75,7 +75,12 @@ if ! sudo jq -e 'del(.forceLoginMethod, .forceLoginGatewayUrl) == {}' "$MS" >/de
   sudo cp "$MS" "$P/" 2>/dev/null </dev/null || true
   sudo cp "$ETC"/managed-settings.d/*.json "$P/" 2>/dev/null </dev/null || true
   sudo chown -R "$(id -u)" "$P" 2>/dev/null </dev/null || true
-  say "남아 있던 정책을 $P 에 복사해 두었습니다"
+  if [ -n "$(ls -A "$P" 2>/dev/null)" ]; then
+    say "남아 있던 정책을 복사해 두었습니다: $P"
+  else
+    rmdir "$P" 2>/dev/null || true
+    say "경고: 남아 있던 정책을 읽지 못해 백업하지 못했습니다" >&2
+  fi
 fi
 echo '{}' | sudo tee "$MS" >/dev/null
 sudo rm -f "$ETC"/managed-settings.d/*.json </dev/null
@@ -142,11 +147,15 @@ if [ "$T" = ch4 ]; then
   RR="$L/ch3/.claude/agents/risk-reviewer.md"
   if [ -f "$RR.bak" ]; then
     mv "$RR.bak" "$RR"
-    say "Ch3 TASK 02의 원복(mv .bak)을 대신 했습니다: risk-reviewer는 다시 읽기 전용"
-  elif ! grep -qx 'tools: Read, Grep, Glob' "$RR"; then
+    say "Ch3 TASK 02의 원복(mv .bak)을 대신 했습니다"
+  fi
+  # checked after the restore too: a sed run twice leaves Write in the .bak itself
+  if ! grep -qx 'tools: Read, Grep, Glob' "$RR"; then
     mkdir -p "$BK" && cp "$RR" "$BK/risk-reviewer-$(stamp).md"
     cp "$CP/ch3/agents/risk-reviewer.md" "$RR"
     say "risk-reviewer의 tools가 읽기 전용이 아니라 기준본으로 바꿨습니다 (이전 파일은 $BK)"
+  else
+    say "risk-reviewer: 읽기 전용(tools: Read, Grep, Glob) 확인"
   fi
   [ -f "$L/ch3/segments.md" ] || { cp "$CP/ch3/segments.md" "$L/ch3/"; say "Ch3 segments.md 기준본"; }
   ln -sfn "$K/pseudo" "$L/ch3/pseudo"   # Ch4 TASK 06 opens Claude in ch3 and reads pseudo/
