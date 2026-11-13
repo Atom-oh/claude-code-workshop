@@ -98,6 +98,19 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <p><code>/etc/claude-code/managed-settings.json</code>은 시스템 경로입니다. ccb-endpoint의 <code>ec2-user</code>는 sudo를 쓸 수 있습니다. 회사 PC라면 같은 파일을 MDM이나 배포 도구로 내려보냅니다.</p></div></div>
 
 <h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Ch1까지 마치지 못했다면, 먼저 catchup</strong></p>
+<p>앞 랩이 중간에 실패했거나 건너뛰었다면, 실행 중인 <code>claude</code>를 모두 종료한 뒤 아래 한 줄로 이 랩을 시작할 수 있는 상태를 맞추고 TASK 00 블록을 실행합니다. 앞 랩을 마쳤다면 건너뜁니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>catchup ch2</code></pre></div>
+<details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
+<ol>
+<li data-lines="1"><code>catchup ch2</code>는 남은 정책(managed-settings)을 비우고, Ch2 Lab 1이 사용자 설정에 넣은 raw 읽기 규칙을 지우고(이전 파일은 <code>settings.json.before-catchup</code>으로 남김), 기본 모드(<code>use_bedrock_direct</code>)로 돌립니다. 이 랩의 작업 폴더 <code>~/claude-lab/ch2</code>가 이미 있으면 지우지 않고 <code>~/claude-lab/.catchup-backup/</code>으로 옮깁니다. Ch4에서 설치하는 asset-team-kit 플러그인과 fsi-local 마켓플레이스가 등록되어 있으면 제거합니다. 이 랩을 시작할 때는 없는 상태이기 때문입니다. 채워 넣을 앞 랩 결과물은 없습니다.</li>
+</ol></details>
+<p><code>catchup: command not found</code>가 나오면 아래 블록으로 같은 스크립트를 받아 실행합니다.</p>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch2</code></pre></div>
+<details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
+<ol>
+<li data-lines="1"><code>curl -fsSL</code>이 워크숍 사이트에서 catchup 스크립트를 받고(<code>-f</code>는 오류 페이지를 받지 않음, <code>-sSL</code>은 진행 표시를 숨기고 리디렉션을 따라감), <code>bash -s ch2</code>가 받은 스크립트를 <code>ch2</code>를 인자로 실행합니다. 하는 일은 위 블록과 같습니다.</li>
+</ol></details></div></div>
 <p>분석팀 PC에 있는 두 폴더를 작업 폴더에 연결해 둡니다. <code>raw/</code>는 막을 대상이고 <code>pseudo/</code>는 열어 줄 대상입니다. Preflight에서 데이터를 이미 받았다면 키트 내려받기 줄은 아무 일도 하지 않습니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>use_bedrock_direct &gt;/dev/null

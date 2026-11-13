@@ -61,3 +61,19 @@ After a publish, verify that the public copy matches the local build:
     aws s3 cp --no-sign-request s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip /tmp/check.zip
     shasum -a 256 /tmp/check.zip tools/mydata/dist/mydata-kit.zip  # must match
 There is no signed URL, so no URL check script.
+
+## catchup
+
+`20261116/assets/catchup.sh` puts the lab PC in the state a chapter's TASK 00 expects, so a
+learner whose earlier lab failed can start the next one: `catchup ch4` (also `ch2-lab2`,
+`ch1`-`ch6`, or a bare number). It fetches the kit if missing, clears managed policy, drops
+Ch2 Lab 1's raw-read rules from `~/.claude/settings.json`, runs `use_bedrock_direct`, moves
+the chapter's own folder to `~/claude-lab/.catchup-backup/`, removes the Ch4 plugin before
+Ch2-Ch4, and fills earlier-chapter material from `checkpoints/` (Ch4: Ch3 agents,
+`segments.md`, DLP hook; Ch5: asset-team-kit). Labs Ch2-Ch6 show it at the top of TASK 00.
+
+Pages publishes the file. Once the Workshop Studio stack installs it as `~/.local/bin/catchup`,
+learners type `catchup ch4`; until then, and on any PC without it, the lab callout's second block runs
+`curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch4`.
+`tests/test_catchup.py` runs it against a fake HOME with stubbed `sudo`, `claude`, `aws` and
+`use_bedrock_direct` (`CATCHUP_ETC` and `CATCHUP_DLP` redirect `/etc/claude-code` and `/opt/dlp`).
