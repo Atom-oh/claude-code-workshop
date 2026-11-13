@@ -156,10 +156,10 @@ class CatchupTest(unittest.TestCase):
         self.run_catchup("ch6")
         agents = self.lab / "ch3" / ".claude" / "agents"
         agents.mkdir(parents=True)
-        (agents / "risk-reviewer.md").write_text("my own")
+        (agents / "spending-analyst.md").write_text("my own")
         self.run_catchup("ch4")
-        self.assertEqual((agents / "risk-reviewer.md").read_text(), "my own", "keeps the learner's copy")
-        for a in ("spending-analyst", "portfolio-analyst"):
+        self.assertEqual((agents / "spending-analyst.md").read_text(), "my own", "keeps the learner's copy")
+        for a in ("risk-reviewer", "portfolio-analyst"):
             self.assertTrue((agents / (a + ".md")).is_file())
         self.assertTrue((self.lab / "ch3" / "segments.md").is_file())
         dlp = self.dlp / "dlp-guard.sh"
@@ -223,6 +223,59 @@ class CatchupTest(unittest.TestCase):
     def test_ch4_links_pseudo_into_ch3_for_task_06(self):
         self.run_catchup("ch4")
         self.assertTrue((self.lab / "ch3" / "pseudo" / "customers.csv").is_file())
+
+    def test_ch4_restores_read_only_risk_reviewer_from_bak(self):
+        self.run_catchup("ch6")
+        agents = self.lab / "ch3" / ".claude" / "agents"
+        agents.mkdir(parents=True)
+        ro = (CHECKPOINTS / "ch3" / "agents" / "risk-reviewer.md").read_text()
+        (agents / "risk-reviewer.md.bak").write_text(ro)
+        (agents / "risk-reviewer.md").write_text(ro.replace("tools: Read, Grep, Glob", "tools: Read, Grep, Glob, Write"))
+        self.run_catchup("ch4")
+        self.assertEqual((agents / "risk-reviewer.md").read_text(), ro)
+        self.assertFalse((agents / "risk-reviewer.md.bak").exists())
+
+    def test_ch4_replaces_write_capable_risk_reviewer_without_bak(self):
+        self.run_catchup("ch6")
+        agents = self.lab / "ch3" / ".claude" / "agents"
+        agents.mkdir(parents=True)
+        ro = (CHECKPOINTS / "ch3" / "agents" / "risk-reviewer.md").read_text()
+        (agents / "risk-reviewer.md").write_text(ro.replace("tools: Read, Grep, Glob", "tools: Read, Grep, Glob, Write"))
+        self.run_catchup("ch4")
+        self.assertIn("\ntools: Read, Grep, Glob\n", (agents / "risk-reviewer.md").read_text())
+        self.assertEqual(len(list((self.lab / ".catchup-backup").glob("risk-reviewer-*.md"))), 1)
+
+    def test_drops_lab2_ask_and_automode_like_ch3(self):
+        s = self.home / ".claude" / "settings.json"
+        s.parent.mkdir()
+        s.write_text(json.dumps({"autoMode": {"x": 1}, "permissions": {"ask": ["Bash(git push:*)"], "allow": ["Bash(ls)"]}}))
+        self.run_catchup("ch5")
+        got = json.loads(s.read_text())
+        self.assertNotIn("autoMode", got)
+        self.assertEqual(got["permissions"], {"allow": ["Bash(ls)"]})
+
+    def test_leftover_policy_is_backed_up_before_clearing(self):
+        (self.etc / "managed-settings.json").write_text('{"model": "x"}')
+        (self.etc / "managed-settings.d" / "10-security.json").write_text('{"y": 1}')
+        self.run_catchup("ch3")
+        pol = list((self.lab / ".catchup-backup").glob("policy-*"))
+        self.assertEqual(len(pol), 1)
+        self.assertEqual(json.loads((pol[0] / "managed-settings.json").read_text()), {"model": "x"})
+        self.assertTrue((pol[0] / "10-security.json").is_file())
+        self.run_catchup("ch3")
+        self.assertEqual(len(list((self.lab / ".catchup-backup").glob("policy-*"))), 1, "clean policy: no new backup")
+
+    def test_piped_script_survives_commands_that_read_stdin(self):
+        for name in ("use_bedrock_direct", "sudo"):
+            stub = self.bin / name
+            stub.write_text(stub.read_text().replace("#!/bin/bash\n", "#!/bin/bash\ncat >/dev/null\n", 1))
+        env = dict(HOME=str(self.home), PATH="%s:%s" % (self.bin, os.environ["PATH"]), CATCHUP_ETC=str(self.etc),
+                   CATCHUP_DLP=str(self.dlp), STUB_LOG=str(self.log), STUB_STATE=str(self.state),
+                   STUB_KIT=str(self.kit), WS_KIT="s3://example/mydata-kit.zip")
+        with open(SCRIPT, "rb") as f:
+            r = subprocess.run(["bash", "-s", "ch4"], stdin=f, env=env, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("준비 끝", r.stdout, "the last line of the piped script still ran")
 
     def test_ch6_leaves_plugin_alone(self):
         (self.state / "plugins").write_text("asset-team-kit@fsi-local\n")

@@ -66,14 +66,18 @@ There is no signed URL, so no URL check script.
 
 `20261116/assets/catchup.sh` puts the lab PC in the state a chapter's TASK 00 expects, so a
 learner whose earlier lab failed can start the next one: `catchup ch4` (also `ch2-lab2`,
-`ch1`-`ch6`, or a bare number). It fetches the kit if missing, clears managed policy, drops
-Ch2 Lab 1's raw-read rules from `~/.claude/settings.json`, runs `use_bedrock_direct`, moves
+`ch1`-`ch6`, or a bare number). It fetches the kit if missing, copies any leftover managed
+policy to `~/claude-lab/.catchup-backup/` and clears it, drops Ch2 Lab 1's raw-read rules and
+Ch2 Lab 2's `permissions.ask` and `autoMode` from `~/.claude/settings.json` (the same scope as
+Ch3 Step 1), runs `use_bedrock_direct`, moves
 the chapter's own folder to `~/claude-lab/.catchup-backup/`, removes the Ch4 plugin before
 Ch2-Ch4, and fills earlier-chapter material from `checkpoints/` (Ch4: Ch3 agents,
-`segments.md`, DLP hook; Ch5: asset-team-kit). Labs Ch2-Ch6 show it at the top of TASK 00.
+`segments.md`, DLP hook, and a read-only `risk-reviewer` if Ch3 TASK 02 stopped before its
+restore; Ch5: asset-team-kit). Every `sudo`, `claude` and helper call reads `/dev/null`, so the
+script also survives being piped in. Labs Ch2-Ch6 show it at the top of TASK 00.
 
 Pages publishes the file. Once the Workshop Studio stack installs it as `~/.local/bin/catchup`,
 learners type `catchup ch4`; until then, and on any PC without it, the lab callout's second block runs
-`curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch4`.
+`bash <(curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh) ch4`.
 `tests/test_catchup.py` runs it against a fake HOME with stubbed `sudo`, `claude`, `aws` and
 `use_bedrock_direct` (`CATCHUP_ETC` and `CATCHUP_DLP` redirect `/etc/claude-code` and `/opt/dlp`).

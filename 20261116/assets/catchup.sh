@@ -18,7 +18,9 @@
 #   https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh
 # Once the Workshop Studio stack installs it as ~/.local/bin/catchup, `catchup ch4` works directly.
 # Until then (or on any PC without it):
-#   curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh | bash -s ch4
+#   bash <(curl -fsSL https://www.atomai.click/claude-code-workshop/20261116/assets/catchup.sh) ch4
+# Every sudo, claude and helper call reads </dev/null, so even `curl ... | bash -s ch4` (script on
+# stdin) cannot have its remaining lines swallowed by a command that reads stdin.
 # Test hooks: CATCHUP_ETC and CATCHUP_DLP override /etc/claude-code and /opt/dlp.
 set -euo pipefail
 
@@ -52,31 +54,45 @@ say() { echo "[catchup] $*"; }
 BK="$L/.catchup-backup"
 stamp() { date +%Y%m%d-%H%M%S; }
 # plugin/marketplace listings are captured first, so pipefail never sees grep -q close the pipe
-plugins() { claude plugin list 2>/dev/null || true; }
-markets() { claude plugin marketplace list 2>/dev/null || true; }
+plugins() { claude plugin list 2>/dev/null </dev/null || true; }
+markets() { claude plugin marketplace list 2>/dev/null </dev/null || true; }
 has() { case "$1" in *"$2"*) return 0 ;; *) return 1 ;; esac; }
 
 # 1. kit
 if [ ! -d "$K/pseudo" ]; then
   say "키트를 내려받습니다"
-  aws s3 cp "$KIT" /tmp/mydata-kit.zip --only-show-errors
+  aws s3 cp "$KIT" /tmp/mydata-kit.zip --only-show-errors </dev/null
   mkdir -p "$K" && unzip -qo /tmp/mydata-kit.zip -d "$K"
 fi
 [ -d "$K/checkpoints" ] || { say "키트에 checkpoints가 없습니다: $K" >&2; exit 1; }
 
-# 2. managed policy
-echo '{}' | sudo tee "$ETC/managed-settings.json" >/dev/null
-sudo rm -f "$ETC"/managed-settings.d/*.json
+# 2. managed policy (anything non-empty is copied to the backup folder first)
+MS="$ETC/managed-settings.json"
+if ! sudo jq -e 'del(.forceLoginMethod, .forceLoginGatewayUrl) == {}' "$MS" >/dev/null 2>&1 </dev/null \
+   || ls "$ETC"/managed-settings.d/*.json >/dev/null 2>&1; then
+  P="$BK/policy-$(stamp)"
+  mkdir -p "$P"
+  sudo cp "$MS" "$P/" 2>/dev/null </dev/null || true
+  sudo cp "$ETC"/managed-settings.d/*.json "$P/" 2>/dev/null </dev/null || true
+  sudo chown -R "$(id -u)" "$P" 2>/dev/null </dev/null || true
+  say "남아 있던 정책을 $P 에 복사해 두었습니다"
+fi
+echo '{}' | sudo tee "$MS" >/dev/null
+sudo rm -f "$ETC"/managed-settings.d/*.json </dev/null
 say "정책 초기화: managed-settings.json = {}, managed-settings.d 조각 삭제"
 
-# 3. user settings: Ch2 Lab 1 TASK 03 replaces .permissions with raw-read allow rules
+# 3. user settings, same scope as Ch3 Step 1: Ch2 Lab 1 TASK 03's raw-read rules,
+#    Ch2 Lab 2's permissions.ask (git push) and autoMode
 S="$HOME/.claude/settings.json"
 if [ -s "$S" ] && jq -e 'type == "object"' "$S" >/dev/null 2>&1; then
   RAW='claude-lab/(mydata|ch2)/raw'
-  if jq -e --arg r "$RAW" '[(.permissions // {}) | (.allow, .deny, .ask) | (. // [])[] | strings | select(test($r))] | length > 0' "$S" >/dev/null 2>&1; then
+  if jq -e --arg r "$RAW" '([(.permissions // {}) | (.allow, .deny, .ask) | (. // [])[] | strings | select(test($r))] | length > 0)
+                          or (.permissions.ask != null) or (.autoMode != null)' "$S" >/dev/null 2>&1; then
     cp "$S" "$S.before-catchup"
     jq --arg r "$RAW" '
-      if .permissions then
+      del(.autoMode)
+      | if (.permissions | type) == "object" then del(.permissions.ask) else . end
+      | if .permissions then
         .permissions |= (with_entries(if (.key == "allow" or .key == "deny" or .key == "ask")
                                        then .value |= ((. // []) | map(select(type != "string" or (test($r) | not))))
                                        else . end)
@@ -84,10 +100,10 @@ if [ -s "$S" ] && jq -e 'type == "object"' "$S" >/dev/null 2>&1; then
         | if .permissions == {} then del(.permissions) else . end
       else . end' "$S.before-catchup" > "$S.tmp"
     mv "$S.tmp" "$S"
-    say "사용자 설정에서 Ch2 Lab 1의 raw 읽기 규칙을 지웠습니다 (이전 파일: $S.before-catchup)"
+    say "사용자 설정에서 Ch2 Lab 1의 raw 읽기 규칙과 Ch2 Lab 2의 ask·autoMode를 지웠습니다 (이전 파일: $S.before-catchup)"
   fi
 fi
-use_bedrock_direct >/dev/null
+use_bedrock_direct >/dev/null </dev/null
 say "기본 모드(use_bedrock_direct)로 맞췄습니다"
 
 # 4. the chapter's own folder
@@ -101,14 +117,14 @@ fi
 # 5. Ch4 has not installed its plugin yet at the start of Ch2-Ch4
 if [ "$N" -le 4 ] && [ "$N" -ge 2 ]; then
   if has "$(plugins)" asset-team-kit; then
-    if claude plugin uninstall asset-team-kit@fsi-local >/dev/null 2>&1; then
+    if claude plugin uninstall asset-team-kit@fsi-local >/dev/null 2>&1 </dev/null; then
       say "Ch4에서 설치하는 asset-team-kit 플러그인을 제거했습니다 (이 장을 시작할 때는 없는 상태)"
     else
       say "경고: asset-team-kit 제거에 실패했습니다. claude plugin list로 범위(scope)를 확인하고 직접 제거하세요" >&2
     fi
   fi
   if has "$(markets)" fsi-local; then
-    if claude plugin marketplace remove fsi-local >/dev/null 2>&1; then
+    if claude plugin marketplace remove fsi-local >/dev/null 2>&1 </dev/null; then
       say "fsi-local 마켓플레이스 등록을 지웠습니다"
     else
       say "경고: fsi-local 마켓플레이스를 지우지 못했습니다" >&2
@@ -123,10 +139,19 @@ if [ "$T" = ch4 ]; then
   for a in spending-analyst portfolio-analyst risk-reviewer; do
     [ -f "$L/ch3/.claude/agents/$a.md" ] || { cp "$CP/ch3/agents/$a.md" "$L/ch3/.claude/agents/"; say "Ch3 에이전트 기준본: $a"; }
   done
+  RR="$L/ch3/.claude/agents/risk-reviewer.md"
+  if [ -f "$RR.bak" ]; then
+    mv "$RR.bak" "$RR"
+    say "Ch3 TASK 02의 원복(mv .bak)을 대신 했습니다: risk-reviewer는 다시 읽기 전용"
+  elif ! grep -qx 'tools: Read, Grep, Glob' "$RR"; then
+    mkdir -p "$BK" && cp "$RR" "$BK/risk-reviewer-$(stamp).md"
+    cp "$CP/ch3/agents/risk-reviewer.md" "$RR"
+    say "risk-reviewer의 tools가 읽기 전용이 아니라 기준본으로 바꿨습니다 (이전 파일은 $BK)"
+  fi
   [ -f "$L/ch3/segments.md" ] || { cp "$CP/ch3/segments.md" "$L/ch3/"; say "Ch3 segments.md 기준본"; }
   ln -sfn "$K/pseudo" "$L/ch3/pseudo"   # Ch4 TASK 06 opens Claude in ch3 and reads pseudo/
   if ! cmp -s "$CP/ch2/dlp-guard.sh" "$DLP/dlp-guard.sh" 2>/dev/null; then
-    sudo mkdir -p "$DLP" && sudo install -m 755 "$CP/ch2/dlp-guard.sh" "$DLP/dlp-guard.sh"
+    sudo mkdir -p "$DLP" </dev/null && sudo install -m 755 "$CP/ch2/dlp-guard.sh" "$DLP/dlp-guard.sh" </dev/null
     say "DLP 훅 기준본을 설치했습니다: $DLP/dlp-guard.sh"
   fi
 fi
@@ -137,7 +162,7 @@ if [ "$T" = ch5 ] && ! has "$(plugins)" asset-team-kit; then
   if [ -e "$M/plugins/asset-team-kit" ]; then
     mkdir -p "$BK"
     mv "$M/plugins/asset-team-kit" "$BK/asset-team-kit-$(stamp)"
-    say "Ch4에서 만들다 만 asset-team-kit 폴더를 $BK 로 옮겼습니다"
+    say "Ch4에서 만들다 만 asset-team-kit 폴더를 옮겼습니다: $BK"
   fi
   cp -r "$CP/ch4/asset-team-kit" "$M/plugins/"
   cat > "$M/.claude-plugin/marketplace.json" << 'EOF'
@@ -149,8 +174,8 @@ if [ "$T" = ch5 ] && ! has "$(plugins)" asset-team-kit; then
   ]
 }
 EOF
-  claude plugin marketplace add "$M" >/dev/null 2>&1 || true
-  claude plugin install asset-team-kit@fsi-local >/dev/null
+  claude plugin marketplace add "$M" >/dev/null 2>&1 </dev/null || true
+  claude plugin install asset-team-kit@fsi-local >/dev/null </dev/null
   P="$(plugins)"
   if has "$P" asset-team-kit && ! has "$P" "failed to load"; then
     say "Ch4 asset-team-kit 기준본을 설치했습니다"
