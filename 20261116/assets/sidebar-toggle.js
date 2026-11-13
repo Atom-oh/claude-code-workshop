@@ -15,12 +15,12 @@
     // Lab pages show aside.side from 861px; capstone pages show aside.sidenav from 901px. The gutter
     // only applies where the tab is visible, and on capstone pages it also covers the hero and the
     // sticky timeline, which start at the same left edge as the tab.
-    "@media (min-width:861px){" +
+    "@media screen and (min-width:861px){" +
     "html.sb-hidden .layout:has(>aside.side){grid-template-columns:minmax(0,1fr)!important;padding-left:56px!important}" +
-    "html.sb-hidden .layout>aside.side{display:none!important}}" +
-    "@media (min-width:901px){" +
+    "html.sb-hidden .layout:has(>aside.side)>aside.side{display:none!important}}" +
+    "@media screen and (min-width:901px){" +
     "html.sb-hidden .layout:has(>aside.sidenav){grid-template-columns:minmax(0,1fr)!important;padding-left:56px!important}" +
-    "html.sb-hidden .layout>aside.sidenav{display:none!important}" +
+    "html.sb-hidden .layout:has(>aside.sidenav)>aside.sidenav{display:none!important}" +
     "html.sb-hidden body:has(.layout>aside.sidenav) .hero,html.sb-hidden body:has(.layout>aside.sidenav) .timeline-inner{padding-left:56px!important}}" +
     ".sb-toggle{display:flex;align-items:center;gap:6px;width:100%;margin:0 0 12px;padding:7px 10px;cursor:pointer;" +
     "font:600 12.5px/1.2 system-ui,-apple-system,'Segoe UI',sans-serif;border-radius:8px;text-align:left;" +
@@ -45,6 +45,8 @@
     if (!side.id) side.id = "page-sidebar";
     var lab = side.classList.contains("side"), what = lab ? "실습 목록" : "목차", obj = lab ? "실습 목록을" : "목차를";
     var mq = window.matchMedia ? window.matchMedia("(min-width:861px)") : null;
+    var hasSel = false;
+    try { hasSel = CSS.supports("selector(:has(*))"); } catch (e) {}
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "sb-toggle";
@@ -53,6 +55,8 @@
     // Usable only where the page itself shows the sidebar in its layout (not the lab ☰ drawer, and not
     // the capstone single-column range, which hides the sidenav below about 900px).
     function usable() {
+      // Every hide rule needs :has(); without it the toggle is never offered (and nothing hides).
+      if (!hasSel) return false;
       if (mq ? !mq.matches : window.innerWidth < 861) return false;
       var was = root.classList.contains("sb-hidden");
       if (was) root.classList.remove("sb-hidden");
