@@ -25,7 +25,8 @@
   var ACTIONS = { n: 'presenter', N: 'presenter', 'ㅜ': 'presenter', g: 'overview', G: 'overview', 'ㅎ': 'overview' };
   // Keys the framework must no longer take once the pen owns them.
   var FREED = { p: 1, P: 1, o: 1, O: 1 };
-  var penReady = false;
+  var penReady = false;   // pen wrapper in place
+  var fwReady = false;    // framework key map in place (N/G exist)
   // Plain key code -> the Option chord code deck-pen understands. TOOLS work any time;
   // C and the digits only while the pen is on.
   var TOOLS = { KeyP: 'KeyP', KeyO: 'KeyO', KeyI: 'KeyI', KeyU: 'KeyU', KeyY: 'KeyY' };
@@ -41,15 +42,16 @@
   function patchFramework() {
     var FW = window.SlideFramework || (typeof SlideFramework !== 'undefined' ? SlideFramework : null); // eslint-disable-line no-undef
     if (!FW || !FW.prototype) return false;
-    if (FW.prototype.__fsiKeys) return true;
+    if (FW.prototype.__fsiKeys) { fwReady = true; return true; }
     var orig = FW.prototype.getKeyAction;
     if (typeof orig !== 'function') return false;
     FW.prototype.getKeyAction = function (key) {
       if (Object.prototype.hasOwnProperty.call(ACTIONS, key)) return ACTIONS[key];
-      if (penReady && FREED[key]) return null;
+      if (penReady && fwReady && FREED[key]) return null;
       return orig.call(this, key);
     };
     FW.prototype.__fsiKeys = true;
+    fwReady = true;
     return true;
   }
 
@@ -61,7 +63,8 @@
     var orig = c.handleKey;
     if (typeof orig !== 'function') return false;
     c.handleKey = function (event) {
-      if (event && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey &&
+      // Only while N/G exist too: otherwise P/O must stay the presenter view and overview.
+      if (fwReady && event && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey &&
           !typing(event.target) && !searchOpen(event.target)) {
         var code = TOOLS[event.code] || null;
         if (!code && c.active) {
@@ -90,6 +93,7 @@
   function patchHint() {
     var hints = document.querySelectorAll('.nav-hint');
     for (var i = 0; i < hints.length; i++) {
+      if (!fwReady) continue;   // framework hint (P/O) stays true
       hints[i].textContent = penReady
         ? '← → Space  |  F: Fullscreen  |  N: Notes  |  G: Overview  |  P O I U Y: Pen  |  C: Clear'
         : '← → Space  |  F: Fullscreen  |  N: Notes  |  G: Overview';
@@ -106,8 +110,12 @@
     if (!fw || !pen) {
       if (tries++ < 100) { setTimeout(wait, 100); return; }
       if (typeof console !== 'undefined') {
-        console.warn('[deck-keys] ' + (!fw ? 'SlideFramework.getKeyAction' : 'DeckPen.controller.handleKey') +
-          ' not found; single-key pen shortcuts are off (P/O keep their framework meaning, Option chords still work).');
+        var missing = [];
+        if (!fw) missing.push('SlideFramework.getKeyAction');
+        if (!pen) missing.push('DeckPen.controller.handleKey');
+        console.warn('[deck-keys] ' + missing.join(' and ') + ' not found; ' +
+          (fw ? 'N/G work, ' : 'N/G are off, ') +
+          'single-key pen shortcuts are off, P/O keep their framework meaning (presenter view, overview), Option chords still work.');
       }
     }
   })();
