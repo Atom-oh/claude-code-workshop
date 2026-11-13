@@ -120,9 +120,9 @@ class CatchupTest(unittest.TestCase):
         self.assertFalse((self.lab / "ch2").exists())
         self.assertIn("Ch2 Lab 2 랩", r.stdout)
         self.assertIn("Ch2 Lab 1 랩", self.run_catchup("ch2-lab1").stdout)
-        (self.lab / "ch1-loop").mkdir()
+        (self.lab / "ch1").mkdir()
         self.run_catchup("1")
-        self.assertFalse((self.lab / "ch1-loop").exists())
+        self.assertFalse((self.lab / "ch1").exists())
 
     def test_drops_lab1_raw_rules_from_user_settings_only(self):
         s = self.home / ".claude" / "settings.json"

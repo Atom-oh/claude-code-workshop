@@ -44,7 +44,7 @@ change. Learner folders follow the same numbers (see the folder rule below).
 - `slides/ClaudeCode_FSI_Ch1..6_20261116.pdf` follow the six-chapter numbering.
   They are image-only exports of the reactive decks (one screenshot per slide),
   so re-export them after a deck change. Learner folders follow the chapter
-  numbers: Ch2 Lab 1 and Lab 2 share `~/claude-lab/ch2` (Lab 2 resets it), Ch3-Ch6
+  numbers: Ch1 uses `~/claude-lab/ch1`, Ch2 Lab 1 and Lab 2 share `~/claude-lab/ch2` (Lab 2 resets it), Ch3-Ch6
   use `~/claude-lab/ch3`-`ch6`, and Ch5 reads Ch4's `~/claude-lab/ch4/marketplace`.
 - Reactive decks are Remarp sources in `20261116/reactive/*.md`; rebuild the
   HTML with the reactive-presentation compiler instead of editing it, then
