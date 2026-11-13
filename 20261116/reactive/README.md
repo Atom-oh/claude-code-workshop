@@ -23,12 +23,15 @@ Option chord. It patches the framework at run time because `common/` is rebuilt.
 | N | Presenter view with notes (was P) |
 | G | Slide overview (was O) |
 | P / O / I / U / Y | Laser, pen, highlighter, eraser, magnifier (was Option+key); Esc leaves pen mode |
-| 1-3 / 4-9 | Stroke size / colour; zoom 1-3 in the magnifier (was Option+digit) |
-| C | Clear this slide's drawing (was Option+T) |
+| 1-3 / 4-9 | While the pen is on: stroke size / colour; zoom 1-3 in the magnifier (was Option+digit) |
+| C | While the pen is on: clear this slide's drawing (was Option+T) |
 | F, S, H, T, / | Fullscreen, sidebar, hide slide, theme, search (unchanged) |
 
-Option chords still work. The keys also work in the presenter window, and N/G also work
-with the Korean input method on.
+Option chords still work. In the presenter window the pen keys, 1-9 and C work (they drive
+the same pen); its other keys are the presenter view's own navigation. N and G also accept the
+Korean jamo (ㅜ, ㅎ); the pen keys match the physical key, so they work with any input method.
+If a compiler update changes what the script patches, P and O keep their old framework meaning
+and the browser console shows a `[deck-keys]` warning.
 
 The Ch3 deck loads `assets/ch4.css`, and Ch4 loads `ch5.css`. The style files
 kept the pre-renumbering chapter names (see the chapter table in
@@ -184,9 +187,10 @@ request; see `docs/review.md` for the merge gate.
 ## Viewer controls
 
 `←` `→` and Space move between slides. `↓` `↑` step through a slide's visual.
-`F` is fullscreen, `P` opens the presenter view with notes and timer, `O` is
+`F` is fullscreen, `N` opens the presenter view with notes and timer, `G` is
 the overview, `T` toggles dark and light, and `S` or the `‹` `›` tab on the left
-edge hides or shows the slide sidebar. The sidebar choice is remembered across
+edge hides or shows the slide sidebar. Pen keys are in
+[Presenter shortcuts](#presenter-shortcuts). The sidebar choice is remembered across
 decks.
 
 To skip slides in a talk, right-click a thumbnail in the sidebar and choose
