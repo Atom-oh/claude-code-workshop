@@ -147,7 +147,7 @@ head -1 pseudo/customers.csv &amp;&amp; wc -l pseudo/customers.csv</code></pre><
 <ol>
 <li data-lines="1">M 변수에 조직 정책 파일(managed-settings.json)의 경로를 담아 뒤에서 짧게 씁니다.</li>
 <li data-lines="2-4">게이트웨이용 키 두 개를 빼면 정책 파일이 빈 {}인지, managed-settings.d에 정책 조각 파일이 하나도 없는지 확인합니다. 둘 다 맞으면 &quot;정책 상태: 깨끗함&quot;만 출력하고 아무것도 바꾸지 않습니다. 앞 랩을 원복까지 마친 경우입니다. 줄 끝의 \는 다음 줄과 이어진 한 명령이라는 표시입니다.</li>
-<li data-lines="5-11">정책이 남아 있으면 지금 정책을 ~/claude-lab/reset-backup에 복사해 두고, 정책 파일을 {}로 비우고, 정책 조각 파일을 지웁니다. Ch2 Lab 1의 모델 제한과 raw 읽기 금지, Ch2 Lab 2의 DLP 훅, auto 잠금, sandbox, 사이드로드 금지가 여기서 사라집니다. 백업은 작업 폴더 밖에 두어 이 랩의 git 커밋에 섞이지 않게 합니다.</li>
+<li data-lines="5-11">정책이 남아 있으면 지금 정책 파일(managed-settings.json)을 ~/claude-lab/reset-backup에 복사해 두고, 정책 파일을 {}로 비우고, 정책 조각 파일을 지웁니다. Ch2 Lab 1의 모델 제한과 raw 읽기 금지, Ch2 Lab 2의 DLP 훅, auto 잠금, sandbox, 사이드로드 금지가 여기서 사라집니다. 백업은 작업 폴더 밖에 두어 이 랩의 git 커밋에 섞이지 않게 합니다.</li>
 <li data-lines="12-16">개인 설정에서 Ch2 Lab 2가 넣은 permissions.ask(git push 확인)와 autoMode를 지우고, Ch2 Lab 1이 우회 시도로 넣은 raw 읽기 allow 규칙만 골라 뺍니다. 다른 allow 규칙과 나머지 설정은 그대로 둡니다. 해당 키가 없으면 내용은 바뀌지 않습니다.</li>
 <li data-lines="17">use_bedrock_direct는 실습 환경에 준비된 명령으로, 기본 모드(Bedrock 직접 호출)로 맞춥니다. 게이트웨이 모드로 남아 있었다면 여기서 되돌아갑니다. &gt;/dev/null은 화면에 나오는 출력을 버린다는 뜻입니다.</li>
 <li data-lines="19-20">키트(mydata-kit.zip)의 S3 주소를 KIT 변수에 담고, ~/claude-lab/mydata/pseudo 폴더가 없을 때만 내려받아 풉니다. 이미 받았다면 아무것도 하지 않습니다.</li>
@@ -168,7 +168,7 @@ customer_id,name,rrn,mobile,age,gender,region,income_band,joined_date
 </ol></details>
 <p>첫 줄은 헤더, 나머지 1,000줄이 고객입니다. <code>rrn</code>과 <code>mobile</code> 열에는 원본 대신 <code>CI_</code>로 시작하는 가명 토큰이 들어 있습니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Ch2에서 만든 DLP 훅은 이 랩에서 쓰지 않습니다</strong></p>
-<p>Ch3는 가명 데이터만 다루므로 DLP 훅을 강제하지 않고, Step 1에서 앞 챕터 정책을 비웠습니다. 앞 랩을 마치지 못했어도 같은 출발점에서 시작합니다. 초기화 전 정책은 <code>~/claude-lab/reset-backup/ch3-managed-settings.json</code>에 남아 있습니다. Ch2 Lab 2 선택 TASK 05에서 만든 Guardrail은 계정에 리소스만 남고 이 랩에는 영향이 없으며, 정리는 Ch2 Lab 2 TASK 07의 Guardrail 삭제 블록으로 합니다. 훅이 필요하면 키트의 <code>~/claude-lab/mydata/checkpoints/ch2/dlp-guard.sh</code>를 참고하세요.</p>
+<p>Ch3는 가명 데이터만 다루므로 DLP 훅을 강제하지 않고, Step 1에서 앞 챕터 정책을 비웠습니다. 앞 랩을 마치지 못했어도 같은 출발점에서 시작합니다. Step 1에서 초기화했다면 초기화 전 정책은 <code>~/claude-lab/reset-backup/ch3-managed-settings.json</code>에 남아 있습니다. Ch2 Lab 2 선택 TASK 05에서 만든 Guardrail은 계정에 리소스만 남고 이 랩에는 영향이 없으며, 정리는 Ch2 Lab 2 TASK 07의 Guardrail 삭제 블록으로 합니다. 훅이 필요하면 키트의 <code>~/claude-lab/mydata/checkpoints/ch2/dlp-guard.sh</code>를 참고하세요.</p>
 </div></div>
 <h3 id="step-2-jq-설치-확인">Step 2 · jq 설치 확인</h3>
 <p>선택 TASK 05의 헤드리스 통합에서 <strong>JSON 출력 파싱</strong>에 <code>jq</code>를 사용합니다. 없으면 한 줄로 설치하세요.</p>
@@ -649,7 +649,7 @@ Prompt cache (main):   6 requests · 88% of input tokens from cache · warm (5m 
 <p>에이전트별 수치가 필요하면 선택 TASK 05의 헤드리스 JSON에 있는 <code>subagent_stats</code>를 씁니다. <code>/usage</code>는 <code>Esc</code>로 닫습니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>병렬화의 트레이드오프</strong></p>
 <p>병렬 호출은 <strong>시간은 max로 단축</strong>되지만 <strong>비용은 합산</strong>됩니다.
-병렬 3개면 비용은 대략 세 작업의 합입니다. 강의에서 본 약 7배는 팀원이 plan 모드로 도는 Agent teams의 수치입니다.
+병렬 3개면 비용은 대략 세 작업의 합입니다. 강의에서 본 일반 세션 대비 약 7배 토큰은 팀원이 plan 모드로 도는 Agent teams의 수치입니다.
 반복적인 단순 작업은 <code>model: haiku</code>로 지정해 비용을 조절하고, Opus는 심층 분석에만 사용하세요.</p>
 </div></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
