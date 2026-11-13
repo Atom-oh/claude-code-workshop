@@ -38,7 +38,7 @@ usage() {
 
 [ $# -eq 1 ] || usage
 case "$1" in
-  1|ch1) T=ch1; DIR=ch1-loop ;;
+  1|ch1) T=ch1; DIR=ch1 ;;
   2|ch2|ch2-lab1) T=ch2; DIR=ch2 ;;
   ch2-lab2) T=ch2-lab2; DIR=ch2 ;;
   3|ch3) T=ch3; DIR=ch3 ;;

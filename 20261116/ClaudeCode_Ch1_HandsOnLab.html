@@ -139,7 +139,7 @@ cat /etc/claude-code/managed-settings.json</code></pre></div>
 git config --global user.email &gt;/dev/null || git config --global user.email &quot;participant@example.com&quot;
 KIT=${WS_KIT:-s3://ws-assets-prod-iad-r-iad-ed304a55c2ca1aee/5b8d0649-9ad2-43a8-8ff5-10ce7bb42e6f/mydata-kit.zip}
 [ -d ~/claude-lab/mydata/pseudo ] || (aws s3 cp &quot;$KIT&quot; /tmp/mydata-kit.zip --only-show-errors &amp;&amp; mkdir -p ~/claude-lab/mydata &amp;&amp; unzip -qo /tmp/mydata-kit.zip -d ~/claude-lab/mydata)
-mkdir -p ~/claude-lab/ch1-loop &amp;&amp; cd ~/claude-lab/ch1-loop &amp;&amp; git init -q
+mkdir -p ~/claude-lab/ch1 &amp;&amp; cd ~/claude-lab/ch1 &amp;&amp; git init -q
 ln -sfn ~/claude-lab/mydata/pseudo data
 git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;&amp; head -2 data/customers.csv data/pensions.csv</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
@@ -147,7 +147,7 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;
 <li data-lines="1-2">git은 변경 이력을 남기는 도구입니다. 이름과 이메일이 아직 없을 때만 임시 값을 넣습니다. 뒤에서 git commit을 하려면 필요합니다.</li>
 <li data-lines="3">KIT 변수에 키트(mydata-kit.zip)가 있는 S3 주소를 담습니다.</li>
 <li data-lines="4">~/claude-lab/mydata/pseudo 폴더가 없을 때만 키트를 내려받아 풉니다. Preflight에서 이미 받았다면 아무것도 하지 않습니다.</li>
-<li data-lines="5">이번 실습 폴더 ch1-loop를 만들고 그 안에서 git 저장소를 시작합니다.</li>
+<li data-lines="5">이번 실습 폴더 ch1을 만들고 그 안에서 git 저장소를 시작합니다.</li>
 <li data-lines="6">data라는 이름의 바로가기(심볼릭 링크)를 만들어 pseudo/ 폴더를 가리키게 합니다. 이후 프롬프트에서 data/customers.csv처럼 짧게 부를 수 있습니다.</li>
 <li data-lines="7">첫 상태를 커밋하고, data 링크를 확인한 뒤 두 CSV의 앞 2줄(제목줄과 첫 행)을 보여줍니다. 고객 이름이 고객0001 형태면 가명처리 데이터를 제대로 연결한 것입니다.</li>
 </ol></details>
@@ -157,13 +157,13 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span><code>CLAUDE_CODE_USE_BEDROCK=1</code>, <code>AWS_REGION=us-east-1</code>을 확인했다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span><code>~/claude-lab/ch1-loop/data</code>가 <code>pseudo/</code>를 가리키고, 고객 이름이 <code>고객0001</code> 형태로 보인다</span></label></li>
+<li class="check"><label><input type="checkbox"> <span><code>~/claude-lab/ch1/data</code>가 <code>pseudo/</code>를 가리키고, 고객 이름이 <code>고객0001</code> 형태로 보인다</span></label></li>
 </ul></div></div>
 
 <h2 id="task-01-에이전트-루프-관찰-5분">TASK 01 · 에이전트 루프 관찰 (5분)</h2>
 <h3 id="step-1-첫-세션과-status">Step 1 · 첫 세션과 /status</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch1-loop &amp;&amp; claude</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch1 &amp;&amp; claude</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
 <li data-lines="1">실습 폴더로 이동한 뒤 Claude Code를 시작합니다. &amp;&amp;는 앞 명령이 성공했을 때만 뒤 명령을 실행하라는 뜻입니다.</li>
@@ -220,19 +220,19 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;
 <figcaption>그림: 세션 파일 — 1) 기록: Claude Code가 내가 보낸 글, 모델의 답, 도구 결과를 ~/.claude/projects/ 아래 JSONL 파일에 한 줄씩 덧붙입니다. 2) 평문: 암호화나 마스킹 없이 그대로 저장됩니다. 3) grep: <code>grep -o '고객0'</code>이 고객 행이 저장된 곳을 찾습니다. 4) 그래서: 보존 기간(cleanupPeriodDays)과 DLP는 2장에서 다룹니다.</figcaption>
 </figure>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>ls -lt ~/.claude/projects/*ch1-loop*/ | head -5
-F=$(ls -t ~/.claude/projects/*ch1-loop*/*.jsonl | head -1)
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>ls -lt ~/.claude/projects/*claude-lab-ch1/ | head -5
+F=$(ls -t ~/.claude/projects/*claude-lab-ch1/*.jsonl | head -1)
 wc -l &quot;$F&quot; &amp;&amp; grep -o &#x27;&quot;type&quot;:&quot;[a-z_]*&quot;&#x27; &quot;$F&quot; | sort | uniq -c | sort -rn | head</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
-<li data-lines="1">내 실습 폴더(ch1-loop)의 세션 파일이 있는 폴더를 시간순으로 보여줍니다. 가장 위가 가장 최근 파일입니다.</li>
+<li data-lines="1">내 실습 폴더(ch1)의 세션 파일이 있는 폴더(<code>~/claude-lab/ch1</code>의 경로가 이름에 들어간 폴더)를 시간순으로 보여줍니다. 가장 위가 가장 최근 파일입니다.</li>
 <li data-lines="2">가장 최근 .jsonl 파일의 경로를 F 변수에 담습니다. JSONL은 한 줄에 JSON 하나를 적는 텍스트 형식입니다.</li>
 <li data-lines="3">wc -l로 줄 수를 세고, 각 줄의 &quot;type&quot; 값(user, assistant 등)이 몇 번 나오는지 세어, 많이 나온 순으로 위 10개만 보여 줍니다. 대화가 줄 단위로 쌓인 모습을 볼 수 있습니다.</li>
 </ol></details>
 
 <p>대화와 도구 결과가 이 PC(ccb-endpoint)에 JSONL로 남아 있습니다. 방금 읽힌 고객 데이터가 세션 파일에 그대로 들어 있는지 세어 봅니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>F=$(ls -t ~/.claude/projects/*ch1-loop*/*.jsonl | head -1)
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>F=$(ls -t ~/.claude/projects/*claude-lab-ch1/*.jsonl | head -1)
 grep -o &#x27;고객0&#x27; &quot;$F&quot; | wc -l</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
@@ -249,7 +249,7 @@ grep -o &#x27;고객0&#x27; &quot;$F&quot; | wc -l</code></pre></div>
 
 <h2 id="task-03-체크포인트와-권한-모드-5분">TASK 03 · 체크포인트와 권한 모드 (5분)</h2>
 <h3 id="step-1-되돌릴-수-있는-것">Step 1 · 되돌릴 수 있는 것</h3>
-<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch1-loop &amp;&amp; claude --continue</code></pre></div>
+<div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch1 &amp;&amp; claude --continue</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
 <li data-lines="1">같은 폴더에서 가장 최근 세션을 이어서 엽니다. 앞에서 만든 연령대별 표가 대화에 남아 있어서 다음 요청에서 그대로 쓸 수 있습니다.</li>

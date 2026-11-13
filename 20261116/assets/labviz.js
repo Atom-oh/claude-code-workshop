@@ -578,7 +578,7 @@
     nodes: [
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 400, y: 190, w: 760, h: 320 },
       { id: "claude", shape: "note", label: "Claude Code\n(터미널 프로그램)", x: 105, y: 190, w: 150, h: 58 },
-      { id: "dir", shape: "group", label: "~/.claude/projects/*ch1-loop*/", x: 410, y: 215, w: 330, h: 150 },
+      { id: "dir", shape: "group", label: "~/.claude/projects/*claude-lab-ch1/", x: 410, y: 215, w: 330, h: 150 },
       { id: "jsonl", shape: "file", label: "<session>.jsonl", sub: "한 줄에 JSON 하나", x: 410, y: 238, w: 220, h: 60 },
       { id: "grepnote", shape: "note", tone: "info", label: "터미널\ngrep -o '고객0'", x: 670, y: 150, w: 170, h: 54, appear: 3 },
       { id: "nextnote", shape: "note", tone: "ok", label: "2장에서 다룹니다\n보존 기간 · DLP", x: 670, y: 270, w: 170, h: 54, appear: 4 }
