@@ -1,8 +1,9 @@
 /* Presenter view: spoken script first, [요약] and [출처] below it (loaded once by stepviz.js).
  *
- * Each slide's notes are written as "[N min] [요약]" bullets, then the script, then "[출처]"
- * (README section 3). On stage the presenter reads the script, so the view puts it at the top
- * and moves the summary and sources under a divider in smaller, dimmer text. The .md sources and
+ * The compiled notes read "<cue emoji> [N min] [요약]" bullets, then the script, then "[출처]",
+ * each a blank-line paragraph (README section 3). On stage the presenter reads the script, so
+ * the view puts it at the top and moves the summary and sources under a divider in smaller,
+ * dimmer text. The cue emoji and "[N min]" stay on a line above the script. The .md sources and
  * the PDF are unchanged: this only reorders what the presenter window shows.
  *
  * common/ is overwritten by every compiler build, so this file patches
@@ -14,20 +15,29 @@
   if (window.__fsiPresenterNotes) return;
   window.__fsiPresenterNotes = true;
 
-  var SUMMARY = /^\s*(\[[^\]\n]*\]\s*)*\[요약\]/;
+  // First line of the summary paragraph, with whatever precedes the tag (cue emoji, [N min]).
+  var SUMMARY = /^([^\n]*?)\[요약\]/;
   var SOURCES = /^\s*\[출처\]/;
 
   // Split on blank lines; returns null when there is nothing to move.
   function split(text) {
     var paras = String(text).split(/\n[ \t]*\n+/);
-    var script = [], meta = [];
+    var script = [], meta = [], lead = '';
     for (var i = 0; i < paras.length; i++) {
       var p = paras[i];
       if (!p.trim()) continue;
-      if (SUMMARY.test(p) || SOURCES.test(p)) meta.push(p); else script.push(p);
+      var m = SUMMARY.exec(p);
+      if (m) {
+        lead = m[1].trim();
+        meta.push(p.slice(m[1].length));
+      } else if (SOURCES.test(p)) {
+        meta.push(p);
+      } else {
+        script.push(p);
+      }
     }
     if (!meta.length || !script.length) return null;
-    return { script: script.join('\n\n'), meta: meta.join('\n\n') };
+    return { lead: lead, script: script.join('\n\n'), meta: meta.join('\n\n') };
   }
 
   function patch() {
@@ -39,9 +49,17 @@
     PV.prototype.renderRichNotes = function (text) {
       var parts = split(text || '');
       if (!parts) return orig.call(this, text);
-      return orig.call(this, parts.script) +
+      var top = orig.call(this, parts.script), bottom = orig.call(this, parts.meta);
+      if (typeof top !== 'string' || typeof bottom !== 'string') return orig.call(this, text);
+      var head = '';
+      if (parts.lead) {
+        head = orig.call(this, parts.lead);
+        if (typeof head !== 'string') return orig.call(this, text);
+        head = '<div class="fsi-notes-lead" style="font-size:0.82em;opacity:0.8;margin-bottom:0.5em;">' + head + '</div>';
+      }
+      return head + top +
         '<div class="fsi-notes-meta" style="margin-top:1.4em;padding-top:0.9em;border-top:1px solid #2d3250;' +
-        'font-size:0.82em;opacity:0.72;">' + orig.call(this, parts.meta) + '</div>';
+        'font-size:0.82em;opacity:0.72;">' + bottom + '</div>';
     };
     PV.prototype.__fsiNotes = true;
     return true;

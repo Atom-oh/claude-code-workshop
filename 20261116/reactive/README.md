@@ -150,8 +150,9 @@ The decks use a small subset of Remarp:
   each slide as it first appears.
 - `:::notes` is required on every slide. It holds `{timing: Nmin}`, then a
   `[요약]` list, a spoken script, and optional `{cue: demo|pause|poll|transition}`
-  and `[출처]`. The presenter view (`assets/presenter-notes.js`) shows the script first and
-  moves `[요약]` and `[출처]` under a divider; keep writing them in this order. Keep the `{timing}` values of a chapter close to its `duration` in
+  and `[출처]`. The presenter view (`assets/presenter-notes.js`) shows the
+  cue and timing, then the script, and moves the `[요약]` and `[출처]` paragraphs
+  under a divider, so keep a blank line between the summary, the script and the sources. Keep the `{timing}` values of a chapter close to its `duration` in
   `_presentation.md` (Ch3 matches exactly; Ch1 and Ch4 currently run a few
   minutes over).
 
