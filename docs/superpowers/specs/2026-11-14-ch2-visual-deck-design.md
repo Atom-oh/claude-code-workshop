@@ -76,10 +76,11 @@ metadata only; no time is shown on any slide or said in the script).
 2. **Survey results** (new position; replaces the Part 3 survey slide
    "138명 중 51명이 고른 주제", which is removed). Base: confirmed attendees who
    answered, 139 (survey responses matched to the confirmed list of 142):
+   - any of the three Ch2 topics below, 87 (61.3%), shown as the headline;
    - "망분리·보안: 폐쇄망 환경 운영, 소스코드 유출 방지(DLP), 감사 로그" 51;
-   - "팀 표준화: 설정 스코프, 권한 규칙, Hooks, MCP" 60;
    - "규제·감사 대응: 코드 리뷰 가드레일, 변경관리 증적 자동화" 45;
    - "Admin Setup: 플릿 배포, Bedrock IAM/SSO, 관리형 정책" 28;
+   - ("팀 표준화" 60 is a Ch4 topic and is not shown here);
    - context: "Amazon Bedrock을 통해 사용 중" 17.
    Count-up bars; the slide shows no times. The last step says this chapter
    answers these questions, leading into the agenda. Source: OneDrive workbook
