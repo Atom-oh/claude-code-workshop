@@ -21,6 +21,13 @@ const NS = 'http://www.w3.org/2000/svg';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const D = sel => document.querySelector('.slide-deck ' + sel) || document.querySelector(sel);
 
+// Scene styles live next to this module, so any deck that imports it gets them.
+(function () {
+  const href = new URL('./flowscene.css', import.meta.url).href;
+  if ([].some.call(document.querySelectorAll('link[rel=stylesheet]'), l => l.href === href)) return;
+  const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; document.head.appendChild(l);
+})();
+
 export function mount(sel, S) {
   const host = D(sel);
   if (!host || host.dataset.fsMounted) return;
@@ -291,7 +298,7 @@ export function mount(sel, S) {
     else dot.style.opacity = 0;
 
     for (const id in marks) marks[id].setAttribute('opacity', ph.all || (pk && pk.mode === 'block' && pk.mark === id && u > (pk.stopAt || 0.6)) ? 1 : 0);
-    for (const id in tags) { const tg = (S.tags.find(x => x.id === id) || {}).show || []; tags[id].style.opacity = ph.all || tg.includes(ph.key) ? 1 : 0; }
+    for (const id in tags) { const td = S.tags.find(x => x.id === id) || {}, tg = td.show || []; tags[id].style.opacity = (ph.all && td.overview !== false) || tg.includes(ph.key) ? 1 : 0; }
 
     // sequential checks (e.g. IAM evaluation) light up in this phase
     const lit = ph.checks ? Math.floor(clamp(u / (pk && pk.hold || 0.8), 0, 1) * (chk.length + 0.0001)) : (ph.all || (S.checksDoneAfter && PH.findIndex(p => p.key === S.checksDoneAfter) < i) ? chk.length : 0);

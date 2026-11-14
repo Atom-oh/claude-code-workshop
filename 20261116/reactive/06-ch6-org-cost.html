@@ -117,18 +117,113 @@
 </div>
 
 <div class="slide" data-remarp-id="s6" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s6-header"><h2>정책으로 켜는 OTel</h2></div>
+  <div class="slide-header" data-remarp-id="s6-header"><h2>프롬프트 하나가 대시보드 숫자가 되기까지</h2></div>
   <div class="slide-body" data-remarp-id="s6-body">
-    <p><!-- Slide 7: OTel by policy --></p>
+    <p><!-- Slide 7: Prompt to dashboard scene --></p>
+<p>요청 하나가 남기는 기록의 길 (랩 환경 기준)</p>
+<div class="fsi fs" id="c6-flow">
+  <div class="fs-stage"></div>
+  <div class="fs-side">
+    <div class="fs-step"></div>
+    <div class="fs-title"></div>
+    <pre class="fs-code"></pre>
+    <div class="fs-say"></div>
+    <div class="fs-prog"><i></i></div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s7" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s7-header"><h2>정책으로 켜는 OTel</h2></div>
+  <div class="slide-body" data-remarp-id="s7-body">
+    <p><!-- Slide 8: OTel by policy --></p>
 <p>managed settings env 한 블록이면 모두에게</p>
 <div id="c6-sv-otel"></div>
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s7" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s7-header"><h2>이틀간 우리가 쓴 토큰</h2></div>
-  <div class="slide-body" data-remarp-id="s7-body">
-    <p><!-- Slide 8: Demo dashboard --></p>
+<div class="slide" data-remarp-id="s8" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s8-header"><h2>OTel이 보내는 것, 보내지 않는 것</h2></div>
+  <div class="slide-body" data-remarp-id="s8-body">
+    <p><!-- Slide 9: What OTel sends --></p>
+<p>지표와 이벤트는 가고, 본문은 기본으로 남는다</p>
+<div class="fsi c6-sig">
+  <div class="panel">
+    <span class="k">지표 (기본 1분마다)</span>
+    <h4>숫자로 쌓이는 8가지</h4>
+    <ul>
+      <li><code>token.usage</code> 입력, 출력, 캐시 읽기, 캐시 쓰기</li>
+      <li><code>cost.usage</code> 추정 비용 (USD)</li>
+      <li><code>session.count</code>, <code>active_time.total</code></li>
+      <li><code>lines_of_code.count</code>, <code>commit.count</code>, <code>pull_request.count</code></li>
+      <li><code>code_edit_tool.decision</code> 편집 허용, 거부</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <span class="k">이벤트 (기본 5초마다)</span>
+    <h4>한 건씩 남는 기록</h4>
+    <ul>
+      <li><code>api_request</code> 모델, 토큰, cost_usd, 걸린 시간</li>
+      <li><code>tool_result</code> 도구 이름, 성공 여부, 걸린 시간</li>
+      <li><code>tool_decision</code> 허용, 거부와 그 출처</li>
+      <li><code>user_prompt</code> 프롬프트 <b>길이</b></li>
+      <li><code>api_error</code> 상태 코드, 재시도</li>
+    </ul>
+  </div>
+  <div class="panel off">
+    <span class="k">기본으로 보내지 않음</span>
+    <h4>켜야만 나가는 내용</h4>
+    <ul>
+      <li>프롬프트 본문 <code>OTEL_LOG_<wbr>USER_PROMPTS</code></li>
+      <li>도구 인자 <code>OTEL_LOG_<wbr>TOOL_DETAILS</code></li>
+      <li>응답 본문 <code>OTEL_LOG_<wbr>ASSISTANT_RESPONSES</code></li>
+      <li>API 원문 <code>OTEL_LOG_<wbr>RAW_API_BODIES</code></li>
+    </ul>
+    <p>금융권 운영은 이 스위치를 <b>끈 채로</b> 두고, 수집기에서 한 번 더 지웁니다.</p>
+  </div>
+</div>
+<p class="c6-sig-note">모든 지표 이름 앞에는 <code>claude_code.</code>가 붙습니다. 비용 지표는 추정치이고, 정산은 AWS 청구서가 기준입니다.</p>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s9" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s9-header"><h2>ccdash, 워크숍 사용량 대시보드</h2></div>
+  <div class="slide-body" data-remarp-id="s9-body">
+    <p><!-- Slide 10: ccdash architecture --></p>
+<p>OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조</p>
+<div id="c6-sv-dash"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s10" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s10-header"><h2>ccdash 화면 둘러보기</h2></div>
+  <div class="slide-body" data-remarp-id="s10-body">
+    <p><!-- Slide 11: ccdash tour --></p>
+<p>스크롤하고, 눌러 보면 보이는 것들 (리허설 데이터, 식별자 가림)</p>
+<div class="fsi c6-tour">
+  <div class="fsi-stack" data-pick="c6-tour">
+    <button class="pick" data-key="ov"><span class="k">Overview</span><span class="t">추이와 모델별 사용량</span></button>
+    <button class="pick" data-key="tool"><span class="k">Usage</span><span class="t">도구별 호출과 오류율</span></button>
+    <button class="pick" data-key="task"><span class="k">Users</span><span class="t">작업 목록, 비용 높은 순</span></button>
+    <button class="pick" data-key="cost"><span class="k">Cost</span><span class="t">모델, effort, 캐시 구성</span></button>
+    <button class="pick" data-key="ask"><span class="k">Ask Claude</span><span class="t">말로 묻고 표로 받기</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c6-tour">
+    <figure data-for="ov"><img src="image/ch6-ccdash-overview.jpg" alt="ccdash Overview를 내려 본 화면: 시간별 토큰과 비용 추이 두 그래프, 모델별 사용량 표(모델, 백엔드, 토큰, 비용, 세션)"><figcaption>피크는 실습을 돌린 구간입니다. 아래 표에서 어느 모델이 비용을 만들었는지 바로 보입니다.</figcaption></figure>
+    <figure data-for="tool"><img src="image/ch6-ccdash-usage-tools.jpg" alt="ccdash Usage 화면의 도구 사용 표: Bash, Read, mcp_tool, Edit 등 도구별 호출 수, 오류 수, 오류율, 평균 시간"><figcaption>Bash가 가장 많이 불리고, WebFetch는 호출은 적어도 오류율이 높습니다.</figcaption></figure>
+    <figure data-for="task"><img src="image/ch6-ccdash-user-tasks-cost.jpg" alt="ccdash 사용자 상세의 작업 목록을 비용 높은 순으로 정렬한 화면: 작업별 모델, LLM 호출 수, 서브에이전트 수, 토큰, 비용, 소요 시간"><figcaption>정렬 탭을 <b>비용 높은 순</b>으로 바꾸면 비싼 작업이 위로 올라옵니다. 행을 누르면 작업 상세가 열립니다.</figcaption></figure>
+    <figure data-for="cost"><img src="image/ch6-ccdash-cost-mix.jpg" alt="ccdash Cost 화면: 모델별 비용 도넛, effort와 백엔드별 비용 도넛, 입력 토큰 구성 도넛(캐시 읽기가 대부분)"><figcaption>입력 토큰 대부분이 캐시 읽기입니다. Ch5에서 본 캐시가 실제로 일하고 있다는 뜻입니다.</figcaption></figure>
+    <figure data-for="ask"><img src="image/ch6-ccdash-ask-claude.jpg" alt="ccdash Ask Claude 패널: '지난 2일 동안 오류가 가장 많은 도구 3개와 오류율을 표로 보여줘' 질문과 도구별 오류 표, 해석, 오류 판단 기준, 커버리지와 한계가 담긴 답"><figcaption>질문 하나에 표, 해석, 판단 기준, 데이터의 한계까지 함께 돌아옵니다.</figcaption></figure>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s11" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s11-header"><h2>이틀간 우리가 쓴 토큰</h2></div>
+  <div class="slide-body" data-remarp-id="s11-body">
+    <p><!-- Slide 12: Demo dashboard --></p>
 <p>DEMO, 강사 대시보드 (URL은 현장 안내)</p>
 <div class="fsi fsi-lab c6-lab c6-demo">
   <div class="head"><span class="tag">DEMO</span></div>
@@ -148,10 +243,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s8" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s8-header"><h2>추정 비용을 청구서에 가깝게</h2></div>
-  <div class="slide-body" data-remarp-id="s8-body">
-    <p><!-- Slide 9: modelPricing --></p>
+<div class="slide" data-remarp-id="s12" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s12-header"><h2>추정 비용을 청구서에 가깝게</h2></div>
+  <div class="slide-body" data-remarp-id="s12-body">
+    <p><!-- Slide 13: modelPricing --></p>
 <p>계약 단가로 보여 주는 modelPricing</p>
 <div class="c6-price fsi">
   <div class="left">
@@ -179,10 +274,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s9" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s9-header"><h2>AWS 쪽에서 보는 비용</h2></div>
-  <div class="slide-body" data-remarp-id="s9-body">
-    <p><!-- Slide 10: AWS side tools --></p>
+<div class="slide" data-remarp-id="s13" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s13-header"><h2>AWS 쪽에서 보는 비용</h2></div>
+  <div class="slide-body" data-remarp-id="s13-body">
+    <p><!-- Slide 14: AWS side tools --></p>
 <p>Claude Code 계측과 별개로 계정에서 보이는 것, 둘을 대사</p>
 <div class="c6">
   <div class="c6-cards four">
@@ -195,10 +290,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s10" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s10-header"><h2>Bedrock 앞단의 게이트웨이</h2></div>
-  <div class="slide-body" data-remarp-id="s10-body">
-    <p><!-- Slide 11: Claude Apps Gateway --></p>
+<div class="slide" data-remarp-id="s14" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s14-header"><h2>Bedrock 앞단의 게이트웨이</h2></div>
+  <div class="slide-body" data-remarp-id="s14-body">
+    <p><!-- Slide 15: Claude Apps Gateway --></p>
 <p>Claude Apps Gateway, 공식 구성과 이번 랩 구성</p>
 <div class="c6-gwwrap">
 <div id="c6-sv-gw"></div>
@@ -215,10 +310,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s11" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s11-header"><h2>사용자별 지출 한도를 실시간으로</h2></div>
-  <div class="slide-body" data-remarp-id="s11-body">
-    <p><!-- Slide 12: Spend limits --></p>
+<div class="slide" data-remarp-id="s15" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s15-header"><h2>사용자별 지출 한도를 실시간으로</h2></div>
+  <div class="slide-body" data-remarp-id="s15-body">
+    <p><!-- Slide 16: Spend limits --></p>
 <p>지출 한도의 범위, 기간, 초과 시 동작</p>
 <div class="c6-spend fsi">
   <div class="meter" id="c6-spend">
@@ -239,10 +334,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s12" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s12-header"><h2>운영 전에 정할 두 가지</h2></div>
-  <div class="slide-body" data-remarp-id="s12-body">
-    <p><!-- Slide 13: Two decisions before operation --></p>
+<div class="slide" data-remarp-id="s16" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s16-header"><h2>운영 전에 정할 두 가지</h2></div>
+  <div class="slide-body" data-remarp-id="s16-body">
+    <p><!-- Slide 17: Two decisions before operation --></p>
 <p>기본값이 금융권 기대와 다를 수 있습니다</p>
 <div class="c6 c6-ops fsi">
   <div class="c6-two">
@@ -261,10 +356,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s13" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s13-header"><h2>그룹 한도와 사용자 한도, 누가 이기나</h2></div>
-  <div class="slide-body" data-remarp-id="s13-body">
-    <p><!-- Slide 14: Quick check 2 --></p>
+<div class="slide" data-remarp-id="s17" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s17-header"><h2>그룹 한도와 사용자 한도, 누가 이기나</h2></div>
+  <div class="slide-body" data-remarp-id="s17-body">
+    <p><!-- Slide 18: Quick check 2 --></p>
 <p>QUICK CHECK, 손을 들어 답해 주세요</p>
 <div class="fsi qc" id="c6-qc-3">
   <p class="q">standard-users 그룹 한도가 $50/일인데 bob에게만 1센트 사용자 한도를 걸면?</p>
@@ -278,10 +373,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s14" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s14-header"><h2>텔레메트리는 어디로 가는가</h2></div>
-  <div class="slide-body" data-remarp-id="s14-body">
-    <p><!-- Slide 15: Lab TASK 01 --></p>
+<div class="slide" data-remarp-id="s18" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s18-header"><h2>텔레메트리는 어디로 가는가</h2></div>
+  <div class="slide-body" data-remarp-id="s18-body">
+    <p><!-- Slide 19: Lab TASK 01 --></p>
 <p>LAB, Chapter 6 TASK 01</p>
 <div class="fsi fsi-lab c6-lab">
   <ol class="steps">
@@ -295,10 +390,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s15" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s15-header"><h2>모델 정책과 지출 한도</h2></div>
-  <div class="slide-body" data-remarp-id="s15-body">
-    <p><!-- Slide 16: Lab TASK 02 to 03 --></p>
+<div class="slide" data-remarp-id="s19" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s19-header"><h2>모델 정책과 지출 한도</h2></div>
+  <div class="slide-body" data-remarp-id="s19-body">
+    <p><!-- Slide 20: Lab TASK 02 to 03 --></p>
 <p>LAB, 게이트웨이 실습 Chapter 6 TASK 02부터 03까지</p>
 <div class="fsi fsi-lab c6-lab">
   <ol class="steps">
@@ -313,10 +408,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s16" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s16-header"><h2>내 계정에 비용 설정 적용</h2></div>
-  <div class="slide-body" data-remarp-id="s16-body">
-    <p><!-- Slide 17: Optional lab TASK 04 --></p>
+<div class="slide" data-remarp-id="s20" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s20-header"><h2>내 계정에 비용 설정 적용</h2></div>
+  <div class="slide-body" data-remarp-id="s20-body">
+    <p><!-- Slide 21: Optional lab TASK 04 --></p>
 <p>선택 LAB, Chapter 6 선택 TASK 04</p>
 <div class="fsi fsi-lab c6-lab">
   <ol class="steps">
@@ -330,10 +425,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s17" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s17-header"><h2>자주 받는 질문</h2></div>
-  <div class="slide-body" data-remarp-id="s17-body">
-    <p><!-- Slide 18: Deep dive FAQ --></p>
+<div class="slide" data-remarp-id="s21" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s21-header"><h2>자주 받는 질문</h2></div>
+  <div class="slide-body" data-remarp-id="s21-body">
+    <p><!-- Slide 22: Deep dive FAQ --></p>
 <p>더 알아보기, OTel 지표, 이상 징후, Admin API</p>
 <div class="c6-pickset c6-dd fsi">
   <div class="fsi-stack" data-pick="c6-dd2">
@@ -369,10 +464,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s18" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
-  <div class="slide-header" data-remarp-id="s18-header"><h2>보고, 막기</h2></div>
-  <div class="slide-body" data-remarp-id="s18-body">
-    <p><!-- Slide 19: Key Takeaways --></p>
+<div class="slide" data-remarp-id="s22" data-fit="off" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+  <div class="slide-header" data-remarp-id="s22-header"><h2>보고, 막기</h2></div>
+  <div class="slide-body" data-remarp-id="s22-body">
+    <p><!-- Slide 23: Key Takeaways --></p>
 <p>Chapter 6 Key Takeaways</p>
 <div class="c6-recap">
   <div class="grid">
@@ -384,7 +479,7 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s19" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
+<div class="slide" data-remarp-id="s23" data-block="06-ch6-org-cost" data-block-title="Chapter 6. 조직의 비용 보고 통제하기">
   <div class="center-content" style="height:100%; gap:1.5rem;">
     <h1 style="font-family:var(--font-display); letter-spacing:var(--tracking-tight, -0.02em); font-size:3rem; color:var(--text-primary);">Thank You</h1>
     <p style="color:var(--text-secondary); font-size:1.1rem;">다음은 Capstone 쇼케이스와 Closing입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에 언제든 편하게 남겨 주세요.</p>
@@ -416,6 +511,78 @@
 <script>
 (function(){
 (window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c6-setup', { start: 0 }); });
+})();
+</script>
+<script>
+(function(){
+import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
+  aria: '개발자 PC의 Claude Code가 지표와 이벤트를 PC 안의 수집기로 보내고, 수집기가 프롬프트 본문을 지운 뒤 ClickHouse와 CloudWatch로 내보내며, ccdash가 이를 읽어 관리자 화면과 Ask Claude 답변을 만드는 흐름',
+  zones: [
+    { box: [-0.4, 0, 0, 9.2, 4.2, 0.4], label: '개발자 PC', labelAt: [-0.2, 0, -1.05] },
+    { box: [11.4, 0, 0, 15.2, 4.2, 0.4], label: 'AWS 관측 환경', labelAt: [11.6, 0, -1.05], icon: 'Group-AWS-Cloud' },
+    { box: [12.0, 0.4, 0.4, 8.6, 3.4, 0.25], label: 'EKS 클러스터 (ccdash)', labelAt: [12.2, 0.4, -0.5], sub: true, icon: 'EKS' }
+  ],
+  parts: {
+    pc: { boxes: [[1.4, 1.2, 0.4, 1.8, 1.4, 0.8], [1.7, 2.4, 1.2, 1.2, 0.15, 1.0]] },
+    col: { boxes: [[5.4, 1.3, 0.4, 1.4, 1.4, 1.3]], rings: [[[6.1, 2.0, 0.42], 34, 12]] },
+    ch: { boxes: [[13.2, 1.2, 0.65, 1.0, 1.6, 2.0], [14.3, 1.2, 0.65, 1.0, 1.6, 2.0]] },
+    api: { boxes: [[17.4, 1.2, 0.65, 1.8, 1.6, 1.4]] },
+    cw: { boxes: [[22.6, 0.3, 0.4, 1.6, 1.2, 1.2]] },
+    bedrock: { boxes: [[22.6, 2.4, 0.4, 2.0, 1.6, 2.0]] }
+  },
+  icons: [
+    { part: 'cw', at: [23.4, 0.9, 1.9], name: 'CloudWatch' },
+    { part: 'bedrock', at: [23.6, 3.2, 2.7], name: 'Bedrock', size: 34 }
+  ],
+  tags: [
+    { id: 'evt', at: [6.6, 3.2, 3.4], text: 'api_request: model, 토큰, cost_usd', show: ['emit'], overview: false },
+    { id: 'scrub', at: [6.6, 3.2, 3.4], text: 'prompt 본문 ✕  prompt_length만', show: ['scrub'], overview: false },
+    { id: 'sql', at: [20.6, 4.0, 3.6], text: 'SELECT … (읽기 전용)', show: ['ask'], overview: false }
+  ],
+  wires: {
+    emit: { pts: [[3.2, 1.9, 1.0], [5.4, 2.0, 1.0]] },
+    exp: { pts: [[6.8, 2.0, 1.1], [9.8, 2.0, 1.1], [13.2, 2.0, 1.3]] },
+    cwl: { pts: [[6.8, 1.5, 0.8], [9.8, 0.15, 0.8], [22.0, 0.15, 0.8], [22.6, 0.8, 0.9]], cls: 'fs-alt' },
+    read: { pts: [[15.3, 2.0, 1.5], [17.4, 2.0, 1.5]] },
+    view: { pts: [[19.2, 1.7, 1.2], [20.4, 0.5, 1.6]] },
+    ask: { pts: [[19.2, 2.4, 1.6], [21.0, 3.2, 1.6], [22.6, 3.2, 1.6]] }
+  },
+  callouts: [
+    { id: 'pc', n: 1, anchor: [2.3, 1.2, 1.2], at: [40, 440], title: '개발자 PC, Claude Code', sub: 'OTel은 managed settings로 켜짐' },
+    { id: 'col', n: 2, anchor: [6.1, 1.3, 1.7], at: [120, 70], title: '수집기 (PC 안)', sub: 'loopback 4317, 디스크 큐' },
+    { id: 'ch', n: 3, anchor: [14.3, 1.2, 2.65], at: [330, 70], title: 'ClickHouse', sub: '지표와 이벤트를 저장' },
+    { id: 'cw', n: 4, anchor: [23.4, 0.3, 1.0], at: [650, 470], title: 'Amazon CloudWatch', sub: '랩 환경은 두 곳으로 전송' },
+    { id: 'api', n: 5, anchor: [18.3, 1.2, 2.05], at: [320, 470], title: 'ccdash (Express + React)', sub: '읽기 쿼리로 화면을 만듦' },
+    { id: 'admin', n: 6, anchor: [20.6, 0.4, 2.3], at: [520, 120], title: '관리자, 브라우저', sub: 'Overview, Users, Cost' },
+    { id: 'bedrock', n: 7, anchor: [23.6, 2.4, 2.4], at: [680, 200], title: 'Amazon Bedrock', sub: 'Ask Claude: 질문을 SQL로' }
+  ],
+  figures: [
+    { at: [0.6, 1.9, 0.4], scale: 0.9, pose: 'type', act: { start: 'type', emit: 'type' } },
+    { at: [20.6, 0.4, 0.65], scale: 0.9, dir: -1, colour: 'var(--info)', act: { view: 'raise', ask: 'raise' } }
+  ],
+  code: [
+    'CLAUDE_CODE_ENABLE_TELEMETRY=1',
+    'OTEL_METRICS_EXPORTER=otlp',
+    'OTEL_LOGS_EXPORTER=otlp',
+    'OTEL_EXPORTER_OTLP_PROTOCOL=grpc',
+    'OTEL_EXPORTER_OTLP_ENDPOINT=',
+    '  http://localhost:4317',
+    '# 이벤트 claude_code.api_request',
+    '#   model, input_tokens, output_tokens,',
+    '#   cache_read_tokens, cost_usd, duration_ms',
+    '# 프롬프트 본문: 기본 미전송 (길이만)'
+  ],
+  overview: { label: '전체 그림', title: '내 PC에서 관리자 화면까지', say: '프롬프트를 보내면 Claude Code는 답과 별도로 <b>무엇을 얼마나 썼는지</b>를 기록합니다. 그 기록이 PC 안의 수집기를 거쳐 저장되고, ccdash 화면의 숫자가 됩니다.' },
+  phases: [
+    { key: 'start', d: 2.6, focus: ['pc'], cam: ['pc', 'col'], zoom: 0.3, badge: 'pc', lines: [1], label: '1  입력', title: '개발자가 프롬프트를 보낸다', say: '정책으로 OTel이 켜진 PC에서는 개발자가 따로 할 일이 없습니다. 평소처럼 Claude Code를 쓰면 <b>사용 기록이 자동으로</b> 남습니다.' },
+    { key: 'emit', d: 2.8, focus: ['pc', 'col'], cam: ['pc', 'col'], zoom: 0.3, badge: 'col', lines: [2, 3, 7, 8, 9], packet: { wire: 'emit' }, label: '2  기록', title: '요청마다 이벤트, 1분마다 지표', say: '모델 호출 한 번마다 <b>api_request</b> 이벤트가 생기고 모델, 토큰, 추정 비용이 담깁니다. token.usage 같은 지표는 기본 1분마다 모아서 보냅니다.' },
+    { key: 'scrub', d: 2.6, focus: ['col'], cam: ['col'], zoom: 0.28, badge: 'col', lines: [10], label: '3  지우기', title: '본문은 보내지 않는다', say: '프롬프트 본문은 <b>기본으로 보내지 않고 길이만</b> 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막습니다.' },
+    { key: 'store', d: 3.2, focus: ['col', 'ch'], badge: 'ch', lines: [4, 5, 6], packet: { wire: 'exp' }, label: '4  저장', title: '수집기가 ClickHouse에 쌓는다', say: 'PC 안의 수집기가 받아서 <b>ClickHouse</b>에 씁니다. 연결이 잠깐 끊겨도 디스크 큐에 모아 두었다가 다시 보냅니다.' },
+    { key: 'cw', d: 3.6, focus: ['col', 'cw'], badge: 'cw', lines: [], packet: { wire: 'cwl', colour: 'var(--info)' }, label: '5  한 갈래 더', title: 'CloudWatch에도 보낸다', say: '이번 랩 환경은 같은 기록을 <b>Amazon CloudWatch</b>에도 보냅니다. 받는 곳은 조직이 정합니다.' },
+    { key: 'view', d: 3.0, focus: ['ch', 'api'], cam: ['ch', 'api', 'admin'], badge: 'admin', lines: [], packet: { wire: 'read' }, label: '6  화면', title: 'ccdash가 읽어서 화면으로', say: 'ccdash가 ClickHouse를 <b>읽기 쿼리</b>로 조회해 Overview, Users, Cost 화면을 만듭니다. 브라우저는 데이터베이스에 직접 붙지 않습니다.' },
+    { key: 'ask', d: 3.4, focus: ['api', 'bedrock'], badge: 'bedrock', lines: [], packet: { wire: 'ask', mode: 'pingpong', colour: 'var(--success)' }, label: '7  질문', title: 'Ask Claude, 말로 묻고 표로 받기', say: '“오류가 많은 도구는?”처럼 물으면 Bedrock의 Claude가 <b>읽기 전용 SQL</b>로 조회하고, 표와 해석으로 답합니다.' }
+  ]
+}); });
 })();
 </script>
 <script>
@@ -462,6 +629,59 @@
      snip:{hd:'TASK 01에서 확인',path:'랩 환경',lines:['# settings.json의 OTEL_* 환경 변수','# otelcol, fanout 타이머 active','# scrub_logs: 프롬프트 본문 삭제 규칙','# exporters: CloudWatch + 중앙 대시보드'],hl:[],note:'프롬프트 본문을 <b>내보내기 전에 지우는</b> 규칙이 금융권 운영의 기본입니다.'}}
   ], {legend:[['danger','관리자가 강제'],['accent','Claude Code'],['warning','수집기'],['info','보는 곳']]});
 });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var PC = {id:'pc',x:40,y:60,w:260,h:90,t:'Claude Code',s:'참가자 PC',c:'accent',icon:'terminal'};
+  var COL = {id:'col',x:40,y:320,w:260,h:90,t:'수집기',s:'loopback 4317, 디스크 큐',c:'warning',icon:'pipe'};
+  var CH = {id:'ch',x:410,y:320,w:280,h:90,t:'ClickHouse',s:'지표, 로그, 시간별 롤업',c:'info',icon:'server'};
+  var API = {id:'api',x:410,y:60,w:280,h:90,t:'ccdash',s:'Express API + React 화면',c:'info',icon:'chart'};
+  var CF = {id:'cf',x:820,y:60,w:320,h:90,t:'Amazon CloudFront',s:'브라우저 접속, OIDC 로그인',c:'success',icon:'aws:CloudFront'};
+  var BD = {id:'bd',x:820,y:320,w:320,h:90,t:'Amazon Bedrock',s:'Ask Claude가 SQL을 작성',c:'accent',icon:'aws:Bedrock'};
+  var Z = [{x:20,y:20,w:300,h:420,l:'참가자 PC'},{x:390,y:20,w:320,h:420,l:'EKS',tone:'info'}];
+  var N = [PC, COL, CH, API, CF, BD];
+  var col = ['# collector-config.yaml (요약)','receivers:','  otlp: grpc 127.0.0.1:4317, http 4318','processors:','  Claude Code 지표 8개만 허용','  로그 본문은 지우고 내보냄','exporters:','  clickhouse: 디스크 큐, 재시도'];
+  F.stepviz('#c6-sv-dash', [
+    {kicker:'OVERVIEW', title:'받고, 쌓고, 보여 주고, 답한다',
+     body:'ccdash는 이 워크숍을 위해 만들어 <b>GitHub에 공개한 사용량 대시보드</b>입니다. 참가자 PC의 수집기가 보낸 OTel을 ClickHouse에 쌓고, 화면과 Ask Claude로 보여 줍니다.',
+     facts:['github.com/Atom-oh/claude-code-usage-dashboard','Claude Code와 Codex 사용량','숫자는 관측값과 추정치, 청구서가 아님'],
+     zones:Z, nodes:N,
+     edges:[{f:'pc',t:'col',c:'accent',o:0},{f:'col',t:'ch',c:'warning',o:1},{f:'ch',t:'api',c:'info',o:2},{f:'api',t:'cf',c:'success',o:3},{f:'api',t:'bd',c:'accent',o:3}],
+     loop:true, stagger:0.6,
+     snip:{hd:'구성 요소',path:'docs/architecture.md',lines:['Claude Code  → 수집기 (PC 안)','수집기       → ClickHouse','ClickHouse   → Express API, React','브라우저     → CloudFront → API','Ask Claude   → Amazon Bedrock'],hl:[],note:'브라우저는 ClickHouse에 <b>직접 붙지 않습니다</b>. 모든 조회는 API를 거칩니다.'}},
+    {kicker:'STEP 1', title:'수집: PC 안의 수집기가 먼저 받는다',
+     body:'Claude Code는 같은 PC의 <b>loopback 4317</b>로 보냅니다. 수집기는 Claude Code 지표 여덟 개만 통과시키고, 로그 본문은 지운 뒤 내보냅니다.',
+     facts:['OTLP gRPC 4317, HTTP 4318','지표 허용 목록','디스크 큐, 끊겨도 다시 보냄'],
+     zones:Z, nodes:N, hot:['pc','col','ch'],
+     edges:[{f:'pc',t:'col',c:'accent',l:'OTLP',o:0},{f:'col',t:'ch',c:'warning',l:'내보내기',o:1}], loop:true, stagger:0.7,
+     snip:{hd:'수집기 설정',path:'collector-config.yaml',lines:col,hl:[2,3,4,5,6]}},
+    {kicker:'STEP 2', title:'저장: ClickHouse와 시간별 롤업',
+     body:'원본 지표와 로그는 <b>ClickHouse</b>에 쌓이고, 지표는 시간별 롤업 표로도 모입니다. 긴 기간 화면은 롤업을 읽어 빠르게 그립니다.',
+     facts:['원본: 지표, 로그, 선택 시 트레이스','롤업: 시간별 지표','기본 2일, 최대 90일 범위'],
+     zones:Z, nodes:N, hot:['ch','api'],
+     edges:[{f:'ch',t:'api',c:'info',l:'읽기 쿼리',o:0}], loop:true,
+     snip:{hd:'화면 범위',path:'환경 변수',lines:['DEFAULT_RANGE_DAYS=2','RANGE_CAP_DAYS=90','PII_MASK_ENABLED  # 화면, CSV, 채팅 가림'],hl:[1,2],note:'이 워크숍 화면도 <b>최근 2일</b>이 기본입니다.'}},
+    {kicker:'STEP 3', title:'화면: 로그인한 사람만, 역할대로',
+     body:'관리자는 브라우저로 <b>CloudFront</b>를 거쳐 접속합니다. 조직 OIDC 로그인을 켜면 viewer, analyst, admin 그룹대로 볼 수 있는 범위가 나뉩니다.',
+     facts:['Overview, Users, Usage, Cost 등 메뉴','조직 OIDC, viewer / analyst / admin','사용자 식별자 가림 옵션'],
+     zones:Z, nodes:N, hot:['api','cf'],
+     edges:[{f:'api',t:'cf',c:'success',l:'HTTPS',o:0}], loop:true,
+     snip:{hd:'메뉴',path:'ccdash 왼쪽 메뉴',lines:['Overview    핵심 지표 요약','Users       사용자별 활동','Usage       토큰, 도구 사용','Cost        비용, 모델별 비교','Reliability 오류, 응답 시간','Analytics   모델, 진단 분석'],hl:[1,2,3,4]}},
+    {kicker:'STEP 4', title:'Ask Claude: 말로 묻고 표로 받기',
+     body:'질문을 하면 Bedrock의 Claude가 <b>SQL을 작성해 읽기 전용으로</b> 조회하고, 표와 해석, 데이터의 한계까지 함께 답합니다.',
+     facts:['인증된 사용자만 사용','읽기 전용 ClickHouse 세션','답에 쿼리와 커버리지 한계 표시'],
+     zones:Z, nodes:N, hot:['api','bd'],
+     edges:[{f:'api',t:'bd',c:'accent',l:'SQL 도구',o:0}], loop:true,
+     snip:{hd:'예시 질문',path:'Ask Claude',lines:['지난 2일 동안 오류가 가장 많은','도구 3개와 오류율을 표로 보여줘'],hl:[1,2],note:'답의 숫자는 <b>관측값</b>입니다. 도구 품질이나 사람의 생산성 평가에 쓰지 않습니다.'}}
+  ], {legend:[['accent','Claude Code, Bedrock'],['warning','수집기'],['info','저장, API'],['success','접속']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c6-tour', { start: 0 }); });
 })();
 </script>
 <script>
@@ -591,21 +811,25 @@
     3: "[0.5min] [\uc694\uc57d]\n\u2022 \uac15\uc758\uc640 \ub370\ubaa8\ub97c \uc9e7\uac8c \ud558\uace0, \uc774\uc5b4\uc11c \ub7a9\n\u2022 OTel \uacc4\uce21, modelPricing, \uac8c\uc774\ud2b8\uc6e8\uc774 \uc9c0\ucd9c \ud55c\ub3c4\n\u2022 \ub7a9 TASK 01, TASK 02\uc640 03, \uc120\ud0dd TASK 04\n\nBedrock \ube44\uc6a9\uc744 \ud30c\uc545\ud558\ub294 \ubc29\ubc95\ubd80\ud130 \uc0b4\ud3b4\ubcf4\uace0,\n\uacc4\uc57d \ub2e8\uac00\uc640 AWS \ub3c4\uad6c\ub85c \uc218\uce58\ub97c \ub9de\ucdb0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uc774\uc5b4\uc11c \uac8c\uc774\ud2b8\uc6e8\uc774\uc758 \uadf8\ub8f9 \uc815\ucc45\uacfc \ud55c\ub3c4\ub97c \ub2e4\ub8f9\ub2c8\ub2e4.\n\ub370\ubaa8 \ub4a4\uc5d0\ub294 TASK 01\ubd80\ud130 03\uc744 \uc2e4\uc2b5\ud558\uace0,\n\uc120\ud0dd TASK 04\ub3c4 \ud574 \ubcf4\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
     4: "[0.5min] [\uc694\uc57d]\n\u2022 Chapter 6\uc740 \uc870\uc9c1\uc758 \ube44\uc6a9 \ud1b5\uc81c, \uc4f4 \ub9cc\ud07c \ubcf4\uace0 \ub118\uce58\uba74 \ub9c9\ub294\ub2e4\n\u2022 Bedrock \ube44\uc6a9 \ubcf4\uae30, OTel \ub300\uc2dc\ubcf4\ub4dc, modelPricing\uacfc AWS \ub3c4\uad6c, Claude Apps Gateway \uc2e4\uc2b5\n\nChapter 5\uc5d0\uc11c\ub294 \uac1c\uc778\uc774 \ub35c \uc4f0\ub294 \ubc29\ubc95\uc744 \ubd24\uc2b5\ub2c8\ub2e4.\n\uc774\uc81c \uc870\uc9c1\uc774 \uc0ac\uc6a9\ub7c9\uc744 \ud30c\uc545\ud558\uace0 \ud1b5\uc81c\ud560 \ucc28\ub840\uc785\ub2c8\ub2e4.\n\uc0ac\uc6a9\ub7c9\uc744 \uc0ac\ub78c\uacfc \ud300\uc5d0 \uc5f0\uacb0\ud574\uc57c\n\ud544\uc694\ud55c \ud55c\ub3c4\ub97c \uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\uacc4\uce21\uc73c\ub85c \ube44\uc6a9\uc774 \ubc1c\uc0dd\ud55c \uacbd\ub85c\ub97c \ud655\uc778\ud55c \ub4a4,\n\uac8c\uc774\ud2b8\uc6e8\uc774\ub85c \ud55c\ub3c4\ub97c \uc801\uc6a9\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
     5: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 Amazon Bedrock: AWS \uccad\uad6c \ucf58\uc194, AWS \uc608\uc0b0 \ub3c4\uad6c, \uc0ac\uc6a9\uc790\ubcc4\uc740 IAM principal\uacfc \ud0dc\uadf8(CUR 2.0), OTel, \uac8c\uc774\ud2b8\uc6e8\uc774\n\u2022 Claude Team, Enterprise: \uc870\uc9c1 Analytics, \uad00\ub9ac \ucf58\uc194 \uc9c0\ucd9c \ud55c\ub3c4, CSV\uc640 Analytics API\n\u2022 Claude Console: Console Usage, Workspace limit, Claude Code Analytics API\n\n\uad6c\uc131\uc5d0 \ub530\ub77c \ube44\uc6a9\uc744 \ubcf4\ub294 \ubc29\ubc95\uc774 \ub2ec\ub77c\uc9d1\ub2c8\ub2e4.\n\uc774\ubc88 \uc6cc\ud06c\uc20d\uc758 Bedrock \ube44\uc6a9\uc740 AWS \uccad\uad6c \ucf58\uc194\ub85c,\n\uc608\uc0b0 \uc54c\ub9bc\uc740 AWS \uc608\uc0b0 \ub3c4\uad6c\ub85c \ud655\uc778\ud569\ub2c8\ub2e4.\n\uc0ac\uc6a9\uc790 \uad6c\ubd84\uc5d0\ub294 IAM principal\uacfc CUR 2.0 \ud0dc\uadf8,\nOTel\uacfc \uac8c\uc774\ud2b8\uc6e8\uc774\uc758 \uacc4\uce21\uc744 \ud568\uaed8 \uc0b4\ud3b4\uc57c \ud569\ub2c8\ub2e4.\n\n\ub2e4\ub978 \uad6c\uc131\ub3c4 \ube44\uad50\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\u2193\nClaude Team\uacfc Enterprise\ub294 \uc870\uc9c1 Analytics\uc640\n\uad00\ub9ac \ucf58\uc194 \uc9c0\ucd9c \ud55c\ub3c4\ub97c \uc81c\uacf5\ud569\ub2c8\ub2e4.\u2193\nConsole\uc740 Workspace limit\uacfc Analytics API\ub85c\n\uad00\ub9ac\ud569\ub2c8\ub2e4. Bedrock\uc5d0\uc11c\ub294 \ubcc4\ub3c4 \uacc4\uce21\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.",
-    6: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 Bedrock\uc5d0\ub294 Analytics \ub300\uc2dc\ubcf4\ub4dc\uac00 \uc5c6\uc74c\n\u2022 \uacc4\uce21\uc744 \uc124\uce58\ud574\uc57c \ubcf4\uc774\uace0, \uc124\uce58\ud558\uc9c0 \uc54a\uc740 \uc0ac\ub78c\uc740 \uc7a1\ud788\uc9c0 \uc54a\uc74c\n\n\n\ud654\uba74\uc758 Analytics\ub294 Claude \uc870\uc9c1 Analytics\uc785\ub2c8\ub2e4.\nBedrock\uc5d0\ub294 \uc774 \ub300\uc2dc\ubcf4\ub4dc\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.\nAWS\uc758 \uad00\uce21 \ub3c4\uad6c\uc640\ub294 \uad6c\ubd84\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\uc0ac\ub78c\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ubcc4\ub3c4 \uacc4\uce21\uc774 \ud544\uc694\ud558\uba70,\n\uc124\uc815 \ub204\ub77d\uc774\ub098 \uc5f0\uacb0 \uc7a5\uc560\uac00 \uc788\uc73c\uba74 \ube60\uc9c8 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
-    7: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 managed settings env \ud55c \ube14\ub85d\uc73c\ub85c OTel\uc744 \ubaa8\ub450\uc5d0\uac8c \ucf2c (CLAUDE_CODE_ENABLE_TELEMETRY 1)\n\u2022 OTLP http/protobuf\ub85c \uc870\uc9c1 \uc218\uc9d1\uae30 \uc5d4\ub4dc\ud3ec\uc778\ud2b8\uc5d0 \uc9c0\ud45c\uc640 \ub85c\uadf8 \uc804\uc1a1\n\u2022 \ub300\ud45c \uc9c0\ud45c: claude_code.token.usage, cost.usage, session.count, lines_of_code, commit, PR\n\u2022 OTEL_RESOURCE_ATTRIBUTES\ub85c \ud300\ubcc4 \uc9d1\uacc4\n\u2022 \ub7a9 \ud658\uacbd: otelcol, scrub_logs\ub85c \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38 \uc0ad\uc81c, CloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc \uc774\uc911 \uc804\uc1a1\n\n\nmanaged settings\uc758 env\ub85c OTel\uc744 \ucf2d\ub2c8\ub2e4.\n\uc0ac\uc6a9\uc790\uac00 \ub04c \uc218 \uc5c6\ub294 \uc815\ucc45\uc73c\ub85c \ubc30\ud3ec\ud558\ub418,\n\uc218\uc9d1\uae30 \uc5f0\uacb0\uacfc \uc2e4\uc81c \uc218\uc2e0\ub3c4 \ud655\uc778\ud574\uc57c \ud569\ub2c8\ub2e4.\u2193\nOTLP\ub85c \uc870\uc9c1 \uc218\uc9d1\uae30\uc5d0 \uc9c0\ud45c\uc640 \ub85c\uadf8\ub97c \ubcf4\ub0c5\ub2c8\ub2e4.\u2193\n\ud1a0\ud070\uacfc \ucd94\uc815 \ube44\uc6a9, \uc138\uc158 \uc218\ub85c \uc0ac\uc6a9\ub7c9\uc744 \ubcf4\uace0,\n\ucf54\ub4dc \uc904 \uc218\uc640 \ucee4\ubc0b, PR\ub3c4 \ud568\uaed8 \uc9d1\uacc4\ud569\ub2c8\ub2e4.\u2193\nresource \uc18d\uc131\uc5d0 \ubd80\uc11c\uc640 \ud300\uc744 \ub123\uc73c\uba74\n\ud300\ubcc4\ub85c \ub098\ub204\uc5b4 \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.\u2193\n\ub7a9\uc5d0\uc11c\ub294 otelcol\uc774 \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc744 \uc9c0\uc6b4 \ub4a4,\nCloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc\ub85c \ubcf4\ub0c5\ub2c8\ub2e4.\n\uc774 \uacbd\ub85c\ub97c TASK 01\uc5d0\uc11c \ud655\uc778\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 OTLP: OpenTelemetry Protocol",
-    8: "\ud83c\udfac [10min] [\uc694\uc57d]\n\u2022 \uac15\uc0ac \ub300\uc2dc\ubcf4\ub4dc(URL\uc740 \ud604\uc7a5 \uc548\ub0b4), \ub7a9 \ud658\uacbd\uc740 Day 1\ubd80\ud130 OTel \uc218\uc9d1 \uc911 (\ucc38\uac00 \uc548\ub0b4\ubb38\uc5d0 \uace0\uc9c0)\n\u2022 \uc804\uccb4 \ucd94\uc774\uc640 Capstone \ud53c\ud06c, \ubaa8\ub378\ubcc4\uacfc \ub3c4\uad6c\ubcc4 \ubd84\ud3ec, \uce90\uc2dc \uc801\uc911\ub960, \ub0b4 \ucc38\uac00\uc790 ID\ub85c \ucc3e\uae30\n\u2022 \uac00\uc7a5 \ube44\uc6a9\uc774 \ucef8\ub358 \ud328\ud134\uc744 Ch5\uc758 \uc6d0\ub9ac\ub85c \ud574\uc11d\n\u2022 \ud654\uba74\uc5d0\ub294 \ucc38\uac00\uc790 ID\ub9cc, \ud68c\uc0ac\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ub178\ucd9c\ud558\uc9c0 \uc54a\uc74c\n\n\ucc38\uac00 \uc548\ub0b4\ubb38\uc5d0 \uace0\uc9c0\ud55c \ub300\ub85c \ub7a9\uc5d0\uc11c\ub294\nDay 1\ubd80\ud130 OTel\uc744 \uc218\uc9d1\ud558\uace0 \uc788\uc2b5\ub2c8\ub2e4.\n\uc774\ud2c0\uac04 \uc218\uc9d1\ub41c \uc0ac\uc6a9\ub7c9\uc758 \uc804\uccb4 \ucd94\uc774\ub97c \ubcf4\uba70,\nCapstone \uad6c\uac04\uc5d0\uc11c \uc0ac\uc6a9\ub7c9\uc774 \ub298\uc5b4\ub09c \uc9c0\uc810\uc744\n\ucc3e\uc544\ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\ubaa8\ub378\uacfc \ub3c4\uad6c\ubcc4 \ubd84\ud3ec, \uce90\uc2dc \uc801\uc911\ub960\uc744 \uc0b4\ud3b4\ubcf8 \ub4a4,\n\ucc38\uac00\uc790 ID\ub85c \ubcf8\uc778 \uc0ac\uc6a9\ub7c9\uc744 \ucc3e\uc544\ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\uac12\uc774 \uc5c6\uc73c\uba74 \uacc4\uce21 \uc5f0\uacb0\ub3c4 \ud655\uc778\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ube44\uc6a9\uc774 \ucef8\ub358 \ud328\ud134\uc740 Chapter 5\uc758 \uc6d0\ub9ac\ub85c \ud574\uc11d\ud569\ub2c8\ub2e4.\n\ud654\uba74\uc5d0\ub294 \ucc38\uac00\uc790 ID\ub9cc \ud45c\uc2dc\ud558\uba70,\n\ud68c\uc0ac\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ubcf4\uc5ec \ub4dc\ub9ac\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
-    9: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 managed-settings.json modelPricing.multiplier\ub85c \uacc4\uc57d \ub2e8\uac00\ub97c \ud45c\uc2dc (managed settings\uc5d0\uc11c\ub9cc, v2.1.242+)\n\u2022 1\ubcf4\ub2e4 \uc791\uc73c\uba74 \ud560\uc778, \ud06c\uba74 \ud560\uc99d, \ubaa8\ub378\ubcc4 \ub2e8\uac00\ub294 overrides\n\u2022 \ud45c\uc2dc\ub9cc \ubc14\uafb8\uace0 \uccad\uad6c\ub294 \uadf8\ub300\ub85c, \uc22b\uc790\ub294 \uacc4\uc57d \ub2e8\uac00\ub85c\n\n/usage\uc640 \ub300\uc2dc\ubcf4\ub4dc \ube44\uc6a9\uc740 \ubaa9\ub85d\uac00 \uae30\uc900 \ucd94\uc815\uce58\uc785\ub2c8\ub2e4.\n\uacc4\uc57d \ub2e8\uac00\uac00 \ub2e4\ub974\uba74 \uccad\uad6c\uc11c\uc640 \ucc28\uc774\uac00 \ub0a9\ub2c8\ub2e4.\nmodelPricing\uc73c\ub85c \ud45c\uc2dc \ub2e8\uac00\ub97c \ub9de\ucda5\ub2c8\ub2e4.\n\nmultiplier\ub97c \ubc14\uafd4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uc6d0\ub9ac 1\uc758 0.55\ub2ec\ub7ec \uc138\uc158\uc5d0 0.9\ub97c \uacf1\ud558\uba74\n0.50\ub2ec\ub7ec\ub85c \ud45c\uc2dc\ub429\ub2c8\ub2e4.\n1\ubcf4\ub2e4 \uc791\uc73c\uba74 \ud560\uc778, \ud06c\uba74 \ud560\uc99d\uc744 \ubc18\uc601\ud558\uace0,\n\ubaa8\ub378\ubcc4 \ucc28\uc774\ub294 overrides\ub85c \uc124\uc815\ud569\ub2c8\ub2e4.\nmanaged settings\uc5d0\uc11c\ub9cc \uc801\uc6a9\ub418\uba70,\n\ud45c\uc2dc\ub97c \ubc14\uafc0 \ubfd0 \uc2e4\uc81c \uccad\uad6c\ub294 \ubc14\uafb8\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\uc640 \ub300\uc0ac\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
-    10: "[0.5min] [\uc694\uc57d]\n\u2022 Application inference profile \ud0dc\uadf8: Ch2 modelOverrides\ub85c \ud300\ubcc4 \uacbd\ub85c, Cost Explorer\n\u2022 AWS Budgets: \uacc4\uc815\uacfc \ud0dc\uadf8 \ub2e8\uc704 \uc608\uc0b0 \uc54c\ub78c\n\u2022 \uc804\uc6a9 AWS \uacc4\uc815\uc73c\ub85c \ube44\uc6a9 \ubd84\ub9ac (\uacf5\uc2dd \uad8c\uc7a5)\n\u2022 TPM \ucffc\ud130: \ub3d9\uc2dc \uc0ac\uc6a9 \uae09\uc99d\uc740 \uc0ac\uc804 \uc99d\uc561\n\u2022 Claude Code \uacc4\uce21\uacfc AWS \ucabd \uc22b\uc790\ub97c \ub300\uc0ac\ud574\uc57c \uc815\ud655\n\nClaude Code \uacc4\uce21\uc740 AWS \uacc4\uc815\uc758 \ube44\uc6a9\uacfc \ub300\uc0ac\ud569\ub2c8\ub2e4.\nCh2\uc758 modelOverrides\ub85c \ud300\ubcc4 \uacbd\ub85c\ub97c \ub9cc\ub4e4\uace0,\napplication inference profile\uc758 \ud0dc\uadf8\ub97c\nCost Explorer\uc5d0\uc11c \ub098\ub204\uc5b4 \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.\nAWS Budgets\ub294 \uacc4\uc815\uacfc \ud0dc\uadf8 \ub2e8\uc704\ub85c \uc54c\ub9bc\uc744 \uc90d\ub2c8\ub2e4.\n\uc804\uc6a9 AWS \uacc4\uc815\uc73c\ub85c \ube44\uc6a9\uc744 \ubd84\ub9ac\ud558\ub294 \uac83\uc774\n\uacf5\uc2dd \uad8c\uc7a5 \ubc29\uc2dd\uc785\ub2c8\ub2e4.\n\ub3d9\uc2dc \uc0ac\uc6a9\uc774 \ubab0\ub9ac\ub294 \uad50\uc721\uc740 TPM \ucffc\ud130\ub3c4\n\ubbf8\ub9ac \uc99d\uc561\ud574 \ub450\uc154\uc57c \ud569\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 TPM: Tokens Per Minute",
-    11: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 Claude Apps Gateway: Bedrock \uc55e\ub2e8\uc5d0 \uc9c1\uc811 \uc6b4\uc601, SSO \ub85c\uadf8\uc778, IdP \uadf8\ub8f9\ubcc4 \ubaa8\ub378\uacfc \uc815\ucc45, \uc0ac\uc6a9\uc790\ubcc4 \uc9c0\ucd9c \ud55c\ub3c4, OTLP \uc911\uacc4 (claude gateway --config gateway.yaml)\n\u2022 \uacf5\uc2dd AWS \uc608\uc81c: \uc0ac\uc124\ub9dd \uc804\uc6a9, internal ALB(IPv4, idle 3600\ucd08), Route 53 \uc0ac\uc124 \uc874, ECS Fargate, RDS PostgreSQL, OIDC IdP, IAM \uc5ed\ud560\ub85c Bedrock \ud638\ucd9c\n\u2022 /login\uc740 \uac8c\uc774\ud2b8\uc6e8\uc774 \ud638\uc2a4\ud2b8\uac00 \uc0ac\uc124 IP\ub85c\ub9cc resolve\ub420 \ub54c\ub9cc \ud1b5\uacfc, \ub85c\uadf8\uc778 \ube0c\ub77c\uc6b0\uc800\ub3c4 \uc0ac\uc124\ub9dd\n\u2022 \ub7a9 \uc804\uc6a9 \uad6c\uc131(\uc6b4\uc601 \ud658\uacbd\uc740 \uc0ac\uc124\ub9dd): \ucc38\uac00\uc790 \uacc4\uc815 VPC\ub9c8\ub2e4 \uac8c\uc774\ud2b8\uc6e8\uc774 EC2, Cognito OIDC alice\uc640 bob, us-east-1, global \ucd94\ub860 \ud504\ub85c\ud544\uc758 5.5 \ubaa8\ub378\n\u2022 ccb-endpoint\ub294 \ucc38\uac00\uc790 \uc2e4\uc2b5 PC, use_gateway\ub294 \ubaa8\ub4dc \uc804\ud658 \uc2a4\ud06c\ub9bd\ud2b8\n\n\n\uc774\uc81c \uc9c0\ucd9c\uc744 \ud1b5\uc81c\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\nClaude Apps Gateway\ub294 Bedrock \uc55e\ub2e8\uc5d0\uc11c\n\uc9c1\uc811 \uc6b4\uc601\ud558\uba70, claude \ubc14\uc774\ub108\ub9ac\uc5d0 \ud3ec\ud568\ub429\ub2c8\ub2e4.\u2193\n\uacf5\uc2dd AWS \uc608\uc81c\uc5d0\uc11c \uac1c\ubc1c\uc790\ub294 /login\uc73c\ub85c\n\ub514\ubc14\uc774\uc2a4 \uc778\uc99d\uc744 \ud558\uace0 \uadf8\ub8f9 \uc815\ucc45\uc744 \ubc1b\uc2b5\ub2c8\ub2e4.\u2193\n\ub124\ud2b8\uc6cc\ud06c\ub294 internal ALB\uc640\nRoute 53 \uc0ac\uc124 \uc874\uc744 \uc0ac\uc6a9\ud569\ub2c8\ub2e4.\u2193\nECS Fargate\uc758 \uac8c\uc774\ud2b8\uc6e8\uc774\ub85c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.\n\uc0c1\ud0dc\ub294 RDS PostgreSQL, \uc778\uc99d\uc740 OIDC IdP\uac00\n\ub2f4\ub2f9\ud569\ub2c8\ub2e4.\u2193\nBedrock\uc740 IAM \uc5ed\ud560\ub85c \ud638\ucd9c\ud569\ub2c8\ub2e4.\n\uc6b4\uc601 \uad6c\uc131\uc740 \uc0ac\uc124\ub9dd \uc804\uc6a9\uc785\ub2c8\ub2e4.\n/login\uc740 \uac8c\uc774\ud2b8\uc6e8\uc774 \ud638\uc2a4\ud2b8\uac00\n\uc0ac\uc124 IP\ub85c\ub9cc \ud574\uc11d\ub420 \ub54c \ud1b5\uacfc\ud558\uba70,\n\ub85c\uadf8\uc778 \ube0c\ub77c\uc6b0\uc800\ub3c4 \uc0ac\uc124\ub9dd \uc548\uc5d0 \uc788\uc5b4\uc57c \ud569\ub2c8\ub2e4.\u2193\n\ub7a9\uc740 \uac01 \uacc4\uc815\uc758 VPC \uc548\uc5d0 \uac8c\uc774\ud2b8\uc6e8\uc774\uac00 \ud55c \ub300\uc529 \uc788\uace0,\nalice\uc640 bob\uc73c\ub85c \uc2e4\uc2b5\ud569\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 SSO: Single Sign-On\n\u2022 IdP: Identity Provider\n\u2022 OIDC: OpenID Connect\n\u2022 ALB: Application Load Balancer",
-    12: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 \ubc94\uc704: user(OIDC sub), rbac_group, organization, \uadf8\ub8f9\uacfc \uc870\uc9c1 \ud55c\ub3c4\ub294 1\uc778\ub2f9 \uae30\ubcf8\uac12\n\u2022 \uae30\uac04: daily, weekly, monthly, UTC \uae30\uc900 \ub9ac\uc14b\n\u2022 \ucd08\uacfc \uc2dc 429 billing_error\uc640 \ub9ac\uc14b \uc2dc\uac01, 75%\uc640 95%\uc5d0\uc11c \uc0ac\uc804 \uacbd\uace0\n\u2022 \ub2e8\uac00: pricing.overrides, \ubaa9\ub85d\uac00, \ubbf8\uc9c0 \ubaa8\ub378 $5/$25, \ucd94\uc815\uce58\uc774\uace0 \uc815\uc0b0\uc740 AWS\n\u2022 \uc124\uc815\uc740 Admin API POST /v1/organizations/spend_limits, gateway.yaml\uc774 \uc544\ub2d8\n\n\n\uc0ac\uc6a9\uc790\ubcc4 \ud55c\ub3c4\uc5d0 \uac00\uae4c\uc6cc\uc9c8 \ub54c\uc758 \ub3d9\uc791\uc744 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uc9c0\uae08\uc740 \ud55c\ub3c4 \ub300\ube44 40%\ub85c \uc815\uc0c1 \uc0ac\uc6a9 \uc911\uc785\ub2c8\ub2e4.\u2193\n75%\uc5d0\uc11c \uc0ac\uc804 \uacbd\uace0\uac00 \ub098\uc635\ub2c8\ub2e4.\u2193\n95%\uc5d0\uc11c \ub2e4\uc2dc \uacbd\uace0\ud569\ub2c8\ub2e4.\u2193\n100%\uc5d0 \ub2ff\uc73c\uba74 \ub2e4\uc74c \uc694\uccad\uc740\n429 billing_error\uc640 \ub9ac\uc14b \uc2dc\uac01\uc744 \ubc1b\uc2b5\ub2c8\ub2e4.\n\ubc94\uc704\ub294 \uc0ac\uc6a9\uc790, \uadf8\ub8f9, \uc870\uc9c1\uc774\uba70,\n\uadf8\ub8f9\uacfc \uc870\uc9c1 \ud55c\ub3c4\ub294 \uacf5\uc720 \ud480\uc774 \uc544\ub2cc 1\uc778\ub2f9 \uae30\ubcf8\uac12\uc785\ub2c8\ub2e4.\n\uc77c, \uc8fc, \uc6d4 \ub2e8\uc704\ub85c UTC \uae30\uc900\uc5d0 \ub9de\ucdb0 \ub9ac\uc14b\ub429\ub2c8\ub2e4.\n\ud55c\ub3c4 \ud310\ub2e8\uc740 \ucd94\uc815 \ube44\uc6a9\uc774\uba70 \uc815\uc0b0\uc740 AWS\uc640 \ub300\uc0ac\ud569\ub2c8\ub2e4.\n\uc124\uc815\uc740 gateway.yaml \ub300\uc2e0 Admin API\ub85c \ud569\ub2c8\ub2e4.",
-    13: "\u2753 [1min] [\uc694\uc57d]\n\u2022 \uc800\uc7a5\uc18c \uc7a5\uc560 \uc2dc \uae30\ubcf8\uc740 fail-open(\uc694\uccad \ud1b5\uacfc, \uacbd\uace0 \ub85c\uadf8), fail_closed_on_error: true\uba74 \ucc28\ub2e8, \ucd94\ub860 \uc911\ub2e8\uacfc \ubbf8\uacc4\uce21 \uc9c0\ucd9c \uc911 \uc120\ud0dd\n\u2022 principal_emails\uc5d0 \uc774\uba54\uc77c, \uc774\ub984, \uadf8\ub8f9 \uc800\uc7a5, \uae30\ubcf8 90\uc77c \ubcf4\uc874(identity_retention_days)\n\u2022 \ud1f4\uc0ac\ub098 \uc5f4\ub78c \uc694\uccad \uc2dc \ud589 \uc0ad\uc81c, spend\uc640 audit\uc740 OIDC sub\ub9cc \ucc38\uc870\n\n\n\uc6b4\uc601 \uc804 \ubcf4\uc548 \uac80\ud1a0\uc5d0\uc11c \uc7a5\uc560 \ucc98\ub9ac\uc640\n\uac1c\uc778\uc815\ubcf4 \ubcf4\uc874 \uc815\ucc45\uc744 \ud655\uc778\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\uc800\uc7a5\uc18c \uc7a5\uc560 \uc2dc \uae30\ubcf8\uc740 fail-open\uc785\ub2c8\ub2e4.\n\uc694\uccad\uc740 \ud1b5\uacfc\uc2dc\ud0a4\uace0 \uacbd\uace0\ub97c \ub0a8\uae41\ub2c8\ub2e4.\u2193\nfail_closed_on_error\ub97c \ucf1c\uba74 \uc694\uccad\uc744 \ucc28\ub2e8\ud569\ub2c8\ub2e4.\n\ucd94\ub860 \uc911\ub2e8\uacfc \uacc4\uce21\ub418\uc9c0 \uc54a\ub294 \uc9c0\ucd9c \uc911\n\ubb34\uc5c7\uc744 \uac10\uc218\ud560\uc9c0 \uc815\ud558\ub294 \uc120\ud0dd\uc785\ub2c8\ub2e4.\n\uc774\uba54\uc77c\uacfc \uc774\ub984, \uadf8\ub8f9\uc740 \uae30\ubcf8 90\uc77c \ubcf4\uc874\ud569\ub2c8\ub2e4.\n\ud1f4\uc0ac\ub098 \uc5f4\ub78c \uc694\uccad\uc744 \ucc98\ub9ac\ud558\ub294 \uc808\ucc28\uc640\n\ud544\uc694\ud55c \ud589\uc744 \uc0ad\uc81c\ud558\ub294 \uae30\uc900\ub3c4 \uc815\ud574 \ub450\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
-    14: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, \uc0ac\uc6a9\uc790 \ud55c\ub3c4\uac00 \uadf8\ub8f9 \uae30\ubcf8\uac12\ubcf4\ub2e4 \uc6b0\uc120\ud574 \ub2e4\uc74c \uc694\uccad\ubd80\ud130 429\n\u2022 \uc9c4\ud589 \uc911\uc778 \uc751\ub2f5\uc740 \ub05d\uae4c\uc9c0 \uac10\n\nstandard-users\uc758 \ud558\ub8e8 \uae30\ubcf8 \ud55c\ub3c4\ub294 50\ub2ec\ub7ec\uc785\ub2c8\ub2e4.\nbob\uc5d0\uac8c\ub9cc 1\uc13c\ud2b8 \ud55c\ub3c4\ub97c \uac78\uba74 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\u2193\n\n\uc815\ub2f5\uc740 B\uc785\ub2c8\ub2e4. \uc0ac\uc6a9\uc790 \ud55c\ub3c4\uac00 \uc6b0\uc120\ud569\ub2c8\ub2e4.\n\uc9d1\uacc4\ub41c \uc9c0\ucd9c\uc774 \ud55c\ub3c4\uc5d0 \ub2ff\uc73c\uba74\n\ub2e4\uc74c \uc694\uccad\ubd80\ud130 429\ub85c \uac70\uc808\ub429\ub2c8\ub2e4.\n\uc9c4\ud589 \uc911\uc778 \uc751\ub2f5\uc740 \ub05d\uae4c\uc9c0 \uac11\ub2c8\ub2e4.\n\uc774 \ub3d9\uc791\uc744 \ub7a9\uc5d0\uc11c \ud655\uc778\ud558\uaca0\uc2b5\ub2c8\ub2e4.",
-    15: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 LAB, Chapter 6 TASK 01\n\u2022 OTEL_* \ud658\uacbd \ubcc0\uc218, otelcol\uacfc fanout \ud0c0\uc774\uba38, scrub_logs \uaddc\uce59, CloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc \uc774\uc911 \uc804\uc1a1 \ud655\uc778\n\n\nChapter 6 TASK 01\uc5d0\uc11c \uacc4\uce21 \uacbd\ub85c\ub97c \ud655\uc778\ud569\ub2c8\ub2e4.\nsettings.json\uc758 OTEL \ud658\uacbd \ubcc0\uc218\ub97c \uc77d\uace0,\notelcol\uacfc fanout \ud0c0\uc774\uba38\uac00 \uc2e4\ud589 \uc911\uc778\uc9c0 \ubd05\ub2c8\ub2e4.\n\uc774\uc5b4\uc11c \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc744 \uc9c0\uc6b0\ub294 scrub_logs\uc640\n\ub450 \uacf3\uc73c\ub85c \ubcf4\ub0b4\ub294 exporters\ub97c \ucc3e\uc544\ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc774 \uc678\ubd80\ub85c \ub098\uac00\uae30 \uc804\uc5d0 \uc9c0\uc6cc\uc9c0\ub294\uc9c0\n\uc9c1\uc811 \ud655\uc778\ud558\ub294 \uacfc\uc815\uc785\ub2c8\ub2e4.",
-    16: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 LAB, Chapter 6 TASK 02\ubd80\ud130 03, \uac01\uc790 \uacc4\uc815\uc758 \uac8c\uc774\ud2b8\uc6e8\uc774\n\u2022 alice\uc640 bob\uc73c\ub85c \uadf8\ub8f9\ubcc4 \ubaa8\ub378 \uc815\ucc45 \ube44\uad50, Admin API\ub85c bob \ud55c\ub3c4 1\uc13c\ud2b8, \uac70\uc808 \ud655\uc778\n\u2022 \ub05d\ub098\uba74 \ud55c\ub3c4 DELETE, \uadf8\ub8f9 \ud55c\ub3c4 \ubcf5\uc6d0, use_bedrock_direct\ub85c \uc6d0\ubcf5\n\n\n\uac01\uc790 \uacc4\uc815\uc5d0\uc11c use_gateway\ub85c \uc804\ud658\ud569\ub2c8\ub2e4.\nalice\ub85c \ub85c\uadf8\uc778\ud574 /model\uc758 Opus\uc640\n/usage\uc758 \ud55c\ub3c4\ub97c \ud655\uc778\ud569\ub2c8\ub2e4.\nbob\uc73c\ub85c \ub2e4\uc2dc \ub85c\uadf8\uc778\ud558\uba74 Opus\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.\n\uc9c8\ubb38 \ud558\ub098\ub85c \uc9c0\ucd9c \uae30\ub85d\uc744 \ub9cc\ub4e0 \ub4a4,\n\ub2e4\ub978 \ud130\ubbf8\ub110\uc758 Admin API\ub85c bob\uc744 \uc870\ud68c\ud558\uace0\n1\uc13c\ud2b8 \ud55c\ub3c4\ub97c \uc124\uc815\ud569\ub2c8\ub2e4.\n\ub2e4\uc74c \uc694\uccad\uc758 \uac70\uc808\uc744 \ud655\uc778\ud558\ub418, \uc9d1\uacc4\uac00 \ub2a6\uc73c\uba74\n\ud55c\ub450 \ubc88 \ub354 \uc694\uccad\ud574 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ub05d\ub098\uba74 \ud55c\ub3c4\ub97c \uc0ad\uc81c\ud558\uace0 \uc801\uc6a9 \ud55c\ub3c4\uc640 \ucd9c\ucc98\uac00\n\uc774\uc804 \uc0c1\ud0dc\ub85c \ub3cc\uc544\uc654\ub294\uc9c0 \ud655\uc778\ud55c \ub4a4,\nuse_bedrock_direct\ub85c \ubcf5\uad6c\ud569\ub2c8\ub2e4.\n\uac8c\uc774\ud2b8\uc6e8\uc774\uc5d0 \ubb38\uc81c\uac00 \uc788\uc73c\uba74 \uc81c \ud654\uba74\uc744 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
-    17: "[0.5min] [\uc694\uc57d]\n\u2022 \uc120\ud0dd LAB, Chapter 6 \uc120\ud0dd TASK 04, \uac01\uc790 Bedrock \uc9c1\uacb0\n\u2022 modelPricing.multiplier \ubcd1\ud569, /usage configured rates \ud655\uc778, \ub300\uc2dc\ubcf4\ub4dc \uc804\ud6c4 \ube44\uad50, \ubc31\uc5c5\uc73c\ub85c \uc6d0\ubcf5\n\n\uc120\ud0dd \ub7a9\uc740 Bedrock \uc9c1\uacb0 \uc0c1\ud0dc\uc5d0\uc11c \uc9c4\ud589\ud569\ub2c8\ub2e4.\nmanaged settings\uc5d0 modelPricing\uc744 \ub123\uace0,\n/usage\uc758 configured rates \ud45c\uc2dc\uc640\n\ub300\uc2dc\ubcf4\ub4dc\uc758 \uc801\uc6a9 \uc804\ud6c4\ub97c \ube44\uad50\ud574 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ub05d\ub098\uba74 \ubc31\uc5c5\uc73c\ub85c \ubcf5\uad6c\ud569\ub2c8\ub2e4.",
-    18: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 OTel \uc9c0\ud45c: token.usage(type\ubcc4), cost.usage, session.count, lines_of_code.count, commit\uacfc PR, active_time.total\n\u2022 \uc774\uc0c1 \uc9d5\ud6c4: cacheRead \ub0ae\uc74c, input \uae09\uc99d, Opus \ube44\uc911, \ud2b9\uc815 \uc0ac\uc6a9\uc790 \uae09\uc99d, \ubd84\ub958\uae30 \ud638\ucd9c \ube44\uc911\uacfc \uac01 \ucc98\ubc29\n\u2022 Admin API: \uadf8\ub8f9 \uae30\ubcf8\uac12 POST, effective \uc870\ud68c, amount\ub294 US \uc13c\ud2b8 \ubb38\uc790\uc5f4, \uc0ac\uc6a9\uc790 \ud55c\ub3c4 \uc6b0\uc120, write \ud0a4\ub294 \uc18c\uc218\ub9cc\n\n\uc9c8\ubb38\uc5d0 \ub530\ub77c \ud544\uc694\ud55c \uc138\ubd80 \ub0b4\uc6a9\uc744 \uc0b4\ud3b4\ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\ntoken.usage\uc758 type \uc18d\uc131\uc73c\ub85c \uce90\uc2dc \ud6a8\uc728\uc744 \ubcf4\uace0,\ncost.usage\ub85c \ucd94\uc815 \ube44\uc6a9\uc744 \ud655\uc778\ud569\ub2c8\ub2e4.\u2193\ncacheRead \ube44\uc728\uc774 \ub0ae\uc73c\uba74 \uae34 \ud734\uc2dd \ub4a4 \uc7ac\uac1c\ub098\n\uc811\ub450\ubd80 \ubcc0\uacbd\uc744 \uc0b4\ud3b4\ubcf4\uace0 \uc138\uc158 \uc704\uc0dd\uc744 \uc810\uac80\ud569\ub2c8\ub2e4.\nOpus \ube44\uc911\uc774 \ub192\uc73c\uba74 \uae30\ubcf8 \ubaa8\ub378 \uc124\uc815\uc744 \ud655\uc778\ud569\ub2c8\ub2e4.\n\ubd84\ub958\uae30 \ud638\ucd9c\uc774 \ub9ce\uc73c\uba74 Ch2 Lab 2\ucc98\ub7fc\nauto mode \ubd84\ub958\uae30 \ubaa8\ub378\uc744 \uba85\uc2dc\ud569\ub2c8\ub2e4.\u2193\nAdmin API\ub85c \uadf8\ub8f9 \uae30\ubcf8\uac12\uacfc \uc0ac\uc6a9\uc790 \uc608\uc678\ub97c \ub461\ub2c8\ub2e4.\namount\ub294 US \uc13c\ud2b8 \ubb38\uc790\uc5f4\ub85c,\n\ud558\ub8e8 50\ub2ec\ub7ec\ub294 5000\uc73c\ub85c \uc124\uc815\ud569\ub2c8\ub2e4.",
-    19: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \ubcf4\uae30: Bedrock\uc740 Analytics\uac00 \uc5c6\uc73c\ub2c8 OTel\uc744 \uc815\ucc45\uc73c\ub85c\n\u2022 modelPricing\uc73c\ub85c \uacc4\uc57d \ub2e8\uac00 \ud45c\uc2dc, \uc815\uc0b0\uc740 AWS\uc640 \ub300\uc0ac\n\u2022 \ub9c9\uae30: \uac8c\uc774\ud2b8\uc6e8\uc774\uc758 SSO, \uadf8\ub8f9 \uc815\ucc45, \uc9c0\ucd9c \ud55c\ub3c4, \uc0ac\uc124\ub9dd \uc804\uc6a9\n\n\uc870\uc9c1\uc758 \ube44\uc6a9 \uad00\ub9ac\ub97c \uc815\ub9ac\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\nOTel\uc744 \uc815\ucc45\uc73c\ub85c \ucf1c\uc11c \uc0ac\uc6a9\ub7c9\uc744 \ubcf4\uace0,\nmodelPricing\uc73c\ub85c \uacc4\uc57d \ub2e8\uac00\ub97c \ubc18\uc601\ud569\ub2c8\ub2e4.\n\uc2e4\uc81c \uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\uc640 \ub9de\ucdb0 \ud655\uc778\ud569\ub2c8\ub2e4.\n\uac8c\uc774\ud2b8\uc6e8\uc774\uc758 \uadf8\ub8f9 \uc815\ucc45\uacfc \ud55c\ub3c4\ub85c \ud1b5\uc81c\ud558\uba74,\nChapter 5\uc5d0\uc11c \ubcf8 \ube44\uc6a9 \uc808\uac10\uc774 \uc870\uc9c1 \uad00\ub9ac\ub85c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.",
-    20: "[0.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc74c\uc740 Capstone \uc1fc\ucf00\uc774\uc2a4\uc640 Closing\n\u2022 \uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi\n\n\uac10\uc0ac\ud569\ub2c8\ub2e4. \uc5ec\uc12f \uac1c \ucc55\ud130\ub97c \ubaa8\ub450 \ub9c8\ucce4\uc2b5\ub2c8\ub2e4.\n\ub2e4\uc74c\uc740 Capstone \uc1fc\ucf00\uc774\uc2a4\uc640 Closing\uc785\ub2c8\ub2e4.\n\uc9c8\ubb38\uc740 Slack \ucc44\ub110\n#20261116-claude-code-workshop-for-fsi\uc5d0\n\ud3b8\ud558\uac8c \ub0a8\uaca8 \uc8fc\uc2dc\uba74 \ub429\ub2c8\ub2e4."
+    6: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 Bedrock\uc5d0\ub294 Analytics \ub300\uc2dc\ubcf4\ub4dc\uac00 \uc5c6\uc74c\n\u2022 \uacc4\uce21\uc744 \uc124\uce58\ud574\uc57c \ubcf4\uc774\uace0, \uc124\uce58\ud558\uc9c0 \uc54a\uc740 \uc0ac\ub78c\uc740 \uc7a1\ud788\uc9c0 \uc54a\uc74c\n\n\n\ud654\uba74\uc758 Analytics\ub294 Claude \uc870\uc9c1 Analytics\uc785\ub2c8\ub2e4.\nBedrock\uc5d0\ub294 \uc774 \ub300\uc2dc\ubcf4\ub4dc\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.\nAWS\uc758 \uad00\uce21 \ub3c4\uad6c\uc640\ub294 \uad6c\ubd84\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\uc0ac\ub78c\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ubcc4\ub3c4 \uacc4\uce21\uc774 \ud544\uc694\ud558\uba70,\n\uc124\uc815 \ub204\ub77d\uc774\ub098 \uc5f0\uacb0 \uc7a5\uc560\uac00 \uc788\uc73c\uba74 \ube60\uc9c8 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\uadf8\ub798\uc11c OTel\ub85c \uc9c1\uc811 \uacc4\uce21\ud569\ub2c8\ub2e4. \uba3c\uc800 \uc694\uccad \ud558\ub098\uac00 \uc5b4\ub5bb\uac8c \uc22b\uc790\uac00 \ub418\ub294\uc9c0 \ubcfc\uac8c\uc694.",
+    7: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \uc694\uccad \ud558\ub098\uac00 \ub0a8\uae30\ub294 \uae30\ub85d\uc758 \uae38: Claude Code, PC \uc548 \uc218\uc9d1\uae30, ClickHouse\uc640 CloudWatch, ccdash \ud654\uba74, Ask Claude\n\u2022 \ubaa8\ub378 \ud638\ucd9c\ub9c8\ub2e4 api_request \uc774\ubca4\ud2b8(\ubaa8\ub378, \ud1a0\ud070, cost_usd), \uc9c0\ud45c\ub294 \uae30\ubcf8 1\ubd84\ub9c8\ub2e4 \uc804\uc1a1\n\u2022 \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc740 \uae30\ubcf8 \ubbf8\uc804\uc1a1(\uae38\uc774\ub9cc), \ub7a9 \uc218\uc9d1\uae30\ub294 \ub0b4\ubcf4\ub0b4\uae30 \uc804\uc5d0 \ub85c\uadf8 \ubcf8\ubb38\uc744 \ud55c \ubc88 \ub354 \uc9c0\uc6c0\n\u2022 \uc218\uc9d1\uae30\ub294 \ub514\uc2a4\ud06c \ud050\ub85c \ub04a\uaca8\ub3c4 \ub2e4\uc2dc \ubcf4\ub0c4, ccdash\ub294 \uc77d\uae30 \ucffc\ub9ac\ub85c \ud654\uba74 \uad6c\uc131\n\n\nOTel\uc744 \ucf1c\uba74 \uc2e4\uc81c\ub85c \ubb34\uc2a8 \uc77c\uc774 \uc77c\uc5b4\ub098\ub294\uc9c0, \uc694\uccad \ud558\ub098\ub97c \ub530\ub77c\uac00 \ubcfc\uac8c\uc694.\u2193\n\uac1c\ubc1c\uc790\ub294 \ud3c9\uc18c\ucc98\ub7fc Claude Code\uc5d0 \ud504\ub86c\ud504\ud2b8\ub97c \ubcf4\ub0b4\uc694. \uc815\ucc45\uc73c\ub85c \uc774\ubbf8 \ucf1c\uc838 \uc788\uc73c\ub2c8\uae4c \ub530\ub85c \ud560 \uc77c\uc740 \uc5c6\uc2b5\ub2c8\ub2e4.\u2193\n\ubaa8\ub378\uc744 \ud55c \ubc88 \ubd80\ub97c \ub54c\ub9c8\ub2e4 api_request\ub77c\ub294 \uc774\ubca4\ud2b8\uac00 \uc0dd\uae30\ub294\ub370\uc694, \uc5ec\uae30\uc5d0 \ubaa8\ub378, \ud1a0\ud070, \ucd94\uc815 \ube44\uc6a9\uc774 \ub2f4\uaca8\uc694. \ud1a0\ud070 \uc0ac\uc6a9\ub7c9 \uac19\uc740 \uc9c0\ud45c\ub294 \uae30\ubcf8 1\ubd84\ub9c8\ub2e4 \ubaa8\uc544\uc11c \ubcf4\ub0c5\ub2c8\ub2e4.\u2193\n\uae08\uc735\uad8c\uc5d0\uc11c \uc81c\uc77c \ub9ce\uc774 \ubb3c\uc5b4\ubcf4\uc2dc\ub294 \uac8c \uc774\uac70\uc608\uc694. \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc740 \uae30\ubcf8\uc73c\ub85c \ubcf4\ub0b4\uc9c0 \uc54a\uace0 \uae38\uc774\ub9cc \ub0a8\uae41\ub2c8\ub2e4. \ub7a9 \uc218\uc9d1\uae30\ub294 \ub0b4\ubcf4\ub0b4\uae30 \uc804\uc5d0 \ub85c\uadf8 \ubcf8\ubb38\uc744 \uc9c0\uc6b0\ub294 \uaddc\uce59\uc73c\ub85c \ud55c \ubc88 \ub354 \ub9c9\uc544\uc694.\u2193\nPC \uc548\uc758 \uc218\uc9d1\uae30\uac00 \uc774\uac78 \ubc1b\uc544\uc11c ClickHouse\uc5d0 \uc501\ub2c8\ub2e4. \uc5f0\uacb0\uc774 \uc7a0\uae50 \ub04a\uaca8\ub3c4 \ub514\uc2a4\ud06c\uc5d0 \ubaa8\uc544 \ub480\ub2e4\uac00 \ub2e4\uc2dc \ubcf4\ub0b4\uc694.\u2193\n\uc774\ubc88 \ub7a9 \ud658\uacbd\uc740 \uac19\uc740 \uae30\ub85d\uc744 CloudWatch\uc5d0\ub3c4 \ubcf4\ub0c5\ub2c8\ub2e4. \uc5b4\ub514\ub85c \ubcf4\ub0bc\uc9c0\ub294 \uc870\uc9c1\uc774 \uc815\ud558\uc2dc\uba74 \ub3fc\uc694.\u2193\nccdash\uac00 ClickHouse\ub97c \uc77d\uc5b4\uc11c \uad00\ub9ac\uc790\uac00 \ubcf4\ub294 \ud654\uba74\uc744 \ub9cc\ub4ed\ub2c8\ub2e4.\u2193\n\uadf8\ub9ac\uace0 Ask Claude\uc5d0 \ub9d0\ub85c \ubb3c\uc5b4\ubcf4\uba74, Bedrock\uc758 Claude\uac00 \uc77d\uae30 \uc804\uc6a9 SQL\ub85c \uc870\ud68c\ud574\uc11c \ud45c\ub85c \ub2f5\ud574 \uc918\uc694.\n\n\n\uadf8\ub7fc \uc774\uac78 \ubaa8\ub450\uc5d0\uac8c \uc5b4\ub5bb\uac8c \ucf1c\ub294\uc9c0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/monitoring-usage (metrics, events, \uae30\ubcf8 \ubbf8\uc804\uc1a1 \ud56d\ubaa9, export interval)\n\u2022 github.com/Atom-oh/claude-code-usage-dashboard (docs/architecture.md: loopback 4317 \uc218\uc9d1\uae30, \ub514\uc2a4\ud06c \ud050, ClickHouse, Express)",
+    8: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 managed settings env \ud55c \ube14\ub85d\uc73c\ub85c OTel\uc744 \ubaa8\ub450\uc5d0\uac8c \ucf2c (CLAUDE_CODE_ENABLE_TELEMETRY 1)\n\u2022 OTLP http/protobuf\ub85c \uc870\uc9c1 \uc218\uc9d1\uae30 \uc5d4\ub4dc\ud3ec\uc778\ud2b8\uc5d0 \uc9c0\ud45c\uc640 \ub85c\uadf8 \uc804\uc1a1\n\u2022 \ub300\ud45c \uc9c0\ud45c: claude_code.token.usage, cost.usage, session.count, lines_of_code, commit, PR\n\u2022 OTEL_RESOURCE_ATTRIBUTES\ub85c \ud300\ubcc4 \uc9d1\uacc4\n\u2022 \ub7a9 \ud658\uacbd: otelcol, scrub_logs\ub85c \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38 \uc0ad\uc81c, CloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc \uc774\uc911 \uc804\uc1a1\n\n\nmanaged settings\uc758 env\ub85c OTel\uc744 \ucf2d\ub2c8\ub2e4.\n\uc0ac\uc6a9\uc790\uac00 \ub04c \uc218 \uc5c6\ub294 \uc815\ucc45\uc73c\ub85c \ubc30\ud3ec\ud558\ub418,\n\uc218\uc9d1\uae30 \uc5f0\uacb0\uacfc \uc2e4\uc81c \uc218\uc2e0\ub3c4 \ud655\uc778\ud574\uc57c \ud569\ub2c8\ub2e4.\u2193\nOTLP\ub85c \uc870\uc9c1 \uc218\uc9d1\uae30\uc5d0 \uc9c0\ud45c\uc640 \ub85c\uadf8\ub97c \ubcf4\ub0c5\ub2c8\ub2e4.\u2193\n\ud1a0\ud070\uacfc \ucd94\uc815 \ube44\uc6a9, \uc138\uc158 \uc218\ub85c \uc0ac\uc6a9\ub7c9\uc744 \ubcf4\uace0,\n\ucf54\ub4dc \uc904 \uc218\uc640 \ucee4\ubc0b, PR\ub3c4 \ud568\uaed8 \uc9d1\uacc4\ud569\ub2c8\ub2e4.\u2193\nresource \uc18d\uc131\uc5d0 \ubd80\uc11c\uc640 \ud300\uc744 \ub123\uc73c\uba74\n\ud300\ubcc4\ub85c \ub098\ub204\uc5b4 \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.\u2193\n\ub7a9\uc5d0\uc11c\ub294 otelcol\uc774 \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc744 \uc9c0\uc6b4 \ub4a4,\nCloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc\ub85c \ubcf4\ub0c5\ub2c8\ub2e4.\n\uc774 \uacbd\ub85c\ub97c TASK 01\uc5d0\uc11c \ud655\uc778\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 OTLP: OpenTelemetry Protocol",
+    9: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 \uc9c0\ud45c 8\uac00\uc9c0(\uae30\ubcf8 1\ubd84 \uac04\uaca9): token.usage, cost.usage, session.count, active_time, lines_of_code, commit, PR, code_edit_tool.decision\n\u2022 \uc774\ubca4\ud2b8(\uae30\ubcf8 5\ucd08 \uac04\uaca9): api_request, tool_result, tool_decision, user_prompt(\uae38\uc774), api_error\n\u2022 \uae30\ubcf8 \ubbf8\uc804\uc1a1: \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38, \ub3c4\uad6c \uc778\uc790, \uc751\ub2f5 \ubcf8\ubb38, API \uc6d0\ubb38. \uac01\uac01 \uc2a4\uc704\uce58\ub97c \ucf1c\uc57c\ub9cc \uc804\uc1a1\n\u2022 \ube44\uc6a9 \uc9c0\ud45c\ub294 \ucd94\uc815\uce58, \uc815\uc0b0 \uae30\uc900\uc740 AWS \uccad\uad6c\uc11c\n\n\uadf8\ub7fc OTel\ub85c \uc815\ud655\ud788 \ubb50\uac00 \ub098\uac00\ub294\uc9c0 \ubcfc\uac8c\uc694.\n\uc67c\ucabd\uc740 \uc9c0\ud45c\uc608\uc694. \ud1a0\ud070, \ucd94\uc815 \ube44\uc6a9, \uc138\uc158 \uc218, \ucf54\ub4dc \uc904 \uc218\uc640 \ucee4\ubc0b, PR \uac19\uc740 \uc22b\uc790 \uc5ec\ub35f \uac00\uc9c0\uac00 \uae30\ubcf8 1\ubd84\ub9c8\ub2e4 \uc313\uc785\ub2c8\ub2e4.\n\uac00\uc6b4\ub370\ub294 \uc774\ubca4\ud2b8\uc778\ub370\uc694, \ubaa8\ub378 \ud638\ucd9c\uc774\ub098 \ub3c4\uad6c \uc2e4\ud589 \ud55c \uac74\ub9c8\ub2e4 \ub0a8\ub294 \uae30\ub85d\uc774\uc5d0\uc694. \ub300\uc2dc\ubcf4\ub4dc\uc5d0\uc11c \uc5b4\ub5a4 \ub3c4\uad6c\uac00 \uc790\uc8fc \uc2e4\ud328\ud558\ub294\uc9c0 \uac19\uc740 \uac74 \uc5ec\uae30\uc11c \ub098\uc635\ub2c8\ub2e4.\n\uc624\ub978\ucabd\uc774 \uc81c\uc77c \uc911\uc694\ud574\uc694. \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38, \ub3c4\uad6c \uc778\uc790, \uc751\ub2f5 \ubcf8\ubb38\uc740 \uae30\ubcf8\uc73c\ub85c \ubcf4\ub0b4\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \uc2a4\uc704\uce58\ub97c \ucf1c\uc57c\ub9cc \ub098\uac00\uc694. \uae08\uc735\uad8c\uc5d0\uc11c\ub294 \uc774 \uc2a4\uc704\uce58\ub97c \ub048 \ucc44\ub85c \ub450\uace0, \uc218\uc9d1\uae30\uc5d0\uc11c \ud55c \ubc88 \ub354 \uc9c0\uc6b0\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n\uadf8\ub9ac\uace0 \ube44\uc6a9 \uc9c0\ud45c\ub294 \ucd94\uc815\uce58\uc608\uc694. \uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\uac00 \uae30\uc900\uc785\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/monitoring-usage (Available metrics, Events, Privacy and content logging, Cost metrics are approximations)",
+    10: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 ccdash: \uc774 \uc6cc\ud06c\uc20d\uc6a9\uc73c\ub85c GitHub\uc5d0 \uacf5\uac1c\ud55c \uc0ac\uc6a9\ub7c9 \ub300\uc2dc\ubcf4\ub4dc (github.com/Atom-oh/claude-code-usage-dashboard)\n\u2022 \uc218\uc9d1: PC \uc548 \uc218\uc9d1\uae30(loopback 4317)\uac00 Claude Code \uc9c0\ud45c 8\uac1c\ub9cc \ud1b5\uacfc, \ub85c\uadf8 \ubcf8\ubb38 \uc0ad\uc81c, \ub514\uc2a4\ud06c \ud050\n\u2022 \uc800\uc7a5: ClickHouse \uc6d0\ubcf8\uacfc \uc2dc\uac04\ubcc4 \ub864\uc5c5, \uae30\ubcf8 2\uc77c, \ucd5c\ub300 90\uc77c\n\u2022 \ud654\uba74: CloudFront\ub85c \uc811\uc18d, \uc870\uc9c1 OIDC\uc640 viewer, analyst, admin \uadf8\ub8f9\n\u2022 Ask Claude: Bedrock\uc758 Claude\uac00 \uc77d\uae30 \uc804\uc6a9 SQL\ub85c \uc870\ud68c, \uc22b\uc790\ub294 \uad00\uce21\uac12\uc774\uace0 \ud3c9\uac00 \uadfc\uac70\uac00 \uc544\ub2d8\n\n\n\uc774\ubc88 \uc6cc\ud06c\uc20d\uc5d0\uc11c \uc4f0\ub294 \ub300\uc2dc\ubcf4\ub4dc\uac00 ccdash\uc608\uc694. GitHub\uc5d0 \uacf5\uac1c\ub3fc \uc788\uc5b4\uc11c \uad6c\uc870\ub97c \uadf8\ub300\ub85c \ucc38\uace0\ud558\uc2e4 \uc218 \uc788\uc5b4\uc694. \ubc1b\uace0, \uc313\uace0, \ubcf4\uc5ec \uc8fc\uace0, \ub2f5\ud558\ub294 \ub124 \ub2e8\uacc4\ub85c \ubcfc\uac8c\uc694.\u2193\n\uba3c\uc800 \uc218\uc9d1\uc774\uc5d0\uc694. Claude Code\ub294 \uac19\uc740 PC \uc548\uc758 \uc218\uc9d1\uae30\ub85c \ubcf4\ub0b4\uace0, \uc218\uc9d1\uae30\ub294 Claude Code \uc9c0\ud45c \uc5ec\ub35f \uac1c\ub9cc \ud1b5\uacfc\uc2dc\ud0a4\uace0 \ub85c\uadf8 \ubcf8\ubb38\uc740 \uc9c0\uc6b4 \ub4a4 \ub0b4\ubcf4\ub0c5\ub2c8\ub2e4.\u2193\n\uc800\uc7a5\uc740 ClickHouse\uc608\uc694. \uc6d0\ubcf8\uacfc \uc2dc\uac04\ubcc4 \ub864\uc5c5\uc774 \ub530\ub85c \uc788\uc5b4\uc11c \uae34 \uae30\uac04\ub3c4 \ube60\ub974\uac8c \uadf8\ub9bd\ub2c8\ub2e4. \ud654\uba74\uc740 \uae30\ubcf8 \ucd5c\uadfc 2\uc77c\uc774\uc5d0\uc694.\u2193\n\ud654\uba74\uc740 CloudFront\ub97c \uac70\uccd0 \uc811\uc18d\ud558\uace0, \uc870\uc9c1 OIDC \ub85c\uadf8\uc778\uc744 \ucf1c\uba74 \uc5ed\ud560\ub300\ub85c \ubcfc \uc218 \uc788\ub294 \ubc94\uc704\uac00 \ub098\ub269\ub2c8\ub2e4.\u2193\n\ub9c8\uc9c0\ub9c9\uc774 Ask Claude\uc608\uc694. \ub9d0\ub85c \ubb3c\uc73c\uba74 Bedrock\uc758 Claude\uac00 \uc77d\uae30 \uc804\uc6a9 SQL\ub85c \uc870\ud68c\ud574\uc11c \ud45c\ub85c \ub2f5\ud574 \uc90d\ub2c8\ub2e4. \ub2e4\ub9cc \uc774 \uc22b\uc790\ub294 \uad00\uce21\uac12\uc774\ub77c\uc11c, \uc0ac\ub78c\uc758 \uc0dd\uc0b0\uc131\uc744 \ud3c9\uac00\ud558\ub294 \ub370 \uc4f0\uc2dc\uba74 \uc548 \ub3fc\uc694.\n\n[\ucd9c\ucc98]\n\u2022 github.com/Atom-oh/claude-code-usage-dashboard (README, docs/architecture.md)",
+    11: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 Overview: \uc2dc\uac04\ubcc4 \ud1a0\ud070\uacfc \ube44\uc6a9 \ucd94\uc774, \ubaa8\ub378\ubcc4 \uc0ac\uc6a9\ub7c9 \ud45c (\ub9ac\ud5c8\uc124 \ub370\uc774\ud130)\n\u2022 Usage: \ub3c4\uad6c\ubcc4 \ud638\ucd9c, \uc624\ub958, \uc624\ub958\uc728 (Bash \ucd5c\ub2e4, WebFetch \uc624\ub958\uc728 \ub192\uc74c)\n\u2022 Users: \uc791\uc5c5 \ubaa9\ub85d \uc815\ub82c \ud0ed(\ud1a0\ud070, \ube44\uc6a9, \uc11c\ube0c\uc5d0\uc774\uc804\ud2b8, \ub290\ub9b0 \uc21c), \ud589\uc744 \ub204\ub974\uba74 \uc791\uc5c5 \uc0c1\uc138\n\u2022 Cost: \ubaa8\ub378\ubcc4, effort\uc640 \ubc31\uc5d4\ub4dc\ubcc4 \ube44\uc6a9, \uc785\ub825 \ud1a0\ud070 \uad6c\uc131(\uce90\uc2dc \uc77d\uae30\uac00 \ub300\ubd80\ubd84)\n\u2022 Ask Claude: \uc9c8\ubb38 \ud558\ub098\uc5d0 \ud45c, \ud574\uc11d, \ud310\ub2e8 \uae30\uc900, \ucee4\ubc84\ub9ac\uc9c0 \ud55c\uacc4\n\n\n\ub370\ubaa8 \uc804\uc5d0 \ud654\uba74\uc744 \ubbf8\ub9ac \ud55c \ubc88 \ubcfc\uac8c\uc694. Overview\ub97c \ub0b4\ub824 \ubcf4\uba74 \uc2dc\uac04\ubcc4 \ucd94\uc774\uac00 \ub098\uc624\ub294\ub370\uc694, \uc19f\uc740 \uad6c\uac04\uc774 \uc2e4\uc2b5\uc744 \ub3cc\ub9b0 \ub54c\uc608\uc694. \uc544\ub798 \ud45c\uc5d0\uc11c \uc5b4\ub290 \ubaa8\ub378\uc774 \ube44\uc6a9\uc744 \ub9cc\ub4e4\uc5c8\ub294\uc9c0 \ubc14\ub85c \ubcf4\uc785\ub2c8\ub2e4.\u2193\nUsage\uc5d0\uc11c\ub294 \ub3c4\uad6c\ubcc4\ub85c \ubd10\uc694. Bash\uac00 \uac00\uc7a5 \ub9ce\uc774 \ubd88\ub9ac\uace0, WebFetch\ub294 \ud638\ucd9c\uc740 \uc801\uc5b4\ub3c4 \uc624\ub958\uc728\uc774 \ub192\uc8e0.\u2193\nUsers\uc5d0\uc11c \uc0ac\uc6a9\uc790\ub97c \ub204\ub974\uba74 \uc791\uc5c5 \ubaa9\ub85d\uc774 \ub098\uc624\ub294\ub370\uc694, \uc815\ub82c\uc744 \ube44\uc6a9 \ub192\uc740 \uc21c\uc73c\ub85c \ubc14\uafb8\uba74 \ube44\uc2fc \uc791\uc5c5\uc774 \uc704\ub85c \uc62c\ub77c\uc635\ub2c8\ub2e4. \ud589\uc744 \ub204\ub974\uba74 \uc791\uc5c5 \uc0c1\uc138\uac00 \uc5f4\ub824\uc694.\u2193\nCost\uc5d0\uc11c\ub294 \uc785\ub825 \ud1a0\ud070 \uad6c\uc131\uc744 \uaf2d \ubcf4\uc138\uc694. \ub300\ubd80\ubd84\uc774 \uce90\uc2dc \uc77d\uae30\uc608\uc694. Chapter 5\uc5d0\uc11c \ubcf8 \uce90\uc2dc\uac00 \uc2e4\uc81c\ub85c \uc77c\ud558\uace0 \uc788\ub2e4\ub294 \ub73b\uc785\ub2c8\ub2e4.\u2193\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c Ask Claude\uc5d0 \ubb3c\uc5b4\ubd24\uc5b4\uc694. \uc624\ub958\uac00 \ub9ce\uc740 \ub3c4\uad6c \uc138 \uac1c\ub97c \ud45c\ub85c \ub2ec\ub77c\uace0 \ud588\ub354\ub2c8, \ud45c\uc640 \ud574\uc11d\uc5d0 \ud310\ub2e8 \uae30\uc900, \ub370\uc774\ud130\uc758 \ud55c\uacc4\uae4c\uc9c0 \uac19\uc774 \ub2f5\ud574 \uc90d\ub2c8\ub2e4.\n\n\n\uc774\uc81c \uc2e4\uc81c \ub300\uc2dc\ubcf4\ub4dc\ub97c \uac19\uc774 \uc5f4\uc5b4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
+    12: "\ud83c\udfac [10min] [\uc694\uc57d]\n\u2022 \uac15\uc0ac \ub300\uc2dc\ubcf4\ub4dc(URL\uc740 \ud604\uc7a5 \uc548\ub0b4), \ub7a9 \ud658\uacbd\uc740 Day 1\ubd80\ud130 OTel \uc218\uc9d1 \uc911 (\ucc38\uac00 \uc548\ub0b4\ubb38\uc5d0 \uace0\uc9c0)\n\u2022 \uc804\uccb4 \ucd94\uc774\uc640 Capstone \ud53c\ud06c, \ubaa8\ub378\ubcc4\uacfc \ub3c4\uad6c\ubcc4 \ubd84\ud3ec, \uce90\uc2dc \uc801\uc911\ub960, \ub0b4 \ucc38\uac00\uc790 ID\ub85c \ucc3e\uae30\n\u2022 \uac00\uc7a5 \ube44\uc6a9\uc774 \ucef8\ub358 \ud328\ud134\uc744 Ch5\uc758 \uc6d0\ub9ac\ub85c \ud574\uc11d\n\u2022 \ud654\uba74\uc5d0\ub294 \ucc38\uac00\uc790 ID\ub9cc, \ud68c\uc0ac\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ub178\ucd9c\ud558\uc9c0 \uc54a\uc74c\n\n\ucc38\uac00 \uc548\ub0b4\ubb38\uc5d0 \uace0\uc9c0\ud55c \ub300\ub85c \ub7a9\uc5d0\uc11c\ub294\nDay 1\ubd80\ud130 OTel\uc744 \uc218\uc9d1\ud558\uace0 \uc788\uc2b5\ub2c8\ub2e4.\n\uc774\ud2c0\uac04 \uc218\uc9d1\ub41c \uc0ac\uc6a9\ub7c9\uc758 \uc804\uccb4 \ucd94\uc774\ub97c \ubcf4\uba70,\nCapstone \uad6c\uac04\uc5d0\uc11c \uc0ac\uc6a9\ub7c9\uc774 \ub298\uc5b4\ub09c \uc9c0\uc810\uc744\n\ucc3e\uc544\ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\ubaa8\ub378\uacfc \ub3c4\uad6c\ubcc4 \ubd84\ud3ec, \uce90\uc2dc \uc801\uc911\ub960\uc744 \uc0b4\ud3b4\ubcf8 \ub4a4,\n\ucc38\uac00\uc790 ID\ub85c \ubcf8\uc778 \uc0ac\uc6a9\ub7c9\uc744 \ucc3e\uc544\ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\uac12\uc774 \uc5c6\uc73c\uba74 \uacc4\uce21 \uc5f0\uacb0\ub3c4 \ud655\uc778\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ube44\uc6a9\uc774 \ucef8\ub358 \ud328\ud134\uc740 Chapter 5\uc758 \uc6d0\ub9ac\ub85c \ud574\uc11d\ud569\ub2c8\ub2e4.\n\ud654\uba74\uc5d0\ub294 \ucc38\uac00\uc790 ID\ub9cc \ud45c\uc2dc\ud558\uba70,\n\ud68c\uc0ac\ubcc4 \uc0ac\uc6a9\ub7c9\uc740 \ubcf4\uc5ec \ub4dc\ub9ac\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
+    13: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 managed-settings.json modelPricing.multiplier\ub85c \uacc4\uc57d \ub2e8\uac00\ub97c \ud45c\uc2dc (managed settings\uc5d0\uc11c\ub9cc, v2.1.242+)\n\u2022 1\ubcf4\ub2e4 \uc791\uc73c\uba74 \ud560\uc778, \ud06c\uba74 \ud560\uc99d, \ubaa8\ub378\ubcc4 \ub2e8\uac00\ub294 overrides\n\u2022 \ud45c\uc2dc\ub9cc \ubc14\uafb8\uace0 \uccad\uad6c\ub294 \uadf8\ub300\ub85c, \uc22b\uc790\ub294 \uacc4\uc57d \ub2e8\uac00\ub85c\n\n/usage\uc640 \ub300\uc2dc\ubcf4\ub4dc \ube44\uc6a9\uc740 \ubaa9\ub85d\uac00 \uae30\uc900 \ucd94\uc815\uce58\uc785\ub2c8\ub2e4.\n\uacc4\uc57d \ub2e8\uac00\uac00 \ub2e4\ub974\uba74 \uccad\uad6c\uc11c\uc640 \ucc28\uc774\uac00 \ub0a9\ub2c8\ub2e4.\nmodelPricing\uc73c\ub85c \ud45c\uc2dc \ub2e8\uac00\ub97c \ub9de\ucda5\ub2c8\ub2e4.\n\nmultiplier\ub97c \ubc14\uafd4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uc6d0\ub9ac 1\uc758 0.55\ub2ec\ub7ec \uc138\uc158\uc5d0 0.9\ub97c \uacf1\ud558\uba74\n0.50\ub2ec\ub7ec\ub85c \ud45c\uc2dc\ub429\ub2c8\ub2e4.\n1\ubcf4\ub2e4 \uc791\uc73c\uba74 \ud560\uc778, \ud06c\uba74 \ud560\uc99d\uc744 \ubc18\uc601\ud558\uace0,\n\ubaa8\ub378\ubcc4 \ucc28\uc774\ub294 overrides\ub85c \uc124\uc815\ud569\ub2c8\ub2e4.\nmanaged settings\uc5d0\uc11c\ub9cc \uc801\uc6a9\ub418\uba70,\n\ud45c\uc2dc\ub97c \ubc14\uafc0 \ubfd0 \uc2e4\uc81c \uccad\uad6c\ub294 \ubc14\uafb8\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\uc640 \ub300\uc0ac\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
+    14: "[0.5min] [\uc694\uc57d]\n\u2022 Application inference profile \ud0dc\uadf8: Ch2 modelOverrides\ub85c \ud300\ubcc4 \uacbd\ub85c, Cost Explorer\n\u2022 AWS Budgets: \uacc4\uc815\uacfc \ud0dc\uadf8 \ub2e8\uc704 \uc608\uc0b0 \uc54c\ub78c\n\u2022 \uc804\uc6a9 AWS \uacc4\uc815\uc73c\ub85c \ube44\uc6a9 \ubd84\ub9ac (\uacf5\uc2dd \uad8c\uc7a5)\n\u2022 TPM \ucffc\ud130: \ub3d9\uc2dc \uc0ac\uc6a9 \uae09\uc99d\uc740 \uc0ac\uc804 \uc99d\uc561\n\u2022 Claude Code \uacc4\uce21\uacfc AWS \ucabd \uc22b\uc790\ub97c \ub300\uc0ac\ud574\uc57c \uc815\ud655\n\nClaude Code \uacc4\uce21\uc740 AWS \uacc4\uc815\uc758 \ube44\uc6a9\uacfc \ub300\uc0ac\ud569\ub2c8\ub2e4.\nCh2\uc758 modelOverrides\ub85c \ud300\ubcc4 \uacbd\ub85c\ub97c \ub9cc\ub4e4\uace0,\napplication inference profile\uc758 \ud0dc\uadf8\ub97c\nCost Explorer\uc5d0\uc11c \ub098\ub204\uc5b4 \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.\nAWS Budgets\ub294 \uacc4\uc815\uacfc \ud0dc\uadf8 \ub2e8\uc704\ub85c \uc54c\ub9bc\uc744 \uc90d\ub2c8\ub2e4.\n\uc804\uc6a9 AWS \uacc4\uc815\uc73c\ub85c \ube44\uc6a9\uc744 \ubd84\ub9ac\ud558\ub294 \uac83\uc774\n\uacf5\uc2dd \uad8c\uc7a5 \ubc29\uc2dd\uc785\ub2c8\ub2e4.\n\ub3d9\uc2dc \uc0ac\uc6a9\uc774 \ubab0\ub9ac\ub294 \uad50\uc721\uc740 TPM \ucffc\ud130\ub3c4\n\ubbf8\ub9ac \uc99d\uc561\ud574 \ub450\uc154\uc57c \ud569\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 TPM: Tokens Per Minute",
+    15: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 Claude Apps Gateway: Bedrock \uc55e\ub2e8\uc5d0 \uc9c1\uc811 \uc6b4\uc601, SSO \ub85c\uadf8\uc778, IdP \uadf8\ub8f9\ubcc4 \ubaa8\ub378\uacfc \uc815\ucc45, \uc0ac\uc6a9\uc790\ubcc4 \uc9c0\ucd9c \ud55c\ub3c4, OTLP \uc911\uacc4 (claude gateway --config gateway.yaml)\n\u2022 \uacf5\uc2dd AWS \uc608\uc81c: \uc0ac\uc124\ub9dd \uc804\uc6a9, internal ALB(IPv4, idle 3600\ucd08), Route 53 \uc0ac\uc124 \uc874, ECS Fargate, RDS PostgreSQL, OIDC IdP, IAM \uc5ed\ud560\ub85c Bedrock \ud638\ucd9c\n\u2022 /login\uc740 \uac8c\uc774\ud2b8\uc6e8\uc774 \ud638\uc2a4\ud2b8\uac00 \uc0ac\uc124 IP\ub85c\ub9cc resolve\ub420 \ub54c\ub9cc \ud1b5\uacfc, \ub85c\uadf8\uc778 \ube0c\ub77c\uc6b0\uc800\ub3c4 \uc0ac\uc124\ub9dd\n\u2022 \ub7a9 \uc804\uc6a9 \uad6c\uc131(\uc6b4\uc601 \ud658\uacbd\uc740 \uc0ac\uc124\ub9dd): \ucc38\uac00\uc790 \uacc4\uc815 VPC\ub9c8\ub2e4 \uac8c\uc774\ud2b8\uc6e8\uc774 EC2, Cognito OIDC alice\uc640 bob, us-east-1, global \ucd94\ub860 \ud504\ub85c\ud544\uc758 5.5 \ubaa8\ub378\n\u2022 ccb-endpoint\ub294 \ucc38\uac00\uc790 \uc2e4\uc2b5 PC, use_gateway\ub294 \ubaa8\ub4dc \uc804\ud658 \uc2a4\ud06c\ub9bd\ud2b8\n\n\n\uc774\uc81c \uc9c0\ucd9c\uc744 \ud1b5\uc81c\ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\nClaude Apps Gateway\ub294 Bedrock \uc55e\ub2e8\uc5d0\uc11c\n\uc9c1\uc811 \uc6b4\uc601\ud558\uba70, claude \ubc14\uc774\ub108\ub9ac\uc5d0 \ud3ec\ud568\ub429\ub2c8\ub2e4.\u2193\n\uacf5\uc2dd AWS \uc608\uc81c\uc5d0\uc11c \uac1c\ubc1c\uc790\ub294 /login\uc73c\ub85c\n\ub514\ubc14\uc774\uc2a4 \uc778\uc99d\uc744 \ud558\uace0 \uadf8\ub8f9 \uc815\ucc45\uc744 \ubc1b\uc2b5\ub2c8\ub2e4.\u2193\n\ub124\ud2b8\uc6cc\ud06c\ub294 internal ALB\uc640\nRoute 53 \uc0ac\uc124 \uc874\uc744 \uc0ac\uc6a9\ud569\ub2c8\ub2e4.\u2193\nECS Fargate\uc758 \uac8c\uc774\ud2b8\uc6e8\uc774\ub85c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.\n\uc0c1\ud0dc\ub294 RDS PostgreSQL, \uc778\uc99d\uc740 OIDC IdP\uac00\n\ub2f4\ub2f9\ud569\ub2c8\ub2e4.\u2193\nBedrock\uc740 IAM \uc5ed\ud560\ub85c \ud638\ucd9c\ud569\ub2c8\ub2e4.\n\uc6b4\uc601 \uad6c\uc131\uc740 \uc0ac\uc124\ub9dd \uc804\uc6a9\uc785\ub2c8\ub2e4.\n/login\uc740 \uac8c\uc774\ud2b8\uc6e8\uc774 \ud638\uc2a4\ud2b8\uac00\n\uc0ac\uc124 IP\ub85c\ub9cc \ud574\uc11d\ub420 \ub54c \ud1b5\uacfc\ud558\uba70,\n\ub85c\uadf8\uc778 \ube0c\ub77c\uc6b0\uc800\ub3c4 \uc0ac\uc124\ub9dd \uc548\uc5d0 \uc788\uc5b4\uc57c \ud569\ub2c8\ub2e4.\u2193\n\ub7a9\uc740 \uac01 \uacc4\uc815\uc758 VPC \uc548\uc5d0 \uac8c\uc774\ud2b8\uc6e8\uc774\uac00 \ud55c \ub300\uc529 \uc788\uace0,\nalice\uc640 bob\uc73c\ub85c \uc2e4\uc2b5\ud569\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 SSO: Single Sign-On\n\u2022 IdP: Identity Provider\n\u2022 OIDC: OpenID Connect\n\u2022 ALB: Application Load Balancer",
+    16: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 \ubc94\uc704: user(OIDC sub), rbac_group, organization, \uadf8\ub8f9\uacfc \uc870\uc9c1 \ud55c\ub3c4\ub294 1\uc778\ub2f9 \uae30\ubcf8\uac12\n\u2022 \uae30\uac04: daily, weekly, monthly, UTC \uae30\uc900 \ub9ac\uc14b\n\u2022 \ucd08\uacfc \uc2dc 429 billing_error\uc640 \ub9ac\uc14b \uc2dc\uac01, 75%\uc640 95%\uc5d0\uc11c \uc0ac\uc804 \uacbd\uace0\n\u2022 \ub2e8\uac00: pricing.overrides, \ubaa9\ub85d\uac00, \ubbf8\uc9c0 \ubaa8\ub378 $5/$25, \ucd94\uc815\uce58\uc774\uace0 \uc815\uc0b0\uc740 AWS\n\u2022 \uc124\uc815\uc740 Admin API POST /v1/organizations/spend_limits, gateway.yaml\uc774 \uc544\ub2d8\n\n\n\uc0ac\uc6a9\uc790\ubcc4 \ud55c\ub3c4\uc5d0 \uac00\uae4c\uc6cc\uc9c8 \ub54c\uc758 \ub3d9\uc791\uc744 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uc9c0\uae08\uc740 \ud55c\ub3c4 \ub300\ube44 40%\ub85c \uc815\uc0c1 \uc0ac\uc6a9 \uc911\uc785\ub2c8\ub2e4.\u2193\n75%\uc5d0\uc11c \uc0ac\uc804 \uacbd\uace0\uac00 \ub098\uc635\ub2c8\ub2e4.\u2193\n95%\uc5d0\uc11c \ub2e4\uc2dc \uacbd\uace0\ud569\ub2c8\ub2e4.\u2193\n100%\uc5d0 \ub2ff\uc73c\uba74 \ub2e4\uc74c \uc694\uccad\uc740\n429 billing_error\uc640 \ub9ac\uc14b \uc2dc\uac01\uc744 \ubc1b\uc2b5\ub2c8\ub2e4.\n\ubc94\uc704\ub294 \uc0ac\uc6a9\uc790, \uadf8\ub8f9, \uc870\uc9c1\uc774\uba70,\n\uadf8\ub8f9\uacfc \uc870\uc9c1 \ud55c\ub3c4\ub294 \uacf5\uc720 \ud480\uc774 \uc544\ub2cc 1\uc778\ub2f9 \uae30\ubcf8\uac12\uc785\ub2c8\ub2e4.\n\uc77c, \uc8fc, \uc6d4 \ub2e8\uc704\ub85c UTC \uae30\uc900\uc5d0 \ub9de\ucdb0 \ub9ac\uc14b\ub429\ub2c8\ub2e4.\n\ud55c\ub3c4 \ud310\ub2e8\uc740 \ucd94\uc815 \ube44\uc6a9\uc774\uba70 \uc815\uc0b0\uc740 AWS\uc640 \ub300\uc0ac\ud569\ub2c8\ub2e4.\n\uc124\uc815\uc740 gateway.yaml \ub300\uc2e0 Admin API\ub85c \ud569\ub2c8\ub2e4.",
+    17: "\u2753 [1min] [\uc694\uc57d]\n\u2022 \uc800\uc7a5\uc18c \uc7a5\uc560 \uc2dc \uae30\ubcf8\uc740 fail-open(\uc694\uccad \ud1b5\uacfc, \uacbd\uace0 \ub85c\uadf8), fail_closed_on_error: true\uba74 \ucc28\ub2e8, \ucd94\ub860 \uc911\ub2e8\uacfc \ubbf8\uacc4\uce21 \uc9c0\ucd9c \uc911 \uc120\ud0dd\n\u2022 principal_emails\uc5d0 \uc774\uba54\uc77c, \uc774\ub984, \uadf8\ub8f9 \uc800\uc7a5, \uae30\ubcf8 90\uc77c \ubcf4\uc874(identity_retention_days)\n\u2022 \ud1f4\uc0ac\ub098 \uc5f4\ub78c \uc694\uccad \uc2dc \ud589 \uc0ad\uc81c, spend\uc640 audit\uc740 OIDC sub\ub9cc \ucc38\uc870\n\n\n\uc6b4\uc601 \uc804 \ubcf4\uc548 \uac80\ud1a0\uc5d0\uc11c \uc7a5\uc560 \ucc98\ub9ac\uc640\n\uac1c\uc778\uc815\ubcf4 \ubcf4\uc874 \uc815\ucc45\uc744 \ud655\uc778\ud558\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\uc800\uc7a5\uc18c \uc7a5\uc560 \uc2dc \uae30\ubcf8\uc740 fail-open\uc785\ub2c8\ub2e4.\n\uc694\uccad\uc740 \ud1b5\uacfc\uc2dc\ud0a4\uace0 \uacbd\uace0\ub97c \ub0a8\uae41\ub2c8\ub2e4.\u2193\nfail_closed_on_error\ub97c \ucf1c\uba74 \uc694\uccad\uc744 \ucc28\ub2e8\ud569\ub2c8\ub2e4.\n\ucd94\ub860 \uc911\ub2e8\uacfc \uacc4\uce21\ub418\uc9c0 \uc54a\ub294 \uc9c0\ucd9c \uc911\n\ubb34\uc5c7\uc744 \uac10\uc218\ud560\uc9c0 \uc815\ud558\ub294 \uc120\ud0dd\uc785\ub2c8\ub2e4.\n\uc774\uba54\uc77c\uacfc \uc774\ub984, \uadf8\ub8f9\uc740 \uae30\ubcf8 90\uc77c \ubcf4\uc874\ud569\ub2c8\ub2e4.\n\ud1f4\uc0ac\ub098 \uc5f4\ub78c \uc694\uccad\uc744 \ucc98\ub9ac\ud558\ub294 \uc808\ucc28\uc640\n\ud544\uc694\ud55c \ud589\uc744 \uc0ad\uc81c\ud558\ub294 \uae30\uc900\ub3c4 \uc815\ud574 \ub450\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
+    18: "\u23f8\ufe0f [0.5min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, \uc0ac\uc6a9\uc790 \ud55c\ub3c4\uac00 \uadf8\ub8f9 \uae30\ubcf8\uac12\ubcf4\ub2e4 \uc6b0\uc120\ud574 \ub2e4\uc74c \uc694\uccad\ubd80\ud130 429\n\u2022 \uc9c4\ud589 \uc911\uc778 \uc751\ub2f5\uc740 \ub05d\uae4c\uc9c0 \uac10\n\nstandard-users\uc758 \ud558\ub8e8 \uae30\ubcf8 \ud55c\ub3c4\ub294 50\ub2ec\ub7ec\uc785\ub2c8\ub2e4.\nbob\uc5d0\uac8c\ub9cc 1\uc13c\ud2b8 \ud55c\ub3c4\ub97c \uac78\uba74 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\u2193\n\n\uc815\ub2f5\uc740 B\uc785\ub2c8\ub2e4. \uc0ac\uc6a9\uc790 \ud55c\ub3c4\uac00 \uc6b0\uc120\ud569\ub2c8\ub2e4.\n\uc9d1\uacc4\ub41c \uc9c0\ucd9c\uc774 \ud55c\ub3c4\uc5d0 \ub2ff\uc73c\uba74\n\ub2e4\uc74c \uc694\uccad\ubd80\ud130 429\ub85c \uac70\uc808\ub429\ub2c8\ub2e4.\n\uc9c4\ud589 \uc911\uc778 \uc751\ub2f5\uc740 \ub05d\uae4c\uc9c0 \uac11\ub2c8\ub2e4.\n\uc774 \ub3d9\uc791\uc744 \ub7a9\uc5d0\uc11c \ud655\uc778\ud558\uaca0\uc2b5\ub2c8\ub2e4.",
+    19: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 LAB, Chapter 6 TASK 01\n\u2022 OTEL_* \ud658\uacbd \ubcc0\uc218, otelcol\uacfc fanout \ud0c0\uc774\uba38, scrub_logs \uaddc\uce59, CloudWatch\uc640 \uc911\uc559 \ub300\uc2dc\ubcf4\ub4dc \uc774\uc911 \uc804\uc1a1 \ud655\uc778\n\n\nChapter 6 TASK 01\uc5d0\uc11c \uacc4\uce21 \uacbd\ub85c\ub97c \ud655\uc778\ud569\ub2c8\ub2e4.\nsettings.json\uc758 OTEL \ud658\uacbd \ubcc0\uc218\ub97c \uc77d\uace0,\notelcol\uacfc fanout \ud0c0\uc774\uba38\uac00 \uc2e4\ud589 \uc911\uc778\uc9c0 \ubd05\ub2c8\ub2e4.\n\uc774\uc5b4\uc11c \ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc744 \uc9c0\uc6b0\ub294 scrub_logs\uc640\n\ub450 \uacf3\uc73c\ub85c \ubcf4\ub0b4\ub294 exporters\ub97c \ucc3e\uc544\ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ud504\ub86c\ud504\ud2b8 \ubcf8\ubb38\uc774 \uc678\ubd80\ub85c \ub098\uac00\uae30 \uc804\uc5d0 \uc9c0\uc6cc\uc9c0\ub294\uc9c0\n\uc9c1\uc811 \ud655\uc778\ud558\ub294 \uacfc\uc815\uc785\ub2c8\ub2e4.",
+    20: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 LAB, Chapter 6 TASK 02\ubd80\ud130 03, \uac01\uc790 \uacc4\uc815\uc758 \uac8c\uc774\ud2b8\uc6e8\uc774\n\u2022 alice\uc640 bob\uc73c\ub85c \uadf8\ub8f9\ubcc4 \ubaa8\ub378 \uc815\ucc45 \ube44\uad50, Admin API\ub85c bob \ud55c\ub3c4 1\uc13c\ud2b8, \uac70\uc808 \ud655\uc778\n\u2022 \ub05d\ub098\uba74 \ud55c\ub3c4 DELETE, \uadf8\ub8f9 \ud55c\ub3c4 \ubcf5\uc6d0, use_bedrock_direct\ub85c \uc6d0\ubcf5\n\n\n\uac01\uc790 \uacc4\uc815\uc5d0\uc11c use_gateway\ub85c \uc804\ud658\ud569\ub2c8\ub2e4.\nalice\ub85c \ub85c\uadf8\uc778\ud574 /model\uc758 Opus\uc640\n/usage\uc758 \ud55c\ub3c4\ub97c \ud655\uc778\ud569\ub2c8\ub2e4.\nbob\uc73c\ub85c \ub2e4\uc2dc \ub85c\uadf8\uc778\ud558\uba74 Opus\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.\n\uc9c8\ubb38 \ud558\ub098\ub85c \uc9c0\ucd9c \uae30\ub85d\uc744 \ub9cc\ub4e0 \ub4a4,\n\ub2e4\ub978 \ud130\ubbf8\ub110\uc758 Admin API\ub85c bob\uc744 \uc870\ud68c\ud558\uace0\n1\uc13c\ud2b8 \ud55c\ub3c4\ub97c \uc124\uc815\ud569\ub2c8\ub2e4.\n\ub2e4\uc74c \uc694\uccad\uc758 \uac70\uc808\uc744 \ud655\uc778\ud558\ub418, \uc9d1\uacc4\uac00 \ub2a6\uc73c\uba74\n\ud55c\ub450 \ubc88 \ub354 \uc694\uccad\ud574 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ub05d\ub098\uba74 \ud55c\ub3c4\ub97c \uc0ad\uc81c\ud558\uace0 \uc801\uc6a9 \ud55c\ub3c4\uc640 \ucd9c\ucc98\uac00\n\uc774\uc804 \uc0c1\ud0dc\ub85c \ub3cc\uc544\uc654\ub294\uc9c0 \ud655\uc778\ud55c \ub4a4,\nuse_bedrock_direct\ub85c \ubcf5\uad6c\ud569\ub2c8\ub2e4.\n\uac8c\uc774\ud2b8\uc6e8\uc774\uc5d0 \ubb38\uc81c\uac00 \uc788\uc73c\uba74 \uc81c \ud654\uba74\uc744 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
+    21: "[0.5min] [\uc694\uc57d]\n\u2022 \uc120\ud0dd LAB, Chapter 6 \uc120\ud0dd TASK 04, \uac01\uc790 Bedrock \uc9c1\uacb0\n\u2022 modelPricing.multiplier \ubcd1\ud569, /usage configured rates \ud655\uc778, \ub300\uc2dc\ubcf4\ub4dc \uc804\ud6c4 \ube44\uad50, \ubc31\uc5c5\uc73c\ub85c \uc6d0\ubcf5\n\n\uc120\ud0dd \ub7a9\uc740 Bedrock \uc9c1\uacb0 \uc0c1\ud0dc\uc5d0\uc11c \uc9c4\ud589\ud569\ub2c8\ub2e4.\nmanaged settings\uc5d0 modelPricing\uc744 \ub123\uace0,\n/usage\uc758 configured rates \ud45c\uc2dc\uc640\n\ub300\uc2dc\ubcf4\ub4dc\uc758 \uc801\uc6a9 \uc804\ud6c4\ub97c \ube44\uad50\ud574 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\ub05d\ub098\uba74 \ubc31\uc5c5\uc73c\ub85c \ubcf5\uad6c\ud569\ub2c8\ub2e4.",
+    22: "\ud83c\udfac [0.5min] [\uc694\uc57d]\n\u2022 OTel \uc9c0\ud45c: token.usage(type\ubcc4), cost.usage, session.count, lines_of_code.count, commit\uacfc PR, active_time.total\n\u2022 \uc774\uc0c1 \uc9d5\ud6c4: cacheRead \ub0ae\uc74c, input \uae09\uc99d, Opus \ube44\uc911, \ud2b9\uc815 \uc0ac\uc6a9\uc790 \uae09\uc99d, \ubd84\ub958\uae30 \ud638\ucd9c \ube44\uc911\uacfc \uac01 \ucc98\ubc29\n\u2022 Admin API: \uadf8\ub8f9 \uae30\ubcf8\uac12 POST, effective \uc870\ud68c, amount\ub294 US \uc13c\ud2b8 \ubb38\uc790\uc5f4, \uc0ac\uc6a9\uc790 \ud55c\ub3c4 \uc6b0\uc120, write \ud0a4\ub294 \uc18c\uc218\ub9cc\n\n\uc9c8\ubb38\uc5d0 \ub530\ub77c \ud544\uc694\ud55c \uc138\ubd80 \ub0b4\uc6a9\uc744 \uc0b4\ud3b4\ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\ntoken.usage\uc758 type \uc18d\uc131\uc73c\ub85c \uce90\uc2dc \ud6a8\uc728\uc744 \ubcf4\uace0,\ncost.usage\ub85c \ucd94\uc815 \ube44\uc6a9\uc744 \ud655\uc778\ud569\ub2c8\ub2e4.\u2193\ncacheRead \ube44\uc728\uc774 \ub0ae\uc73c\uba74 \uae34 \ud734\uc2dd \ub4a4 \uc7ac\uac1c\ub098\n\uc811\ub450\ubd80 \ubcc0\uacbd\uc744 \uc0b4\ud3b4\ubcf4\uace0 \uc138\uc158 \uc704\uc0dd\uc744 \uc810\uac80\ud569\ub2c8\ub2e4.\nOpus \ube44\uc911\uc774 \ub192\uc73c\uba74 \uae30\ubcf8 \ubaa8\ub378 \uc124\uc815\uc744 \ud655\uc778\ud569\ub2c8\ub2e4.\n\ubd84\ub958\uae30 \ud638\ucd9c\uc774 \ub9ce\uc73c\uba74 Ch2 Lab 2\ucc98\ub7fc\nauto mode \ubd84\ub958\uae30 \ubaa8\ub378\uc744 \uba85\uc2dc\ud569\ub2c8\ub2e4.\u2193\nAdmin API\ub85c \uadf8\ub8f9 \uae30\ubcf8\uac12\uacfc \uc0ac\uc6a9\uc790 \uc608\uc678\ub97c \ub461\ub2c8\ub2e4.\namount\ub294 US \uc13c\ud2b8 \ubb38\uc790\uc5f4\ub85c,\n\ud558\ub8e8 50\ub2ec\ub7ec\ub294 5000\uc73c\ub85c \uc124\uc815\ud569\ub2c8\ub2e4.",
+    23: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \ubcf4\uae30: Bedrock\uc740 Analytics\uac00 \uc5c6\uc73c\ub2c8 OTel\uc744 \uc815\ucc45\uc73c\ub85c\n\u2022 modelPricing\uc73c\ub85c \uacc4\uc57d \ub2e8\uac00 \ud45c\uc2dc, \uc815\uc0b0\uc740 AWS\uc640 \ub300\uc0ac\n\u2022 \ub9c9\uae30: \uac8c\uc774\ud2b8\uc6e8\uc774\uc758 SSO, \uadf8\ub8f9 \uc815\ucc45, \uc9c0\ucd9c \ud55c\ub3c4, \uc0ac\uc124\ub9dd \uc804\uc6a9\n\n\uc870\uc9c1\uc758 \ube44\uc6a9 \uad00\ub9ac\ub97c \uc815\ub9ac\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\nOTel\uc744 \uc815\ucc45\uc73c\ub85c \ucf1c\uc11c \uc0ac\uc6a9\ub7c9\uc744 \ubcf4\uace0,\nmodelPricing\uc73c\ub85c \uacc4\uc57d \ub2e8\uac00\ub97c \ubc18\uc601\ud569\ub2c8\ub2e4.\n\uc2e4\uc81c \uc815\uc0b0\uc740 AWS \uccad\uad6c\uc11c\uc640 \ub9de\ucdb0 \ud655\uc778\ud569\ub2c8\ub2e4.\n\uac8c\uc774\ud2b8\uc6e8\uc774\uc758 \uadf8\ub8f9 \uc815\ucc45\uacfc \ud55c\ub3c4\ub85c \ud1b5\uc81c\ud558\uba74,\nChapter 5\uc5d0\uc11c \ubcf8 \ube44\uc6a9 \uc808\uac10\uc774 \uc870\uc9c1 \uad00\ub9ac\ub85c \uc774\uc5b4\uc9d1\ub2c8\ub2e4.",
+    24: "[0.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc74c\uc740 Capstone \uc1fc\ucf00\uc774\uc2a4\uc640 Closing\n\u2022 \uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi\n\n\uac10\uc0ac\ud569\ub2c8\ub2e4. \uc5ec\uc12f \uac1c \ucc55\ud130\ub97c \ubaa8\ub450 \ub9c8\ucce4\uc2b5\ub2c8\ub2e4.\n\ub2e4\uc74c\uc740 Capstone \uc1fc\ucf00\uc774\uc2a4\uc640 Closing\uc785\ub2c8\ub2e4.\n\uc9c8\ubb38\uc740 Slack \ucc44\ub110\n#20261116-claude-code-workshop-for-fsi\uc5d0\n\ud3b8\ud558\uac8c \ub0a8\uaca8 \uc8fc\uc2dc\uba74 \ub429\ub2c8\ub2e4."
   };
   const deck = new SlideFramework({
     logoSrc: "./image/aws-logo-white.png",

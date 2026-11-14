@@ -22,6 +22,9 @@ drawn by `../../reactive/assets/stepviz.js` (node `icon:'aws:<Name>'`) and `../.
 | `Elastic-Load-Balancing.svg` | Arch_Networking-Content-Delivery/48/Arch_Elastic-Load-Balancing_48.svg |
 | `Direct-Connect.svg` | Arch_Networking-Content-Delivery/48/Arch_AWS-Direct-Connect_48.svg |
 | `PrivateLink.svg` | Arch_Networking-Content-Delivery/48/Arch_AWS-PrivateLink_48.svg |
+| `EKS.svg` | Arch_Containers/48/Arch_Amazon-Elastic-Kubernetes-Service_48.svg |
+| `CloudFront.svg` | Arch_Networking-Content-Delivery/48/Arch_Amazon-CloudFront_48.svg |
+| `Group-AWS-Cloud.svg` | Architecture-Group-Icons_07312025/AWS-Cloud_32.svg |
 | `Group-Region.svg` | Architecture-Group-Icons_07312025/Region_32.svg |
 | `Group-VPC.svg` | Architecture-Group-Icons_07312025/Virtual-private-cloud-VPC_32.svg |
 | `Group-Corporate-data-center.svg` | Architecture-Group-Icons_07312025/Corporate-data-center_32.svg |
