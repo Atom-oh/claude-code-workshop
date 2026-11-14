@@ -15,8 +15,14 @@ are generated output, so never edit them by hand.
 
 ## Presenter shortcuts
 
-`assets/deck-keys.js` (loaded by `stepviz.js`) makes every shortcut a single key, with no
-Option chord. It patches the framework at run time because `common/` is rebuilt.
+Every shortcut is a single key, with no Option chord. Compiler 3.0.10 and later do this
+natively; `assets/deck-keys.js` (loaded by `stepviz.js`) then only adds the Korean jamo
+(ㅜ, ㅎ) for N and G. On older compilers it patches the framework at run time.
+
+The presenter view (N) can edit a slide's notes: **Edit notes** or double-click the notes,
+Ctrl+Enter saves, Esc cancels, **Reset to original** restores the authored text. Edits stay in
+that browser's localStorage (`rp-notes:<page path>`), keyed by slide position, so they are not
+written back to the `.md`: copy lasting changes into the source.
 
 | Key | Action |
 | --- | --- |
