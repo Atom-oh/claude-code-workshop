@@ -627,9 +627,9 @@ Application inference profile로 경로와 비용 경계를 고정
   <div class="name">정책은 파일로</div>
   <p class="what">콘솔이 없으니 파일이 정책이다</p>
   <ol>
-    <li><b>01</b>managed settings 파일</li>
-    <li><b>02</b>키 충돌 시 상위 우선</li>
-    <li><b>03</b>/status로 확인</li>
+    <li><b>01</b>파일 한 장이 모든 PC로</li>
+    <li><b>02</b>키 충돌과 잠금 스위치</li>
+    <li><b>03</b>배포 후 확인</li>
   </ol>
 </div>
 :::
@@ -638,9 +638,9 @@ Application inference profile로 경로와 비용 경계를 고정
 {timing: 0.5min}
 [요약]
 • Part 2: 정책은 파일로
-• managed settings 파일, 같은 키는 위가 이긴다, /status로 확인
+• 파일 한 장이 모든 PC로, 키 충돌과 잠금 스위치, 배포 후 확인
 
-두 번째 Part는 정책은 파일로입니다. Bedrock에는 claude.ai 같은 관리 콘솔이 없잖아요. 그래서 회사 정책을 파일 한 장으로 단말에 내려보내야 해요. 그다음 실제로 적용됐는지까지 확인해 보겠습니다.
+두 번째 Part는 정책은 파일로입니다. Bedrock으로 쓸 때는 claude.ai 같은 관리 콘솔을 쓸 수 없잖아요. 그래서 회사 정책을 파일 한 장으로 모든 PC에 내려보냅니다. 그 파일이 어떻게 이기는지, 어떤 잠금을 거는지, 그리고 적용됐는지 확인하는 방법까지 보겠습니다.
 :::
 ---
 <!-- Slide 13: Policy delivery channels -->
@@ -648,82 +648,137 @@ Application inference profile로 경로와 비용 경계를 고정
 @fit: off
 
 ## 콘솔 대신 파일과 MDM
-Bedrock에서 정책이 도달하는 길과 병합 규칙
+정책 파일 한 장이 모든 개발자 PC로 가는 길
 
 :::html
-<div id="c2-sv-deliver"></div>
+<div class="fsi fs" id="c2-mdm">
+  <div class="fs-stage"></div>
+  <div class="fs-side">
+    <div class="fs-step"></div>
+    <div class="fs-title"></div>
+    <pre class="fs-code"></pre>
+    <div class="fs-checks"></div>
+    <div class="fs-say"></div>
+    <div class="fs-prog"><i></i></div>
+    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 경로 이름은 이 랩의 예시 값</div>
+  </div>
+</div>
 :::
 
 :::script
-(window.__fsiq = window.__fsiq || []).push(function (F) {
-  var Z = [{x:20,y:30,w:440,h:430,l:'관리자'},{x:500,y:30,w:660,h:430,l:'개발자 PC'}];
-  var SV = {id:'sv',x:50,y:80,w:380,h:90,t:'Server-managed settings',s:'claude.ai 콘솔',c:'muted'};
-  var MD = {id:'md',x:50,y:210,w:380,h:90,t:'MDM',s:'macOS plist, Windows 레지스트리',c:'accent'};
-  var DT = {id:'dt',x:50,y:340,w:380,h:90,t:'배포 도구로 파일 복사',s:'Ansible, SSM, 이미지 등',c:'accent'};
-  var MS = {id:'ms',x:530,y:120,w:330,h:96,t:'managed-settings.json',s:'OS별 고정 경로',c:'danger'};
-  var DD = {id:'dd',x:530,y:320,w:330,h:96,t:'managed-settings.d/',s:'*.json 조각, 이름순 병합',c:'danger'};
-  var CC = {id:'cc',x:900,y:210,w:240,h:96,t:'Claude Code',s:'최종 설정',c:'ink'};
-  var ALL = [SV,MD,DT,MS,DD,CC];
-  F.stepviz('#c2-sv-deliver', [
-    {kicker:'OVERVIEW', title:'세 갈래 중 두 갈래만 열려 있습니다',
-     body:'claude.ai 콘솔의 <b>Server-managed settings는 Bedrock에서 쓸 수 없습니다</b>. 대신 <b>파일과 MDM</b>으로 정책을 내려보냅니다.',
-     facts:['쓸 수 없음: 서버 관리 설정','쓸 수 있음: OS별 정책 파일','쓸 수 있음: MDM (plist, 레지스트리)'],
-     zones:Z, nodes:ALL, hot:['md','dt','ms','dd','cc'],
-     edges:[{f:'sv',t:'cc',c:'muted',dash:true,curve:-80},{f:'md',t:'cc',c:'accent',side:'h',curve:-30,o:0},{f:'dt',t:'ms',c:'accent',o:1},{f:'ms',t:'cc',c:'danger',o:2},{f:'dd',t:'cc',c:'danger',o:3}],
-     loop:true, stagger:0.6,
-     snip:{hd:'정책이 닿는 곳',path:'Bedrock 경로',lines:['# 쓸 수 없음','Server-managed settings (claude.ai 콘솔)','','# 쓸 수 있음','managed-settings.json (OS별 경로)','MDM: macOS plist, Windows 레지스트리'],hl:[5,6],note:'점선은 Bedrock 경로에서 쓸 수 없는 길입니다.'}},
-    {kicker:'CLOSED', title:'서버 관리 설정은 왜 안 되나',
-     body:'Server-managed settings는 <b>Team, Enterprise 조직</b>이 필요하고, <b>ANTHROPIC_BASE_URL이 비공식 호스트면 꺼집니다</b>.',
-     facts:['claude.ai Team, Enterprise 조직 필요','ANTHROPIC_BASE_URL이 비공식 호스트면 꺼짐','그래서 Bedrock에서는 파일, MDM'],
-     zones:Z, nodes:ALL, hot:['sv'],
-     edges:[{f:'sv',t:'cc',c:'muted',dash:true,curve:-80}],
-     snip:{hd:'쓸 수 없는 이유',path:'Server-managed settings',lines:['Team, Enterprise 조직이 필요','ANTHROPIC_BASE_URL이 비공식 호스트면 꺼짐'],hl:[1,2],note:'콘솔이 없는 자리를 <b>파일로 채웁니다</b>.'}},
-    {kicker:'MDM', title:'MDM은 OS 정책 그대로 씁니다',
-     body:'macOS는 <b>plist</b>, Windows는 <b>레지스트리</b>로 MDM이 같은 정책을 내려보냅니다.',
-     facts:['macOS: plist','Windows: 레지스트리','단말 관리 체계를 그대로 재사용'],
-     zones:Z, nodes:ALL, hot:['md','cc'],
-     edges:[{f:'md',t:'cc',c:'accent',side:'h',curve:-30,o:0}],
-     loop:true,
-     snip:{hd:'MDM 채널',path:'OS 정책',lines:['macOS    plist','Windows  레지스트리'],hl:[1,2],note:'배포 도구는 OS마다 다릅니다. OS별 자세한 표는 PDF 덱의 더 알아보기에 있습니다.'}},
-    {kicker:'FILE', title:'OS마다 정해진 경로가 있습니다',
-     body:'관리자 권한이 있어야 쓰는 <b>OS별 고정 경로</b>에 managed-settings.json을 둡니다. 이 랩은 Linux 경로를 씁니다.',
-     facts:['macOS: Jamf, Intune 등 MDM','Linux, WSL: 이 랩의 경로','Windows: Intune, GPO'],
-     zones:Z, nodes:ALL, hot:['dt','ms','cc'],
-     edges:[{f:'dt',t:'ms',c:'accent',o:0},{f:'ms',t:'cc',c:'danger',o:1}],
-     loop:true, stagger:0.8,
-     snip:{hd:'OS별 정책 파일',path:'managed-settings.json',lines:['# macOS','/Library/Application Support/ClaudeCode/','# Linux, WSL (이 랩)','/etc/claude-code/','# Windows','C:\\Program Files\\ClaudeCode\\'],hl:[2,4,6],note:'파일 이름은 모두 <b>managed-settings.json</b>입니다.'}},
-    {kicker:'DROP-IN', title:'팀별 조각은 옆 디렉터리에',
-     body:'파일 옆 <b>managed-settings.d/</b>에 조각을 두면 <b>이름순으로 병합</b>됩니다. 하나의 파일을 여러 팀이 고치지 않아도 됩니다.',
-     facts:['보안팀, 플랫폼팀이 각자 관리','*.json 조각, 이름순 병합','하나의 파일을 함께 고치지 않음'],
-     zones:Z, nodes:ALL, hot:['dd','ms','cc'],
-     edges:[{f:'dd',t:'ms',c:'danger',l:'병합',o:0},{f:'ms',t:'cc',c:'danger',o:1}],
-     loop:true, stagger:0.8,
-     snip:{hd:'조각 배치 (예시)',path:'/etc/claude-code/',lines:['managed-settings.json','managed-settings.d/','  10-security.json   # 보안팀','  20-platform.json   # 플랫폼팀'],hl:[2,3,4],note:'파일 이름은 예시이고, <b>이름순</b>으로 합쳐집니다.'}},
-    {kicker:'ONE SOURCE', title:'기본은 한 소스만, merge로 합침',
-     body:'managed 소스가 여럿이면 기본은 <b>서버, MDM, 파일 순으로 먼저 정책을 주는 소스 하나만</b> 적용합니다. <b>managedSourcesBehavior를 "merge"</b>로 두면 모두 합칩니다.',
-     facts:['기본: 먼저 정책을 주는 소스 하나','순서: 서버, MDM, 파일','"merge": 모든 managed 소스 합침'],
-     zones:Z, nodes:ALL, hot:['md','ms','cc'],
-     edges:[{f:'md',t:'cc',c:'accent',side:'h',curve:-30,o:0},{f:'ms',t:'cc',c:'danger',dash:true}],
-     snip:{hd:'병합 동작',path:'managed settings',lines:['# 기본: 한 소스만 (서버, MDM, 파일 순)','','"managedSourcesBehavior": "merge"','# 모든 managed 소스를 합침'],hl:[3],note:'팀별 조각은 managed-settings.d/ drop-in으로 나눕니다.'}}
-  ], {legend:[['accent','배포 채널'],['danger','사용자가 못 바꾸는 파일'],['ink','적용 결과'],['muted','Bedrock에서 쓸 수 없음']]});
-});
+import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
+  aria: '인프라 엔지니어가 쓴 managed-settings.json이 MDM과 배포 도구로 모든 개발자 PC의 시스템 경로에 놓이고, Claude Code가 시작할 때 읽으며, 개발자가 개인 설정으로 풀려고 해도 managed 규칙이 이기는 흐름',
+  zones: [
+    { box: [-0.4, 0, 0, 8.6, 4.2, 0.4], label: '인프라 팀', labelAt: [-0.2, 0, -0.75] },
+    { box: [11.0, 0, 0, 16.6, 4.2, 0.4], label: '개발자 PC (전 직원)', labelAt: [11.2, 0, -0.75] }
+  ],
+  parts: {
+    pcs: { boxes: [[11.3, 3.2, 0.4, 0.8, 0.7, 0.5], [12.4, 3.2, 0.4, 0.8, 0.7, 0.5]] },
+    ws: { boxes: [[1.4, 1.2, 0.4, 1.8, 1.4, 0.8], [1.7, 2.4, 1.2, 1.2, 0.15, 1.0]] },
+    doc: { boxes: [[3.8, 1.6, 0.4, 0.9, 0.15, 1.3]] },
+    net: { clouds: [[[5.6, 3.0, 5.4], 74, 20, 'claude.ai 콘솔']] },
+    mdm: { boxes: [[6.2, 1.0, 0.4, 1.2, 2.2, 2.0]] },
+    link: { pipes: [[[7.4, 2.0, 1.0], [11.6, 2.0, 1.0]]] },
+    sys: { boxes: [[14.0, 1.0, 0.4, 1.6, 1.6, 1.6]] },
+    dd: { boxes: [[16.0, 1.0, 0.4, 0.9, 1.6, 1.1]] },
+    cc: { boxes: [[19.2, 1.2, 0.4, 2.4, 1.8, 2.2]] },
+    proj: { boxes: [[23.6, 2.7, 0.4, 1.4, 1.1, 0.7]] },
+    user: { boxes: [[23.6, 0.8, 0.4, 1.4, 1.4, 1.0]] }
+  },
+  marks: [{ id: 'x', at: [14.4, 3.0, 4.5] }, { id: 'y', at: [22.4, 1.8, 1.1] }],
+  tags: [
+    { id: 'deny', at: [14.8, 1.0, 2.35], text: 'deny Read(raw/**)', show: ['land', 'start', 'win'] },
+    { id: 'allow', at: [24.3, 0.8, 2.45], text: 'allow Read(raw/**)', show: ['loosen'] },
+    { id: 'res', at: [20.4, 1.2, 3.15], text: 'raw/ Read 거부', show: ['win'] },
+    { id: 'status', at: [20.4, 1.2, -0.62], text: '/status: Enterprise managed settings (file)', show: ['start'] }
+  ],
+  wires: {
+    console: { pts: [[5.6, 3.0, 5.4], [12.5, 3.0, 5.2], [20.4, 2.1, 2.7]], cls: 'fs-alt' },
+    fan: { pts: [[7.4, 2.4, 1.0], [10.8, 3.5, 0.9], [13.2, 3.5, 0.9]], cls: 'fs-alt' },
+    push: { pts: [[4.3, 1.6, 1.0], [6.2, 1.6, 1.2], [7.4, 2.0, 1.2], [11.6, 2.0, 1.0], [14.0, 1.8, 1.0]] },
+    read: { pts: [[15.6, 1.8, 1.4], [19.2, 2.0, 1.4]] },
+    user: { pts: [[23.6, 1.5, 0.9], [21.6, 2.0, 1.2]] }
+  },
+  callouts: [
+    { id: 'doc', n: 1, anchor: [4.25, 1.6, 1.7], at: [40, 440], title: '정책 파일 한 장', sub: '인프라 엔지니어가 작성' },
+    { id: 'net', n: 2, anchor: [5.6, 3.0, 4.75], at: [300, 92], title: '서버 관리 설정은 건너뜀', sub: 'CLAUDE_CODE_USE_BEDROCK이면' },
+    { id: 'mdm', n: 3, anchor: [6.8, 2.0, 2.4], at: [190, 474], title: 'MDM, 배포 도구', sub: 'Jamf, Intune, GPO, Ansible' },
+    { id: 'sys', n: 4, anchor: [14.8, 1.0, 1.2], at: [420, 474], title: 'OS별 고정 경로', sub: '관리자만 쓸 수 있는 폴더' },
+    { id: 'dd', n: 5, anchor: [16.45, 1.0, 1.5], at: [470, 178], title: 'managed-settings.d/', sub: '팀별 조각, 이름순 병합' },
+    { id: 'cc', n: 6, anchor: [20.4, 1.2, 0.6], at: [610, 474], title: 'Claude Code', sub: '시작할 때 읽고, 바뀌면 다시 읽음' },
+    { id: 'user', n: 7, anchor: [24.3, 0.8, 1.4], at: [730, 112], title: '개인 설정 파일', sub: '~/.claude/settings.json' }
+  ],
+  figures: [
+    { at: [0.4, 1.9, 0.4], scale: 0.9, pose: 'type', colour: 'var(--info)', act: { write: 'type' } },
+    { at: [26.3, 1.5, 0.4], scale: 0.9, dir: -1, act: { loosen: 'type', win: 'raise' } }
+  ],
+  code: [
+    '# 인프라 팀 (Linux, WSL 경로)',
+    '/etc/claude-code/managed-settings.json',
+    '"deny": ["Read(~/claude-lab/ch2/raw/**)"]',
+    '# mac /Library/Application Support/ClaudeCode/',
+    '# win C:\\Program Files\\ClaudeCode\\',
+    '# 개발자 ~/.claude/settings.json',
+    '"allow": ["Read(~/claude-lab/ch2/raw/**)"]',
+    '# 결과: raw/ Read는 여전히 거부'
+  ],
+  checks: ['시작할 때 읽고, 바뀌면 다시 읽음', '사용자, 프로젝트, --settings보다 위', '/status에 Enterprise managed settings'],
+  checksDoneAfter: 'start',
+  overview: { label: '전체 그림', title: '정책은 파일로 배포된다', say: '파일 한 장이 MDM으로 <b>모든 PC</b>에 놓이고, 시작할 때 읽힙니다. 개인 설정으로는 못 풉니다.' },
+  phases: [
+    { key: 'write', d: 2.8, focus: ['ws', 'doc'], badge: 'doc', lines: [1, 2, 3], label: '1  작성', title: '인프라 엔지니어가 정책 한 장을 쓴다', say: '회사 정책을 <b>managed-settings.json</b> 한 장에 씁니다. 예시는 원본 고객 데이터 <b>raw/ 읽기 금지</b>입니다.' },
+    { key: 'console', d: 2.8, focus: ['net', 'cc'], cam: ['net', 'doc', 'cc'], badge: 'net', lines: [], packet: { wire: 'console', mode: 'block', mark: 'x' }, label: '2  콘솔은 막힘', title: '콘솔에서 내려오는 길은 닫혀 있다', say: 'claude.ai 콘솔의 서버 관리 설정은 Team, Enterprise 플랜용입니다. <b>CLAUDE_CODE_USE_BEDROCK</b>을 켜면 Claude Code는 이 길을 건너뜁니다.' },
+    { key: 'push', d: 3.2, focus: ['doc', 'mdm', 'link', 'sys', 'pcs'], badge: 'mdm', lines: [4, 5], packet: { wire: 'push' }, label: '3  배포', title: 'MDM이 모든 PC에 같은 파일을', say: 'Jamf, Intune, GPO 같은 <b>MDM</b>은 plist나 레지스트리로, Ansible 같은 <b>배포 도구</b>는 파일 복사로 모든 PC에 내려보냅니다.' },
+    { key: 'land', d: 3.0, focus: ['sys', 'dd'], badge: 'sys', lines: [2, 4, 5], label: '4  시스템 경로', title: 'OS마다 정해진 폴더에 놓인다', say: '파일은 <b>관리자 권한으로만 쓰는 폴더</b>에 놓입니다. 옆의 <b>managed-settings.d/</b>에 팀별 조각을 두면 이름순으로 합쳐집니다.' },
+    { key: 'start', d: 3.4, focus: ['sys', 'cc'], badge: 'cc', lines: [2, 3], checks: true, packet: { wire: 'read' }, label: '5  시작', title: 'Claude Code가 시작할 때 읽는다', say: '시작할 때 읽고, 파일이 바뀌면 다시 읽습니다. <b>사용자, 프로젝트 설정보다 위</b>에서 적용됩니다.' },
+    { key: 'loosen', d: 3.4, focus: ['user', 'cc'], badge: 'user', lines: [6, 7], packet: { wire: 'user', mode: 'block', mark: 'y' }, label: '6  풀어 보기', title: '개발자가 개인 설정으로 풀어 보면', say: '개발자가 <b>~/.claude/settings.json</b>에 같은 경로의 allow를 넣습니다. 이 줄은 managed 정책을 넘지 못합니다.' },
+    { key: 'win', d: 3.0, focus: ['cc', 'sys', 'user'], badge: 'cc', lines: [3, 8], packet: { wire: 'read' }, label: '7  결과', title: 'managed 규칙이 그대로 이긴다', say: '규칙은 모든 층에서 합쳐지고 <b>deny가 먼저</b> 평가됩니다. raw/ 읽기는 여전히 거부. 개인이 정책을 되돌릴 수 없습니다.' }
+  ],
+  frame: function (c) {
+    if (!c.svg.__lock) {
+      var NS = 'http://www.w3.org/2000/svg', g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'c2-lock');
+      var r = document.createElementNS(NS, 'rect');
+      r.setAttribute('x', 486); r.setAttribute('y', 334); r.setAttribute('width', 15); r.setAttribute('height', 12); r.setAttribute('rx', 2);
+      var a = document.createElementNS(NS, 'path');
+      a.setAttribute('d', 'M489 334 v-4 a4.5 4.5 0 0 1 9 0 v4');
+      g.appendChild(a); g.appendChild(r); c.svg.appendChild(g); c.svg.__lock = g;
+    }
+    var k = c.ph.key;
+    c.svg.__lock.style.opacity = (c.all || k === 'land' || k === 'start' || k === 'win' || k === 'push') ? 1 : 0.3;
+    c.parts.cc.querySelector('.fs-top').style.fill = k === 'win' ? 'var(--accent)' : '';
+    c.parts.user.querySelector('.fs-top').style.fill = k === 'loosen' ? 'var(--warning)' : '';
+  }
+}); });
 :::
 
 :::notes
-{timing: 3.5min}
+{timing: 3min}
 [요약]
-• Server-managed settings(claude.ai 콘솔)는 Team, Enterprise 조직 필요, ANTHROPIC_BASE_URL이 비공식 호스트면 꺼짐
-• MDM: macOS plist, Windows 레지스트리
-• 파일: macOS /Library/Application Support/ClaudeCode/, Linux와 WSL /etc/claude-code/, Windows C:\Program Files\ClaudeCode\
-• managed-settings.d/ drop-in 조각은 이름순 병합
-• managed 소스가 여럿이면 기본은 서버, MDM, 파일 순으로 하나만, managedSourcesBehavior "merge"로 모두 합침
+• 인프라 엔지니어가 managed-settings.json 한 장을 쓰고, MDM(plist, HKLM 레지스트리)이나 배포 도구가 모든 개발자 PC에 내려보냄
+• 서버 관리 설정(claude.ai 콘솔)은 Team, Enterprise 플랜용이고 CLAUDE_CODE_USE_BEDROCK을 켜면 건너뜀
+• 경로: macOS /Library/Application Support/ClaudeCode/, Linux와 WSL /etc/claude-code/, Windows C:\Program Files\ClaudeCode\
+• managed-settings.d/ 조각은 본 파일 다음에 이름순 병합. managed 소스가 여럿이면 기본은 우선순위가 가장 높은 하나만, managedSourcesBehavior "merge"로 합침
+• Claude Code는 시작할 때 읽고 파일이 바뀌면 다시 읽음. 개인 설정의 allow로는 managed deny를 풀 수 없음
 
 {cue: demo}
-그럼 정책을 단말까지 어떻게 내려보내는지 보겠습니다.
-claude.ai 콘솔의 서버 관리 설정은 Bedrock에서 쓸 수 없어요. Team, Enterprise 조직이 필요하고, 비공식 호스트를 쓰면 꺼지거든요.
-대신 MDM으로 plist와 레지스트리를 내려보내거나, OS마다 정해진 경로에 managed-settings.json을 두시면 됩니다.
-여러 팀이 정책을 나눠 관리한다면 파일 옆 managed-settings.d 디렉터리에 조각을 두세요. 그러면 이름순으로 합쳐져요.
-마지막으로 하나 챙기셔야 해요. managed 소스가 여럿이어도 기본은 하나만 적용됩니다. 모두 합치려면 managedSourcesBehavior를 merge로 두시면 돼요.
+이 장면도 저절로 돌아가요. 왼쪽이 인프라 팀, 오른쪽이 전 직원의 개발자 PC입니다.
+먼저 인프라 엔지니어가 정책 파일 한 장을 씁니다. 여기서는 원본 고객 데이터, raw 폴더 읽기 금지를 예로 들었어요.
+위쪽 claude.ai 콘솔에서 내려오는 서버 관리 설정은 Team, Enterprise 플랜용이에요. 그리고 CLAUDE_CODE_USE_BEDROCK을 켜면 Claude Code가 이 길을 아예 건너뜁니다. 그래서 Bedrock에서는 파일과 MDM을 씁니다.
+Jamf, Intune, GPO 같은 MDM은 plist나 레지스트리로, Ansible 같은 배포 도구는 파일 복사로 모든 PC에 같은 정책을 내려보내요.
+파일은 OS마다 정해진, 관리자만 쓸 수 있는 폴더에 놓입니다. 오늘 랩은 Linux라서 /etc/claude-code를 써요. 여러 팀이 나눠 관리한다면 옆의 managed-settings.d 폴더에 조각을 두시면 이름순으로 합쳐집니다.
+Claude Code는 시작할 때 이 파일을 읽고, 파일이 바뀌면 다시 읽어요. 그리고 사용자 설정, 프로젝트 설정보다 위에서 적용됩니다.
+이제 개발자가 자기 settings.json에 같은 경로의 allow를 넣어서 풀어 보려고 하죠. 그래도 막혀요. 규칙은 모든 층에서 합쳐지고 deny가 먼저 평가되거든요. 개인이 정책을 되돌릴 수 없습니다.
+하나만 더요. MDM과 파일을 같이 쓰면 기본은 우선순위가 높은 소스 하나만 적용돼요. 다 합치려면 managedSourcesBehavior를 merge로 두시면 됩니다.
+
+{cue: transition}
+그럼 같은 키가 여러 파일에 있으면 어느 값이 이길까요?
+
+[출처]
+• code.claude.com/docs/en/managed-settings (경로, 전달 방식, drop-in 순서, 소스 우선순위)
+• code.claude.com/docs/en/server-managed-settings (플랜 요건, 서드파티 공급자 사용 시 건너뜀)
+• code.claude.com/docs/en/settings (설정 우선순위)
+• Ch2 Lab 1 TASK 02, TASK 03
 :::
 ---
 <!-- Slide 14: Settings precedence -->
@@ -731,60 +786,277 @@ claude.ai 콘솔의 서버 관리 설정은 Bedrock에서 쓸 수 없어요. Tea
 @fit: off
 
 ## 키 충돌 시 상위 우선
-설정 우선순위 다섯 층, 값을 넣어 보며 확인
+같은 키가 다섯 층에 있을 때 이기는 값
 
 :::html
-<div class="fsi fsi-split wide-left c2-prec" id="c2-prec">
-  <div class="fsi-stack c2-layers" id="c2-prec-rows">
-    <button class="c2-row" data-k="managed"><b>1</b><span class="n">Managed</span><span class="w">파일, MDM. 사용자가 덮어쓸 수 없음</span><code>managed-settings.json</code><span class="x">sonnet</span></button>
-    <button class="c2-row" data-k="cli"><b>2</b><span class="n">CLI 인자</span><span class="w">이번 세션에만 적용</span><code>--settings</code><span class="x">haiku</span></button>
-    <button class="c2-row" data-k="local"><b>3</b><span class="n">Local</span><span class="w">개인, 커밋하지 않음</span><code>.claude/settings.local.json</code><span class="x">opus</span></button>
-    <button class="c2-row" data-k="project"><b>4</b><span class="n">Project</span><span class="w">팀 공유, 저장소에 커밋</span><code>.claude/settings.json</code><span class="x">sonnet</span></button>
-    <button class="c2-row" data-k="user"><b>5</b><span class="n">User</span><span class="w">내 PC의 모든 프로젝트</span><code>~/.claude/settings.json</code><span class="x">opus</span></button>
-  </div>
-  <div class="fsi-stack">
-    <div class="c2-res big"><span class="k">이번 세션의 모델 (예시 키)</span><span class="v" id="c2-prec-v">sonnet</span><span class="s" id="c2-prec-s">1. Managed가 이김</span></div>
-    <button class="btn btn-primary c2-cyc" data-cycle>다음 경우 보기</button>
-    <p class="c2-cap">줄을 눌러 그 층에 값을 넣고 빼 보세요. 오른쪽 값은 설명용 예시입니다.</p>
-    <p class="c2-cap" id="c2-prec-note"></p>
-  </div>
-</div>
+<div id="c2-sv-prec"></div>
 :::
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var order = ['managed','cli','local','project','user'];
-  var label = { managed:'1. Managed', cli:'2. CLI 인자', local:'3. Local', project:'4. Project', user:'5. User' };
-  var rows = Array.prototype.slice.call(document.querySelectorAll('#c2-prec-rows .c2-row'));
-  var on = {};
-  var notes = ['다섯 층에 모두 값이 있으면 Managed가 이깁니다. 아래 어떤 층도 덮어쓰지 못합니다.','Managed가 없으면 이번 세션의 CLI 인자가 이깁니다.','CLI 인자도 없으면 개인의 Local이 이깁니다.','Local도 없으면 팀이 커밋한 Project가 이깁니다.','개인 설정만 남으면 User 값이 쓰입니다.'];
-  var cur = 0;
-  function render() {
-    var win = order.filter(function (k) { return on[k]; })[0];
-    rows.forEach(function (r) { r.classList.toggle('set', !!on[r.dataset.k]); r.classList.toggle('win', r.dataset.k === win); });
-    var w = rows.filter(function (r) { return r.dataset.k === win; })[0];
-    document.getElementById('c2-prec-v').textContent = w ? w.querySelector('.x').textContent : '기본값';
-    document.getElementById('c2-prec-s').textContent = win ? label[win] + '가 이김' : '어느 층에도 값 없음';
+  var Z = [{x:20,y:10,w:560,h:440,l:'설정 층 (위가 이김)'},{x:595,y:10,w:220,h:440,l:'이 층의 값'},{x:840,y:10,w:330,h:440,l:'이번 세션'}];
+  var LY = [['1  Managed','managed-settings.json, MDM','danger'],['2  CLI 인자','claude --settings (이번 세션만)','info'],['3  Local','.claude/settings.local.json (개인)','info'],['4  Project','.claude/settings.json (팀, 커밋)','info'],['5  User','~/.claude/settings.json (내 PC 전체)','info']];
+  var HD = ['# 1 Managed','# 2 --settings','# 3 Local','# 4 Project','# 5 User'];
+  var DAYS = [14, 3, 7, 30, 90];
+  function scene(top, vals, res, resSub, lines, hl, win, lose) {
+    var nodes = [], hot = ['r'], edges = [];
+    LY.forEach(function (l, i) {
+      var y = 52 + i * 78, on = i >= top;
+      nodes.push({id:'l'+i,x:40,y:y,w:520,h:66,t:l[0],s:l[1],c:l[2]});
+      nodes.push({id:'v'+i,x:610,y:y,w:190,h:66,t:vals[i],c:on && vals[i] !== '키 없음' ? (win.indexOf(i) >= 0 ? 'accent' : 'muted') : 'muted'});
+      if (on && vals[i] !== '키 없음') hot.push('l'+i);
+      if (win.indexOf(i) >= 0) { hot.push('v'+i); edges.push({f:'v'+i,t:'r',c:'accent',o:edges.length}); }
+      else if (lose.indexOf(i) >= 0) edges.push({f:'v'+i,t:'r',c:'muted',dash:true});
+    });
+    nodes.push({id:'r',x:860,y:185,w:290,h:110,t:res,s:resSub,c:'accent'});
+    return {zones:Z, nodes:nodes, hot:hot, edges:edges, loop:true, stagger:0.6, snipLines:lines, hl:hl};
   }
-  rows.forEach(function (r) { r.addEventListener('click', function () { on[r.dataset.k] = !on[r.dataset.k]; document.getElementById('c2-prec-note').textContent = ''; render(); }); });
-  var scen = [{ managed: 1, cli: 1, local: 1, project: 1, user: 1 }, { cli: 1, local: 1, project: 1, user: 1 }, { local: 1, project: 1, user: 1 }, { project: 1, user: 1 }, { user: 1 }];
-  F.cycle('#c2-prec', scen.length, function (i) { cur = i; on = {}; for (var k in scen[i]) on[k] = true; document.getElementById('c2-prec-note').textContent = notes[i]; render(); });
+  function cdays(top) {
+    var vals = DAYS.map(function (d, i) { return i < top ? '키 없음' : d + '일'; });
+    var lines = [];
+    HD.forEach(function (h, i) { lines.push((i < top ? '{ }' : (i === 1 ? '\'{"cleanupPeriodDays": 3}\'' : '{ "cleanupPeriodDays": ' + DAYS[i] + ' }')) + '  ' + h); });
+    lines.push(''); lines.push('# 이번 세션에 적용'); lines.push('cleanupPeriodDays = ' + DAYS[top]);
+    var lose = []; for (var i = top + 1; i < 5; i++) lose.push(i);
+    return scene(top, vals, DAYS[top] + '일 보관', LY[top][0].replace(/^\d\s+/, '') + ' 값이 이김', lines, [top + 1, 8], [top], lose);
+  }
+  function mk(base, o) { var s = base; for (var k in o) s[k] = o[k]; s.snip = {hd:o.hd, path:o.path, lines:base.snipLines, hl:base.hl, note:o.note}; return s; }
+  var LIST = scene(0, ['raw/**','키 없음','키 없음','.env','[ ]'], 'deny 2개', 'raw/**와 .env 모두', ['# 1 Managed','"deny": ["Read(~/claude-lab/ch2/raw/**)"]','# 4 Project','"deny": ["Read(./.env)"]','# 5 User','"deny": []','','# 이번 세션의 deny (합집합)','Read(~/claude-lab/ch2/raw/**)','Read(./.env)'], [1,2,3,4,8,9,10], [0, 3], [4]);
+  F.stepviz('#c2-sv-prec', [
+    mk(cdays(0), {kicker:'OVERVIEW', title:'다섯 층에 같은 키, 맨 위가 이깁니다',
+     body:'다섯 층 모두 <b>cleanupPeriodDays</b>(세션 기록 보관 일수)를 적었습니다. 값은 다르지만 적용되는 값은 하나, <b>맨 위 Managed의 14일</b>입니다.',
+     facts:['순서: Managed, CLI 인자, Local, Project, User','같은 키는 가장 위 층의 값 하나만','Managed는 어떤 개인 파일로도 못 덮음'],
+     hd:'같은 키, 다섯 파일', path:'cleanupPeriodDays', note:'Managed가 있는 한 아래 네 층의 값은 <b>쓰이지 않습니다</b>.'}),
+    mk(cdays(1), {kicker:'STEP 1', title:'Managed가 없으면 CLI 인자',
+     body:'정책이 없을 때는 <b>--settings</b>로 준 값이 이깁니다. 이번 세션에만 쓰이고 파일은 바뀌지 않습니다.',
+     facts:['--settings: Managed 아래, 모든 파일 위','이번 세션에만 적용'],
+     hd:'Managed를 빼면', path:'claude --settings', note:'CLI 인자도 <b>Managed는 못 넘습니다</b>.'}),
+    mk(cdays(2), {kicker:'STEP 2', title:'CLI 인자도 없으면 Local',
+     body:'개인이 이 프로젝트에만 두는 <b>.claude/settings.local.json</b>이 이깁니다. 저장소에 커밋하지 않습니다.',
+     facts:['개인, 이 프로젝트만','Claude Code가 git에서 빼 둠'],
+     hd:'CLI 인자를 빼면', path:'.claude/settings.local.json', note:'팀 설정을 <b>나만</b> 바꾸고 싶을 때 쓰는 층입니다.'}),
+    mk(cdays(3), {kicker:'STEP 3', title:'Local도 없으면 Project',
+     body:'팀이 저장소에 커밋한 <b>.claude/settings.json</b>이 팀원 모두에게 적용됩니다.',
+     facts:['팀 공유, 저장소에 커밋','User보다 위'],
+     hd:'Local을 빼면', path:'.claude/settings.json', note:'팀 규칙은 이 파일로 <b>PR 리뷰</b>를 거쳐 바꿉니다.'}),
+    mk(cdays(4), {kicker:'STEP 4', title:'마지막은 User',
+     body:'<b>~/.claude/settings.json</b>은 내 PC의 모든 프로젝트에 적용되는 <b>가장 아래 층</b>입니다.',
+     facts:['내 PC의 모든 프로젝트','위 층에 같은 키가 있으면 짐'],
+     hd:'개인 설정만 남으면', path:'~/.claude/settings.json', note:'키가 어디에도 없으면 기본값(30일)입니다.'}),
+    mk(LIST, {kicker:'LISTS', title:'목록 키는 고르지 않고 합칩니다',
+     body:'<b>permissions.deny</b> 같은 목록은 <b>모든 층의 항목을 합칩니다</b>. User가 빈 목록을 적어도 조직이 넣은 deny는 남습니다.',
+     facts:['목록: 모든 층의 항목을 합침','예외: managed의 availableModels는 합치지 않고 그대로','fallbackModel처럼 순서가 있는 목록은 한 층 값만'],
+     hd:'목록 키', path:'permissions.deny', note:'그래서 개인이 <b>조직의 deny를 지울 수 없습니다</b>.'})
+  ], {legend:[['danger','Managed (사용자가 못 바꿈)'],['info','개인과 팀 설정'],['accent','이기는 값'],['muted','쓰이지 않는 값']]});
 });
 :::
 
 :::notes
-{timing: 3min}
+{timing: 2.5min}
 [요약]
-• 다섯 층: Managed, CLI 인자, Local, Project, User
-• 같은 키가 충돌하면 위가 이김
-• Managed는 파일, MDM으로 배포되고 사용자가 덮어쓸 수 없음
-• CLI 인자는 이번 세션에만, Local은 개인 미커밋, Project는 팀 공유, User는 내 PC 전체
+• 다섯 층: Managed, CLI 인자(--settings), Local, Project, User. 같은 키는 가장 위 층의 값 하나
+• 예시 키 cleanupPeriodDays: 14(Managed), 3(--settings), 7(Local), 30(Project), 90(User) → 14일
+• Managed는 어떤 개인 파일이나 --settings로도 못 덮음
+• 목록 키(permissions.allow, deny 등)는 모든 층을 합침. 예외: managed의 availableModels는 그대로 적용, fallbackModel은 한 층 값만
 
 {cue: demo}
-설정은 다섯 층에서 올 수 있고, 같은 키가 충돌하면 위가 이겨요. 다섯 층에 모두 값을 넣고, 위에서부터 하나씩 빼 볼게요.
-처음에는 1번 Managed가 이깁니다. 관리자가 Managed에 값을 두면 아래 어떤 층도 덮어쓰지 못해요. 그러니까 사용자가 정책을 되돌릴 수 없는 거죠.
-Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local을 씁니다. 그다음은 4번 팀이 커밋한 Project, 마지막이 5번 User 값이고요.
-화면에 보이는 모델 값은 설명용 예시예요.
+같은 키가 여러 파일에 있으면 어느 값이 이길까요? 예로 세션 기록을 며칠 남길지 정하는 cleanupPeriodDays를 다섯 층에 모두 적어 봤어요.
+값은 층마다 다르지만 적용되는 건 하나, 맨 위 Managed의 14일입니다. 관리자가 Managed에 두면 아래 어떤 층도 덮어쓰지 못해요.
+아래 화살표로 위에서부터 하나씩 빼 볼게요. Managed를 빼면 --settings로 준 CLI 인자가 이깁니다. 이건 이번 세션에만 쓰여요.
+그것도 빼면 개인 Local, 그다음이 팀이 커밋한 Project, 마지막이 User예요. 어디에도 없으면 기본값 30일이고요.
+마지막 장이 중요합니다. deny 같은 목록 키는 하나를 고르지 않고 모든 층을 합쳐요. 그래서 개인이 빈 목록을 적어도 조직의 deny는 남습니다. 단, managed의 availableModels는 합치지 않고 그 목록 그대로 씁니다.
+
+{cue: transition}
+그런데 합치는 규칙만으로는 개인이 allow를 더하는 것까지는 못 막아요. 그 문을 닫는 게 잠금 스위치입니다.
+
+[출처]
+• code.claude.com/docs/en/settings (Settings precedence, Lists merge instead of overriding)
+• code.claude.com/docs/en/settings-reference (cleanupPeriodDays 기본 30일)
+:::
+---
+<!-- Slide 99: Lock keys -->
+@type: content
+@fit: off
+
+## 조직이 거는 잠금 스위치 여섯 개
+managed-settings.json에 넣는 잠금 키와 그 효과
+
+:::html
+<div id="c2-sv-lock"></div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:10,w:640,h:440,l:'managed-settings.json의 잠금 키'},{x:720,y:10,w:450,h:440,l:'개발자 PC에서'}];
+  var KD = [['k1','disableBypassPermissionsMode','권한 우회 모드 금지'],['k2','allowManagedPermissionRulesOnly','권한 규칙은 managed만'],['k3','allowManagedHooksOnly','조직이 배포한 훅만'],['k4','allowedHttpHookUrls','HTTP 훅 목적지 제한'],['k5','requiredMinimumVersion','낮은 버전은 시작 거부'],['k6','strictKnownMarketplaces','허용한 마켓플레이스만']];
+  var K = KD.map(function (k, i) { return {id:k[0],x:40,y:46+i*66,w:600,h:62,t:(i+1)+'  '+k[1],s:k[2],c:'danger'}; });
+  var J = ['{','  "permissions": {','    "disableBypassPermissionsMode": "disable" },','  "allowManagedPermissionRulesOnly": true,','  "allowManagedHooksOnly": true,','  "allowedHttpHookUrls":','    ["https://audit.corp.example/*"],','  "requiredMinimumVersion": "2.1.300",','  "strictKnownMarketplaces": [{ "source": "git",','    "url": "https://git.corp.example/p.git" }]','}'];
+  var HL = { k1:[2,3], k2:[4], k3:[5], k4:[6,7], k5:[8], k6:[9,10] };
+  function ed(id, o) { return {f:id,t:'ef',c:'danger',side:'h',o:o}; }
+  function st(id, kicker, title, body, et, es, facts, note) {
+    return {kicker:kicker, title:title, body:body, facts:facts, zones:Z,
+      nodes:K.concat([{id:'ef',x:740,y:165,w:410,h:140,t:et,s:es,c:'accent'}]), hot:[id,'ef'], edges:[ed(id,0)], loop:true,
+      snip:{hd:'잠금 키 묶음 (예시 값)', path:'/etc/claude-code/managed-settings.json', lines:J, hl:HL[id], note:note}};
+  }
+  F.stepviz('#c2-sv-lock', [
+    {kicker:'OVERVIEW', title:'개인 설정으로 못 여는 문 여섯 개',
+     body:'합치는 규칙만으로는 개인이 allow를 <b>더하는 것</b>까지 막지 못합니다. 그 문을 닫는 것이 잠금 키입니다. 위에서부터 하나씩 켜 봅니다.',
+     facts:['넷은 managed 전용 키','disableBypassPermissionsMode, allowedHttpHookUrls는 어느 파일에나','조직에 강제하려면 모두 managed에'],
+     zones:Z, nodes:K.concat([{id:'ef',x:740,y:165,w:410,h:140,t:'잠금 키 여섯 개',s:'개인 설정으로는 못 끔',c:'accent'}]),
+     hot:['k1','k2','k3','k4','k5','k6','ef'], edges:['k1','k2','k3','k4','k5','k6'].map(function (k, i) { return ed(k, i); }), loop:true, stagger:0.4,
+     snip:{hd:'잠금 키 묶음 (예시 값)', path:'/etc/claude-code/managed-settings.json', lines:J, hl:[3,4,5,6,7,8,9,10], note:'파일이 깨지면 <b>시작을 거부</b>하니 배포 전에 <b>jq .</b>로 검증합니다.'}},
+    st('k1','KEY 1','우회 모드는 항상 잠급니다','모든 권한 확인을 건너뛰는 <b>bypassPermissions</b> 모드를 막습니다. 플래그를 줘도 우회 모드로 들어가지 않습니다.',
+       '우회 모드에 못 들어감','--dangerously-skip-permissions도',['범위: 어느 설정 파일에나','managed에 두면 개인이 못 끔','권고: 항상 켬'],'랩 TASK 03에서 <b>exit=0이지만 우회 모드는 꺼진</b> 모습을 봅니다.'),
+    st('k2','KEY 2','권한 규칙은 managed 것만','<b>사용자, 프로젝트, local, --settings</b>의 allow, ask, deny를 모두 무시합니다. <b>--allowedTools</b>도 무시합니다.',
+       '개인 allow가 통하지 않음','항상 허용 선택지도 숨김',['범위: managed 전용','새 규칙 저장도 멈춤','권고: 규제 환경의 기본값'],'켜면 필요한 allow도 <b>managed에 직접</b> 넣어야 합니다.'),
+    st('k3','KEY 3','훅은 조직이 배포한 것만','<b>사용자, 프로젝트, local 훅</b>과 다른 플러그인의 훅을 막고, managed 훅과 강제 설치한 플러그인의 훅만 실행합니다.',
+       '개인 훅은 실행 안 됨','DLP 훅을 끄거나 바꿀 수 없음',['범위: managed 전용','managed가 강제한 플러그인 훅은 실행','권고: Part 3 DLP 훅과 짝'],'개인이 DLP 훅을 <b>우회하는 길</b>을 닫습니다.'),
+    st('k4','KEY 4','HTTP 훅의 목적지를 제한','HTTP 훅은 <b>목록의 URL</b>로만 보냅니다. 맞지 않는 훅은 실행하지 않고 막습니다.',
+       '허용 URL로만 전송','빈 배열이면 모든 HTTP 훅 차단',['범위: 어느 설정 파일에나','목록은 층마다 합쳐짐','권고: 감사 수집기만 허용'],'감사 로그가 <b>엉뚱한 서버</b>로 새지 않게 합니다.'),
+    st('k5','KEY 5','오래된 버전은 시작 거부','실행 중인 버전이 이보다 낮으면 Claude Code가 <b>시작할 때 종료</b>합니다. 이미 도는 세션은 계속됩니다.',
+       '낮은 버전은 시작 안 됨','claude update로 복구는 가능',['범위: managed 전용, 시작할 때만 검사','minimumVersion은 업데이트 하한만 정함','권고: 보안 수정이 든 버전을 하한으로'],'버전 값은 예시입니다.'),
+    st('k6','KEY 6','마켓플레이스는 허용 목록만','마켓플레이스 추가와 플러그인 설치, 업데이트를 <b>허용한 출처</b>로만 제한합니다.',
+       '허용한 출처만 설치','다른 마켓플레이스는 오류',['범위: managed 전용','빈 배열이면 공식 마켓플레이스까지 차단','Ch4 확장하기에서 다시 봄'],'git 주소는 예시입니다.')
+  ], {legend:[['danger','managed 잠금 키'],['accent','개발자 PC의 효과']]});
+});
+:::
+
+:::notes
+{timing: 1.5min}
+[요약]
+• permissions.disableBypassPermissionsMode "disable": 우회 모드 금지 (어느 파일에나, managed에 두면 강제)
+• allowManagedPermissionRulesOnly: 사용자, 프로젝트, local, --settings의 권한 규칙과 --allowedTools 무시 (managed 전용)
+• allowManagedHooksOnly: managed 훅과 강제 설치 플러그인 훅만 실행 (managed 전용)
+• allowedHttpHookUrls: HTTP 훅 목적지 제한, 빈 배열은 전부 차단 (어느 파일에나, 배열 병합)
+• requiredMinimumVersion: 낮은 버전은 시작 거부 (managed 전용). minimumVersion은 업데이트 하한만
+• strictKnownMarketplaces: 마켓플레이스 출처 허용 목록 (managed 전용)
+
+{cue: demo}
+합치는 규칙만으로는 개인이 allow를 더하는 것까지는 막지 못해요. 그 문을 닫는 게 잠금 키입니다. 위에서부터 하나씩 켜 볼게요.
+첫째, disableBypassPermissionsMode는 모든 확인을 건너뛰는 우회 모드를 막습니다. 이건 항상 켜세요.
+둘째, allowManagedPermissionRulesOnly를 켜면 개인과 프로젝트의 권한 규칙을 아예 무시해요. 규제 환경이라면 기본으로 권합니다.
+셋째, allowManagedHooksOnly는 조직이 배포한 훅만 돌게 합니다. Part 3의 DLP 훅과 짝이에요. 넷째, allowedHttpHookUrls는 HTTP 훅이 감사 수집기로만 가게 하고요.
+다섯째, requiredMinimumVersion은 정한 버전보다 낮으면 시작을 거부합니다. 비슷한 이름의 minimumVersion은 업데이트 하한만 정하니까 헷갈리지 마세요.
+여섯째, strictKnownMarketplaces는 플러그인 마켓플레이스를 허용 목록으로 묶어요. Ch4에서 다시 봅니다.
+
+[출처]
+• code.claude.com/docs/en/settings-reference (permissions.disableBypassPermissionsMode, allowManagedPermissionRulesOnly, allowManagedHooksOnly, allowedHttpHookUrls, requiredMinimumVersion, minimumVersion, strictKnownMarketplaces)
+• Ch2 Lab 1 TASK 03
+:::
+---
+<!-- Slide 99: Lab policy file -->
+@type: content
+@fit: off
+
+## Lab에서 배포할 정책 한 장
+managed-settings.json, 줄마다 담은 뜻
+
+:::html
+<div id="c2-sv-ms"></div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:10,w:430,h:440,l:'정책 파일의 키'},{x:480,y:10,w:690,h:440,l:'개발자 PC에서 보이는 것'}];
+  var LK = [['f1','availableModels','+ enforceAvailableModels, env','accent'],['f2','cleanupPeriodDays','14','info'],['f3','permissions.deny','Read, 경로 두 개','warning'],['f4','disableBypassPermissionsMode','"disable"','success']];
+  var RS = [['/model에 Sonnet, Haiku만','--model opus도 목록 안으로, 기본은 Sonnet'],['세션 기록은 14일만','로컬 세션 JSONL을 14일 뒤 정리'],['raw/ Read 거부','실제 경로와 링크 경로 둘 다'],['권한 우회 모드 꺼짐','우회 플래그를 줘도 우회 모드로 안 들어감']];
+  var ALL = [];
+  LK.forEach(function (k, i) { var y = 55 + i * 95; ALL.push({id:k[0],x:40,y:y,w:390,h:80,t:k[1],s:k[2],c:k[3]}); ALL.push({id:'r'+(i+1),x:500,y:y,w:650,h:80,t:RS[i][0],s:RS[i][1],c:k[3]}); });
+  function E(i) { return {f:'f'+i,t:'r'+i,c:LK[i-1][3],o:0}; }
+  var J = ['{','  "availableModels": ["sonnet", "haiku"],','  "enforceAvailableModels": true,','  "env": { "ANTHROPIC_MODEL": "sonnet" },','  "cleanupPeriodDays": 14,','  "permissions": { "deny": [','    "Read(~/claude-lab/mydata/raw/**)",','    "Read(~/claude-lab/ch2/raw/**)" ],','    "disableBypassPermissionsMode":','      "disable" }','}'];
+  function sn(hl, note) { return {hd:'Ch2 Lab 1 TASK 02', path:'/etc/claude-code/managed-settings.json', lines:J, hl:hl, note:note}; }
+  F.stepviz('#c2-sv-ms', [
+    {kicker:'OVERVIEW', title:'파일 한 장, 효과 네 가지',
+     body:'오늘 랩에서 그대로 배포할 정책입니다. 줄 묶음 하나가 개발자 PC에서 <b>보이는 변화 하나</b>가 됩니다.',
+     facts:['모델, 보존 기간, 원본 데이터, 우회 모드','기존 파일에 jq로 병합해 배포','값은 이 랩의 예시'],
+     zones:Z, nodes:ALL, hot:ALL.map(function (n) { return n.id; }),
+     edges:[1,2,3,4].map(function (i) { var e = E(i); e.o = i - 1; return e; }), loop:true, stagger:0.5,
+     snip:sn([2,3,4,5,6,7,8,9,10],'랩은 이 내용을 기존 managed-settings에 <b>병합</b>합니다.')},
+    {kicker:'MODEL', title:'모델은 세 줄로 묶습니다',
+     body:'<b>availableModels</b>로 선택지를 줄이고, <b>enforceAvailableModels</b>로 --model 지정도 목록 안으로 바꾸고, <b>env.ANTHROPIC_MODEL</b>로 기본 모델을 고정합니다.',
+     facts:['availableModels만으로는 기본 모델이 안 바뀜','managed env는 사용자 env보다 우선','시작 화면에 Sonnet 5.5'],
+     zones:Z, nodes:ALL, hot:['f1','r1'], edges:[E(1)], loop:true,
+     snip:sn([2,3,4],'이 랩의 사용자 설정에는 ANTHROPIC_MODEL=opus가 있어서 <b>세 줄이 함께</b> 필요합니다.')},
+    {kicker:'RETENTION', title:'세션 기록은 14일만 남깁니다',
+     body:'<b>cleanupPeriodDays</b>로 로컬에 남는 세션 기록(JSONL)을 14일 뒤 지웁니다. 기본값은 30일입니다.',
+     facts:['기본 30일, 최소 1일','지운 세션은 /resume에 안 보임'],
+     zones:Z, nodes:ALL, hot:['f2','r2'], edges:[E(2)], loop:true,
+     snip:sn([5],'PC에 남는 대화 기록의 <b>보존 기간</b>입니다.')},
+    {kicker:'DENY', title:'원본 데이터 raw/는 읽지 못하게',
+     body:'<b>permissions.deny</b>에 실제 경로(mydata/raw)와 작업 폴더의 링크 경로(ch2/raw)를 <b>둘 다</b> 넣습니다. 규칙은 도구가 받은 경로 그대로 맞춰 보기 때문입니다.',
+     facts:['Read deny는 Read, Grep, Glob 같은 파일 도구를 막음','cat 같은 셸 명령은 Lab 2의 Sandbox가 맡음','pseudo/는 그대로 읽힘'],
+     zones:Z, nodes:ALL, hot:['f3','r3'], edges:[E(3)], loop:true,
+     snip:sn([6,7,8],'경로를 하나만 넣으면 <b>링크 쪽으로 새어 나갑니다</b>.')},
+    {kicker:'BYPASS', title:'우회 모드는 잠급니다',
+     body:'<b>disableBypassPermissionsMode</b>를 두면 --dangerously-skip-permissions를 줘도 우회 모드로 들어가지 않습니다. deny 규칙도 그대로 살아 있습니다.',
+     facts:['실행은 exit=0으로 끝남','우회 모드만 꺼짐'],
+     zones:Z, nodes:ALL, hot:['f4','r4'], edges:[E(4)], loop:true,
+     snip:sn([9,10],'랩 TASK 03에서 <b>직접 확인</b>합니다.')}
+  ], {legend:[['accent','모델'],['info','보존 기간'],['warning','원본 데이터'],['success','우회 모드']]});
+});
+:::
+
+:::notes
+{timing: 2min}
+[요약]
+• availableModels ["sonnet","haiku"], enforceAvailableModels true, env.ANTHROPIC_MODEL "sonnet": 선택지, 명령줄 지정, 기본 모델을 함께 묶음
+• cleanupPeriodDays 14: 로컬 세션 기록 14일 보존 (기본 30일)
+• permissions.deny: raw/ 읽기 금지, 실제 경로와 링크 경로 둘 다. Read deny는 파일 도구만, 셸은 Lab 2 Sandbox
+• disableBypassPermissionsMode "disable": 우회 플래그를 줘도 우회 모드로 안 들어감 (exit=0)
+
+이게 오늘 랩에서 그대로 배포할 정책 한 장이에요. 줄 묶음 하나가 개발자 PC에서 보이는 변화 하나가 됩니다.
+{cue: demo}
+먼저 모델은 세 줄로 묶어요. availableModels로 선택지를 Sonnet과 Haiku로 줄이고, enforceAvailableModels로 --model opus처럼 목록 밖을 지정해도 목록 안으로 바꾸고, env의 ANTHROPIC_MODEL로 기본 모델을 고정합니다. availableModels만으로는 기본 모델이 안 바뀌어서 세 줄이 같이 있어야 해요.
+cleanupPeriodDays 14는 PC에 남는 세션 기록을 14일만 둡니다. 기본은 30일이고요.
+deny에는 원본 데이터 경로를 실제 경로와 링크 경로 둘 다 넣었어요. 규칙은 도구가 받은 경로 그대로 맞춰 보거든요. 그리고 Read deny는 Claude의 파일 도구를 막는 거라, cat 같은 셸 명령은 Lab 2의 Sandbox가 맡습니다.
+마지막으로 disableBypassPermissionsMode로 우회 모드를 잠급니다.
+
+[출처]
+• Ch2 Lab 1 TASK 02 (정책 내용과 효과 표), TASK 03
+• code.claude.com/docs/en/settings-reference (availableModels, enforceAvailableModels, cleanupPeriodDays, permissions.disableBypassPermissionsMode)
+:::
+---
+<!-- Slide 99: Quick check broken JSON -->
+@type: content
+@fit: off
+
+## JSON이 깨지면 어떻게 될까?
+QUICK CHECK, 손을 들어 답해 주세요
+
+:::html
+<div class="fsi qc" id="c2-qc-json">
+  <p class="q">managed-settings.json에 JSON 문법 오류가 있으면?</p>
+  <div class="opts">
+    <button class="opt"><b>A</b>무시하고 실행</button>
+    <button class="opt"><b>B</b>틀린 줄만 빼고 실행</button>
+    <button class="opt right"><b>C</b>시작을 거부</button>
+    <button class="opt"><b>D</b>기본값으로 실행</button>
+  </div>
+  <p class="ans">정답 C. "Managed settings document could not be parsed" 오류를 내고 시작하지 않습니다(claude -p는 exit=1). JSON은 맞고 항목 하나만 틀렸다면 그 항목만 빠지고 나머지는 적용됩니다.</p>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c2-qc-json'); });
+:::
+
+:::notes
+{timing: 1min}
+{cue: poll}
+[요약]
+• 정답 C, 시작을 거부 ("Managed settings document could not be parsed", claude -p는 exit=1)
+• 다른 managed 소스에 정상 정책이 있어도 거부
+• JSON은 맞고 개별 항목만 틀리면 그 항목만 빠지고 나머지는 적용
+• 배포 파이프라인에 jq . 검증
+
+퀴즈 하나 갈게요. managed-settings.json에 JSON 문법 오류가 있으면 Claude Code는 어떻게 할까요? 손 들어서 답해 주세요.
+{cue: pause}
+정답은 C, 시작을 거부합니다. Managed settings document could not be parsed라는 오류를 내고 시작하지 않아요. 정책이 조용히 빠지는 것보다 안전한 쪽이죠.
+반대로 JSON은 맞는데 항목 하나만 틀렸다면 그 항목만 빠지고 나머지 정책은 그대로 적용됩니다. 그래서 배포 파이프라인에 jq 점 검증을 꼭 넣어 두세요. 랩 TASK 04에서 일부러 깨뜨려 볼 거예요.
+
+[출처]
+• code.claude.com/docs/en/managed-settings (Invalid entries in managed settings, 파싱 실패 시 시작 거부)
+• code.claude.com/docs/en/errors (Managed settings document could not be parsed)
+• Ch2 Lab 1 TASK 04 Step 2
 :::
 ---
 <!-- Slide 15: Verification -->
@@ -792,31 +1064,68 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local을 씁니다. 그
 @fit: off
 
 ## 배포 이후가 진짜 시작
-적용 검증 4단계
+적용 검증 4단계, 랩 순서 그대로
 
 :::html
-<div class="fsi c2-verify">
-  <div class="fsi-grid-4">
-    <div class="rc"><b>1</b><span class="t">/status 확인</span><span class="d">Setting sources에 Enterprise managed settings가 보이는지</span></div>
-    <div class="rc"><b>2</b><span class="t">덮어쓰기 실패 확인</span><span class="d">~/.claude/settings.json에서 같은 키를 바꿔도 적용되지 않는지</span></div>
-    <div class="rc"><b>3</b><span class="t">모델 선택 확인</span><span class="d">/model에 허용한 모델만 보이는지</span></div>
-    <div class="rc"><b>4</b><span class="t">차단 규칙 확인</span><span class="d">.env 읽기를 요청했을 때 거부되는지</span></div>
-  </div>
-</div>
+<div id="c2-sv-verify"></div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:10,w:1150,h:190,l:'확인할 것'},{x:20,y:220,w:1150,h:230,l:'보여야 하는 것'}];
+  var X = [25, 310, 595, 880];
+  var A = [['/status','Setting sources 줄'],['/model','모델 선택지'],['raw/ 읽기 요청','Read 도구로만'],['개인 설정에 allow','~/.claude/settings.json']];
+  var B = [['Enterprise managed','settings (file) 표시'],['Sonnet, Haiku만','시작 화면도 Sonnet 5.5'],['raw/ 거부','pseudo/는 읽힘'],['그래도 거부','우회 플래그도 우회 모드 안 됨']];
+  var N = [];
+  A.forEach(function (a, i) { N.push({id:'a'+i,x:X[i]+15,y:60,w:250,h:110,t:(i+1)+'  '+a[0],s:a[1],c:'info'}); });
+  B.forEach(function (b, i) { N.push({id:'b'+i,x:X[i]+15,y:285,w:250,h:120,t:b[0],s:b[1],c:'success'}); });
+  function st(i, kicker, title, body, facts, sn) {
+    return {kicker:kicker, title:title, body:body, facts:facts, zones:Z, nodes:N, hot:['a'+i,'b'+i],
+      edges:[{f:'a'+i,t:'b'+i,c:'success',o:0}], loop:true, snip:sn};
+  }
+  F.stepviz('#c2-sv-verify', [
+    {kicker:'OVERVIEW', title:'배포했으면 네 가지로 확인합니다',
+     body:'정책 파일이 <b>읽혔는지</b>, <b>모델</b>이 묶였는지, <b>deny</b>가 통하는지, 개인이 <b>되돌릴 수 없는지</b>. 랩에서 이 순서 그대로 해 봅니다.',
+     facts:['1, 2: TASK 02','3, 4: TASK 03','깨진 JSON: TASK 04'],
+     zones:Z, nodes:N, hot:N.map(function (n) { return n.id; }),
+     edges:[0,1,2,3].map(function (i) { return {f:'a'+i,t:'b'+i,c:'success',o:i}; }), loop:true, stagger:0.5,
+     snip:{hd:'확인 순서', path:'Ch2 Lab 1', lines:['1 /status    managed settings (file)','2 /model     Sonnet, Haiku만','3 raw/ Read  거부, pseudo/는 읽힘','4 개인 allow 그래도 거부'], hl:[1,2,3,4], note:'하나라도 다르면 <b>경로, JSON, 재시작</b>부터 봅니다.'}},
+    st(0,'STEP 1','정책 파일이 읽혔나','<b>/status</b>의 Setting sources 줄에 <b>Enterprise managed settings (file)</b>이 보여야 합니다. 괄호 안은 정책이 온 길입니다.',
+       ['(file): managed-settings.json','(plist), (HKLM): MDM','(drop-ins): managed-settings.d/'],
+       {hd:'Claude 입력창', path:'/status', lines:['/status','','# Status 탭','Setting sources:','  Enterprise managed settings (file)'], hl:[1,5], note:'안 보이면 <b>경로와 파일 이름</b>부터 확인합니다.'}),
+    st(1,'STEP 2','모델이 묶였나','시작 화면이 <b>Sonnet 5.5</b>로 바뀌고, <b>/model</b>에 Sonnet과 Haiku만 보여야 합니다.',
+       ['Opus는 선택지에서 빠짐','Default 줄 설명의 버전 표기는 무시'],
+       {hd:'Claude 입력창', path:'/model', lines:['/model','','# 보여야 하는 것','Default','Sonnet','Haiku','# Opus는 없음'], hl:[1,5,6], note:'실제 모델은 <b>시작 화면과 /status</b>로 봅니다.'}),
+    st(2,'STEP 3','deny가 통하나','Read 도구로 <b>raw/customers.csv</b>를 읽게 하면 거부되고, <b>pseudo/</b>는 읽혀야 합니다.',
+       ['원본만 막고 분석은 그대로','Bash로 우회하지 않게 Read 도구로만 요청'],
+       {hd:'Claude 입력창', path:'~/claude-lab/ch2', lines:['# Read 도구로만 읽게 요청','raw/customers.csv     → 거부','pseudo/customers.csv  → 읽힘'], hl:[2,3], note:'Read deny는 <b>Claude의 파일 도구</b>를 막습니다.'}),
+    st(3,'STEP 4','개인이 되돌릴 수 없나','개인 <b>settings.json</b>에 allow를 넣어도 읽기는 여전히 거부됩니다. 우회 플래그를 줘도 우회 모드로 들어가지 않습니다.',
+       ['권한 규칙은 합쳐지고 deny가 먼저','끝나면 개인 설정을 원복'],
+       {hd:'Terminal', path:'~/claude-lab/ch2', lines:['# ~/.claude/settings.json에 allow 추가','"allow": ["Read(~/claude-lab/ch2/raw/**)"]','claude -p "Use the Read tool to read raw/customers.csv"','# → 여전히 거부','claude --dangerously-skip-permissions -p "hi"','# → exit=0, 우회 모드는 꺼진 채'], hl:[2,3,5], note:'이 확인이 <b>정책이 강제된다</b>는 증거입니다.'})
+  ], {legend:[['info','확인할 것'],['success','보여야 하는 것']]});
+});
 :::
 
 :::notes
-{timing: 2min}
+{timing: 1.5min}
 [요약]
-• 1 /status의 Setting sources에 Enterprise managed settings
-• 2 ~/.claude/settings.json에서 같은 키를 바꿔도 적용되지 않는지
-• 3 /model에 허용한 모델만 보이는지
-• 4 .env 읽기 요청이 거부되는지
+• 1 /status의 Setting sources에 Enterprise managed settings (file)
+• 2 시작 화면 Sonnet 5.5, /model에 Sonnet과 Haiku만
+• 3 Read 도구로 raw/ 읽기는 거부, pseudo/는 읽힘
+• 4 개인 settings.json에 allow를 넣어도 거부, 우회 플래그를 줘도 우회 모드 안 됨
 
-정책을 배포했으면 실제로 적용됐는지도 봐야 하잖아요. 네 단계로 확인합니다.
+정책을 배포했으면 실제로 적용됐는지 봐야 하잖아요. 랩 순서 그대로 네 가지로 확인합니다.
 {cue: demo}
-첫 번째, /status의 Setting sources에 Enterprise managed settings가 보여야 해요. 두 번째는 개인 설정 파일에서 같은 키를 바꿔 보는 겁니다. 바꿔도 적용되지 않아야 하죠.
-세 번째는 /model에 허용한 모델만 보이는지예요. 네 번째, .env를 읽어 달라고 하면 거부돼야 합니다. 랩에서 이 네 가지를 그대로 해 볼 거예요.
+첫째, /status의 Setting sources에 Enterprise managed settings가 보여야 해요. 괄호 안에 file이라고 나오면 파일로 온 정책입니다.
+둘째, 시작 화면이 Sonnet 5.5로 바뀌고 /model에 Sonnet과 Haiku만 보여야 하고요.
+셋째, Read 도구로 raw 폴더를 읽게 하면 거부되고 pseudo는 읽혀야 합니다. 넷째, 개인 settings.json에 allow를 넣어 봐도 여전히 거부돼야 해요. 이 네 가지가 맞으면 정책이 강제되고 있다는 증거입니다.
+
+{cue: transition}
+여기까지가 정책을 내려보내는 법이었고, 이제 무엇을 막을지로 넘어가겠습니다.
+
+[출처]
+• code.claude.com/docs/en/managed-settings (Read the source in /status)
+• Ch2 Lab 1 TASK 02 Step 2, TASK 03
 :::
 ---
 <!-- Slide 16: Part 03 divider -->
