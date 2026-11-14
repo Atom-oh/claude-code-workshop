@@ -315,22 +315,29 @@ html[data-theme="light"] .step-title .step-no, html[data-theme="light"] .btn.pri
         <p class="syn">Claude Code의 전체 구조를 한 장으로 보고, 에이전트가 맥락을 읽고 도구를 고르는 방식을 살펴봅니다. Amazon Bedrock 경로에서 코드와 대화가 어디로 가고 어디에 남는지 확인하고, 이틀 동안 다룰 관리와 활용 두 갈래를 정리합니다. 같은 내용은 점심 뒤 통합 랩에서 직접 확인합니다.</p>
         <div class="links"><a class="lab" href="reactive/01-ch1-how-it-works.html?theme=dark">강의자료</a></div>
       </article>
-      <div class="slot"><div class="time">10:40–10:50</div><div class="title">Break</div></div>
       <article class="session">
-        <div class="top"><span class="time">10:50–11:40</span><span class="badge lec">강의</span><span class="dur">50분</span></div>
+        <div class="top"><span class="time">10:40–11:30</span><span class="badge lec">강의</span><span class="dur">50분</span></div>
         <h3><span class="chip">CH 02</span>Bedrock 위에서 안전하게 쓰기</h3>
         <p class="steps"><b>연결과 자격증명</b> → <b>모델 고정과 비용 태깅</b> → <b>정책 전달</b> → <b>auto mode와 안전의 경계</b> → <b>DLP 5층과 감사</b></p>
         <p class="syn">키는 나눠 주지 않고, 정책은 파일로, 막을 것은 앞에서 막습니다. 장기 키 대신 SSO 자격증명으로 연결하고, 모델 버전을 고정해 inference profile로 팀별 비용을 나눕니다. claude.ai 관리 콘솔이 없는 Bedrock 환경에서 정책을 managed-settings.json으로 강제하는 구조를 보고, 권한 규칙, sandbox, hooks, Bedrock Guardrails, 반출 채널 통제를 층으로 쌓아 데이터가 나가는 길을 좁힙니다. auto mode가 어디에서 멈추는지, 감사에서 자주 받는 질문에 어떤 기록으로 답하는지도 함께 다룹니다.</p>
         <div class="links"><a class="lab" href="reactive/02-ch2-bedrock-safe.html?theme=dark">강의자료</a></div>
       </article>
+      <article class="session">
+        <div class="top"><span class="time">11:30–11:40</span><span class="badge lab">LAB</span><span class="dur">10분</span></div>
+        <h3><span class="chip">PRE</span>실습 환경 점검</h3>
+        <p class="steps"><b>Preflight CHECK 01~06</b></p>
+        <p class="syn">점심 전에 내 EC2 code-server에 접속해 Claude Code 버전과 기본 모드, Bedrock 연결, 게이트웨이 도달, 마이데이터 키트를 확인합니다. 환경을 미리 맞춰 두어 점심 뒤 한 시간을 Ch1과 Ch2 랩에 온전히 씁니다.</p>
+        <p class="out"><b>산출물</b>점검을 마친 실습 환경</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Preflight_Check.html">Preflight</a></div>
+      </article>
       <div class="slot"><div class="time">11:40–13:00</div><div class="title">점심 식사</div></div>
       <article class="session">
         <div class="top"><span class="time">13:00–14:00</span><span class="badge lab">LAB</span><span class="dur">60분</span></div>
-        <h3><span class="chip">PRE + CH 01 · 02 LAB</span>실습 환경 점검부터 정책과 DLP 훅까지</h3>
-        <p class="steps"><b>Preflight CHECK 01~06</b> → <b>Ch1 에이전트 루프와 세션 파일</b> → <b>Ch2 Lab 1 managed settings 배포</b> → <b>Ch2 Lab 2 DLP 훅과 auto mode</b> → <b>원복</b></p>
-        <p class="syn">오전 두 강의의 내용을 한 시간 동안 이어서 직접 해 봅니다. Preflight로 내 EC2 환경과 Bedrock 연결을 확인하고, Ch1 랩에서 에이전트가 파일을 읽고 실행하고 고치는 순서와 /context, 세션 파일을 봅니다. Preflight에서 버전과 모드를 확인했으므로 Ch1 TASK 00은 실습 폴더 만들기만 합니다. 이어서 Ch2 Lab 1에서 managed-settings.json을 배포해 개인 설정으로 덮어쓸 수 없음을 확인하고, Ch2 Lab 2에서 DLP 훅을 정책으로 강제한 뒤 fail-open 함정과 auto mode의 경계를 확인합니다. Ch2 Lab 1과 Lab 2의 원복 TASK까지 마쳐야 Ch3 랩과 Capstone이 막히지 않습니다.</p>
-        <p class="out"><b>산출물</b>점검을 마친 실습 환경, 정책으로 강제한 DLP 훅</p>
-        <div class="links"><a class="lab" href="ClaudeCode_Preflight_Check.html">Preflight</a><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Ch1 Lab</a><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1 · 정책</a><a class="lab" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 · 가드레일</a></div>
+        <h3><span class="chip">CH 01 · 02 LAB</span>에이전트 루프부터 정책과 DLP 훅까지</h3>
+        <p class="steps"><b>Ch1 에이전트 루프와 세션 파일</b> → <b>Ch2 Lab 1 managed settings 배포</b> → <b>Ch2 Lab 2 DLP 훅과 auto mode</b> → <b>원복</b></p>
+        <p class="syn">오전 두 강의의 내용을 한 시간 동안 이어서 직접 해 봅니다. Ch1 랩에서 에이전트가 파일을 읽고 실행하고 고치는 순서와 /context, 세션 파일을 봅니다. 점심 전 Preflight에서 버전과 모드를 확인했으므로 Ch1 TASK 00은 실습 폴더 만들기만 합니다. 이어서 Ch2 Lab 1에서 managed-settings.json을 배포해 개인 설정으로 덮어쓸 수 없음을 확인하고, Ch2 Lab 2에서 DLP 훅을 정책으로 강제한 뒤 fail-open 함정과 auto mode의 경계를 확인합니다. Ch2 Lab 1과 Lab 2의 원복 TASK까지 마쳐야 Ch3 랩과 Capstone이 막히지 않습니다.</p>
+        <p class="out"><b>산출물</b>정책으로 강제한 managed settings와 DLP 훅</p>
+        <div class="links"><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Ch1 Lab</a><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1 · 정책</a><a class="lab" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 · 가드레일</a></div>
       </article>
       <article class="session">
         <div class="top"><span class="time">14:00–14:40</span><span class="badge lec">강의</span><span class="dur">40분</span></div>

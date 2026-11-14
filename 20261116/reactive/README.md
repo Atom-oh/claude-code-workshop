@@ -90,8 +90,8 @@ After a deck change:
 - Update `toc.html` if a title, tagline or slide count changed.
 - Re-export the matching `../slides/ClaudeCode_FSI_ChN_20261116.pdf`. These
   are image-only screenshots, one per slide.
-- State no schedule. Session times appear only in `../eDM.html`, `../eDM.txt`
-  and `../eDM-notes.md`; slides, notes and `toc.html` give no clock times or
+- State no schedule. Session times appear only in `../eDM.html`, `../eDM.txt`,
+  `../eDM-notes.md` and the portal `../index.html`; slides, notes and `toc.html` give no clock times or
   session, lab or TASK durations. `{timing}` in notes is presenter-timer
   metadata and stays; technical durations (TTL, timeouts) are content.
 
