@@ -137,7 +137,8 @@ class CheckLabsTest(unittest.TestCase):
 
     def test_lab_pages_state_no_minutes(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"
-        for heading in ("TASK 01 · x (5분)", "선택 TASK 02 · y (7분)", "TASK 03 · z (5~7분)", "TASK 04 · w (약 5분)"):
+        for heading in ("TASK 01 · x (5분)", "선택 TASK 02 · y (7분)", "TASK 03 · z (5~7분)", "TASK 04 · w (약 5분)",
+                        "TASK 05 · v (5분 내외)", "TASK 06 · u (10분 남짓)", "TASK 07 · t (5분) — 선택"):
             errs = self.run_check(full_set(**{name: page(body="<h2>%s</h2>" % heading)}))
             self.assertEqual(len(errs), 1, heading)
             self.assertTrue(errs[0].startswith(name + ": rule 4: heading states minutes"), errs)
@@ -147,6 +148,16 @@ class CheckLabsTest(unittest.TestCase):
         self.assertTrue(errs[0].startswith(pre + ": rule 4"))
         errs = self.run_check(full_set(**{name: page(body="<p>소요 시간 <strong>20분</strong></p>")}))
         self.assertEqual(errs, [name + ": rule 4: states 소요 시간 (times come from the eDM)"])
+
+    def test_session_length_prose_is_flagged(self):
+        name = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"
+        base = full_set()[name]
+        for phrase in ("Ch2 강의에 이어지는 55분 실습 세션으로", "7분 프리플라이트", "20분 랩"):
+            errs = self.run_check(full_set(**{name: base.replace("</body>", "<p>%s</p></body>" % phrase)}))
+            self.assertEqual(len(errs), 1, phrase)
+            self.assertTrue(errs[0].startswith(name + ": rule 4: states a session length"), errs)
+        in_code = base.replace("</body>", "<pre>echo 5분 실습</pre></body>")
+        self.assertEqual(self.run_check(full_set(**{name: in_code})), [])
 
     def test_operational_minutes_in_prose_are_fine(self):
         name = "ClaudeCode_Ch5_HandsOnLab.html"

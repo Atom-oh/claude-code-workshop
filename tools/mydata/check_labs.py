@@ -49,7 +49,10 @@ S3_CP_VAR_RE = re.compile(r"\baws s3 cp\s+(?:--?[\w-]+\s+)*[\"']?\$\{?KIT\}?[\"'
 # states no minutes in its TASK/CHECK headings and has no "소요 시간" line.
 PAT_RE = re.compile(r"PAT='([^']*)'")
 H2_RE = re.compile(r"<h2\b[^>]*>(.*?)</h2>", re.S)
-STATED_MINUTES_RE = re.compile(r"\((?:[^()]*,\s*)?[약\s]*\d+(?:\s*[~–-]\s*\d+)?\s*분\)\s*$")
+STATED_MINUTES_RE = re.compile(r"\d+\s*분")  # any minutes in a TASK/CHECK heading
+# Session-length prose outside code: "55분 실습 세션", "7분 프리플라이트", "20분 랩".
+SESSION_PROSE_RE = re.compile(r"\d+\s*분\s*(?:짜리\s*)?(?:실습|프리플라이트|세션|랩)")
+CODE_RE = re.compile(r"<(pre|code)\b.*?</\1>", re.S)
 TIMED_HEADING = ("TASK", "선택 TASK", "CHECK")
 GUARDRAILS = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"
 
@@ -95,6 +98,11 @@ def _sections(raw):
 def stated_minutes(raw):
     """Return headings (TASK, 선택 TASK, CHECK) that still state minutes, e.g. "(5분)"."""
     return [h for h, _ in _sections(raw) if h.startswith(TIMED_HEADING) and STATED_MINUTES_RE.search(h)]
+
+
+def session_prose(raw):
+    """Return session-length phrases in the page text outside <pre>/<code>."""
+    return [m.group(0) for m in SESSION_PROSE_RE.finditer(_text(CODE_RE.sub(" ", raw)))]
 
 
 def _path_known(path, entries):
@@ -165,6 +173,8 @@ def check(labs_dir, manifest):
             err(4, "heading states minutes (times come from the eDM): %s" % h)
         if "소요 시간" in text:
             err(4, "states 소요 시간 (times come from the eDM)")
+        for phrase in session_prose(raw):
+            err(4, "states a session length (times come from the eDM): %s" % phrase)
         if name in NO_TRANSACTIONS:  # rule 5
             for f in TRANSACTION_FILES:
                 if f in text:

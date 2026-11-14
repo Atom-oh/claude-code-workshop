@@ -101,7 +101,7 @@ Session mapping:
   11:40–13:00, one combined lab 13:00–14:00 (Preflight, Ch1 lab, Ch2 Lab 1 and
   Lab 2), Ch3 lecture 14:00–14:40, Ch3 lab 14:40–15:40, Capstone Round 1
   15:50–17:40. The combined lab's required TASKs add up to about 110 minutes
-  by the lab pages' own estimates (Preflight 7, Ch1 20, Lab 1 50, Lab 2 35),
+  by the facilitators' estimates (Preflight 7, Ch1 20, Lab 1 50, Lab 2 35; the lab pages state no minutes since 2026-11-14),
   so facilitators choose which TASKs run in the session; the Ch2 Lab 1 and Lab 2
   restore TASKs must still run. The Ch3 deck is paced for the 40-minute lecture
   slot (four Parts; the former deep dive is Part 4, retimed 2026-11-12) and
@@ -117,12 +117,10 @@ Session mapping:
   optional), Showcase 2 17:40–18:00. Ch4 + Ch5 + R2 = 310 minutes (90 + 60 +
   160), against 320 before (80 + 60 + 180) with a 70-minute lunch; the R2 cut
   of 20 minutes pays for the 10 longer Ch4 and the 10 longer lunch.
-- Ch4 (90 minutes) pairs a 35-minute lecture with a Super Lab of about 61
-  required minutes by the lab page (TASK 00 3, 01 8, 02 12, 03 8, 04 8, 05 12,
-  07 6, 08 4; optional TASK 06 is 12 more), so the chapter runs about 95
-  minutes, about 5 over the slot and within the ±30-minute tolerance. If time
-  runs short, TASK 07–08 (mod control and the checklist, about 10 minutes)
-  slip to the start of Capstone Round 2.
+- Ch4 (90 minutes) is a 35-minute lecture (10:10–10:45) and a 55-minute Super
+  Lab (10:45–11:40). Timing measured on the lab fits the slot; if it runs
+  short, TASK 07–08 (mod control and the checklist) slip to the start of
+  Capstone Round 2. Optional TASK 06 is extra.
 - Ch5 (60 minutes, unchanged length) pairs about 21 minutes of lecture and
   demo with the 38-minute lab (TASK 01 5, 02 10, 03 8, 04 15), about 59
   minutes.
