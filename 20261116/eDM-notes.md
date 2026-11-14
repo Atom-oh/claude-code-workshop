@@ -107,10 +107,12 @@ Session mapping:
   slot (four Parts; the former deep dive is Part 4, retimed 2026-11-12) and
   the 60-minute lab slot (40 required lab-page minutes, optional TASK 05 7,
   about 13 minutes for questions).
-- Day 2 (retimed 2026-11-10): recap 10:00–10:10, Ch4 10:10–11:40 (90
-  minutes), lunch 11:40–13:00, Ch5 13:00–14:00 (60 minutes, lab TASK 01–04),
+- Day 2 (retimed 2026-11-10; split into lecture and lab cards 2026-11-14 like
+  Day 1, same outer slots): recap 10:00–10:10, Ch4 10:10–11:40 (lecture
+  10:10–10:45, lab 10:45–11:40), lunch 11:40–13:00, Ch5 13:00–14:00 (lecture
+  and demo 13:00–13:20, lab TASK 01–04 13:20–14:00),
   Capstone Round 2 14:00–16:40 (160 minutes, no break before it), break
-  16:40–16:50, Ch6 16:50–17:40 (lab TASK 01–03 as a participant lab:
+  16:40–16:50, Ch6 16:50–17:40 (lecture and demo 16:50–17:10, lab 17:10–17:40, TASK 01–03 as a participant lab:
   telemetry, gateway login and group policy, spend limit; TASK 04 is
   optional), Showcase 2 17:40–18:00. Ch4 + Ch5 + R2 = 310 minutes (90 + 60 +
   160), against 320 before (80 + 60 + 180) with a 70-minute lunch; the R2 cut

@@ -92,7 +92,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <p><strong>Claude Code Deep Dive Workshop, Chapter 6 - 조직의 비용 보고 통제하기 (FinOps) 실습</strong></p>
 </blockquote>
 <p>고객자산 분석 담당자의 연금상품 기획서는 Ch4에서 끝났고, Ch5에서 한 사람의 세션이 토큰을 덜 쓰게 만들었습니다. 이번에는 <strong>IT보안·플랫폼 담당자</strong>로 돌아와, 조직이 누가 무엇을 얼마나 썼는지 <strong>보고 막는</strong> 방법을 실습합니다. 핵심은 이 환경에 함께 배포된 <strong>Claude Apps Gateway</strong>에 직접 로그인해 그룹별 모델 허용 목록과 지출 한도를 체험하는 것입니다.</p>
-<p>소요 시간 <strong>30분 내외 + 선택 10분</strong>, Task <strong>준비 + 3개 + 선택 1개</strong>, 기준 버전 <strong>Claude Code 2.1.290 이상</strong>, Update <strong>2026.11</strong></p>
+<p>Task <strong>준비 + 3개 + 선택 1개</strong>, 기준 버전 <strong>Claude Code 2.1.290 이상</strong>, Update <strong>2026.11</strong></p>
 <table>
 <thead>
 <tr>
@@ -119,7 +119,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 </tr>
 </tbody>
 </table>
-<h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
+<h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인</h2>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Ch5까지 마치지 못했다면, 먼저 catchup</strong></p>
 <p>앞 랩이 중간에 실패했거나 건너뛰었다면, 실행 중인 <code>claude</code>를 모두 종료한 뒤 아래 한 줄로 이 랩을 시작할 수 있는 상태를 맞추고 TASK 00 블록을 실행합니다. 앞 랩을 마쳤다면 건너뜁니다.</p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>catchup ch6</code></pre></div>
@@ -166,7 +166,7 @@ ls pseudo | head -4</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span>managed-settings에 이전 챕터 정책이 남아 있지 않고, 기본 모드(<code>use_bedrock_direct</code>)이며 <code>~/claude-lab/ch6</code>에 <code>pseudo</code> 링크가 있다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-01-텔레메트리는-어디로-가는가-6분">TASK 01 · 텔레메트리는 어디로 가는가 (6분)</h2>
+<h2 id="task-01-텔레메트리는-어디로-가는가-6분">TASK 01 · 텔레메트리는 어디로 가는가</h2>
 <p>이 환경의 Claude Code는 OpenTelemetry로 사용량을 같은 PC의 Collector(<code>127.0.0.1:4318</code>)에 보내고, Collector가 내 계정 CloudWatch와 워크샵 중앙 대시보드로 내보냅니다.</p>
 <p>아래 그림은 사용량 데이터가 Claude Code에서 대시보드까지 가는 길입니다. 아래 블록은 그 길의 각 지점이 설정되어 있는지 확인합니다.</p>
 <figure class="viz" data-viz="telemetry-path">
@@ -199,7 +199,7 @@ sudo grep -n &#x27;exporters: \[&#x27; /etc/otelcol/config.yaml</code></pre></di
 <li class="check"><label><input type="checkbox"> <span>otelcol이 active이고 프롬프트 삭제 규칙을 찾았다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-02-apps-gateway-로그인과-그룹별-모델-정책-12분">TASK 02 · Apps Gateway 로그인과 그룹별 모델 정책 (12분)</h2>
+<h2 id="task-02-apps-gateway-로그인과-그룹별-모델-정책-12분">TASK 02 · Apps Gateway 로그인과 그룹별 모델 정책</h2>
 <p>Ch2 Lab 1 TASK 06에서 bob으로 그룹 모델 정책을 봤습니다. 이번에는 자산분석팀의 alice와 타 부서의 bob을 비교하고 지출 한도까지 다룹니다. 같은 VPC의 <strong>Claude Apps Gateway</strong>를 거치도록 바꿉니다. 게이트웨이는 사내 IdP(이 랩에서는 Cognito)로 사용자를 식별하고, 그룹별로 모델과 지출 한도를 적용한 뒤 Bedrock을 대신 호출합니다.</p>
 <table>
 <thead>
@@ -324,7 +324,7 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span><code>/usage</code>에 Spend limit 막대가 보인다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-03-관리자가-되어-지출-한도-걸기-10분">TASK 03 · 관리자가 되어 지출 한도 걸기 (10분)</h2>
+<h2 id="task-03-관리자가-되어-지출-한도-걸기-10분">TASK 03 · 관리자가 되어 지출 한도 걸기</h2>
 <p>두 번째 터미널을 열어(code-server 터미널 패널의 <strong>+</strong>) 관리자 역할을 합니다. 게이트웨이 Admin API는 VPC 안에서만 열려 있고, 이 랩의 키는 고정값입니다.</p>
 <h3 id="step-1-현재-적용-한도-조회">Step 1 · 현재 적용 한도 조회</h3>
 <p><strong>Terminal 2, 전체 복사</strong></p>
@@ -426,7 +426,7 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span><code>use_bedrock_direct</code>로 기본 모드에 돌아왔다</span></label></li>
 </ul></div></div>
 
-<h2 id="선택-task-04-계약-단가로-비용-표시하기-10분">선택 TASK 04 · 계약 단가로 비용 표시하기 (10분)</h2>
+<h2 id="선택-task-04-계약-단가로-비용-표시하기-10분">선택 TASK 04 · 계약 단가로 비용 표시하기</h2>
 <p><code>/usage</code>와 OTel의 비용은 목록가 기준 <strong>추정치</strong>입니다. 조직의 할인율을 반영해 보여 주려면 managed settings의 <code>modelPricing</code>을 씁니다. 기본 모드(<code>use_bedrock_direct</code>)에서 진행합니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>M=/etc/claude-code/managed-settings.json
@@ -491,7 +491,7 @@ cd ~/claude-lab/ch6 &amp;&amp; claude</code></pre></div>
 <ul>
 <li>이전: <a href="ClaudeCode_Ch5_HandsOnLab.html">Ch5. 비용 효율적으로 쓰기</a></li>
 <li>다음: <a href="index.html#capstones">Capstone</a></li>
-</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch5_HandsOnLab.html"><small>이전</small>Ch5. 비용 효율적으로 쓰기</a><a class="next" href="index.html#capstones"><small>다음</small>Capstone</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-텔레메트리는-어디로-가는가-6분">TASK 01 · 텔레메트리는 어디로 가는가 (6분)</a></li><li><a href="#task-02-apps-gateway-로그인과-그룹별-모델-정책-12분">TASK 02 · Apps Gateway 로그인과 그룹별 모델 정책 (12분)</a></li><li><a href="#task-03-관리자가-되어-지출-한도-걸기-10분">TASK 03 · 관리자가 되어 지출 한도 걸기 (10분)</a></li><li><a href="#선택-task-04-계약-단가로-비용-표시하기-10분">선택 TASK 04 · 계약 단가로 비용 표시하기 (10분)</a></li><li><a href="#마무리-finops-체크리스트">마무리, FinOps 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch5_HandsOnLab.html"><small>이전</small>Ch5. 비용 효율적으로 쓰기</a><a class="next" href="index.html#capstones"><small>다음</small>Capstone</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인</a></li><li><a href="#task-01-텔레메트리는-어디로-가는가-6분">TASK 01 · 텔레메트리는 어디로 가는가</a></li><li><a href="#task-02-apps-gateway-로그인과-그룹별-모델-정책-12분">TASK 02 · Apps Gateway 로그인과 그룹별 모델 정책</a></li><li><a href="#task-03-관리자가-되어-지출-한도-걸기-10분">TASK 03 · 관리자가 되어 지출 한도 걸기</a></li><li><a href="#선택-task-04-계약-단가로-비용-표시하기-10분">선택 TASK 04 · 계약 단가로 비용 표시하기</a></li><li><a href="#마무리-finops-체크리스트">마무리, FinOps 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;
