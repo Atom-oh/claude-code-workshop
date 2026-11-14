@@ -1128,7 +1128,7 @@
     nodes: [
       { id: "ec2", shape: "group", icon: "EC2-Instance", label: "ccb-endpoint (실습 PC)", x: 385, y: 225, w: 750, h: 380 },
       { id: "cc", shape: "note", label: "Claude Code\nenv의 OTEL_* 설정", x: 110, y: 150, w: 170, h: 60 },
-      { id: "attr", shape: "note", tone: "ok", label: "남는 것\nuser.email · team.id\n토큰 · 비용 지표", x: 110, y: 262, w: 170, h: 74, appear: 1 },
+      { id: "attr", shape: "note", tone: "ok", label: "남는 것\nuser.email · team\n토큰 · 비용 지표", x: 110, y: 262, w: 170, h: 74, appear: 1 },
       { id: "drop", shape: "note", tone: "err", label: "scrub_logs가 지우는 것\n프롬프트 본문", x: 110, y: 362, w: 170, h: 54, appear: 3 },
       { id: "col", shape: "group", label: "otelcol (같은 PC의 Collector)", x: 505, y: 235, w: 440, h: 330, appear: 2 },
       { id: "recv", shape: "note", label: "수신 127.0.0.1:4317 (gRPC)", x: 505, y: 150, w: 380, h: 46, appear: 2 },
@@ -1146,10 +1146,10 @@
     ],
     steps: [
       { cmd: "OTel 설정",
-        caption: "이 PC의 Claude Code는 ~/.claude/settings.json의 env에 있는 TELEMETRY, OTEL_ 값으로 사용량을 OpenTelemetry(OTel)로 내보냅니다. OTEL_RESOURCE_ATTRIBUTES의 user.email, team.id가 대시보드에서 사람과 팀별로 묶는 키입니다.",
+        caption: "이 PC의 Claude Code는 ~/.claude/settings.json의 env에 있는 TELEMETRY, OTEL_ 값으로 사용량을 OpenTelemetry(OTel)로 내보냅니다. OTEL_RESOURCE_ATTRIBUTES의 user.email, team.id가 사람과 팀을 나타냅니다.",
         on: ["cc", "attr"] },
       { cmd: "Collector가 받음",
-        caption: "사용량은 같은 PC에서 도는 Collector(otelcol, 127.0.0.1:4317)가 받습니다. systemctl is-active로 otelcol이 active인지 확인합니다.",
+        caption: "사용량은 같은 PC에서 도는 Collector(otelcol, 127.0.0.1:4317)가 받고, team.id를 대시보드가 쓰는 team으로 바꿉니다. systemctl is-active로 otelcol이 active인지 확인합니다.",
         on: ["cc", "e-cc", "recv", "col", "ec2"], flow: { edge: "e-cc", token: "사용량 · 이벤트" } },
       { cmd: "scrub_logs",
         caption: "scrub_logs가 이벤트 로그에서 프롬프트 본문을 삭제한 뒤 다음으로 넘깁니다. 비용은 보되 내용은 남기지 않는 DLP 설정입니다.",
@@ -1158,7 +1158,7 @@
         caption: "exporters가 내 계정의 CloudWatch와 워크샵 중앙 대시보드로 내보냅니다. exporters에 clickhouse가 보이면 중앙 대시보드로도 이중 전송 중입니다.",
         on: ["scrub", "e-se", "exp", "e-cw", "cw", "e-dash", "dash", "col"], flow: { edge: "e-cw", token: "지표 · 로그" } },
       { cmd: "대시보드에서 보기",
-        caption: "대시보드는 user.email, team.id로 사람과 팀별로 묶어 claude_code.token.usage, claude_code.cost.usage 같은 지표를 보여 줍니다. 프롬프트 본문은 이미 지워진 뒤라 대시보드에 남지 않습니다.",
+        caption: "대시보드는 user.email, team으로 사람과 팀별로 묶어 claude_code.token.usage, claude_code.cost.usage 같은 지표를 보여 줍니다. 프롬프트 본문은 이미 지워진 뒤라 대시보드에 남지 않습니다.",
         on: ["attr", "cw", "dash", "drop"] }
     ]
   });
