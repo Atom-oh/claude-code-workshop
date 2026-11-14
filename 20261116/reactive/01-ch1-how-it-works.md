@@ -1055,7 +1055,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
       <div class="ev"><span class="tm">03</span><span class="nm">Ch6 조직의 비용</span></div>
     </div>
   </div>
-  <p class="cap">세부 시간은 초대 메일(eDM)을 확인해 주세요. 매일 오후에는 Capstone 라운드가 이어집니다.</p>
+  <p class="cap">세부 시간은 초대 메일(eDM)을 확인해 주세요. 매일 챕터 뒤에는 Capstone 라운드가 이어집니다.</p>
 </div>
 :::
 
@@ -1065,12 +1065,12 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 [요약]
 • Day 1: Ch1, Ch2 Bedrock 위에서 안전하게 쓰기, 통합 랩(Preflight, Ch1 Lab, Ch2 Lab 1과 Lab 2), Ch3 Subagent와 Lab 순서
 • Day 2: Ch4 Claude Code 확장하기, Ch5 비용 효율적으로 쓰기, Ch6 조직의 비용 보고 통제하기 순서
-• 매일 오후 Capstone 라운드
+• 매일 챕터 뒤 Capstone 라운드
 
 이틀의 흐름을 보시면, Day 1은 개인의 도구를 조직이 통제하는 단계까지 갑니다. Day 2는 팀의 플랫폼으로 확장하고 비용을 측정하는 단계까지 가고요.
 {cue: demo}
 왼쪽부터 보면, 지금 하는 Ch1에 이어 Ch2에서 Bedrock 위에서 안전하게 쓰는 법을 볼 거예요. 점심 뒤에는 Ch2 Lab 두 개로 정책과 DLP를 직접 해 보고, 그다음 Ch3 Subagent가 이어집니다.
-내일은 Ch4 Claude Code 확장하기로 시작해서 Ch5 비용 효율적으로 쓰기, Ch6 조직의 비용 보고 통제하기로 이어져요. 매일 오후에는 Capstone 라운드가 있습니다.
+내일은 Ch4 Claude Code 확장하기로 시작해서 Ch5 비용 효율적으로 쓰기, Ch6 조직의 비용 보고 통제하기로 이어져요. 매일 챕터 뒤에는 Capstone 라운드가 있습니다.
 
 [출처]
 • 원본 Ch1 강의자료 p25 순서. 세부 시간은 eDM에서만 안내
