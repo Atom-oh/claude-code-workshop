@@ -76,8 +76,12 @@
     const root = typeof sel === 'string' ? D(sel) : sel;
     if (!root || !STEPS || !STEPS.length) return;
     opt = opt || {};
+    /* opt.static: a still diagram. Steps stay (presenter-paced with ↓ ↑ and the buttons), but
+       nothing moves on its own: no packets and no flowing edges (fsi.css .sv-static). */
+    const STATIC = !!opt.static;
     const W = opt.w || 1180, H = opt.h || 470;
     root.classList.add('sv');
+    if (STATIC) root.classList.add('sv-static');
     root.innerHTML =
       '<div class="sv-main">' +
         '<div class="sv-head"><span class="sv-kicker"></span><span class="sv-title"></span></div>' +
@@ -177,7 +181,7 @@
       });
 
       P.innerHTML = '';
-      pkts = paths.filter(x => !x.e.dash && x.e.pkt !== false).map(({ p, e, i }) => {
+      pkts = paths.filter(x => !STATIC && !x.e.dash && x.e.pkt !== false).map(({ p, e, i }) => {
         const g = svgEl('g', { class: 'sv-pkt' });
         const c = svgEl('circle', { r: 8 }); c.style.fill = col(e.c || 'accent'); g.appendChild(c);
         P.appendChild(g);
@@ -226,7 +230,9 @@
     }
     bindKeys(root, {
       down: () => { if (step < STEPS.length - 1) { go(step + 1); return true; } return false; },
-      up: () => { if (step > 0) { go(step - 1); return true; } return false; }
+      up: () => { if (step > 0) { go(step - 1); return true; } return false; },
+      // an OVERVIEW first step counts as 0, so the count matches the STEP n labels
+      state: () => { const b = /overview/i.test(STEPS[0].kicker || '') ? 0 : 1; return { cur: step + b, total: STEPS.length - 1 + b }; }
     });
     onEnter(root, () => go(0));
     go(0); requestAnimationFrame(tick);
@@ -256,7 +262,8 @@
     items.forEach((it, i) => { it.addEventListener('click', () => show(cur === i && opts.toggle ? -1 : i)); });
     bindKeys(group, {
       down: () => { if (cur < items.length - 1) { show(cur + 1); return true; } return false; },
-      up: () => { if (cur > 0) { show(cur - 1); return true; } if (cur === 0) { show(-1); return true; } return false; }
+      up: () => { if (cur > 0) { show(cur - 1); return true; } if (cur === 0) { show(-1); return true; } return false; },
+      state: () => ({ cur: cur + 2, total: items.length + 1 })
     });
     onEnter(group, () => show(opts.start != null ? opts.start : -1));
     show(opts.start != null ? opts.start : -1);
@@ -290,7 +297,8 @@
     el.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => set(true)));
     bindKeys(el, {
       down: () => { if (!el.classList.contains('revealed')) { set(true); return true; } return false; },
-      up: () => { if (el.classList.contains('revealed')) { set(false); return true; } return false; }
+      up: () => { if (el.classList.contains('revealed')) { set(false); return true; } return false; },
+      state: () => ({ cur: el.classList.contains('revealed') ? 2 : 1, total: 2 })
     });
     onEnter(el, () => set(false));
   }
@@ -303,7 +311,8 @@
     el.querySelectorAll('[data-cycle]').forEach(b => b.addEventListener('click', () => go(i + 1)));
     bindKeys(el, {
       down: () => { if (i < n - 1) { go(i + 1); return true; } return false; },
-      up: () => { if (i > 0) { go(i - 1); return true; } return false; }
+      up: () => { if (i > 0) { go(i - 1); return true; } return false; },
+      state: () => ({ cur: i + 1, total: n })
     });
     onEnter(el, () => go(0));
     go(0);
