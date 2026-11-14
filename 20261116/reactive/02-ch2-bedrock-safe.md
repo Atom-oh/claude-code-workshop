@@ -41,6 +41,65 @@ window.__c3codepick = function (F, name, preId, lines, map) {
 
 이번 시간은 Chapter 2, Bedrock 위에서 안전하게 쓰기입니다. Bedrock에 어떻게 연결하고, 회사 정책을 어떻게 내려보내고, 무엇을 못 하게 막을지까지 볼 거예요.
 오늘은 핵심 기능만 쉽게 훑고요, 자세한 설정은 실습에서 직접 해 보겠습니다.
+
+{cue: transition}
+순서 보기 전에, 사전 설문 결과부터 잠깐 볼게요.
+:::
+---
+<!-- Slide 2: Pre-survey opening -->
+@type: content
+@fit: off
+
+## 셋 중 하나가 고른 주제, 안전하게 쓰기
+사전 설문 결과로 정한 이 챕터의 목표
+
+:::html
+<div class="fsi fsi-survey c2-survey">
+  <div class="sv-big">
+    <span class="eyebrow">PRE-SURVEY</span>
+    <div class="num"><span id="c2-survey-num">51명</span></div>
+    <p class="lead">참가 확정자 <b>142명 중 51명</b>이 망분리와 보안(폐쇄망 운영, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>, 감사 로그)을 기대 주제로 골랐습니다.</p>
+    <p class="why">그런데 지금 Bedrock으로 쓰는 분은 17명입니다. 그래서 Bedrock에 닿는 길부터 그림으로 보고, 정책 배포와 가드레일로 넘어갑니다.</p>
+  </div>
+  <div class="bars" id="c2-survey-bars">
+    <div class="bar lo" data-v="51"><span class="lb">망분리, 보안</span><span class="tr"><i></i></span><span class="v">51명</span></div>
+    <div class="bar" data-v="60"><span class="lb">팀 표준화 (설정, 권한, 훅)</span><span class="tr"><i></i></span><span class="v">60명</span></div>
+    <div class="bar" data-v="45"><span class="lb">규제, 감사 대응</span><span class="tr"><i></i></span><span class="v">45명</span></div>
+    <div class="bar" data-v="28"><span class="lb">Admin Setup (IAM, SSO, 관리형 정책)</span><span class="tr"><i></i></span><span class="v">28명</span></div>
+    <div class="bar" data-v="17"><span class="lb">지금 Bedrock으로 사용 중</span><span class="tr"><i></i></span><span class="v">17명</span></div>
+    <p class="cap">기대 주제는 복수 선택, 막대 길이는 응답 인원</p>
+  </div>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var host = document.querySelector('.slide-deck #c2-survey-bars') || document.getElementById('c2-survey-bars');
+  var bars = Array.prototype.slice.call(host.querySelectorAll('.bar'));
+  function grow(on) { bars.forEach(function (b, i) { var w = on ? (b.dataset.v / 60 * 100) : 0; setTimeout(function () { b.querySelector('i').style.width = w + '%'; }, on ? 120 * i : 0); }); }
+  F.countUp('#c2-survey-num', 51, { decimals: 0, suffix: '명' });
+  F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
+  grow(true);
+});
+:::
+
+:::notes
+{timing: 1.5min}
+[요약]
+• 참가 확정자 142명 중 51명이 망분리와 보안(폐쇄망 운영, DLP, 감사 로그)을 기대 주제로 선택
+• 팀 표준화 60명, 규제와 감사 대응 45명, Admin Setup(IAM, SSO, 관리형 정책) 28명 (복수 선택)
+• 지금 Bedrock으로 쓰는 분은 17명이라, Bedrock에 닿는 길부터 그림으로 시작
+
+{cue: pause}
+사전 설문에서 142분 중 51분, 셋 중 한 분꼴로 망분리와 보안을 기대 주제로 골라 주셨어요. 폐쇄망 운영, DLP, 감사 로그요.
+팀 표준화가 60분, 규제와 감사 대응이 45분, IAM과 SSO 같은 Admin Setup이 28분이었고요.
+그런데 지금 Bedrock으로 쓰고 계신 분은 17분이에요. 그래서 오늘은 Bedrock에 어떻게 닿는지부터 그림으로 보고, 정책을 파일로 내려보내는 법, 그리고 무엇을 앞에서 막는지까지 이어 가겠습니다.
+
+[출처]
+• 이번 워크숍 사전 설문, 참가 확정자 142명, 복수 선택 (2026-11-14 집계)
+
+{cue: transition}
+그럼 순서부터 볼게요.
 :::
 ---
 <!-- Slide 2: Agenda -->

@@ -175,3 +175,7 @@
 .fs-prog { height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; margin-top: auto; }
 .fs-prog i { display: block; height: 100%; width: 0; background: var(--accent); }
 .fs-hint { font-size: var(--fs-caption); color: var(--text-muted); }
+
+/* Ch2 opening survey (five bars) */
+.c2-survey .bars { display: flex; flex-direction: column; gap: var(--space-3); }
+.c2-survey .bar { grid-template-columns: 17rem minmax(0, 1fr) 4.5rem; }
