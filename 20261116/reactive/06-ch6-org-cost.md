@@ -208,12 +208,10 @@ Console은 Workspace limit과 Analytics API로
 • 계측을 설치해야 보이고, 설치하지 않은 사람은 잡히지 않음
 
 {cue: pause}
-화면의 Analytics는 Claude 조직 Analytics입니다.
-Bedrock에는 이 대시보드가 없습니다.
-AWS의 관측 도구와는 구분하시면 됩니다.
-사람별 사용량은 별도 계측이 필요하며,
-설정 누락이나 연결 장애가 있으면 빠질 수 있습니다.
-그래서 OTel로 직접 계측합니다. 먼저 요청 하나가 어떻게 숫자가 되는지 볼게요.
+Bedrock에서 누가 얼마나 썼는지 보려면 별도 계측이 필요합니다.
+Claude 조직 Analytics는 제공되지 않습니다. AWS 비용 조회와 구분하시면 됩니다.
+계측 누락이나 수집 장애가 있으면 사용량이 빠질 수 있습니다.
+OTel로 기록을 모읍니다. 다음 화면에서 요청이 숫자가 되는 과정을 볼게요.
 :::
 ---
 <!-- Slide 7: Prompt to dashboard scene -->
