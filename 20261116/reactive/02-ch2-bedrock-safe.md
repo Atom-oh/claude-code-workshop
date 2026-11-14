@@ -280,7 +280,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 • 응답도 같은 길로, 공용 인터넷을 지나지 않음
 
 {cue: demo}
-장면을 누를 때마다 한 단계씩 넘어가요. 사내망에 있는 개발자 PC에서 요청 하나가 Bedrock까지 어떻게 가는지, 구간마다 가까이 가서 볼게요.
+사내망에 있는 개발자 PC에서 요청 하나가 Bedrock까지 어떻게 가는지, 구간마다 가까이 가서 볼게요.
 먼저 Claude Code가 Bedrock 모드로 요청을 만들고, SSO로 받은 임시 자격증명으로 서명합니다. PC에 오래 쓰는 키는 없어요.
 그런데 PrivateLink가 없으면 어떻게 될까요? Anthropic API, 1P를 바로 쓰면 요청은 인터넷을 지나 api.anthropic.com으로 갑니다. Bedrock을 쓰더라도 VPC 엔드포인트가 없으면 Bedrock 공용 엔드포인트로, 역시 인터넷 구간을 지나요.
 망분리 환경에서는 이 두 길이 모두 방화벽에서 막힙니다. 업데이트나 오류 리포트 같은 부가 통신도 환경변수 하나로 끕니다. 그래서 인터넷 없이 닿는 길이 필요해요.
@@ -653,7 +653,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-key', {
 • 만료되면 Claude Code가 GetCallerIdentity로 확인한 뒤 awsAuthRefresh(aws sso login)를 실행하고 요청을 다시 보냄
 
 {cue: demo}
-이 장면도 누를 때마다 한 단계씩 넘어가요. 위쪽은 키를 나눠 줬을 때, 아래쪽은 SSO로 로그인했을 때입니다.
+위쪽은 키를 나눠 줬을 때, 아래쪽은 SSO로 로그인했을 때입니다.
 먼저 위쪽이요. aws configure로 넣은 IAM 사용자 액세스 키는 누가 지우기 전까지 계속 유효합니다. 그런데 설정을 도와주다가 이 키를 메신저에 붙여 넣거나, .env 파일을 실수로 커밋하면 키가 회사 밖으로 나가요.
 그러면 키를 가진 누구든 다른 PC에서 같은 권한으로 Bedrock을 부를 수 있습니다. 키에는 만료가 없거든요.
 {cue: pause}
@@ -1206,7 +1206,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 • Claude Code는 시작할 때 읽고 파일이 바뀌면 다시 읽음. 개인 설정의 allow로는 managed deny를 풀 수 없음
 
 {cue: demo}
-이 장면도 누를 때마다 한 단계씩 넘어가요. 왼쪽이 인프라 팀, 오른쪽이 전 직원의 개발자 PC입니다.
+왼쪽이 인프라 팀, 오른쪽이 전 직원의 개발자 PC입니다.
 먼저 인프라 엔지니어가 정책 파일 한 장을 씁니다. 여기서는 원본 고객 데이터, raw 폴더 읽기 금지를 예로 들었어요.
 위쪽 claude.ai 콘솔에서 내려오는 서버 관리 설정은 Team, Enterprise 플랜용이에요. 그리고 CLAUDE_CODE_USE_BEDROCK을 켜면 Claude Code가 이 길을 아예 건너뜁니다. 그래서 Bedrock에서는 파일과 MDM을 씁니다.
 Jamf, Intune, GPO 같은 MDM은 plist나 레지스트리로, Ansible 같은 배포 도구는 파일 복사로 모든 PC에 같은 정책을 내려보내요.
@@ -1305,7 +1305,7 @@ Claude Code는 시작할 때 이 파일을 읽고, 파일이 바뀌면 다시 �
 {cue: demo}
 같은 키가 여러 파일에 있으면 어느 값이 이길까요? 예로 세션 기록을 며칠 남길지 정하는 cleanupPeriodDays를 다섯 층에 모두 적어 봤어요.
 값은 층마다 다르지만 적용되는 건 하나, 맨 위 Managed의 14일입니다. 관리자가 Managed에 두면 아래 어떤 층도 덮어쓰지 못해요.
-아래 화살표로 위에서부터 하나씩 빼 볼게요. Managed를 빼면 --settings로 준 CLI 인자가 이깁니다. 이건 이번 세션에만 쓰여요.
+위에서부터 하나씩 빼 볼게요. Managed를 빼면 --settings로 준 CLI 인자가 이깁니다. 이건 이번 세션에만 쓰여요.
 그것도 빼면 개인 Local, 그다음이 팀이 커밋한 Project, 마지막이 User예요. 어디에도 없으면 기본값 30일이고요.
 마지막 장이 중요합니다. deny 같은 목록 키는 하나를 고르지 않고 모든 층을 합쳐요. 그래서 개인이 빈 목록을 적어도 조직의 deny는 남습니다. 단, managed의 availableModels는 합치지 않고 그 목록 그대로 씁니다.
 
@@ -1992,7 +1992,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-layers', {
 • 랩의 층 번호(1 권한 규칙, 2 샌드박스, 3 훅, 4 Guardrails, 5 반출 채널)는 종류 번호, 실제 검사는 훅이 먼저
 
 {cue: demo}
-이 장면도 누를 때마다 한 단계씩 넘어가요. 개발자가 공간 좀 정리해 달라고만 했는데, Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황입니다.
+개발자가 공간 좀 정리해 달라고만 했는데, Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황입니다.
 도구가 실행되기 직전에 가장 먼저 도는 건 PreToolUse 훅이에요. 우리 DLP 훅은 주민번호 같은 패턴만 보니까 이 명령은 통과시킵니다. 훅은 적어 둔 것만 잡아요.
 그다음이 권한 규칙이에요. managed에 deny Bash rm -rf 별표가 있으니 여기서 즉시 거부됩니다.
 {cue: pause}
