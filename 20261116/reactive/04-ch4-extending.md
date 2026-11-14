@@ -83,7 +83,7 @@ AWS Korea
 :::
 
 ---
-<!-- Slide 2: Agenda (PDF p2) -->
+<!-- Slide 3: Agenda (PDF p3) -->
 @type: content
 @fit: off
 

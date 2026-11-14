@@ -159,6 +159,11 @@ class CheckLabsTest(unittest.TestCase):
         in_code = base.replace("</body>", "<pre>echo 5분 실습</pre></body>")
         self.assertEqual(self.run_check(full_set(**{name: in_code})), [])
 
+    def test_finance_terms_in_headings_are_not_minutes(self):
+        name = "ClaudeCode_Ch5_HandsOnLab.html"
+        body = "<h2>TASK 01 · 1분기 거래와 소득 5분위</h2>"
+        self.assertEqual(self.run_check(full_set(**{name: full_set()[name].replace("</body>", body + "</body>")})), [])
+
     def test_operational_minutes_in_prose_are_fine(self):
         name = "ClaudeCode_Ch5_HandsOnLab.html"
         body = "<h2>TASK 01 · 캐시</h2><p>캐시 수명(TTL)은 5분입니다. 2~3분 뒤 새로고침합니다.</p>"

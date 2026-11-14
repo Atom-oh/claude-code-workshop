@@ -49,7 +49,7 @@ S3_CP_VAR_RE = re.compile(r"\baws s3 cp\s+(?:--?[\w-]+\s+)*[\"']?\$\{?KIT\}?[\"'
 # states no minutes in its TASK/CHECK headings and has no "소요 시간" line.
 PAT_RE = re.compile(r"PAT='([^']*)'")
 H2_RE = re.compile(r"<h2\b[^>]*>(.*?)</h2>", re.S)
-STATED_MINUTES_RE = re.compile(r"\d+\s*분")  # any minutes in a TASK/CHECK heading
+STATED_MINUTES_RE = re.compile(r"\d+\s*분(?![기위할석류])")  # minutes, not 1분기 / 5분위 / 2분할
 # Session-length prose outside code: "55분 실습 세션", "7분 프리플라이트", "20분 랩".
 SESSION_PROSE_RE = re.compile(r"\d+\s*분\s*(?:짜리\s*)?(?:실습|프리플라이트|세션|랩)")
 CODE_RE = re.compile(r"<(pre|code)\b.*?</\1>", re.S)

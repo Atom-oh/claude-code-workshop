@@ -118,8 +118,10 @@ Session mapping:
   160), against 320 before (80 + 60 + 180) with a 70-minute lunch; the R2 cut
   of 20 minutes pays for the 10 longer Ch4 and the 10 longer lunch.
 - Ch4 (90 minutes) is a 35-minute lecture (10:10–10:45) and a 55-minute Super
-  Lab (10:45–11:40). Timing measured on the lab fits the slot; if it runs
-  short, TASK 07–08 (mod control and the checklist) slip to the start of
+  Lab (10:45–11:40). The workshop owner timed the labs on 2026-11-14 and
+  confirmed the eDM slots hold, so the lab pages no longer state minutes; the
+  older facilitator estimate was about 61 required minutes for this lab. If it
+  runs short, TASK 07–08 (mod control and the checklist) slip to the start of
   Capstone Round 2. Optional TASK 06 is extra.
 - Ch5 (60 minutes, unchanged length) pairs about 21 minutes of lecture and
   demo with the 38-minute lab (TASK 01 5, 02 10, 03 8, 04 15), about 59
