@@ -15,34 +15,26 @@ are generated output, so never edit them by hand.
 
 ## Presenter shortcuts
 
-Every shortcut is a single key, with no Option chord. Compiler 3.0.10 and later do this
-natively; `assets/deck-keys.js` (loaded by `stepviz.js`) then only adds the Korean jamo
-(ㅜ, ㅎ) for N and G. On older compilers it patches the framework at run time.
+| Key | Action |
+| --- | --- |
+| N | Presenter view with notes |
+| G | Slide overview |
+| P / O / I / U / Y | Laser, pen, highlighter, eraser, magnifier; Esc leaves pen mode |
+| 1-3 / 4-9 | Stroke size / colour; zoom in the magnifier |
+| C | Clear this slide's drawing |
+| H | Hide or show the current slide (also the sidebar eye, the presenter's Hide slide button, and right-click on a thumbnail) |
+| F, S, T, / | Fullscreen, sidebar, theme, search |
+
+These are the compiler's native keys (3.0.10 and later). The pen keys work in the presenter
+window too. N and G also accept the Korean jamo (ㅜ, ㅎ), added by `assets/deck-keys.js`.
+Hidden slides are skipped by the arrows and Space but stay reachable from the sidebar,
+overview, search and `#N`; they are stored per deck in localStorage (`rp-hidden:<page path>`),
+and `assets/hide-slides.js` adds the right-click menu and the on-slide badge.
 
 The presenter view (N) can edit a slide's notes: **Edit notes** or double-click the notes,
 Ctrl+Enter saves, Esc cancels, **Reset to original** restores the authored text. Edits stay in
 that browser's localStorage (`rp-notes:<page path>`), keyed by slide position, so they are not
 written back to the `.md`: copy lasting changes into the source.
-
-| Key | Action |
-| --- | --- |
-| N | Presenter view with notes (was P) |
-| G | Slide overview (was O) |
-| P / O / I / U / Y | Laser, pen, highlighter, eraser, magnifier (was Option+key); Esc leaves pen mode |
-| 1-3 / 4-9 | While the pen is on: stroke size / colour; zoom 1-3 in the magnifier (was Option+digit) |
-| C | While the pen is on: clear this slide's drawing (was Option+T) |
-| F, S, H, T, / | Fullscreen, sidebar, hide slide, theme, search (unchanged) |
-
-Option chords still work. In the presenter window the pen keys, 1-9 and C work (they drive
-the same pen); its other keys are the presenter view's own navigation. N and G also accept the
-Korean jamo (ㅜ, ㅎ); the pen keys match the physical key, so they work with any input method.
-If a compiler update breaks either patch, the single-key pen shortcuts turn off and P and O keep
-their old framework meaning (presenter view, overview); the browser console shows a `[deck-keys]`
-warning naming what is missing.
-
-The Ch3 deck loads `assets/ch4.css`, and Ch4 loads `ch5.css`. The style files
-kept the pre-renumbering chapter names (see the chapter table in
-`AGENTS.md`).
 
 ## 1. Install the compiler (once)
 

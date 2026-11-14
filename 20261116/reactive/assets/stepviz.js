@@ -231,8 +231,8 @@
     bindKeys(root, {
       down: () => { if (step < STEPS.length - 1) { go(step + 1); return true; } return false; },
       up: () => { if (step > 0) { go(step - 1); return true; } return false; },
-      // an OVERVIEW first step counts as 0, so the count matches the STEP n labels
-      state: () => { const b = /overview/i.test(STEPS[0].kicker || '') ? 0 : 1; return { cur: step + b, total: STEPS.length - 1 + b }; }
+      // presses made / presses left on this slide (an OVERVIEW first step is 0, matching STEP n)
+      state: () => ({ cur: step, total: STEPS.length - 1 })
     });
     onEnter(root, () => go(0));
     go(0); requestAnimationFrame(tick);
@@ -263,7 +263,7 @@
     bindKeys(group, {
       down: () => { if (cur < items.length - 1) { show(cur + 1); return true; } return false; },
       up: () => { if (cur > 0) { show(cur - 1); return true; } if (cur === 0) { show(-1); return true; } return false; },
-      state: () => ({ cur: cur + 1, total: items.length })
+      state: () => { const s0 = opts.start != null ? opts.start : -1; return { cur: cur - s0, total: items.length - 1 - s0 }; }
     });
     onEnter(group, () => show(opts.start != null ? opts.start : -1));
     show(opts.start != null ? opts.start : -1);

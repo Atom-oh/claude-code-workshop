@@ -311,7 +311,8 @@ Subagent, Fork, 세션 분기를 git branch처럼 한 장에
   }
   F.bindKeys(host, {
     down: function () { if (k < 4) { render(k + 1); return true; } return false; },
-    up: function () { if (k > 0) { render(k - 1); return true; } return false; }
+    up: function () { if (k > 0) { render(k - 1); return true; } return false; },
+    state: function () { return { cur: k, total: 4 }; }
   });
   F.onEnter(host, function () { render(0); });
   host.querySelectorAll('tbody tr').forEach(function (tr) { tr.addEventListener('click', function () { render(+tr.dataset.k === k ? 0 : +tr.dataset.k); }); });

@@ -1098,7 +1098,8 @@ TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를
   items.forEach(function (it) { it.addEventListener('click', function () { it.classList.toggle('done'); upd(); }); });
   F.bindKeys(root, {
     down: function () { var n = items.filter(function (x) { return x.classList.contains('done'); }).length; if (n < items.length) { items[n].classList.add('done'); upd(); return true; } return false; },
-    up: function () { var d = items.filter(function (x) { return x.classList.contains('done'); }); if (d.length) { d[d.length - 1].classList.remove('done'); upd(); return true; } return false; }
+    up: function () { var d = items.filter(function (x) { return x.classList.contains('done'); }); if (d.length) { d[d.length - 1].classList.remove('done'); upd(); return true; } return false; },
+    state: function () { return { cur: items.filter(function (x) { return x.classList.contains('done'); }).length, total: items.length }; }
   });
   F.onEnter(root, function () { items.forEach(function (x) { x.classList.remove('done'); }); upd(); });
   upd();

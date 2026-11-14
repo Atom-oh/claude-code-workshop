@@ -319,7 +319,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 <div class="fsi c2-air8">
   <div class="fsi-grid-4">
     <div class="pick"><span class="k">모델 호출</span><span class="t">Bedrock Runtime VPC 엔드포인트</span><span class="d">PrivateLink로 계정 안에서 추론 (앞 장의 길)</span></div>
-    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인 (OIDC: 로그인 토큰 표준, STS: 임시 자격증명 발급)</span></div>
+    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인 (OIDC: 로그인(인증) 표준, STS: 임시 자격증명 발급)</span></div>
     <div class="pick"><span class="k">사내 프록시</span><span class="t">HTTPS_PROXY, NO_PROXY</span><span class="d">프록시를 거쳐야 하는 경우</span></div>
     <div class="pick"><span class="k">사내 인증서</span><span class="t">NODE_EXTRA_CA_CERTS</span><span class="d">프록시가 TLS(HTTPS 암호화)를 다시 서명할 때</span></div>
     <div class="pick"><span class="k">외부 통신 끄기</span><span class="t">CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</span><span class="d">자동 업데이트, 오류 리포트 등을 한 번에</span></div>

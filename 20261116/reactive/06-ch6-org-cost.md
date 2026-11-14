@@ -487,7 +487,7 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 
 {cue: demo}
 이제 막는 쪽으로 갈게요. Claude Apps Gateway는 Bedrock 앞단에 직접 운영하는 게이트웨이예요. claude 바이너리에 들어 있습니다.↓
-공식 AWS 예제 구성을 하나씩 보면요. 개발자는 /login으로 디바이스 인증을 하고 그룹 정책을 받습니다.↓ 중간에는 internal ALB와 Route 53 사설 존이 있어요.↓ 게이트웨이는 ECS Fargate와 RDS PostgreSQL, OIDC IdP로 돕니다.↓ Bedrock은 IAM 역할 하나로 호출합니다.
+공식 AWS 예제 구성을 하나씩 보면요. 개발자는 /login으로 디바이스 인증을 하고 그룹 정책을 받습니다.↓ 중간에는 internal ALB와 Route 53 사설 존이 있어요.↓ 게이트웨이는 ECS Fargate와 RDS PostgreSQL, OIDC IdP 위에서 돌아가요.↓ Bedrock은 IAM 역할 하나로 호출합니다.
 여기서 꼭 기억하실 제약이 사설망 전용이라는 거예요. /login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만 통과합니다. 로그인 브라우저도 사설망 안에 있어야 해요.↓
 마지막은 이번 랩 구성입니다. 여러분 계정마다 VPC 안에 게이트웨이가 한 대씩 있고, alice와 bob, 두 사용자로 실습할 거예요.
 
@@ -544,7 +544,8 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
   function idx() { var v = +inp.value, k = 0; stops.forEach(function (s, i) { if (v >= s) k = i; }); return k; }
   F.bindKeys(inp, {
     down: function () { var i = idx(); if (+inp.value < stops[stops.length - 1]) { inp.value = stops[+inp.value < stops[i] ? i : Math.min(i + 1, stops.length - 1)]; draw(); return true; } return false; },
-    up: function () { var i = idx(); if (+inp.value > stops[0]) { inp.value = stops[+inp.value > stops[i] ? i : Math.max(i - 1, 0)]; draw(); return true; } return false; }
+    up: function () { var i = idx(); if (+inp.value > stops[0]) { inp.value = stops[+inp.value > stops[i] ? i : Math.max(i - 1, 0)]; draw(); return true; } return false; },
+    state: function () { return { cur: +inp.value >= stops[stops.length - 1] ? stops.length - 1 : idx(), total: stops.length - 1 }; }
   });
   inp.addEventListener('change', function () { inp.blur(); });
   draw();
