@@ -192,7 +192,7 @@ window.__c3codepick = function (F, name, preId, lines, map) {
     <div class="fs-checks"></div>
     <div class="fs-say"></div>
     <div class="fs-prog"><i></i></div>
-    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. IP와 이름은 예시 값</div>
+    <div class="fs-hint">누르면 멈춤과 재생, IP와 이름은 예시</div>
   </div>
 </div>
 :::
