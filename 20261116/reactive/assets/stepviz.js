@@ -263,7 +263,7 @@
     bindKeys(group, {
       down: () => { if (cur < items.length - 1) { show(cur + 1); return true; } return false; },
       up: () => { if (cur > 0) { show(cur - 1); return true; } if (cur === 0) { show(-1); return true; } return false; },
-      state: () => ({ cur: cur + 2, total: items.length + 1 })
+      state: () => ({ cur: cur + 1, total: items.length })
     });
     onEnter(group, () => show(opts.start != null ? opts.start : -1));
     show(opts.start != null ? opts.start : -1);
@@ -298,7 +298,7 @@
     bindKeys(el, {
       down: () => { if (!el.classList.contains('revealed')) { set(true); return true; } return false; },
       up: () => { if (el.classList.contains('revealed')) { set(false); return true; } return false; },
-      state: () => ({ cur: el.classList.contains('revealed') ? 2 : 1, total: 2 })
+      state: () => ({ cur: el.classList.contains('revealed') ? 1 : 0, total: 1 })
     });
     onEnter(el, () => set(false));
   }
@@ -312,7 +312,7 @@
     bindKeys(el, {
       down: () => { if (i < n - 1) { go(i + 1); return true; } return false; },
       up: () => { if (i > 0) { go(i - 1); return true; } return false; },
-      state: () => ({ cur: i + 1, total: n })
+      state: () => ({ cur: i, total: n - 1 })
     });
     onEnter(el, () => go(0));
     go(0);
