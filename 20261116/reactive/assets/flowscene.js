@@ -213,8 +213,10 @@ export function mount(sel, S) {
   // holds its end state; ArrowUp goes back. The scene opens on the full picture. mode: 'auto'
   // keeps the old continuous loop.
   const STEP = S.mode !== 'auto';
-  let clock = 0, paused = false, last = 0, idx = 0, phaseT = 0;
-  const go = n => { idx = Math.max(0, Math.min(PH.length - 1, n)); phaseT = 0; };
+  let clock = 0, paused = false, last = 0, idx = 0, phaseStart = 0, lastDraw = 0;
+  // A step change draws at once: the presenter view mirrors the live slide's DOM, and a deck
+  // window behind the presenter window may get no animation frames at all until it is focused.
+  const go = n => { idx = Math.max(0, Math.min(PH.length - 1, n)); phaseStart = performance.now(); draw(performance.now()); };
   stage.addEventListener('click', () => { if (STEP) go(idx < PH.length - 1 ? idx + 1 : 0); else paused = !paused; });
   if (STEP && window.FSI && window.FSI.bindKeys) {
     window.FSI.bindKeys(host, {
@@ -225,14 +227,18 @@ export function mount(sel, S) {
   const active = () => !slide || slide.classList.contains('active');
   document.addEventListener('rp:slidechange', () => { if (active()) { clock = 0; paused = false; go(0); } });
 
-  function frame(now) {
-    requestAnimationFrame(frame);
-    const dt = Math.min(0.05, last ? (now - last) / 1000 : 0); last = now;
+  function frame(now) { requestAnimationFrame(frame); draw(now); }
+  // Fallback when animation frames stop (occluded or background window): wall-clock timers.
+  setInterval(() => { if (performance.now() - lastDraw > 150) draw(performance.now()); }, 100);
+
+  function draw(now) {
+    // real elapsed time, so a sparse frame rate never slows the scene; dt feeds only the smoothing
+    const dt = Math.min(0.5, last ? Math.max(0, now - last) / 1000 : 0); last = now; lastDraw = now;
     if (!active()) return;
     // the slide may have been hidden when the scene mounted (getBBox is 0 then): measure now
     if (!framesReady && svg.getBBox().width > 0) { computeFrames(); framesReady = true; cam = OVER.slice(); }
     let i, s;
-    if (STEP) { i = still ? 0 : idx; phaseT = Math.min(phaseT + dt, PH[i].d); s = still ? 0 : phaseT; }
+    if (STEP) { i = still ? 0 : idx; s = still ? 0 : Math.min((now - phaseStart) / 1000, PH[i].d); }
     else {
       if (!paused && !still) clock += dt;
       s = still ? 0 : clock % CYCLE; i = 0;
@@ -265,7 +271,7 @@ export function mount(sel, S) {
     chk.forEach((c, k) => c.classList.toggle('ok', k < lit));
     if (S.frame) S.frame({ parts, marks, tags, wires, svg, lit, ph, u, t, all: !!ph.all });
 
-    figs.forEach(fg => fg.draw(t, dt, ph, (fg.f.act || {})[ph.key] || null));
+    figs.forEach(fg => fg.draw(t, Math.min(dt, 0.05), ph, (fg.f.act || {})[ph.key] || null));
 
     if (still) svg.setAttribute('viewBox', OVER.map(v => v.toFixed(1)).join(' '));
     else {
