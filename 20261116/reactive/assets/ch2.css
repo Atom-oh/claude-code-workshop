@@ -144,7 +144,8 @@
 .fs-zone .fs-face { stroke: var(--border); stroke-dasharray: 5 4; }
 .fs-ring { fill: none; stroke: var(--success); stroke-width: 1.4; stroke-dasharray: 3 3; }
 .fs-part, .fs-call { transition: opacity .35s; }
-.fs-part.dim, .fs-call.dim { opacity: .3; }
+.fs-part.dim, .fs-call.dim, .fs-icon.dim { opacity: .3; }
+.fs-icon { transition: opacity .35s; }
 .fs-part.on .fs-face { stroke: var(--accent); stroke-width: 2; }
 .fs-lbl { font: 700 12.5px/1 var(--font-main); fill: var(--text-primary); }
 .fs-sub { font: 500 11px/1 var(--font-main); fill: var(--text-secondary); }

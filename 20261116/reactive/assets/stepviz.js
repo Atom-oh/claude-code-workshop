@@ -47,6 +47,53 @@
       if (e.detail && e.detail.index === slideIndex(el)) fn();
     });
   }
+  /* Node icons. "aws:Name" draws an official AWS icon from ../assets/aws-icons
+     (unmodified, see its README); any other name is a simple line glyph on a
+     24x24 grid, stroked in the node colour. */
+  const AWS_ICON_DIR = '../assets/aws-icons/';
+  const GLYPH = {
+    terminal: 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M7 10l3 2-3 2 M12 15h5',
+    laptop: 'M5 6h14v9H5z M2.5 18h19 M4 15l-1.5 3 M20 15l1.5 3',
+    check: 'M7 3h10a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z M9 12l2 2 4-4',
+    building: 'M3 21h18 M5 21V9l7-5 7 5v12 M10 21v-5h4v5 M8.5 11h1 M14.5 11h1',
+    gateway: 'M4 21V7l3-3 3 3v14 M7 11v2 M10 13h11 M13 11v4 M16.5 11v4 M20 11v4 M2 21h20',
+    key: 'M8 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z M12 12h9 M18 12v3 M21 12v2',
+    badge: 'M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z M10 3v3h4V3 M12 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M8.5 17.5c.8-1.6 2-2.3 3.5-2.3s2.7.7 3.5 2.3',
+    lock: 'M6 11h12v10H6z M8.5 11V8a3.5 3.5 0 0 1 7 0v3 M12 15v2',
+    shield: 'M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z M8.5 12l2.5 2.5 4.5-4.5',
+    doc: 'M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z M14 3v4h4 M9 12h6 M9 16h6',
+    gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M12 2v3 M12 19v3 M2 12h3 M19 12h3 M4.9 4.9 7 7 M17 17l2.1 2.1 M4.9 19.1 7 17 M17 7l2.1-2.1',
+    user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21c1.2-4 4.2-6 8-6s6.8 2 8 6',
+    users: 'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M2.5 20c.9-3.4 3.3-5.2 6.5-5.2s5.6 1.8 6.5 5.2 M16 4.5a3.2 3.2 0 0 1 0 6.2 M18 14.6c1.8.6 3 2.4 3.5 5.4',
+    globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M3 12h18 M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9 M12 3c-2.5 2.6-3.7 5.6-3.7 9s1.2 6.4 3.7 9',
+    pin: 'M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+    chart: 'M3 21h18 M6 17v-5 M11 17V8 M16 17v-7 M20 17V5',
+    meter: 'M4 17a8 8 0 1 1 16 0 M12 17l4-5 M7 17h.01 M17 17h.01',
+    pipe: 'M3 8h7v8H3z M10 10h4v4h-4 M14 8h7v8h-7z',
+    funnel: 'M3 4h18l-7 8v6l-4 2v-8z',
+    server: 'M4 4h16v6H4z M4 14h16v6H4z M7.5 7h.01 M7.5 17h.01',
+    cloud: 'M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.5A3.8 3.8 0 0 1 17.5 18z',
+    stop: 'M8 3h8l5 5v8l-5 5H8l-5-5V8z M8 12h8',
+    hook: 'M12 3v9a4 4 0 1 1-4-4 M12 3l-3 3 M12 3l3 3',
+    plug: 'M9 3v5 M15 3v5 M6 8h12v3a6 6 0 0 1-12 0z M12 17v4',
+    search: 'M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z M15.5 15.5 21 21',
+    list: 'M9 6h11 M9 12h11 M9 18h11 M4 6h.01 M4 12h.01 M4 18h.01',
+    robot: 'M5 9h14v10H5z M12 9V5 M12 4h.01 M9 13h.01 M15 13h.01 M9.5 16.5h5 M2.5 13v3 M21.5 13v3',
+    tag: 'M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z M7.5 7.5h.01',
+    receipt: 'M5 3h14v18l-2.3-1.5L14.3 21 12 19.5 9.7 21l-2.4-1.5L5 21z M9 8h6 M9 12h6 M9 16h3'
+  };
+  function drawIcon(g, name, x, y, size) {
+    if (!name) return;
+    if (name.indexOf('aws:') === 0) {
+      const im = svgEl('image', { x, y, width: size, height: size, class: 'sv-icon aws' });
+      im.setAttribute('href', AWS_ICON_DIR + name.slice(4) + '.svg');
+      g.appendChild(im); return;
+    }
+    const d = GLYPH[name]; if (!d) return;
+    const s = size / 24;
+    g.appendChild(svgEl('path', { class: 'sv-icon glyph', d, transform: 'translate(' + x + ' ' + y + ') scale(' + s + ')', 'stroke-width': 1.8 / s * (size / 30) }));
+  }
+
   function fitText(t, maxW, start, min) {
     let fs = start; t.style.fontSize = fs + 'px';
     try {
@@ -150,17 +197,23 @@
         g.style.color = col(n.c); g.style.opacity = isHot ? 1 : 0.4;
         g.appendChild(svgEl('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: 12 }));
         const hasSub = !!n.s;
-        const t = svgEl('text', { x: n.x + n.w / 2, y: n.y + (hasSub ? n.h / 2 - 4 : n.h / 2 + 9) });
+        /* With an icon, it sits at the left and the text centres in the rest. */
+        const isz = n.icon ? Math.min(50, n.h - 30, n.w * 0.2) : 0;
+        const ipad = n.icon ? 12 : 0;
+        if (n.icon) drawIcon(g, n.icon, n.x + ipad, n.y + (n.h - isz) / 2 - (n.ctx != null ? 4 : 0), isz);
+        const tx = n.x + (n.icon ? ipad + isz + (n.w - ipad - isz) / 2 : n.w / 2);
+        const tw = n.icon ? n.w - ipad - isz - 14 : n.w - 20;
+        const t = svgEl('text', { x: tx, y: n.y + (hasSub ? n.h / 2 - 4 : n.h / 2 + 9) });
         t.textContent = n.t; g.appendChild(t);
         let st = null;
-        if (hasSub) { st = svgEl('text', { class: 'sub', x: n.x + n.w / 2, y: n.y + n.h / 2 + 24 }); st.textContent = n.s; g.appendChild(st); }
+        if (hasSub) { st = svgEl('text', { class: 'sub', x: tx, y: n.y + n.h / 2 + 24 }); st.textContent = n.s; g.appendChild(st); }
         if (n.ctx != null) {
           g.appendChild(svgEl('rect', { class: 'gauge-bg', x: n.x + 12, y: n.y + n.h - 12, width: n.w - 24, height: 5, rx: 2 }));
           const f = svgEl('rect', { class: 'gauge', x: n.x + 12, y: n.y + n.h - 12, width: 0, height: 5, rx: 2 });
           f.dataset.target = (n.w - 24) * n.ctx; g.appendChild(f);
         }
         G.appendChild(g);
-        fitText(t, n.w - 20, 25, 18); if (st) fitText(st, n.w - 20, 20, 16);
+        fitText(t, tw, 25, 18); if (st) fitText(st, tw, 20, 16);
       });
 
       Ed.innerHTML = '';

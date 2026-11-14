@@ -54,7 +54,19 @@ export function mount(sel, S) {
   };
 
   // zones (ground slabs) and their labels
-  (S.zones || []).forEach(z => { box(L0, z.box, 'fs-zone'); if (z.label) txt(L3, pj(...z.labelAt), z.label, z.sub ? 'fs-sub' : 'fs-lbl', 'start'); });
+  // Official AWS icons (unmodified files in ../assets/aws-icons, see its README).
+  const ICON_DIR = '../assets/aws-icons/';
+  const image = (parent, name, x, y, size) => {
+    const im = el('image', { x: x.toFixed(1), y: y.toFixed(1), width: size, height: size, class: 'fs-awsicon' }, parent);
+    im.setAttribute('href', ICON_DIR + name + '.svg'); return im;
+  };
+  (S.zones || []).forEach(z => {
+    box(L0, z.box, 'fs-zone');
+    if (!z.label) return;
+    let [lx, ly] = pj(...z.labelAt);
+    if (z.icon) { const sz = z.sub ? 16 : 20; image(L3, z.icon, lx, ly - sz + 4, sz); lx += sz + 5; }
+    txt(L3, [lx, ly], z.label, z.sub ? 'fs-sub' : 'fs-lbl', 'start');
+  });
 
   // parts: boxes, ellipses (clouds), pipes, rings
   const parts = {};
@@ -70,6 +82,14 @@ export function mount(sel, S) {
     (def.rings || []).forEach(([c, rx, ry]) => { const p = pj(...c); el('ellipse', { cx: p[0], cy: p[1], rx, ry, class: 'fs-ring' }, g); });
     parts[id] = g;
   }
+
+  // icons standing on parts: { part, at: [x, y, z] (bottom centre), name, size }; they dim with their part
+  const partIcons = {};
+  (S.icons || []).forEach(ic => {
+    const g = el('g', { class: 'fs-icon' }, L3), sz = ic.size || 30, [x, y] = pj(...ic.at);
+    image(g, ic.name, x - sz / 2, y - sz, sz);
+    (partIcons[ic.part] = partIcons[ic.part] || []).push(g);
+  });
 
   // marks (an X on a blocked path), text tags (shown in some phases)
   const marks = {};
@@ -202,7 +222,7 @@ export function mount(sel, S) {
     if (titleEl) titleEl.textContent = ph.title || '';
     if (sayEl) sayEl.innerHTML = ph.say || '';
     lns.forEach((ln, k) => ln.classList.toggle('on', (ph.all ? (S.overview.lines || lns.map((_, j) => j + 1)) : (ph.lines || [])).includes(k + 1)));
-    for (const id in parts) { const on = ph.all || (ph.focus || []).includes(id); parts[id].classList.toggle('dim', !on); parts[id].classList.toggle('on', !ph.all && ph.focus && ph.focus[0] === id); }
+    for (const id in parts) { const on = ph.all || (ph.focus || []).includes(id); parts[id].classList.toggle('dim', !on); parts[id].classList.toggle('on', !ph.all && ph.focus && ph.focus[0] === id); (partIcons[id] || []).forEach(g => g.classList.toggle('dim', !on)); }
     for (const id in calls) { calls[id].classList.toggle('dim', !(ph.all || ph.badge === id)); calls[id].classList.toggle('on', ph.badge === id); }
     for (const id in wires) wires[id].node.classList.toggle('on', ph.all ? !wires[id].node.classList.contains('fs-alt') : (ph.packet && ph.packet.wire === id));
     if (checksEl) checksEl.classList.toggle('dim', !(ph.checks || ph.all));

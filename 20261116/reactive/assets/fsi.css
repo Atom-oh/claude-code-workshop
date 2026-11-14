@@ -72,6 +72,8 @@
 .sv-node text { fill: var(--text-primary); font-size: 25px; font-weight: 700; text-anchor: middle; font-family: var(--font-main); }
 .sv-node text.sub { fill: var(--text-secondary); font-size: 20px; font-weight: 500; }
 .sv-node { transition: opacity var(--duration-normal) var(--ease-out); }
+.sv-node .sv-icon.glyph { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.sv-node:not(.hot) .sv-icon.glyph { stroke: var(--text-secondary); }
 .sv-edge { fill: none; stroke: color-mix(in srgb, currentColor 55%, transparent); stroke-width: 2.5; }
 .sv-edge.hot { stroke: currentColor; stroke-width: 3; stroke-dasharray: 9 9; animation: sv-flow .9s linear infinite; }
 .sv-stage.settled .sv-edge.hot { animation: none; stroke-dasharray: none; }
