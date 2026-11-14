@@ -96,14 +96,16 @@ The earlier PDFs came from separate PowerPoint decks under the old numbering.
 
 Session mapping:
 
-- Day 1 (retimed 2026-11-09): Ch1 lecture 10:10–10:40, break 10:40–10:50,
-  Ch2 lecture 10:50–11:40 (covers the old Ch2 and Ch3 decks), lunch
-  11:40–13:00, one combined lab 13:00–14:00 (Preflight, Ch1 lab, Ch2 Lab 1 and
-  Lab 2), Ch3 lecture 14:00–14:40, Ch3 lab 14:40–15:40, Capstone Round 1
+- Day 1 (retimed 2026-11-09; morning break dropped 2026-11-14): Ch1 lecture
+  10:10–10:40, Ch2 lecture 10:40–11:30 (covers the old Ch2 and Ch3 decks),
+  Preflight 11:30–11:40, lunch 11:40–13:00, one combined lab 13:00–14:00 (Ch1
+  lab, Ch2 Lab 1 and Lab 2), Ch3 lecture 14:00–14:40, Ch3 lab 14:40–15:40, Capstone Round 1
   15:50–17:40. The combined lab's required TASKs add up to about 110 minutes
   by the facilitators' estimates (Preflight 7, Ch1 20, Lab 1 50, Lab 2 35; the lab pages state no minutes since 2026-11-14),
   so facilitators choose which TASKs run in the session; the Ch2 Lab 1 and Lab 2
-  restore TASKs must still run. The Ch3 deck is paced for the 40-minute lecture
+  restore TASKs must still run. Preflight moved before lunch on
+  2026-11-14 because the workshop owner found the Ch1 and Ch2 labs fill the
+  60-minute slot on their own. The Ch3 deck is paced for the 40-minute lecture
   slot (four Parts; the former deep dive is Part 4, retimed 2026-11-12) and
   the 60-minute lab slot (40 required lab-page minutes, optional TASK 05 7,
   about 13 minutes for questions).

@@ -35,9 +35,10 @@ change. Learner folders follow the same numbers (see the folder rule below).
 | 5 | 비용 효율적으로 쓰기 | Ch6 Part 1 | `ClaudeCode_Ch5_HandsOnLab.html` (TASK 00-04) | `05-ch5-cost-efficient` |
 | 6 | 조직의 비용 보고 통제하기 | Ch6 Part 2 | `ClaudeCode_Ch6_HandsOnLab.html` (TASK 00-04) | `06-ch6-org-cost` |
 
-- Session times appear only in `20261116/eDM.html`, `eDM.txt` and
-  `eDM-notes.md`. Decks, notes scripts, lab and capstone pages, the portal
-  (`20261116/index.html`) and `reactive/toc.html` state no clock times and no
+- Session times appear only in `20261116/eDM.html`, `eDM.txt`,
+  `eDM-notes.md` and the portal (`20261116/index.html`: timetable, hero date
+  line and lab-row start times); change them together. Decks, notes scripts,
+  lab and capstone pages and `reactive/toc.html` state no clock times and no
   session, lab or TASK durations; they may give the order of the day. `{timing}`
   in deck notes is presenter-timer metadata and stays. Technical durations (TTL,
   token lifetimes, timeouts) are content, not schedule. Update `toc.html`
