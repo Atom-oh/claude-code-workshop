@@ -181,3 +181,11 @@
 .c2-survey .bar { grid-template-columns: 17rem minmax(0, 1fr) 4.5rem; }
 /* Part 1 visual rebuild (slides 5-11): long ARNs and IDs never split mid-word */
 .slide-deck #c2-sv-iam .sv-pre, .slide-deck #c2-sv-pin .sv-pre, .slide-deck #c2-sv-env .sv-pre, .slide-deck #c2-sv-sso .sv-pre, .slide-deck #c2-sv-cred .sv-pre { white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; }
+/* Part 02 (policy as files): lock glyph on the system folder in the #c2-mdm flow scene */
+.c2-lock { color: var(--accent); transition: opacity .35s; }
+.c2-lock rect { fill: var(--surface-1); stroke: currentColor; stroke-width: 1.6; }
+.c2-lock path { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.slide-deck #c2-mdm .fs-code { font-size: .76rem; line-height: 1.55; }
+.slide-deck #c2-mdm .fs-say { font-size: var(--fs-caption); }
+/* Part 02 stepviz slides with real JSON: a slightly smaller snippet so the whole file fits */
+.slide-deck #c2-sv-prec .sv-pre, .slide-deck #c2-sv-lock .sv-pre, .slide-deck #c2-sv-ms .sv-pre, .slide-deck #c2-sv-verify .sv-pre { font-size: calc(var(--fs-caption) * .88); line-height: 1.45; }
