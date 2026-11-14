@@ -1146,10 +1146,10 @@
     ],
     steps: [
       { cmd: "OTel 설정",
-        caption: "이 PC의 Claude Code는 ~/.claude/settings.json의 env에 있는 TELEMETRY, OTEL_ 값으로 사용량을 OpenTelemetry(OTel)로 내보냅니다. OTEL_RESOURCE_ATTRIBUTES의 user.email, team.id가 사람과 팀을 나타냅니다.",
+        caption: "이 PC의 Claude Code는 ~/.claude/settings.json의 env에 있는 TELEMETRY, OTEL_ 값으로 사용량을 OpenTelemetry(OTel)로 내보냅니다. OTEL_RESOURCE_ATTRIBUTES의 user.email, team이 대시보드에서 사람과 팀별로 묶는 키입니다.",
         on: ["cc", "attr"] },
       { cmd: "Collector가 받음",
-        caption: "사용량은 같은 PC에서 도는 Collector(otelcol, 127.0.0.1:4317)가 받고, team.id를 대시보드가 쓰는 team으로 바꿉니다. systemctl is-active로 otelcol이 active인지 확인합니다.",
+        caption: "사용량은 같은 PC에서 도는 Collector(otelcol, 127.0.0.1:4317)가 받습니다. systemctl is-active로 otelcol이 active인지 확인합니다.",
         on: ["cc", "e-cc", "recv", "col", "ec2"], flow: { edge: "e-cc", token: "사용량 · 이벤트" } },
       { cmd: "scrub_logs",
         caption: "scrub_logs가 이벤트 로그에서 프롬프트 본문을 삭제한 뒤 다음으로 넘깁니다. 비용은 보되 내용은 남기지 않는 DLP 설정입니다.",
