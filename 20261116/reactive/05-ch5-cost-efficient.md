@@ -21,23 +21,77 @@ AWS Korea
 [요약]
 • Chapter 5 비용 효율적으로 쓰기, 같은 일을 더 적은 토큰으로
 • Claude Code v2.1.319(2026-11-08 리허설 검증)와 Amazon Bedrock 기준
-• 13:00부터 강의와 데모, 이어서 랩 TASK 01부터 04
+• 강의와 데모, 이어서 랩 TASK 01부터 04
 
 이번 시간은 Chapter 5, 비용 효율적으로 쓰기입니다. 개인이 같은 일을 더 적은 토큰으로 하는 법을 볼 거예요.
-조직이 비용을 보고 막는 법은 오후 4시 50분 Chapter 6에서 이어져요.
+조직이 비용을 보고 막는 법은 Chapter 6에서 이어져요.
+
+{cue: transition}
+순서 보기 전에, 사전 설문 결과부터 잠깐 볼게요.
 :::
 ---
-<!-- Slide 2: Agenda -->
+<!-- Slide 2: Survey -->
 @type: content
 @fit: off
 
-## 강의와 데모 20분, 랩 38분
+## 기대 주제 FinOps, 그리고 비용 질문
+사전 설문 결과로 정한 이 챕터의 목표
+
+:::html
+<div class="fsi fsi-survey c6-survey">
+  <div class="sv-big">
+    <span class="eyebrow">PRE-SURVEY</span>
+    <div class="num"><span id="c6-survey-num">26명</span></div>
+    <p class="lead">참가 확정자 <b>142명 중 26명</b>이 FinOps(모델 라우팅, 토큰 메터링, OTel 대시보드)를 기대 주제로 골랐습니다.</p>
+    <p class="why">자유 의견에도 토큰 사용 최적화, 사내 토큰 배분, Bedrock 사용 비용을 묻는 질문이 있었습니다. 이 챕터는 개인이 같은 일을 더 적은 토큰으로 하는 법입니다.</p>
+  </div>
+  <div class="share" id="c6-survey-share">
+    <div class="lb"><span>FinOps를 고른 사람</span><b>26 / 142명</b></div>
+    <div class="tr"><i></i></div>
+    <p class="rank">복수 선택 문항, 조직의 비용 통제는 Chapter 6에서</p>
+  </div>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var bar = document.querySelector('.slide-deck #c6-survey-share .tr i') || document.querySelector('#c6-survey-share .tr i');
+  function grow(on) { bar.style.width = on ? (26 / 142 * 100).toFixed(1) + '%' : '0'; }
+  F.countUp('#c6-survey-num', 26, { suffix: '명' });
+  F.onEnter(bar, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
+  grow(true);
+});
+:::
+
+:::notes
+{timing: 1min}
+[요약]
+• 참가 확정자 142명 중 26명이 FinOps(모델 라우팅, 토큰 메터링, OTel 대시보드)를 기대 주제로 선택
+• 자유 의견: 토큰 사용 최적화, 사내 토큰 배분, Bedrock 사용 비용
+• 이 챕터는 개인의 토큰 절약, 조직의 비용 통제는 Chapter 6
+
+사전 설문에서 142분 중 26분이 FinOps, 그러니까 모델 라우팅이나 토큰 메터링을 기대 주제로 골라 주셨어요.
+자유 의견에도 토큰을 아끼는 방법, 사내에서 토큰을 어떻게 나눠 줄지, Bedrock으로 쓰면 비용이 얼마나 드는지 같은 질문이 있었고요.
+그래서 이 챕터에서는 한 사람이 같은 일을 더 적은 토큰으로 하는 법을 보고, 조직이 비용을 보고 막는 법은 Chapter 6에서 이어 갑니다.
+
+[출처]
+• 이번 워크숍 사전 설문, 참가 확정자 142명 기준 (2026-11-14 집계)
+
+{cue: transition}
+그럼 이 목표에 맞춰 짠 순서부터 볼게요.
+:::
+---
+<!-- Slide 3: Agenda -->
+@type: content
+@fit: off
+
+## 강의와 데모, 그리고 랩
 여덟 가지 원리, 그리고 랩 TASK 01부터 04까지
 
 :::html
 <div class="c6 c6-agenda fsi">
   <div class="fsi-grid-2">
-    <div class="pick"><span class="k">CHAPTER 05 / 60분</span><span class="t">컨텍스트 엔지니어링</span><span class="d">먼저 보기, 지침 줄이기, 출력 필터, 캐시와 압축, 모델과 사고량</span><span class="when">13:00 시작</span></div>
+    <div class="pick"><span class="k">CHAPTER 05</span><span class="t">컨텍스트 엔지니어링</span><span class="d">먼저 보기, 지침 줄이기, 출력 필터, 캐시와 압축, 모델과 사고량</span><span class="when">강의와 데모</span></div>
     <div class="pick lab"><span class="k">LAB / Ch5 Lab</span><span class="t">TASK 01부터 04</span><span class="d">기준선 재기, 출력 필터 훅, CLAUDE.md 다이어트, 압축 시점</span><span class="when">강의 뒤 바로</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 둡니다</span></div>
@@ -47,21 +101,21 @@ AWS Korea
 :::notes
 {timing: 0.5min}
 [요약]
-• 13:00부터 60분, 강의와 데모 약 21분 + 랩 38분
+• 강의와 데모를 짧게 하고, 이어서 랩
 • 여덟 가지 원리와 랩 TASK 01부터 04
-• 조직의 비용 통제는 16:50 Chapter 6
+• 조직의 비용 통제는 Chapter 6
 
 먼저 순서부터 볼게요. 같은 일을 더 적은 토큰으로 하는 여덟 가지 원리를 보고, 랩 TASK 01부터 04까지 직접 해 봅니다.
-강의와 데모는 20분 남짓으로 짧게 하고, 나머지는 랩이에요. 조직이 비용을 보고 막는 법은 오후 4시 50분 Chapter 6에서 이어집니다.
+강의와 데모는 짧게 하고, 나머지는 랩이에요. 조직이 비용을 보고 막는 법은 Chapter 6에서 이어집니다.
 :::
 ---
-<!-- Slide 3: Part 01 divider -->
+<!-- Slide 4: Part 01 divider -->
 @type: content
 @fit: off
 
 :::html
 <div class="fsi fsi-section c6-sec">
-  <span class="num">CHAPTER 05 / 13:00</span>
+  <span class="num">CHAPTER 05</span>
   <div class="name">컨텍스트 엔지니어링</div>
   <p class="what">같은 일을 더 적은 토큰으로</p>
   <ol>
@@ -84,7 +138,7 @@ AWS Korea
 먼저 무엇이 자리를 차지하는지 보고, 항상 실리는 지침을 줄인 뒤 구조 정보, 출력 필터, 도구 지연 로드를 봅니다. 이어서 캐시와 압축, 마지막으로 모델과 사고량을 정리할게요.
 :::
 ---
-<!-- Slide 4: Baseline -->
+<!-- Slide 5: Baseline -->
 @type: content
 @fit: off
 
@@ -126,7 +180,7 @@ AWS Korea
 • code.claude.com/docs/en/costs
 :::
 ---
-<!-- Slide 5: Principle 1 -->
+<!-- Slide 6: Principle 1 -->
 @type: content
 @fit: off
 
@@ -182,7 +236,7 @@ AWS Korea
 • 원본 Ch6 강의자료 p6 /usage 출력 예시
 :::
 ---
-<!-- Slide 6: Eight principles -->
+<!-- Slide 7: Eight principles -->
 @type: content
 @fit: off
 
@@ -235,7 +289,7 @@ AWS Korea
 • TTL: Time To Live, 캐시가 유지되는 시간
 :::
 ---
-<!-- Slide 7: Principle 2 -->
+<!-- Slide 8: Principle 2 -->
 @type: content
 @fit: off
 
@@ -302,7 +356,7 @@ AWS Korea
 • YAGNI: You Aren't Gonna Need It, 지금 필요 없는 것은 만들지 말라는 원칙
 :::
 ---
-<!-- Slide 8: Principle 3 -->
+<!-- Slide 9: Principle 3 -->
 @type: content
 @fit: off
 
@@ -336,7 +390,7 @@ grep과 파일 여러 개 읽기를 한 번의 질의로
 • MCP: Model Context Protocol
 :::
 ---
-<!-- Slide 9: Principle 4, output filter 훅 -->
+<!-- Slide 10: Principle 4, output filter 훅 -->
 @type: content
 @fit: off
 
@@ -430,16 +484,16 @@ fi</pre>
 • code.claude.com/docs, 출력 필터 훅 공식 예제 (원본 Ch6 강의자료 p10)
 :::
 ---
-<!-- Slide 10: Demo, output filter -->
+<!-- Slide 11: Demo, output filter -->
 @type: content
 @fit: off
 
 ## 훅 하나로 컨텍스트 절감
-DEMO 7분, 출력 필터 훅 적용 전후 비교
+DEMO, 출력 필터 훅 적용 전후 비교
 
 :::html
 <div class="fsi fsi-lab c6-lab">
-  <div class="head"><span class="tag">DEMO / 7분</span></div>
+  <div class="head"><span class="tag">DEMO</span></div>
   <ol class="steps">
     <li><b>1</b><span>실패 테스트가 섞인 저장소에서 "npm test 돌려서 실패 원인 찾아줘"</span></li>
     <li><b>2</b><span>/context와 /usage 기록</span></li>
@@ -463,7 +517,7 @@ DEMO 7분, 출력 필터 훅 적용 전후 비교
 여러분도 Lab 포털에 있는 같은 스크립트로 따라 해 보실 수 있어요.
 :::
 ---
-<!-- Slide 11: Principle 5 -->
+<!-- Slide 12: Principle 5 -->
 @type: content
 @fit: off
 
@@ -495,7 +549,7 @@ MCP 서버는 공짜가 아닙니다
 REA라는 도구는 MCP 도구가 170여 개예요. 왜 지연 로드가 기본값인지 잘 보여 주죠.
 :::
 ---
-<!-- Slide 12: Quick check 1 -->
+<!-- Slide 13: Quick check 1 -->
 @type: content
 @fit: off
 
@@ -530,7 +584,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 정답은 B예요. 기본 캐시 수명이 5분이라, 돌아온 첫 메시지는 캐시 미스로 전체 컨텍스트를 다시 처리합니다. 세션이 길수록 이 한 번이 비싸지는 거죠.
 :::
 ---
-<!-- Slide 13: Principle 6 -->
+<!-- Slide 14: Principle 6 -->
 @type: content
 @fit: off
 
@@ -565,7 +619,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 아래 숫자도 기억해 주세요. 기본 캐시 수명은 5분이고, 1시간 옵션은 더 비쌉니다.
 :::
 ---
-<!-- Slide 14: Principle 7, compaction methods -->
+<!-- Slide 15: Principle 7, compaction methods -->
 @type: content
 @fit: off
 
@@ -611,7 +665,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 Idle compaction은 1시간 TTL 세션을 오래 비웠을 때 캐시 만료 직전에 일어납니다. Bedrock에서는 1시간 캐시를 켜야 조건이 맞아요. 이건 잠시 뒤에 봅니다. /clear는 압축하는 게 아니라 새로 시작하는 거예요.
 :::
 ---
-<!-- Slide 15: auto-compact window -->
+<!-- Slide 16: auto-compact window -->
 @type: content
 @fit: off
 
@@ -674,7 +728,7 @@ auto-compact window 조정과 설정 우선순위
 오른쪽 우선순위는 환경 변수가 최우선이에요. 그다음 실행 플래그, 그다음 settings 순인데, managed가 사용자의 /autocompact를 덮습니다.
 :::
 ---
-<!-- Slide 16: Trade-off -->
+<!-- Slide 17: Trade-off -->
 @type: content
 @fit: off
 
@@ -710,7 +764,7 @@ Claude Code도 기본값 "auto"를 권하는 이유
 그래서 순서는 이렇습니다. 1순위는 작업 단위 끝에 캐시가 따뜻할 때 직접 /compact를 하는 거고, 2순위로 긴 세션을 하는 팀만 창을 400K에서 500K 사이로 맞춥니다. 그리고 Ch6의 OTel token.usage로 전후를 비교하세요.
 :::
 ---
-<!-- Slide 17: What survives compaction -->
+<!-- Slide 18: What survives compaction -->
 @type: content
 @fit: off
 
@@ -759,7 +813,7 @@ Claude Code도 기본값 "auto"를 권하는 이유
 • code.claude.com/docs, What survives compaction (원본 Ch6 강의자료 p18)
 :::
 ---
-<!-- Slide 18: Cost of compaction, warm vs cold -->
+<!-- Slide 19: Cost of compaction, warm vs cold -->
 @type: content
 @fit: off
 
@@ -818,7 +872,7 @@ Claude Code도 기본값 "auto"를 권하는 이유
 세 번째, 그래서 떠나기 전에 정리하시길 권해드려요. 이어서 할 일이면 /compact, 관련 없는 일이면 /clear입니다.
 :::
 ---
-<!-- Slide 19: Cache TTL by connection -->
+<!-- Slide 20: Cache TTL by connection -->
 @type: content
 @fit: off
 
@@ -892,7 +946,7 @@ Claude Apps Gateway를 경유하면 기본 5분이에요. 정책으로 1시간�
 • 원본 Ch6 강의자료 p14, p20
 :::
 ---
-<!-- Slide 20: Org defaults for compaction -->
+<!-- Slide 21: Org defaults for compaction -->
 @type: content
 @fit: off
 
@@ -962,11 +1016,11 @@ managed settings로 창 크기, 캐시 수명, 압축 후 규칙을 고정
 • DLP: Data Loss Prevention
 :::
 ---
-<!-- Slide 21: Lab TASK 04 -->
+<!-- Slide 22: Lab TASK 04 -->
 @type: content
 @fit: off
 
-## 압축을 내가 정한 때에, 15분
+## 압축을 내가 정한 때에
 LAB, Chapter 5 TASK 04
 
 :::html
@@ -979,23 +1033,23 @@ LAB, Chapter 5 TASK 04
     <li><b>5</b><span>/autocompact 400k로 창 조정, 저장 위치 확인, auto로 복귀</span></li>
     <li><b>6</b><span>/config에서 Idle compaction 항목과 Bedrock TTL 확인</span></li>
   </ol>
-  <p class="where">Ch5 랩: TASK 01 기준선 5분, 02 출력 필터 훅 10분, 03 CLAUDE.md와 모델 8분, 04 압축 15분. Hands-on Lab 포털에서 Chapter 5를 엽니다.</p>
+  <p class="where">Ch5 랩: TASK 01 기준선, 02 출력 필터 훅, 03 CLAUDE.md와 모델, 04 압축. Hands-on Lab 포털에서 Chapter 5를 엽니다.</p>
 </div>
 :::
 
 :::notes
 {timing: 0.5min}
 [요약]
-• LAB 15분, Chapter 5 TASK 04
-• Ch5 랩 전체는 TASK 01 기준선 5분, 02 출력 필터 훅 10분, 03 CLAUDE.md와 모델 8분, 04 압축 15분, 합계 38분
+• LAB, Chapter 5 TASK 04
+• Ch5 랩 전체는 TASK 01 기준선, 02 출력 필터 훅, 03 CLAUDE.md와 모델, 04 압축
 • 압축 전 기록, 지시와 함께 /compact, Compact instructions, SessionStart compact 훅, /autocompact 400k 조정과 복귀, /config 확인
 
 {cue: demo}
-Ch5 랩은 이 세션 안에서 모두 38분이에요. TASK 01 기준선 5분, 02 출력 필터 훅 10분, 03 CLAUDE.md와 모델 8분, 그리고 지금 보는 TASK 04 압축이 15분입니다. Hands-on Lab 포털에서 Chapter 5를 열어 주세요.
+Ch5 랩은 네 개 TASK예요. TASK 01 기준선, 02 출력 필터 훅, 03 CLAUDE.md와 모델, 그리고 지금 보는 TASK 04 압축입니다. Hands-on Lab 포털에서 Chapter 5를 열어 주세요.
 압축 전 기록을 남기고, 지시와 함께 /compact를 해 보세요. CLAUDE.md에 압축 지침을 넣고, SessionStart compact 훅으로 사내 규정이 다시 들어오는지 확인합니다. 마지막으로 /autocompact를 400k로 바꿨다가 auto로 되돌리고, /config에서 Bedrock TTL을 확인하세요.
 :::
 ---
-<!-- Slide 22: Principle 8 -->
+<!-- Slide 23: Principle 8 -->
 @type: content
 @fit: off
 
@@ -1026,7 +1080,7 @@ Ch5 랩은 이 세션 안에서 모두 38분이에요. TASK 01 기준선 5분, 0
 그리고 단순한 Subagent에는 model: haiku처럼 작은 모델을 지정합니다. Ch3에서 본 내용과 이어지는 거죠.
 :::
 ---
-<!-- Slide 23: Three questions for community tools -->
+<!-- Slide 24: Three questions for community tools -->
 @type: content
 @fit: off
 
@@ -1055,12 +1109,12 @@ Ch5 랩은 이 세션 안에서 모두 38분이에요. TASK 01 기준선 5분, 0
 세 번째가 금융권에서는 가장 중요해요. 데이터가 로컬에서 처리되는지, 제3자로 가는지입니다. 도입한다면 Ch2와 Ch4에서 본 것처럼 사내 마켓플레이스에 고정 버전으로 올리세요.
 :::
 ---
-<!-- Slide 24: Key Takeaways -->
+<!-- Slide 25: Key Takeaways -->
 @type: content
 @fit: off
 
 ## 덜 쓰는 세 가지
-Chapter 5 Key Takeaways, 16:50 Chapter 6으로 이어짐
+Chapter 5 Key Takeaways, Chapter 6으로 이어짐
 
 :::html
 <div class="c6-recap">
@@ -1069,7 +1123,7 @@ Chapter 5 Key Takeaways, 16:50 Chapter 6으로 이어짐
     <div class="rc"><b>02</b><span>항상 실리는 지침은 짧게, 큰 출력은 들어오기 전에</span></div>
     <div class="rc"><b>03</b><span>커뮤니티 도구는 원리로 읽고 공식 기능으로 대체 가능한지 본다</span></div>
   </div>
-  <p class="next">Chapter 6은 16:50, 조직이 보고 막는 법입니다. 그 전 Capstone 시간에도 /usage를 한 번씩 확인해 보세요.</p>
+  <p class="next">Chapter 6은 조직이 보고 막는 법입니다. 그 전 Capstone 시간에도 /usage를 한 번씩 확인해 보세요.</p>
 </div>
 :::
 
@@ -1079,13 +1133,13 @@ Chapter 5 Key Takeaways, 16:50 Chapter 6으로 이어짐
 • 먼저 본다: /context, /usage, 캐시 적중률, 캐시를 지키고 압축 시점과 effort는 내가 정한다
 • 항상 실리는 지침은 짧게, 큰 출력은 들어오기 전에
 • 커뮤니티 도구는 원리로 읽고 공식 기능으로 대체 가능한지
-• Chapter 6은 16:50
+• 다음 주제는 Chapter 6, 조직이 보고 막는 법
 
 Chapter 5를 세 줄로 정리할게요. 먼저 보고, 캐시를 지키면서 압축 시점과 effort는 내가 정합니다. 항상 실리는 지침은 짧게 하고, 큰 출력은 들어오기 전에 막아요. 커뮤니티 도구는 원리로 읽고, 공식 기능으로 대체할 수 있는지 봅니다.
-Chapter 6은 오후 4시 50분에 이어집니다. 그 사이 Capstone을 하시면서 /usage를 한 번씩 확인해 보세요. 오후에 대시보드에서 여러분의 숫자를 다시 만나게 될 거예요.
+Chapter 6에서 조직의 비용 통제로 이어집니다. 그 사이 Capstone을 하시면서 /usage를 한 번씩 확인해 보세요. Chapter 6 대시보드에서 여러분의 숫자를 다시 만나게 될 거예요.
 :::
 ---
-<!-- Slide 25: Deep dive FAQ -->
+<!-- Slide 26: Deep dive FAQ -->
 @type: content
 @fit: off
 
@@ -1137,19 +1191,19 @@ Chapter 6은 오후 4시 50분에 이어집니다. 그 사이 Capstone을 하시
 세 번째는 모델 배분 예시입니다. 로그 요약 Subagent에 haiku를 지정했어요. 장황한 로그는 작은 모델이 읽고, 메인에는 5줄만 돌아옵니다.
 :::
 ---
-<!-- Slide 26: Thank you -->
+<!-- Slide 27: Thank you -->
 @type: thankyou
 @toc: toc.html
 @next: 06-ch6-org-cost.html
-@next-label: Chapter 6 (16:50)
-@message: 다음은 14:00 Capstone Round 2이고, 16:50에 Chapter 6. 조직의 비용 보고 통제하기로 이어집니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
+@next-label: Chapter 6
+@message: 다음은 Capstone Round 2이고, 이어서 Chapter 6. 조직의 비용 보고 통제하기입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
 
 :::notes
 {timing: 0.5min}
 [요약]
-• 다음은 14:00 Capstone Round 2, 16:50 Chapter 6
+• 다음은 Capstone Round 2, 이어서 Chapter 6
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 이어서 2시부터 Capstone Round 2를 하고요. 오후 4시 50분에 Chapter 6, 조직의 비용 보고 통제하기로 다시 모입니다.
-Capstone 하시면서 /usage를 한 번씩 확인해 보세요. 오후에 대시보드에서 여러분의 숫자를 다시 만나게 될 거예요.
+감사합니다. 이어서 Capstone Round 2를 하고요. 그다음 Chapter 6, 조직의 비용 보고 통제하기로 다시 모입니다.
+Capstone 하시면서 /usage를 한 번씩 확인해 보세요. Chapter 6 대시보드에서 여러분의 숫자를 다시 만나게 될 거예요.
 :::

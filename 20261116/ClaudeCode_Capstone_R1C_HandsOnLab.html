@@ -795,7 +795,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 
 <header class="hero">
   <span class="eyebrow">HANDS-ON LAB / CAPSTONE R1-C</span>
-  <p class="round" data-round="R1">R1 · Day 1 · 110분 (처음 15분은 SETUP, 이 페이지의 단계는 95분)</p>
+  <p class="round" data-round="R1">R1 · Day 1 (SETUP을 마친 뒤 이 페이지의 단계를 시작)</p>
   <h1>R1-C 내가 고른 MCP: 이미 있는 MCP 서버 위에 에이전트와 가드레일 세우기</h1>
   <div class="subtitle">제공처가 공식으로 내놓은 MCP 서버를 하나 골라 연결하고, 그 데이터를 다루는 agent 2개와 MCP 허용 목록, 외부 호출 범위 가드레일을 만든다</div>
   <p class="lede">
@@ -834,11 +834,11 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 
 <aside class="sidenav" aria-label="목차">
   <div class="nav-title">R1-C</div>
-  <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 고르기와 연결<span class="nav-time">20분</span></a>
-  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 자기 agent 2개<span class="nav-time">20분</span></a>
-  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 가드레일<span class="nav-time">25분</span></a>
-  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 막히는 것 확인<span class="nav-time">20분</span></a>
-  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 R1 정리<span class="nav-time">10분</span></a>
+  <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 고르기와 연결<span class="nav-time"></span></a>
+  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 자기 agent 2개<span class="nav-time"></span></a>
+  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 가드레일<span class="nav-time"></span></a>
+  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 막히는 것 확인<span class="nav-time"></span></a>
+  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 R1 정리<span class="nav-time"></span></a>
 </aside>
 
 <main>
@@ -853,7 +853,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 </div>
 
 <section class="task" id="task-00" data-min="20">
-  <div class="task-head"><span class="task-num">00</span><h2>고르기와 연결</h2><span class="time-badge">20분</span></div>
+  <div class="task-head"><span class="task-num">00</span><h2>고르기와 연결</h2></div>
   <p class="task-goal">MCP 서버 하나를 고르고, 작업 폴더에서 Claude Code에 연결해 도구가 불리는 것까지 확인합니다.</p>
   <p class="body">먼저 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다. 등록은 모두 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더 <code class="inline">~/claude-lab/capstone</code>에서 합니다. 범위를 주지 않으면 <span class="gl" data-gl="local">local 범위</span>(이 폴더에서만 보이고 <code class="inline">~/.claude.json</code>에 저장)로 등록됩니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
   <p class="body"><strong>왜 필요한가요:</strong> 01의 agent와 02의 가드레일이 모두 여기서 고른 서버 하나와 <code class="inline">r1c-choice.env</code>의 값을 기준으로 만들어집니다. 그래서 연결과 도구 호출이 되는 것을 먼저 확인합니다.</p>
@@ -1069,7 +1069,7 @@ claude mcp list</code></pre>
 </section>
 
 <section class="task" id="task-01" data-min="20">
-  <div class="task-head"><span class="task-num">01</span><h2>자기 agent 2개</h2><span class="time-badge">20분</span></div>
+  <div class="task-head"><span class="task-num">01</span><h2>자기 agent 2개</h2></div>
   <p class="task-goal">고른 서버의 자료를 찾아 정리하는 agent와, 그 결과의 근거를 다시 확인하는 읽기 전용 검토 agent를 만듭니다.</p>
   <p class="body">agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일입니다. <code class="inline">tools</code>에는 고른 서버의 도구를 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code>으로 적고, 적지 않은 도구(쓰기, Bash, 웹, 다른 MCP 서버)는 쓸 수 없습니다. 아래 블록은 <code class="inline">r1c-choice.env</code>의 <code class="inline">SRV</code>와 <code class="inline">TOOLS</code>를 채워 두 파일을 만듭니다. 이름과 기준은 예시이고, 같은 틀 안에서 고쳐도 됩니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 조사와 검토를 두 agent로 나누고 <code class="inline">tools</code>를 고른 서버의 읽기 도구로 좁히면, 각 agent는 그 밖의 도구를 쓸 수 없습니다. 이 두 agent가 R2에서 plugin에 그대로 들어갑니다.</p>
@@ -1158,7 +1158,7 @@ ls .claude/agents</code></pre>
 </section>
 
 <section class="task" id="task-02" data-min="25">
-  <div class="task-head"><span class="task-num">02</span><h2>가드레일</h2><span class="time-badge">25분</span></div>
+  <div class="task-head"><span class="task-num">02</span><h2>가드레일</h2></div>
   <p class="task-goal">이 폴더에서 붙을 수 있는 MCP 서버를 고른 서버 하나로 묶고(허용 목록), 그 서버의 읽기 도구만 쓰게 하고, Claude가 직접 부르는 호스트를 그 서비스로 묶습니다. 모두 <span class="gl" data-gl="failclosed">fail-closed</span>입니다.</p>
   <p class="body">세 겹으로 세웁니다. <strong>MCP 허용 목록</strong>(<code class="inline">allowedMcpServers</code>)은 어떤 서버가 연결될 수 있는지를, <strong>mcp-guard <span class="gl" data-gl="hook">훅</span></strong>은 연결된 서버의 어떤 도구를 부를 수 있는지를, <strong>net-guard 훅</strong>은 Claude의 Bash와 WebFetch가 어느 호스트를 부를 수 있는지를 정합니다. 훅의 원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일</a>과 같습니다. exit 2가 차단이고, 오류 경로(jq 없음, 입력 해석 실패)에서도 exit 2를 냅니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> agent 지시문은 Claude가 읽는 지침이라 어길 수도 있습니다. 붙을 수 있는 서버, 부를 수 있는 도구, 부를 수 있는 호스트는 설정과 훅이 실행 전에 실제로 막아야 합니다.</p>
@@ -1309,7 +1309,7 @@ jq -n --arg srv "$SRV" --arg net "$NET_ALLOW" --arg h "$H" --argjson entry "$ALL
 </section>
 
 <section class="task" id="task-03" data-min="20">
-  <div class="task-head"><span class="task-num">03</span><h2>막히는 것 확인</h2><span class="time-badge">20분</span></div>
+  <div class="task-head"><span class="task-num">03</span><h2>막히는 것 확인</h2></div>
   <p class="task-goal">목록 밖 서버의 연결 시도, 다른 호스트 호출이 실제로 막히고, 고른 서버를 쓰는 정상 요청은 통과하는지 직접 봅니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>목록 밖 서버 연결 시도</div>
@@ -1380,7 +1380,7 @@ ls .claude/hooks</code></pre>
 </section>
 
 <section class="task" id="task-04" data-min="10">
-  <div class="task-head"><span class="task-num">04</span><h2>R1 정리</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">04</span><h2>R1 정리</h2></div>
   <p class="task-goal">CLAUDE.md를 짧게 정리하고, 작업 폴더에 키나 토큰이 없는지 확인한 뒤 쇼케이스 1 공유 문구를 준비합니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> R2는 이 폴더를 그대로 plugin으로 묶습니다. 키나 토큰이 어떤 파일에 남아 있으면 plugin에 따라 들어가므로, 묶기 전에 확인합니다.</p>
   <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게, 그리고 키 검사</div>

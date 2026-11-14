@@ -796,8 +796,8 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
     진짜 결과물은 재사용 가능한 plugin, 또는 agent + skill + MCP 세트이고, 앱이나 문서는 그 plugin이 제대로 동작한다는 것을 보여 주는 재료입니다.
   </p>
   <div class="hero-meta">
-    <span>R1 <strong>Day 1, 110분</strong></span>
-    <span>R2 <strong>Day 2, 160분</strong></span>
+    <span>R1 <strong>Day 1</strong></span>
+    <span>R2 <strong>Day 2</strong></span>
     <span>한 사람이 한 팀</span>
     <span>Update <strong>2026.11</strong></span>
   </div>
@@ -821,8 +821,8 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <aside class="sidenav" aria-label="목차">
   <div class="nav-title">OVERVIEW</div>
   <a href="#flow" data-nav="flow"><span class="dot"></span>진행 순서</a>
-  <a href="#missions-r1" data-nav="missions-r1"><span class="dot"></span>R1 미션<span class="nav-time">110분</span></a>
-  <a href="#missions-r2" data-nav="missions-r2"><span class="dot"></span>R2 미션<span class="nav-time">160분</span></a>
+  <a href="#missions-r1" data-nav="missions-r1"><span class="dot"></span>R1 미션<span class="nav-time"></span></a>
+  <a href="#missions-r2" data-nav="missions-r2"><span class="dot"></span>R2 미션<span class="nav-time"></span></a>
   <a href="#checklist" data-nav="checklist"><span class="dot"></span>완주 체크리스트</a>
   <a href="#submit" data-nav="submit"><span class="dot"></span>출품 양식</a>
 </aside>
@@ -837,11 +837,11 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   </p>
   <div class="viz" data-viz="journey"></div>
   <ol class="flow">
-    <li><span class="fl-when">Day 1, R1의<br>처음 15분</span><span class="fl-what"><strong>SETUP</strong>. R1의 110분 중 처음 15분입니다. 대표 플러그인을 먼저 설치합니다. <a href="ClaudeCode_Capstone_Setup.html">시작 전 설치 페이지</a>를 따라 필수 묶음만 깔면 됩니다.</span></li>
-    <li><span class="fl-when">Day 1<br>15:50-17:40 (110분)</span><span class="fl-what"><strong>R1, 에이전트와 가드레일</strong>. 고른 데이터에 맞는 자기 agents와 가드레일이 동작하게 만듭니다. 아래 R1 미션 중 하나를 고릅니다. 110분에는 SETUP 15분이 들어 있어서, 미션 페이지의 단계는 남은 95분에 맞춰져 있습니다.</span></li>
-    <li><span class="fl-when">Day 1<br>17:40-18:00</span><span class="fl-what"><strong>쇼케이스 1</strong>. R1 결과를 공유합니다.</span></li>
-    <li><span class="fl-when">Day 2<br>14:00-16:40 (160분)</span><span class="fl-what"><strong>R2, 플러그인 배포와 재사용</strong>. R2 공통 단계로 plugin을 배포한 뒤, 같은 plugin으로 R2 미션 두 개 이상을 해 냅니다.</span></li>
-    <li><span class="fl-when">Day 2<br>17:40-18:00</span><span class="fl-what"><strong>쇼케이스 2</strong>. Ch6 뒤, Closing과 함께 재사용 시연을 공유합니다.</span></li>
+    <li><span class="fl-when">Day 1<br>R1 시작</span><span class="fl-what"><strong>SETUP</strong>. R1을 시작하면 먼저 합니다. 대표 플러그인을 먼저 설치합니다. <a href="ClaudeCode_Capstone_Setup.html">시작 전 설치 페이지</a>를 따라 필수 묶음만 깔면 됩니다.</span></li>
+    <li><span class="fl-when">Day 1</span><span class="fl-what"><strong>R1, 에이전트와 가드레일</strong>. 고른 데이터에 맞는 자기 agents와 가드레일이 동작하게 만듭니다. 아래 R1 미션 중 하나를 고릅니다. SETUP도 R1 안에서 하므로, 미션 페이지의 단계는 SETUP을 마친 뒤 이어집니다.</span></li>
+    <li><span class="fl-when">Day 1<br>R1 뒤</span><span class="fl-what"><strong>쇼케이스 1</strong>. R1 결과를 공유합니다.</span></li>
+    <li><span class="fl-when">Day 2</span><span class="fl-what"><strong>R2, 플러그인 배포와 재사용</strong>. R2 공통 단계로 plugin을 배포한 뒤, 같은 plugin으로 R2 미션 두 개 이상을 해 냅니다.</span></li>
+    <li><span class="fl-when">Day 2<br>Ch6 뒤</span><span class="fl-what"><strong>쇼케이스 2</strong>. Ch6 뒤, Closing과 함께 재사용 시연을 공유합니다.</span></li>
   </ol>
   <p class="body">미션 페이지의 코드 블록마다 붙여 넣을 곳이 색 배지로 붙어 있습니다. 시작하기 전에 아래에서 실습 화면의 어느 칸에 무엇을 넣는지 봐 둡니다.</p>
   <div class="paste-guide" data-types="term claude file slack"></div>
@@ -849,12 +849,12 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 </section>
 
 <section class="task mission" id="missions-r1">
-  <div class="task-head"><span class="task-num">R1</span><h2>R1 미션, 셋 중 하나</h2><span class="time-badge">110분</span></div>
+  <div class="task-head"><span class="task-num">R1</span><h2>R1 미션, 셋 중 하나</h2></div>
   <p class="task-goal">
     데이터 미션 하나를 고릅니다. 모든 미션의 끝은 같습니다. 고른 데이터를 다루는 <strong>자기 Subagent 2개 이상</strong>(역할이 겹치지 않고 도구 권한이 역할에 맞게 좁혀짐, 읽기 전용 검토 역할 하나를 권장)과,
     <strong>실제로 막는 가드레일 하나 이상</strong>(<span class="gl" data-gl="hook">훅</span>이나 권한 deny 규칙, <span class="gl" data-gl="failclosed">fail-closed</span>)이 동작하고, 작업 폴더의 <code class="inline">CLAUDE.md</code>와 설정이 정리돼 있어야 합니다.
     이것이 R2에서 plugin으로 묶을 재료입니다.
-    110분은 SETUP 15분을 포함한 시간이고, 각 미션 페이지의 단계는 SETUP 뒤 95분 안에 끝나도록 짜여 있습니다.
+    SETUP은 R1 안에서 먼저 하고, 각 미션 페이지의 단계는 SETUP 뒤에 이어집니다.
   </p>
   <div class="rule-box">규칙: R1은 <strong>셋 중 하나만</strong> 고릅니다.</div>
   <div class="mcards">
@@ -893,7 +893,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 </section>
 
 <section class="task mission" id="missions-r2">
-  <div class="task-head"><span class="task-num">R2</span><h2>R2 미션, 공통 단계 후 두 개 이상</h2><span class="time-badge">160분</span></div>
+  <div class="task-head"><span class="task-num">R2</span><h2>R2 미션, 공통 단계 후 두 개 이상</h2></div>
   <p class="task-goal">
     R2는 R1의 agents를 plugin으로 묶는 <strong>공통 단계</strong>에서 시작합니다. 그다음 같은 plugin으로 재사용 미션을 해 냅니다. R2 미션은 R1에서 고른 데이터와 상관없이 고를 수 있습니다.
     두 번째 업무에서 agent와 skill을 다시 짜지 않았다는 것을 보일 수 있어야 합니다.

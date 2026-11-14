@@ -21,23 +21,70 @@ AWS Korea
 [요약]
 • Chapter 6 조직의 비용 보고 통제하기, 쓴 만큼 보고 넘치면 막는다
 • Claude Code v2.1.319(2026-11-08 리허설 검증)와 Amazon Bedrock 기준
-• 16:50부터 강의와 데모, 이어서 랩 TASK 01부터 03 (선택 TASK 04)
+• 강의와 데모, 이어서 랩 TASK 01부터 03 (선택 TASK 04)
 
 이제 마지막 챕터, 조직의 비용 보고 통제하기예요.
-표지 다음 장에서 순서 보고 바로 시작할게요.
+표지 다음 장에서 사전 설문부터 보고 시작할게요.
+
+{cue: transition}
+순서 보기 전에, 사전 설문 결과부터 잠깐 볼게요.
 :::
 ---
-<!-- Slide 2: Agenda -->
+<!-- Slide 2: Survey -->
 @type: content
 @fit: off
 
-## 강의와 데모 20분, 랩 28분
+## 기대 주제 FinOps, 그리고 비용 가시화
+사전 설문 결과로 정한 이 챕터의 목표
+
+:::html
+<div class="fsi c6-survey c6-survey-shot">
+  <div class="sv-big">
+    <span class="eyebrow">PRE-SURVEY</span>
+    <div class="num"><span id="c6b-survey-num">26명</span></div>
+    <p class="lead">참가 확정자 <b>142명 중 26명</b>이 FinOps(모델 라우팅, 토큰 메터링, OTel 대시보드)를 기대 주제로 골랐습니다.</p>
+    <p class="why">자유 의견에도 조직 사용 비용의 가시화, 사내 토큰 배분 정책을 묻는 질문이 있었습니다. 이 챕터는 OTel로 모은 사용량을 대시보드로 보고, 한도로 막는 법입니다.</p>
+  </div>
+  <figure class="shot">
+    <img src="image/ch6-ccdash-users.jpg" alt="ccdash Users 화면: 관측 사용자 6명, 세션 81개, 사용자별 토큰과 비용 표 (사용자 식별자는 가림)">
+    <figcaption>OTel로 모은 사용량, ccdash Users 화면 (랩 환경, 식별자 가림)</figcaption>
+  </figure>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.countUp('#c6b-survey-num', 26, { suffix: '명' }); });
+:::
+
+:::notes
+{timing: 1min}
+[요약]
+• 참가 확정자 142명 중 26명이 FinOps(모델 라우팅, 토큰 메터링, OTel 대시보드)를 기대 주제로 선택
+• 자유 의견: 조직 사용 비용의 가시화, 사내 토큰 배분 정책
+• 이 챕터는 OTel로 모은 사용량을 대시보드로 보고, 게이트웨이 한도로 막는 법
+
+사전 설문에서 142분 중 26분이 FinOps를 기대 주제로 골라 주셨어요. 자유 의견에도 조직이 쓰는 비용을 어떻게 보이게 하느냐, 토큰을 사내에서 어떻게 나눠 주느냐는 질문이 있었고요.
+오른쪽이 이번 랩 환경에서 OTel로 모은 사용량을 대시보드로 본 화면이에요. 사용자별 세션, 토큰, 비용이 이렇게 쌓입니다. 이 챕터에서는 이 데이터가 어떻게 모이는지 보고, 넘치면 게이트웨이 한도로 막는 데까지 가 보겠습니다.
+
+[출처]
+• 이번 워크숍 사전 설문, 참가 확정자 142명 기준 (2026-11-14 집계)
+• ccdash v1.7.0 Users 화면, 랩 환경 데이터 (사용자 식별자 가림)
+
+{cue: transition}
+그럼 순서부터 볼게요.
+:::
+---
+<!-- Slide 3: Agenda -->
+@type: content
+@fit: off
+
+## 강의와 데모, 그리고 랩
 계측, 계약 단가, 게이트웨이 지출 한도의 순서
 
 :::html
 <div class="c6 c6-agenda fsi">
   <div class="fsi-grid-2">
-    <div class="pick"><span class="k">CHAPTER 06 / 50분</span><span class="t">조직의 비용 통제</span><span class="d"><span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span> 대시보드, modelPricing, 게이트웨이 지출 한도</span><span class="when">16:50 시작</span></div>
+    <div class="pick"><span class="k">CHAPTER 06</span><span class="t">조직의 비용 통제</span><span class="d"><span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span> 대시보드, modelPricing, 게이트웨이 지출 한도</span><span class="when">강의와 데모</span></div>
     <div class="pick lab"><span class="k">LAB / Ch6 Lab</span><span class="t">TASK 01부터 03, 선택 TASK 04</span><span class="d">텔레메트리 경로, 그룹별 모델 정책, 지출 한도, 계약 단가</span><span class="when">강의 뒤 바로</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 둡니다</span></div>
@@ -47,21 +94,21 @@ AWS Korea
 :::notes
 {timing: 0.5min}
 [요약]
-• 16:50부터 50분, 강의와 데모 약 21.5분 + 랩 28분
+• 강의와 데모를 짧게 하고, 이어서 랩
 • OTel 계측, modelPricing, 게이트웨이 지출 한도
-• 랩 TASK 01 6분, TASK 02와 03 22분, 선택 TASK 04
+• 랩 TASK 01, TASK 02와 03, 선택 TASK 04
 
 오늘 순서예요. Bedrock에서 비용을 어떻게 보는지부터 시작해서 OTel 대시보드, 계약 단가와 AWS 쪽 도구를 보고, 그다음 Claude Apps Gateway의 그룹 정책과 지출 한도입니다.
-강의와 데모는 20분 남짓이고, 랩은 TASK 01이 6분, TASK 02와 03이 22분입니다. 선택 TASK 04는 시간이 남으면 해 보세요.
+강의와 데모는 짧게 하고, 랩은 TASK 01, 그리고 TASK 02와 03입니다. 선택 TASK 04는 시간이 남으면 해 보세요.
 :::
 ---
-<!-- Slide 3: Part 02 divider -->
+<!-- Slide 4: Part 02 divider -->
 @type: content
 @fit: off
 
 :::html
 <div class="fsi fsi-section">
-  <span class="num">CHAPTER 06 / 16:50</span>
+  <span class="num">CHAPTER 06</span>
   <div class="name">조직의 비용 통제</div>
   <p class="what">쓴 만큼 보고, 넘치면 막는다</p>
   <ol>
@@ -83,7 +130,7 @@ AWS Korea
 Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와 AWS 쪽 도구를 보고, 마지막으로 Claude Apps Gateway를 직접 실습합니다.
 :::
 ---
-<!-- Slide 4: Cost by setup -->
+<!-- Slide 5: Cost by setup -->
 @type: content
 @fit: off
 
@@ -122,7 +169,7 @@ Bedrock에서는 지출은 AWS 청구 콘솔로 보고, 지출 한도는 AWS 예
 아래 화살표로 비교해 볼게요. Claude Team이나 Enterprise는 조직 Analytics와 관리 콘솔 지출 한도가 있고, Console은 Workspace limit과 Analytics API가 있습니다. 근데 Bedrock에는 이런 화면이 없거든요. 다음 장에서 그 얘기를 할게요.
 :::
 ---
-<!-- Slide 5: Bedrock reality -->
+<!-- Slide 6: Bedrock reality -->
 @type: content
 @fit: off
 
@@ -145,7 +192,7 @@ Bedrock에서는 지출은 AWS 청구 콘솔로 보고, 지출 한도는 AWS 예
 계측을 설치해야 보이고, 설치하지 않은 사람은 안 잡혀요. 그래서 다음 장처럼 OTel을 정책으로 모두에게 켜는 겁니다.
 :::
 ---
-<!-- Slide 6: OTel by policy -->
+<!-- Slide 7: OTel by policy -->
 @type: content
 @fit: off
 
@@ -219,16 +266,16 @@ managed settings env 한 블록이면 모두에게
 • OTLP: OpenTelemetry Protocol
 :::
 ---
-<!-- Slide 7: Demo dashboard -->
+<!-- Slide 8: Demo dashboard -->
 @type: content
 @fit: off
 
 ## 이틀간 우리가 쓴 토큰
-DEMO 10분, 강사 대시보드 (URL은 현장 안내)
+DEMO, 강사 대시보드 (URL은 현장 안내)
 
 :::html
-<div class="fsi fsi-lab c6-lab">
-  <div class="head"><span class="tag">DEMO / 10분</span></div>
+<div class="fsi fsi-lab c6-lab c6-demo">
+  <div class="head"><span class="tag">DEMO</span></div>
   <ol class="steps">
     <li><b>1</b><span>랩 환경은 Day 1부터 OTel 수집 중 (참가 안내문 고지)</span></li>
     <li><b>2</b><span>전체 토큰, 비용 추이, Capstone 구간 피크 확인</span></li>
@@ -237,6 +284,10 @@ DEMO 10분, 강사 대시보드 (URL은 현장 안내)
     <li><b>5</b><span>가장 비용이 컸던 패턴을 Ch5의 원리로 해석</span></li>
   </ol>
   <p class="where">화면에는 참가자 ID만 표시합니다. 회사별 사용량은 노출하지 않습니다.</p>
+  <figure class="shot">
+    <img src="image/ch6-ccdash-task.jpg" alt="ccdash 작업 상세 화면: 메인 세션과 Explore 서브에이전트 세 개의 호출 타임라인, 누적 비용, 컨텍스트 크기, 왜 많이 썼나 패널, 세션 환경 카드 (이메일과 MCP 서버 이름은 가림)">
+    <figcaption>작업 상세: 레인별 호출, 누적 비용, 비용이 커진 이유 (식별자 가림)</figcaption>
+  </figure>
 </div>
 :::
 
@@ -254,7 +305,7 @@ DEMO 10분, 강사 대시보드 (URL은 현장 안내)
 마지막으로 가장 비용이 컸던 패턴을 Chapter 5의 원리로 해석해 보겠습니다. 화면에는 참가자 ID만 나오고, 회사별 사용량은 보여 드리지 않습니다.
 :::
 ---
-<!-- Slide 8: modelPricing -->
+<!-- Slide 9: modelPricing -->
 @type: content
 @fit: off
 
@@ -316,7 +367,7 @@ DEMO 10분, 강사 대시보드 (URL은 현장 안내)
 근데 여기서 바뀌는 건 표시뿐이에요. 청구는 그대로입니다. 실제 정산은 AWS 청구서로 대사하셔야 해요. managed settings에서만 유효합니다.
 :::
 ---
-<!-- Slide 9: AWS side tools -->
+<!-- Slide 10: AWS side tools -->
 @type: content
 @fit: off
 
@@ -351,7 +402,7 @@ Claude Code 쪽 계측과 별개로, AWS 계정에서 볼 수 있는 것도 있�
 • TPM: Tokens Per Minute
 :::
 ---
-<!-- Slide 10: Claude Apps Gateway -->
+<!-- Slide 11: Claude Apps Gateway -->
 @type: content
 @fit: off
 
@@ -447,7 +498,7 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 • ALB: Application Load Balancer
 :::
 ---
-<!-- Slide 11: Spend limits -->
+<!-- Slide 12: Spend limits -->
 @type: content
 @fit: off
 
@@ -516,7 +567,7 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 이 설정은 Admin API로 합니다. gateway.yaml에 하는 게 아니에요. 이 부분을 많이 헷갈려 하세요.
 :::
 ---
-<!-- Slide 12: Two decisions before operation -->
+<!-- Slide 13: Two decisions before operation -->
 @type: content
 @fit: off
 
@@ -562,7 +613,7 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 두 번째는 개인정보입니다. 게이트웨이는 이메일과 이름, 그룹을 저장하고 기본 90일 보존해요. 퇴사나 열람 요청 때 해당 행을 지우는 절차를 미리 정해 두세요.
 :::
 ---
-<!-- Slide 13: Quick check 2 -->
+<!-- Slide 14: Quick check 2 -->
 @type: content
 @fit: off
 
@@ -597,11 +648,11 @@ QUICK CHECK, 손을 들어 답해 주세요
 정답은 B예요. 사용자 한도가 그룹 기본값보다 우선하니까 다음 요청부터 429로 막힙니다. 이미 진행 중인 응답은 끝까지 가고요. 잠시 뒤 랩에서 직접 해 보실 거예요.
 :::
 ---
-<!-- Slide 14: Lab TASK 01 -->
+<!-- Slide 15: Lab TASK 01 -->
 @type: content
 @fit: off
 
-## 텔레메트리는 어디로 가는가, 6분
+## 텔레메트리는 어디로 가는가
 LAB, Chapter 6 TASK 01
 
 :::html
@@ -619,19 +670,19 @@ LAB, Chapter 6 TASK 01
 :::notes
 {timing: 0.5min}
 [요약]
-• LAB 6분, Chapter 6 TASK 01
+• LAB, Chapter 6 TASK 01
 • OTEL_* 환경 변수, otelcol과 fanout 타이머, scrub_logs 규칙, CloudWatch와 중앙 대시보드 이중 전송 확인
 
 {cue: demo}
-첫 번째 랩은 6분이에요. Chapter 6 TASK 01을 열어 주세요.
+첫 번째 랩이에요. Chapter 6 TASK 01을 열어 주세요.
 settings.json의 OTEL 환경 변수를 읽고, otelcol과 fanout 타이머가 돌고 있는지 확인한 뒤, 프롬프트 본문을 지우는 scrub_logs 규칙과 두 곳으로 보내는 exporters를 찾아보세요. 아까 OTel 그림에서 본 마지막 단계를 직접 확인하는 겁니다.
 :::
 ---
-<!-- Slide 15: Lab TASK 02 to 03 -->
+<!-- Slide 16: Lab TASK 02 to 03 -->
 @type: content
 @fit: off
 
-## 모델 정책과 지출 한도, 22분
+## 모델 정책과 지출 한도
 LAB, 게이트웨이 실습 Chapter 6 TASK 02부터 03까지
 
 :::html
@@ -650,21 +701,21 @@ LAB, 게이트웨이 실습 Chapter 6 TASK 02부터 03까지
 :::notes
 {timing: 0.5min}
 [요약]
-• LAB 22분, Chapter 6 TASK 02부터 03, 각자 계정의 게이트웨이
+• LAB, Chapter 6 TASK 02부터 03, 각자 계정의 게이트웨이
 • alice와 bob으로 그룹별 모델 정책 비교, Admin API로 bob 한도 1센트, 거절 확인
 • 끝나면 한도 DELETE, 그룹 한도 복원, use_bedrock_direct로 원복
 
 {cue: demo}
-마지막 랩은 22분입니다. 각자 계정의 게이트웨이로 진행할게요.
+마지막 랩입니다. 각자 계정의 게이트웨이로 진행할게요.
 alice로 로그인하면 /model에 Opus가 보이고, bob으로 다시 로그인하면 Opus가 없죠. 이게 그룹 정책이에요. 그다음 두 번째 터미널에서 Admin API로 bob에게 1센트 한도를 걸고, bob의 다음 요청이 거절되는 걸 보세요. 방금 퀴즈의 정답을 직접 확인하는 겁니다.
 끝나면 꼭 한도를 지우고 use_bedrock_direct로 원복해 주세요. 게이트웨이에 문제가 있는 팀은 제 화면을 보시면 돼요.
 :::
 ---
-<!-- Slide 16: Optional lab TASK 04 -->
+<!-- Slide 17: Optional lab TASK 04 -->
 @type: content
 @fit: off
 
-## 내 계정에 비용 설정 적용, 10분
+## 내 계정에 비용 설정 적용
 선택 LAB, Chapter 6 선택 TASK 04
 
 :::html
@@ -682,13 +733,13 @@ alice로 로그인하면 /model에 Opus가 보이고, bob으로 다시 로그인
 :::notes
 {timing: 0.5min}
 [요약]
-• 선택 LAB 10분, Chapter 6 선택 TASK 04, 각자 Bedrock 직결
+• 선택 LAB, Chapter 6 선택 TASK 04, 각자 Bedrock 직결
 • modelPricing.multiplier 병합, /usage configured rates 확인, 대시보드 전후 비교, 백업으로 원복
 
 시간이 남는 분들은 선택 랩을 해 보세요. Bedrock 직결 상태에서 managed settings에 modelPricing을 넣고, /usage에 configured rates가 표시되는지, 대시보드에서는 어떻게 보이는지 비교해 보세요. 끝나면 백업으로 원복합니다.
 :::
 ---
-<!-- Slide 17: Deep dive FAQ -->
+<!-- Slide 18: Deep dive FAQ -->
 @type: content
 @fit: off
 
@@ -747,7 +798,7 @@ alice로 로그인하면 /model에 Opus가 보이고, bob으로 다시 로그인
 세 번째는 Admin API로 그룹 기본값을 걸고 예외 사용자를 두는 겁니다. amount는 US 센트 문자열이라 하루 50달러는 5000이에요.
 :::
 ---
-<!-- Slide 18: Key Takeaways -->
+<!-- Slide 19: Key Takeaways -->
 @type: content
 @fit: off
 
@@ -777,7 +828,7 @@ Chapter 6을 세 줄로 정리할게요.
 Chapter 5의 덜 쓰기까지 합치면 덜 쓰고, 보고, 막기죠. 여기까지가 이틀 과정의 마지막 챕터입니다.
 :::
 ---
-<!-- Slide 19: Thank you -->
+<!-- Slide 20: Thank you -->
 @type: thankyou
 @toc: toc.html
 @message: 다음은 Capstone 쇼케이스와 Closing입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에 언제든 편하게 남겨 주세요.

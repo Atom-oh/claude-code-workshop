@@ -43,12 +43,12 @@ AWS Korea
 <div class="fsi fsi-survey c5-survey">
   <div class="sv-big">
     <span class="eyebrow">PRE-SURVEY</span>
-    <div class="num"><span id="c5-survey-num">58명</span></div>
-    <p class="lead">참가 확정자 <b>138명 중 58명</b>이 팀 표준화(설정, 권한, 훅, MCP)를 기대 주제로 골랐습니다.</p>
+    <div class="num"><span id="c5-survey-num">60명</span></div>
+    <p class="lead">참가 확정자 <b>142명 중 60명</b>이 팀 표준화(설정, 권한, 훅, MCP)를 기대 주제로 골랐습니다.</p>
     <p class="why">이 챕터에서 그 표준을 플러그인 하나로 묶어 배포합니다.</p>
   </div>
   <div class="share" id="c5-survey-share">
-    <div class="lb"><span>팀 표준화를 고른 사람</span><b>58 / 138명</b></div>
+    <div class="lb"><span>팀 표준화를 고른 사람</span><b>60 / 142명</b></div>
     <div class="tr"><i></i></div>
     <p class="rank">기대 주제 2위, 복수 선택 문항</p>
   </div>
@@ -58,8 +58,8 @@ AWS Korea
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var bar = document.querySelector('.slide-deck #c5-survey-share .tr i') || document.querySelector('#c5-survey-share .tr i');
-  function grow(on) { bar.style.width = on ? (58 / 138 * 100).toFixed(1) + '%' : '0'; }
-  F.countUp('#c5-survey-num', 58, { suffix: '명' });
+  function grow(on) { bar.style.width = on ? (60 / 142 * 100).toFixed(1) + '%' : '0'; }
+  F.countUp('#c5-survey-num', 60, { suffix: '명' });
   F.onEnter(bar, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
   grow(true);
 });
@@ -68,15 +68,15 @@ AWS Korea
 :::notes
 {timing: 1min}
 [요약]
-• 138명 중 58명이 팀 표준화(설정, 권한, 훅, MCP)를 기대 주제로 선택
+• 142명 중 60명이 팀 표준화(설정, 권한, 훅, MCP)를 기대 주제로 선택
 • 기대 주제 2위, 복수 선택
 • 그 표준을 플러그인 하나로 묶어 배포하는 것이 이 챕터의 목표
 
-사전 설문에서 138분 중 58분이 팀 표준화를 기대 주제로 골라주셨어요. 설정, 권한, 훅, MCP를 팀에서 똑같이 쓰는 방법이죠. 복수 선택에서는 2위였습니다.
+사전 설문에서 142분 중 60분이 팀 표준화를 기대 주제로 골라주셨어요. 설정, 권한, 훅, MCP를 팀에서 똑같이 쓰는 방법이죠. 복수 선택에서는 2위였습니다.
 어제까지는 각자 만들었잖아요. 오늘은 그걸 플러그인 하나로 묶어서, 동료도 설치 한 줄로 같은 환경을 갖게 해보려는 거예요.
 
 [출처]
-• 이번 워크숍 사전 설문, 참가 확정자 138명 기준
+• 이번 워크숍 사전 설문, 참가 확정자 142명 기준 (2026-11-14 집계)
 
 {cue: transition}
 그럼 이 목표에 맞춰 짠 오늘 순서부터 갈게요.
@@ -87,16 +87,16 @@ AWS Korea
 @type: content
 @fit: off
 
-## 강의 35분 + 랩 55분 (선택 12분)
-세 개의 Part와 Super Lab, 개인 설정에서 팀의 플랫폼까지
+## 강의 세 Part와 Super Lab
+개인 설정에서 팀의 플랫폼까지
 
 :::html
 <div class="fsi fsi-agenda">
   <div class="fsi-grid-4">
-    <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
-    <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
-    <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
-    <div class="pick lab"><span class="k">SUPER LAB / 55분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
+    <div class="pick"><span class="k">PART 01</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
+    <div class="pick"><span class="k">PART 02</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
+    <div class="pick"><span class="k">PART 03</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
+    <div class="pick lab"><span class="k">SUPER LAB</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
 </div>
@@ -105,13 +105,13 @@ AWS Korea
 :::notes
 {timing: 0.5min}
 [요약]
-• 강의는 세 Part, 12분 10분 13분으로 35분
-• 이어서 Super Lab 55분(10:45–11:40, 선택 TASK 06 12분 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
-• 진행자 메모: 랩 칸은 55분이라 시간이 모자라면 TASK 07~08(mod 통제와 체크리스트)을 Capstone R2 시작 때 진행
+• 강의는 세 Part: Plugins, 사내 배포, Mods
+• 이어서 Super Lab(선택 TASK 06 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
+• 진행자 메모: 랩이 빠듯하면 TASK 07~08(mod 통제와 체크리스트)을 Capstone R2 시작 때 진행
 • 더 알아보기는 질문이 나오면 펼침
 
 오늘은 세 Part로 갑니다. 첫 번째는 플러그인이 뭔지, 어떻게 생겼는지예요. 두 번째는 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 세 번째는 Claude Code 안에서 도는 코드인 mod입니다.
-강의 35분이 끝나면 10시 45분부터 55분 동안 Super Lab에서 팀 스타터 킷을 직접 만들어 볼 거예요. 선택 TASK 06은 12분이 더 걸리고요.
+강의가 끝나면 Super Lab에서 팀 스타터 킷을 직접 만들어 볼 거예요. 선택 TASK 06은 여유가 있을 때 하시면 되고요.
 랩이 빠듯하면 TASK 07과 08, mod 통제와 체크리스트는 Capstone Round 2를 시작할 때 이어서 하셔도 됩니다.
 :::
 
@@ -1030,7 +1030,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 @type: content
 @fit: off
 
-## 약 60분, 팀 스타터 킷 제작
+## 팀 스타터 킷 제작
 SUPER LAB, 팀 스타터 킷 플러그인 + mod
 
 :::html
@@ -1040,7 +1040,7 @@ SUPER LAB, 팀 스타터 킷 플러그인 + mod
     <li><b>TASK 03-04</b><span>fsi-local에서 asset-team-kit@fsi-local 설치, 킷으로 pension-product.md 완성</span><em>Part 1</em></li>
     <li><b>TASK 05</b><span>공식 first-mod 만들기, Claude에게 /tally-reset 추가 요청</span><em>Part 3</em></li>
     <li><b>TASK 07</b><span>allowManagedModsOnly로 사용자 mod 차단 확인, 원복</span><em>Part 3</em></li>
-    <li><b>TASK 08</b><span>배포 전 체크리스트 (선택 TASK 06: Bedrock용 idle compaction mod, 12분)</span><em>Part 2</em></li>
+    <li><b>TASK 08</b><span>배포 전 체크리스트 (선택 TASK 06: Bedrock용 idle compaction mod)</span><em>Part 2</em></li>
   </ol>
   <p class="where">TASK 00에서 Ch3 결과물을 확인하고, 없으면 키트 기준본으로 채웁니다. 골격은 복사해 붙이고, 나머지는 Claude에게 시킵니다.</p>
 </div>
@@ -1049,17 +1049,17 @@ SUPER LAB, 팀 스타터 킷 플러그인 + mod
 :::notes
 {timing: 0.5min}
 [요약]
-• Super Lab 약 60분(필수 TASK 00~08, 선택 TASK 06 12분 별도), 팀 스타터 킷 플러그인과 mod
+• Super Lab(필수 TASK 00~08, 선택 TASK 06 별도), 팀 스타터 킷 플러그인과 mod
 • TASK 00 Ch3 결과물 확인, 01 retirement-gap 스킬, 02 asset-team-kit 묶기, 03 fsi-local 등록과 설치, 04 pension-product.md와 훅 차단
 • 05 first-mod와 /tally-reset, 07 사용자 mod 차단과 원복, 08 체크리스트
-• 선택 TASK 06은 Bedrock용 idle compaction mod, 12분
+• 선택 TASK 06은 Bedrock용 idle compaction mod
 
 {cue: demo}
-강의가 끝나면 약 60분 동안 Super Lab을 합니다.
+강의가 끝나면 Super Lab을 합니다.
 Ch3에서 고객자산 분석 담당자로 반복한 분석을 이제 팀 자산으로 만드는 거예요. TASK 00에서 Ch3의 에이전트 세 개와 segments.md, Ch2 Lab 2의 DLP 스크립트를 확인하고, 없는 건 키트 기준본으로 채웁니다.
 TASK 01에서 노후 연금 격차 계산을 retirement-gap 스킬로 고정하고, TASK 02에서 에이전트 세 개랑 이 스킬, DLP 훅을 asset-team-kit 하나로 묶습니다. TASK 03에서는 로컬 디렉터리 마켓플레이스 fsi-local을 등록해서 /plugin install asset-team-kit@fsi-local로 동료 폴더에 설치해요. TASK 04에서는 그 킷으로 연금상품 기획서 pension-product.md를 쓰고, 플러그인 훅이 주민등록번호 형식 프롬프트를 막는지 봅니다.
 TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를 추가하게 시킵니다. TASK 07은 allowManagedModsOnly로 사용자 mod가 막히는지 확인하고 꼭 원복하세요. 마지막 TASK 08은 배포 전 체크리스트예요.
-시간 남으시면 12분짜리 선택 TASK 06, Bedrock용 idle compaction mod를 해 보세요.
+시간 남으시면 선택 TASK 06, Bedrock용 idle compaction mod를 해 보세요.
 골격은 복사해서 붙이고, 나머지는 Claude한테 시키시면 됩니다.
 
 [출처]

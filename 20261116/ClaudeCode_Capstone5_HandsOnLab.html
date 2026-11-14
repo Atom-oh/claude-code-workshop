@@ -617,16 +617,15 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
 <div class="archive-note">예전 예시입니다. 새 캡스톤은 <a href="ClaudeCode_Capstone_Overview.html">여기</a>.</div>
 
 <header class="hero">
-  <span class="eyebrow">CAPSTONE 5 / QUAKE WATCH / 120 MIN</span>
+  <span class="eyebrow">CAPSTONE 5 / QUAKE WATCH</span>
   <h1>지구의 맥박, 실시간 지진 워치</h1>
   <div class="subtitle">USGS 피드 → 멱등 이벤트 스토어 → 세계지도 SVG → AI 해설, 그리고 CloudFront 개장</div>
   <p class="lede">
     지금 이 순간에도 지구는 움직입니다. 전 세계 규모 2.5 이상의 지진을 <strong>실시간 피드로 수집해</strong>
     세계지도 위에 펄스로 띄우고, Bedrock이 "지난 24시간, 지구는"을 해설합니다. 키 발급이 필요 없는
-    공공 데이터라 시작이 빠르고, 마감은 CloudFront → ALB → Fargate 실배포입니다. 120분, 배포까지 완결합니다.
+    공공 데이터라 시작이 빠르고, 마감은 CloudFront → ALB → Fargate 실배포입니다. 배포까지 완결합니다.
   </p>
   <div class="hero-meta">
-    <span>소요 시간 <strong>120분</strong></span>
     <span>미션 <strong>5개 + DoD</strong></span>
     <span>산출물 <strong>공개 URL로 열리는 내 지진 워치</strong></span>
     <span>Update <strong>2026.08</strong></span>
@@ -637,29 +636,28 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
   <div class="timeline-inner">
     <span class="timeline-label">진행 <strong id="progress-count">0/8</strong></span>
     <div class="segments" id="segments">
-      <button class="seg" data-task="m0" style="flex:5" title="M0 사전 준비, 5분"><span class="fill"></span><span class="seg-txt">M0</span></button>
-      <button class="seg" data-task="m1" style="flex:15" title="M1 설계, 15분"><span class="fill"></span><span class="seg-txt">M1 설계</span></button>
-      <button class="seg" data-task="m2" style="flex:30" title="M2 수집기와 스토어, 30분"><span class="fill"></span><span class="seg-txt">M2 수집기</span></button>
-      <button class="seg" data-task="m3" style="flex:40" title="M3 세계지도, 40분"><span class="fill"></span><span class="seg-txt">M3 세계지도</span></button>
-      <button class="seg" data-task="m4" style="flex:30" title="M4 브리핑과 개장, 30분"><span class="fill"></span><span class="seg-txt">M4 개장</span></button>
+      <button class="seg" data-task="m0" style="flex:5" title="M0 사전 준비"><span class="fill"></span><span class="seg-txt">M0</span></button>
+      <button class="seg" data-task="m1" style="flex:15" title="M1 설계"><span class="fill"></span><span class="seg-txt">M1 설계</span></button>
+      <button class="seg" data-task="m2" style="flex:30" title="M2 수집기와 스토어"><span class="fill"></span><span class="seg-txt">M2 수집기</span></button>
+      <button class="seg" data-task="m3" style="flex:40" title="M3 세계지도"><span class="fill"></span><span class="seg-txt">M3 세계지도</span></button>
+      <button class="seg" data-task="m4" style="flex:30" title="M4 브리핑과 개장"><span class="fill"></span><span class="seg-txt">M4 개장</span></button>
     </div>
-    <span class="timeline-label">120 min</span>
   </div>
 </nav>
 
 <div class="layout">
 
 <aside class="sidenav" aria-label="미션 목차">
-  <div class="nav-title">MISSIONS / 120분</div>
+  <div class="nav-title">MISSIONS</div>
   <a href="#brief" data-nav="brief"><span class="dot"></span>브리핑<span class="nav-time"></span></a>
   <a href="#blueprint" data-nav="blueprint"><span class="dot"></span>구현 청사진<span class="nav-time">참고</span></a>
-  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 사전 준비<span class="nav-time">5분</span></a>
-  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 설계<span class="nav-time">15분</span></a>
-  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 수집기와 스토어<span class="nav-time">30분</span></a>
-  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 세계지도<span class="nav-time">40분</span></a>
-  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 브리핑과 개장<span class="nav-time">30분</span></a>
+  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 사전 준비<span class="nav-time"></span></a>
+  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 설계<span class="nav-time"></span></a>
+  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 수집기와 스토어<span class="nav-time"></span></a>
+  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 세계지도<span class="nav-time"></span></a>
+  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 브리핑과 개장<span class="nav-time"></span></a>
   <a href="#gq" data-nav="gq"><span class="dot"></span>BONUS 퀄리티 강화<span class="nav-time">+α</span></a>
-  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">+15분</span></a>
+  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">옵션</span></a>
   <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리<span class="nav-time"></span></a>
 </aside>
 
@@ -669,7 +667,7 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
   <div class="task-head"><span class="task-num">MISSION BRIEFING</span><h2>지구를 모니터링하는 법</h2><span class="time-badge">숙지</span></div>
   <p class="task-goal">
     <strong>빈 폴더에서 superpowers 워크플로로</strong> 설계하고 Phase 단위로 빌드합니다.
-    2시간 트랙이라 키 발급이 없고(USGS는 공공 피드), 마감은 로컬이 아니라 <strong>CloudFront 실배포</strong>입니다.
+    키 발급이 없고(USGS는 공공 피드), 마감은 로컬이 아니라 <strong>CloudFront 실배포</strong>입니다.
     데이터는 실제 지구의 기록이며, 수집 주기마다 바뀝니다.
   </p>
   <table class="tbl">
@@ -774,7 +772,7 @@ docker build ──> ECR push ──> CDK: CloudFront ──> (VPC origin) 내�
 </section>
 
 <section class="task" id="m0">
-  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비</h2><span class="time-badge">5분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비</h2></div>
   <p class="task-goal">이 트랙은 <strong>외부 키 발급이 없습니다</strong>. Bedrock Bearer와 AWS 자격만 확인하면 출발입니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
@@ -790,7 +788,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
 </section>
 
 <section class="task" id="m1">
-  <div class="task-head"><span class="task-num">MISSION 01</span><h2>설계, 브레인스토밍</h2><span class="time-badge">15분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 01</span><h2>설계, 브레인스토밍</h2></div>
   <p class="task-goal">수집/저장/지도/브리핑/배포까지 <strong>요구 9조항</strong>으로 넘깁니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 세션 운용과 Capstone Setup의 superpowers 워크플로.</p>
   <div class="code-wrap">
@@ -843,15 +841,15 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
 </section>
 
 <section class="task" id="m2">
-  <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 수집기와 스토어</h2><span class="time-badge">30분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 수집기와 스토어</h2></div>
   <p class="task-goal">피드가 60초마다 돌고, 이벤트가 <strong>id 멱등으로</strong> 쌓이고, /api/quakes가 필터와 통계를 얹어 주면 끝입니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 배운 방식으로 code-reviewer 서브에이전트를 만들어 수집기 리뷰를 맡겨 보세요.</p>
 
   <div class="callout tip">
-    <span class="co-title">2시간의 열쇠, 인프라 선배포</span>
+    <span class="co-title">시간을 버는 열쇠, 인프라 선배포</span>
     <code class="inline">cdk deploy</code>는 첫 회 20~30분이 걸립니다(VPC origin 생성만 최대 15분). <strong>Phase 1을 시작하자마자
     별도 터미널에서 인프라 배포를 먼저 걸어 두세요</strong>(앱 이미지는 나중에 갱신). 빌드와 배포 대기가
-    겹치면 M4는 이미지 푸시와 서비스 갱신만 남아 10분 안에 개장합니다.
+    겹치면 M4는 이미지 푸시와 서비스 갱신만 남아 금방 개장합니다.
   </div>  <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 인프라 선배포 (백그라운드)</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/capstone/capstone-5 &amp;&amp; npx aws-cdk@2 deploy --require-approval never   # Claude가 infra를 만든 직후 실행</code></pre>
@@ -881,7 +879,7 @@ curl -s "localhost:8000/api/quakes?hours=24&amp;min_mag=2.5" | python3 -c "impor
 </section>
 
 <section class="task" id="m3">
-  <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2, 세계지도</h2><span class="time-badge">40분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2, 세계지도</h2></div>
   <p class="task-goal"><strong>변환 두 줄로 진앙이 제자리에</strong> 찍히고, 규모 슬라이더와 테이블까지 살아나면 워치가 완성됩니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 병렬 감각. 지도를 그리는 동안 테이블과 필터를 서브에이전트로 병행할 수 있습니다.</p>
   <div class="code-wrap prompt">
@@ -913,7 +911,7 @@ curl -s "localhost:8000/api/quakes?hours=24&amp;min_mag=2.5" | python3 -c "impor
 </section>
 
 <section class="task" id="m4">
-  <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 3 + 4, 브리핑과 개장</h2><span class="time-badge">30분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 3 + 4, 브리핑과 개장</h2></div>
   <p class="task-goal">숫자가 <strong>읽고 싶은 해설</strong>이 되고, 내 CloudFront URL이 열리면 미션 완료입니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 자격과 Secrets 주입의 배경, 그 위에서 도는 REST 계약.</p>
   <div class="code-wrap prompt">
@@ -1014,7 +1012,7 @@ curl -s "https://$DOMAIN/healthz" &amp;&amp; echo " &lt;- 열렸습니다, 이 U
 </section>
 
 <section class="task" id="opt-h">
-  <div class="task-head"><span class="task-num">OPTION</span><h2>하네스 엔지니어링</h2><span class="time-badge">+15분</span></div>
+  <div class="task-head"><span class="task-num">OPTION</span><h2>하네스 엔지니어링</h2><span class="time-badge">옵션</span></div>
   <p class="task-goal">완주한 프로젝트를 <strong>표준 하네스</strong>로 성숙시킵니다 (project-init으로 구조를 잡고 harness-eval로 6개 차원 등급을 받습니다).</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4</a>의 훅과 스킬을 팀 자산으로 승격하는 감각, 그리고 <a href="ClaudeCode_Reference3_Plugins.html" style="color:#c9a2ff">Reference 3</a>의 플러그인 생태계.</p>
   <div class="code-wrap">

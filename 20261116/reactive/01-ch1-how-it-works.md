@@ -28,7 +28,7 @@ if (!window.__fsiLoaded) {
 • 공식 문서 code.claude.com/docs 내용을 반영
 
 안녕하세요. 이틀 동안 함께할 Claude Code Deep Dive Workshop, 첫 챕터를 시작할게요.
-이 챕터는 30분 동안 Claude Code가 어떻게 움직이는지 전체 그림을 같이 맞춰 보는 시간이에요.
+이 챕터에서는 Claude Code가 어떻게 움직이는지 전체 그림을 같이 맞춰 볼 거예요.
 이번 자료는 정적인 장표 대신 단계별로 움직이는 그림으로 준비했어요. 화면 오른쪽 아래 버튼이나 키보드 아래 화살표로 단계를 넘겨 볼게요.
 
 {cue: transition}
@@ -47,17 +47,17 @@ if (!window.__fsiLoaded) {
 <div class="fsi fsi-survey">
   <div class="sv-big">
     <span class="eyebrow">PRE-SURVEY</span>
-    <div class="num"><span id="survey-num">40.6%</span></div>
-    <p class="lead">참가 확정자 <b>138명 중 56명</b>이 Claude Code 활용 수준을 <b>입문, 초급</b>으로 답했습니다.</p>
+    <div class="num"><span id="survey-num">42.3%</span></div>
+    <p class="lead">참가 확정자 <b>142명 중 60명</b>이 Claude Code 활용 수준을 <b>입문, 초급</b>으로 답했습니다.</p>
     <p class="why">그래서 이 챕터에서 전체 구조를 먼저 맞추고, 랩 명령은 그대로 복사해 따라 할 수 있게 만들었습니다.</p>
   </div>
   <div class="bars" id="survey-bars">
-    <div class="bar lo" data-v="18"><span class="lb">입문</span><span class="tr"><i></i></span><span class="v">18명</span></div>
-    <div class="bar lo" data-v="38"><span class="lb">초급</span><span class="tr"><i></i></span><span class="v">38명</span></div>
+    <div class="bar lo" data-v="20"><span class="lb">입문</span><span class="tr"><i></i></span><span class="v">20명</span></div>
+    <div class="bar lo" data-v="40"><span class="lb">초급</span><span class="tr"><i></i></span><span class="v">40명</span></div>
     <div class="bar" data-v="64"><span class="lb">중급</span><span class="tr"><i></i></span><span class="v">64명</span></div>
     <div class="bar" data-v="15"><span class="lb">고급</span><span class="tr"><i></i></span><span class="v">15명</span></div>
     <div class="bar" data-v="3"><span class="lb">미기재</span><span class="tr"><i></i></span><span class="v">3명</span></div>
-    <p class="cap">막대 길이는 응답 인원, 주황 막대가 입문과 초급(합계 56명)</p>
+    <p class="cap">막대 길이는 응답 인원, 주황 막대가 입문과 초급(합계 60명)</p>
   </div>
 </div>
 :::
@@ -67,7 +67,7 @@ if (!window.__fsiLoaded) {
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var bars = Array.prototype.slice.call(document.querySelectorAll('#survey-bars .bar'));
   function grow(on) { bars.forEach(function (b, i) { var w = on ? (b.dataset.v / 64 * 100) : 0; setTimeout(function () { b.querySelector('i').style.width = w + '%'; }, on ? 120 * i : 0); }); }
-  F.countUp('#survey-num', 40.6, { decimals: 1, suffix: '%' });
+  F.countUp('#survey-num', 42.3, { decimals: 1, suffix: '%' });
   var host = document.getElementById('survey-bars');
   F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
   grow(true);
@@ -77,20 +77,20 @@ if (!window.__fsiLoaded) {
 :::notes
 {timing: 1min}
 [요약]
-• 참가 확정자 138명 중 56명(40.6%)이 입문 또는 초급
+• 참가 확정자 142명 중 60명(42.3%)이 입문 또는 초급
 • 중급 64명, 고급 15명, 미기재 3명
 • 그래서 구조부터 맞추고, 랩 명령은 그대로 복사해 따라 하도록 설계
 
 {cue: pause}
-참가 확정자 138명 가운데 56명, 40.6%가 Claude Code를 입문이나 초급 수준으로 쓰고 있다고 답해 주셨어요.
+참가 확정자 142명 가운데 60명, 42.3%가 Claude Code를 입문이나 초급 수준으로 쓰고 있다고 답해 주셨어요.
 중급이 64명으로 가장 많긴 한데요. 열 분 중 네 분은 이제 막 시작하신 셈이죠.
 그래서 이 챕터는 전체 구조를 먼저 맞추는 데 집중하고요, 랩은 명령을 그대로 복사해서 따라 하실 수 있게 만들었어요. 이미 익숙하신 분들은 이후 관리 기능이 어디에 있는지 보는 지도로 생각하시면 됩니다.
 
 [출처]
-• 이번 워크숍 사전 설문, 참가 확정자 138명 기준
+• 이번 워크숍 사전 설문, 참가 확정자 142명 기준 (2026-11-14 집계)
 
 {cue: transition}
-그럼 이 눈높이에 맞춰 짠 오늘 30분의 순서를 보겠습니다.
+그럼 이 눈높이에 맞춰 짠 오늘 순서를 보겠습니다.
 :::
 
 ---
@@ -98,19 +98,19 @@ if (!window.__fsiLoaded) {
 @type: content
 @fit: off
 
-## 강의 30분, 실습은 13:00 통합 랩
+## 네 개의 Part와 통합 랩
 네 개의 Part와 Lab, 작동 원리에서 이틀간의 학습 지도까지
 
 :::html
 <div class="fsi fsi-agenda">
   <div class="fsi-grid-4">
-    <div class="pick"><span class="k">PART 01 / 7분</span><span class="t">에이전트 루프</span><span class="d">모델과 도구가 함께 일하는 방식</span></div>
-    <div class="pick"><span class="k">PART 02 / 8분</span><span class="t">컨텍스트와 세션</span><span class="d">무엇이 들어가고 어디에 남나</span></div>
-    <div class="pick"><span class="k">PART 03 / 9분</span><span class="t">권한과 데이터 경로</span><span class="d">Bedrock에서 데이터가 가는 길</span></div>
-    <div class="pick"><span class="k">PART 04 / 6분</span><span class="t">이틀 동안 배울 것</span><span class="d">관리와 활용, 두 갈래</span></div>
+    <div class="pick"><span class="k">PART 01</span><span class="t">에이전트 루프</span><span class="d">모델과 도구가 함께 일하는 방식</span></div>
+    <div class="pick"><span class="k">PART 02</span><span class="t">컨텍스트와 세션</span><span class="d">무엇이 들어가고 어디에 남나</span></div>
+    <div class="pick"><span class="k">PART 03</span><span class="t">권한과 데이터 경로</span><span class="d">Bedrock에서 데이터가 가는 길</span></div>
+    <div class="pick"><span class="k">PART 04</span><span class="t">이틀 동안 배울 것</span><span class="d">관리와 활용, 두 갈래</span></div>
   </div>
   <div class="fsi-grid-2">
-    <div class="pick lab"><span class="k">LAB / 점심 뒤 13:00 통합 랩</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
+    <div class="pick lab"><span class="k">LAB / 점심 뒤 통합 랩</span><span class="t">Preflight + 에이전트 루프 관찰</span><span class="d">실습 환경을 점검하고, 오늘 본 루프를 직접 확인</span></div>
     <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">CLAUDE.md 계층, 추론 리전과 데이터 위치</span></div>
   </div>
 </div>
@@ -120,14 +120,14 @@ if (!window.__fsiLoaded) {
 :::notes
 {timing: 0.5min}
 [요약]
-• 강의는 네 Part, 7분 8분 9분 6분으로 총 30분
-• 실습은 점심 뒤 13:00 통합 랩에서 Ch2 Lab과 함께 진행 (Preflight + 에이전트 루프 관찰)
+• 강의는 네 Part로 구성
+• 실습은 점심 뒤 통합 랩에서 Ch2 Lab과 함께 진행 (Preflight + 에이전트 루프 관찰)
 • 더 알아보기는 시간이 남거나 질문이 나올 때 사용
 
 오늘은 네 Part로 갑니다.
 첫 번째는 한 번의 요청이 처리되는 에이전트 루프예요. 두 번째는 그 루프에 무엇이 실리고 어디에 남는지 볼 거고요.
 세 번째는 금융권에서 가장 많이 묻는 권한과 Bedrock 데이터 경로입니다. 마지막으로 이틀 동안 어떤 순서로 배우는지 지도를 보여드릴게요.
-Ch1 실습은 점심 뒤 13시 통합 랩에서 Ch2 랩과 함께 진행해요. 바로 이어서 하는 건 아니에요. 뒤쪽 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
+Ch1 실습은 점심 뒤 통합 랩에서 Ch2 랩과 함께 진행해요. 바로 이어서 하는 건 아니에요. 뒤쪽 더 알아보기는 시간이 남거나 질문이 나오면 펼쳐 보겠습니다.
 :::
 
 ---
@@ -1041,21 +1041,21 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
   <div class="day">
     <div class="dl"><b>DAY 1</b>개인에서 조직으로</div>
     <div class="track">
-      <div class="ev now"><span class="tm">10:10</span><span class="nm">Ch1 동작 원리, Lab</span><span class="me">지금 여기, Lab은 13:00</span></div>
-      <div class="ev"><span class="tm">10:50</span><span class="nm">Ch2 Bedrock 위에서 안전하게</span></div>
-      <div class="ev"><span class="tm">13:00</span><span class="nm">통합 랩: Preflight, Ch1, Ch2 Lab 1·2 (정책, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>)</span></div>
-      <div class="ev"><span class="tm">14:00</span><span class="nm">Ch3 Subagent, Lab 14:40</span></div>
+      <div class="ev now"><span class="tm">01</span><span class="nm">Ch1 동작 원리, Lab</span><span class="me">지금 여기, Lab은 점심 뒤</span></div>
+      <div class="ev"><span class="tm">02</span><span class="nm">Ch2 Bedrock 위에서 안전하게</span></div>
+      <div class="ev"><span class="tm">03</span><span class="nm">통합 랩: Preflight, Ch1, Ch2 Lab 1과 2 (정책, <span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>)</span></div>
+      <div class="ev"><span class="tm">04</span><span class="nm">Ch3 Subagent, Lab</span></div>
     </div>
   </div>
   <div class="day">
     <div class="dl"><b>DAY 2</b>확장에서 측정으로</div>
     <div class="track">
-      <div class="ev"><span class="tm">10:10</span><span class="nm">Ch4 확장하기</span></div>
-      <div class="ev"><span class="tm">13:00</span><span class="nm">Ch5 비용 효율</span></div>
-      <div class="ev"><span class="tm">16:50</span><span class="nm">Ch6 조직의 비용</span></div>
+      <div class="ev"><span class="tm">01</span><span class="nm">Ch4 확장하기</span></div>
+      <div class="ev"><span class="tm">02</span><span class="nm">Ch5 비용 효율</span></div>
+      <div class="ev"><span class="tm">03</span><span class="nm">Ch6 조직의 비용</span></div>
     </div>
   </div>
-  <p class="cap">세부 시간은 현장 운영에 따라 바뀔 수 있습니다. 매일 오후에는 Capstone 라운드가 이어집니다.</p>
+  <p class="cap">세부 시간은 초대 메일(eDM)을 확인해 주세요. 매일 오후에는 Capstone 라운드가 이어집니다.</p>
 </div>
 :::
 
@@ -1063,8 +1063,8 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 :::notes
 {timing: 1min}
 [요약]
-• Day 1: 10:10 Ch1, 10:50 Ch2 Bedrock 위에서 안전하게 쓰기, 13:00 통합 랩(Preflight, Ch1 Lab, Ch2 Lab 1과 Lab 2), 14:00 Ch3 Subagent (Lab 14:40)
-• Day 2: 10:10 Ch4 Claude Code 확장하기, 13:00 Ch5 비용 효율적으로 쓰기, 16:50 Ch6 조직의 비용 보고 통제하기
+• Day 1: Ch1, Ch2 Bedrock 위에서 안전하게 쓰기, 통합 랩(Preflight, Ch1 Lab, Ch2 Lab 1과 Lab 2), Ch3 Subagent와 Lab 순서
+• Day 2: Ch4 Claude Code 확장하기, Ch5 비용 효율적으로 쓰기, Ch6 조직의 비용 보고 통제하기 순서
 • 매일 오후 Capstone 라운드
 
 이틀의 흐름을 보시면, Day 1은 개인의 도구를 조직이 통제하는 단계까지 갑니다. Day 2는 팀의 플랫폼으로 확장하고 비용을 측정하는 단계까지 가고요.
@@ -1073,7 +1073,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 내일은 Ch4 Claude Code 확장하기로 시작해서 Ch5 비용 효율적으로 쓰기, Ch6 조직의 비용 보고 통제하기로 이어져요. 매일 오후에는 Capstone 라운드가 있습니다.
 
 [출처]
-• 원본 Ch1 강의자료 p25 일정 (eDM.html과 일치). 세부 시간은 현장 운영에 따라 변동 가능
+• 원본 Ch1 강의자료 p25 순서. 세부 시간은 eDM에서만 안내
 :::
 
 ---
@@ -1082,7 +1082,7 @@ PART 04, 같은 기능을 관리자와 사용자 양쪽에서
 @fit: off
 
 ## 통합 랩에서 직접 확인할 다섯 가지
-LAB, Preflight + 에이전트 루프 관찰 (13:00 통합 랩 시작)
+LAB, Preflight + 에이전트 루프 관찰 (점심 뒤 통합 랩)
 
 :::html
 <div class="fsi fsi-lab">
@@ -1100,12 +1100,12 @@ LAB, Preflight + 에이전트 루프 관찰 (13:00 통합 랩 시작)
 :::notes
 {timing: 0.5min}
 [요약]
-• Ch1 실습은 점심 뒤 13:00 통합 랩에서 시작, 이어서 Ch2 Lab 1과 Lab 2
+• Ch1 실습은 점심 뒤 통합 랩에서 시작, 이어서 Ch2 Lab 1과 Lab 2
 • Preflight와 TASK 01부터 04까지, 오늘 본 Part 1에서 3을 직접 확인
 • Hands-on Lab 포털, Preflight, Chapter 1 순서
 
 {cue: demo}
-실습은 점심 뒤 13시 통합 랩에서 Preflight부터 시작하고, Ch2 랩까지 이어서 진행해요. 오늘 그림으로 보신 걸 직접 확인하는 시간입니다.
+실습은 점심 뒤 통합 랩에서 Preflight부터 시작하고, Ch2 랩까지 이어서 진행해요. 오늘 그림으로 보신 걸 직접 확인하는 시간입니다.
 먼저 Preflight로 Workshop Studio에 접속해서 code-server를 열고 게이트웨이 응답을 확인해요.
 TASK 01에서는 /status로 Bedrock과 us-east-1을 확인하고 루프를 지켜봅니다. TASK 02는 /context와 CLAUDE.md, 세션 파일이고요. TASK 03은 /rewind와 plan 모드, TASK 04는 CloudTrail에서 호출 기록을 확인하는 거예요.
 명령은 랩 문서에서 그대로 복사해서 따라 하시면 돼요.

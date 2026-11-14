@@ -626,7 +626,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 <header class="hero">
   <span class="eyebrow">Capstone Hands-on Lab B / Ch1~Ch6 통합</span>
   <h1>Mission: Self-Heal, 무인 운영실을 세워라</h1>
-  <div class="subtitle">Claude Code Deep Dive Workshop, Capstone B - 자율 복구 SRE 에이전트 (135분 목표 / 150분 상한)</div>
+  <div class="subtitle">Claude Code Deep Dive Workshop, Capstone B - 자율 복구 SRE 에이전트</div>
   <p class="lede">
     이번 미션의 정체성은 <strong>"지키는 Claude"</strong>입니다.
     작은 대상 서비스를 배포하고, 스스로 장애를 주입한 뒤, EC2 위 Claude Code 헤드리스가
@@ -646,28 +646,27 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="timeline-inner">
     <span class="timeline-label">진행 <strong id="progress-count">0/6</strong></span>
     <div class="segments" id="segments">
-      <button class="seg" data-task="m0" style="flex:15" title="M0 발사 준비, 15분"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
-      <button class="seg" data-task="m1" style="flex:25" title="M1 서비스 배포, 25분"><span class="fill"></span><span class="seg-txt">M1 서비스 배포</span></button>
-      <button class="seg" data-task="m2" style="flex:20" title="M2 런북과 카오스, 20분"><span class="fill"></span><span class="seg-txt">M2 런북/카오스</span></button>
-      <button class="seg" data-task="m3" style="flex:30" title="M3 메딕 에이전트, 30분"><span class="fill"></span><span class="seg-txt">M3 메딕</span></button>
-      <button class="seg" data-task="m4" style="flex:20" title="M4 인터록과 데몬, 20분"><span class="fill"></span><span class="seg-txt">M4 인터록/데몬</span></button>
-      <button class="seg" data-task="m5" style="flex:20" title="M5 블라인드 카오스, 20분"><span class="fill"></span><span class="seg-txt">M5 블라인드</span></button>
+      <button class="seg" data-task="m0" style="flex:15" title="M0 발사 준비"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
+      <button class="seg" data-task="m1" style="flex:25" title="M1 서비스 배포"><span class="fill"></span><span class="seg-txt">M1 서비스 배포</span></button>
+      <button class="seg" data-task="m2" style="flex:20" title="M2 런북과 카오스"><span class="fill"></span><span class="seg-txt">M2 런북/카오스</span></button>
+      <button class="seg" data-task="m3" style="flex:30" title="M3 메딕 에이전트"><span class="fill"></span><span class="seg-txt">M3 메딕</span></button>
+      <button class="seg" data-task="m4" style="flex:20" title="M4 인터록과 데몬"><span class="fill"></span><span class="seg-txt">M4 인터록/데몬</span></button>
+      <button class="seg" data-task="m5" style="flex:20" title="M5 블라인드 카오스"><span class="fill"></span><span class="seg-txt">M5 블라인드</span></button>
     </div>
-    <span class="timeline-label">130 min</span>
   </div>
 </nav>
 
 <div class="layout">
 
 <aside class="sidenav" aria-label="랩 목차">
-  <div class="nav-title">MISSIONS / 130분 + 버퍼</div>
-  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 발사 준비<span class="nav-time">15분</span></a>
-  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 서비스 배포<span class="nav-time">25분</span></a>
-  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 런북과 카오스<span class="nav-time">20분</span></a>
-  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 메딕 에이전트<span class="nav-time">30분</span></a>
-  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 안전 인터록과 데몬<span class="nav-time">20분</span></a>
-  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 블라인드 카오스 착륙<span class="nav-time">20분</span></a>
-  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">+15분</span></a>
+  <div class="nav-title">MISSIONS</div>
+  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 발사 준비<span class="nav-time"></span></a>
+  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 서비스 배포<span class="nav-time"></span></a>
+  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 런북과 카오스<span class="nav-time"></span></a>
+  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 메딕 에이전트<span class="nav-time"></span></a>
+  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 안전 인터록과 데몬<span class="nav-time"></span></a>
+  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 블라인드 카오스 착륙<span class="nav-time"></span></a>
+  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">옵션</span></a>
   <div class="nav-title" style="margin-top:18px">부록</div>
   <a href="#apx-b" data-nav="apx-b"><span class="dot"></span>부록 컷라인과 트러블슈팅<span class="nav-time"></span></a>
   <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리, 챕터 소환 지도<span class="nav-time"></span></a>
@@ -704,7 +703,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   </div>
   <p style="margin-top:14px">
     캡스톤 A(Ship It)를 먼저 했다면 M0의 상당 부분은 확인만으로 통과합니다.
-    90분 시점에 M3를 못 끝냈다면 <a href="#apx-b" style="color:#c9a2ff">부록 컷라인</a>을 적용하세요.
+    진행이 늦어 M3를 못 끝냈다면 <a href="#apx-b" style="color:#c9a2ff">부록 컷라인</a>을 적용하세요.
   </p>
 </section>
 
@@ -713,7 +712,6 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="task-head">
     <span class="task-num">MISSION 00</span>
     <h2>발사 준비, 계획 승인까지</h2>
-    <span class="time-badge">15분</span>
   </div>
   <p class="task-goal">
     환경 점검 후 superpowers로 <strong>4-Phase 계획을 승인</strong>합니다.
@@ -785,7 +783,6 @@ git add -A &amp;&amp; git commit -m "chore: cdk scaffold" 2&gt;/dev/null || true
   <div class="task-head">
     <span class="task-num">MISSION 01</span>
     <h2>대상 서비스 배포, 정상 상태의 기준선</h2>
-    <span class="time-badge">25분</span>
   </div>
   <p class="task-goal">
     Phase 1을 실행해 대상 서비스를 배포하고, <strong>건강할 때의 모습</strong>(health 200, order 성공, 로그 흐름)을
@@ -935,7 +932,6 @@ export const handler = async (event) =&gt; {
   <div class="task-head">
     <span class="task-num">MISSION 02</span>
     <h2>런북과 카오스, 병을 정의하다</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     <strong>서브에이전트가 런북을 쓰는 동안</strong>(Ch3), 여러분은 카오스 스크립트를 배치하고
@@ -1043,7 +1039,6 @@ ENV_BREAK 처방은 함수 설정 반영에 수 초가 걸릴 수 있다.</code>
   <div class="task-head">
     <span class="task-num">MISSION 03</span>
     <h2>메딕 에이전트, 진단과 치료의 자동화</h2>
-    <span class="time-badge">30분</span>
   </div>
   <p class="task-goal">
     Ch3에서 맛본 헤드리스 문법이 전부 들어간 <strong>medic.sh</strong>를 배치하고,
@@ -1173,7 +1168,6 @@ ROOT_CAUSE: CONFIG_POISON
   <div class="task-head">
     <span class="task-num">MISSION 04</span>
     <h2>안전 인터록과 무인 순찰</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     자율 에이전트에게 가장 먼저 줄 것은 자유가 아니라 <strong>브레이크</strong>입니다.
@@ -1261,7 +1255,6 @@ sleep 2 &amp;&amp; tail -2 medic.log</code></pre>
   <div class="task-head">
     <span class="task-num">MISSION 05</span>
     <h2>블라인드 카오스, 진짜 시험</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     이제 무슨 장애가 들어갈지 <strong>여러분도 모릅니다</strong>. /drill 스킬로 블라인드 장애를 주입하고,
@@ -1334,7 +1327,7 @@ pkill -f medic-daemon        # 데몬 종료
   <div class="task-head">
     <span class="task-num">OPTION</span>
     <h2>하네스 엔지니어링, 작품을 성숙시키고 등급을 받다</h2>
-    <span class="time-badge">+15분 옵션</span>
+    <span class="time-badge">옵션</span>
   </div>
   <p class="task-goal">
     지금까지 만든 것은 <strong>결과물</strong>입니다. 이 옵션은 그 결과물을 만든 <strong>작업 환경, 즉 하네스</strong>
@@ -1418,13 +1411,13 @@ claude plugin list</code></pre>
     <h2>컷라인과 트러블슈팅</h2>
     <span class="time-badge">비상용</span>
   </div>
-  <p class="task-goal">90분 시점 기준으로 순서대로 적용하세요. 어떤 컷에서도 M3의 메딕 1차 드릴과 M5의 블라인드는 지킵니다.</p>
+  <p class="task-goal">진행이 늦으면 순서대로 적용하세요. 어떤 컷에서도 M3의 메딕 1차 드릴과 M5의 블라인드는 지킵니다.</p>
 
   <table class="tbl">
-    <tr><th>컷</th><th>조치</th><th>절약</th></tr>
-    <tr><td>CUT 1</td><td>M4 데몬 생략, 메딕은 수동 실행으로 진행 (인터록은 유지)</td><td>~8분</td></tr>
-    <tr><td>CUT 2</td><td>M2 수동 드릴을 주입까지만 하고 처방은 런북 눈으로 확인</td><td>~5분</td></tr>
-    <tr><td>CUT 3</td><td>M5 블라인드를 모드 2(THROTTLE) 고정으로 대체</td><td>~5분</td></tr>
+    <tr><th>컷</th><th>조치</th></tr>
+    <tr><td>CUT 1</td><td>M4 데몬 생략, 메딕은 수동 실행으로 진행 (인터록은 유지)</td></tr>
+    <tr><td>CUT 2</td><td>M2 수동 드릴을 주입까지만 하고 처방은 런북 눈으로 확인</td></tr>
+    <tr><td>CUT 3</td><td>M5 블라인드를 모드 2(THROTTLE) 고정으로 대체</td></tr>
   </table>
 
   <div class="step-title"><span class="step-no">T</span>트러블슈팅 표</div>

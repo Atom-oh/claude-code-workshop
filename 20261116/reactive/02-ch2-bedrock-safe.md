@@ -35,7 +35,7 @@ window.__c3codepick = function (F, name, preId, lines, map) {
 :::notes
 {timing: 0.5min}
 [요약]
-• Bedrock 연결, 정책 배포, 가드레일을 한 번에 보는 50분 강의
+• Bedrock 연결, 정책 배포, 가드레일을 한 번에 보는 강의
 • 핵심 메시지: 키는 나눠 주지 않고, 정책은 파일로 강제하고, 막을 것은 앞에서 막는다
 • 깊은 내용은 Ch2 Lab 1과 Lab 2에서 직접 다룸
 
@@ -47,15 +47,15 @@ window.__c3codepick = function (F, name, preId, lines, map) {
 @type: content
 @fit: off
 
-## 강의 50분, 깊은 내용은 실습에서
+## 핵심은 강의, 깊이는 실습
 세 개의 Part, 연결에서 정책과 가드레일까지
 
 :::html
 <div class="fsi fsi-agenda">
   <div class="fsi-grid-3">
-    <div class="pick"><span class="k">PART 01 / 18분</span><span class="t">Bedrock에 연결하기</span><span class="d">환경변수 두 개, SSO 로그인, 모델 고정과 팀별 비용</span></div>
-    <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">정책은 파일로</span><span class="d">managed settings, 우선순위, /status로 확인</span></div>
-    <div class="pick"><span class="k">PART 03 / 16분</span><span class="t">무엇을 못 하게 할 것인가</span><span class="d">deny가 이긴다, 훅은 exit 2, DLP 다섯 겹, 남는 기록</span></div>
+    <div class="pick"><span class="k">PART 01</span><span class="t">Bedrock에 연결하기</span><span class="d">환경변수 두 개, SSO 로그인, 모델 고정과 팀별 비용</span></div>
+    <div class="pick"><span class="k">PART 02</span><span class="t">정책은 파일로</span><span class="d">managed settings, 우선순위, /status로 확인</span></div>
+    <div class="pick"><span class="k">PART 03</span><span class="t">무엇을 못 하게 할 것인가</span><span class="d">deny가 이긴다, 훅은 exit 2, DLP 다섯 겹, 남는 기록</span></div>
   </div>
   <div class="fsi-grid-2">
     <div class="pick lab"><span class="k">LAB / Ch2 Lab 1</span><span class="t">정책 배포, managed settings와 게이트웨이 그룹 정책</span><span class="d">정책을 배포하고, 개인 설정으로 우회가 안 되는지 확인</span></div>
@@ -67,9 +67,9 @@ window.__c3codepick = function (F, name, preId, lines, map) {
 :::notes
 {timing: 1.5min}
 [요약]
-• Part 1 Bedrock에 연결하기 18분, Part 2 정책은 파일로 10분, Part 3 무엇을 못 하게 할 것인가 16분
+• Part 1 Bedrock에 연결하기, Part 2 정책은 파일로, Part 3 무엇을 못 하게 할 것인가
 • 강의는 핵심 기능 위주, IAM 세부, auto mode, 샌드박스, 게이트웨이 같은 깊은 내용은 실습으로
-• 실습은 점심 뒤 13:00 통합 랩 60분에서 Preflight, Ch1 Lab에 이어 Ch2 Lab 1과 Lab 2
+• 실습은 점심 뒤 통합 랩에서 Preflight, Ch1 Lab에 이어 Ch2 Lab 1과 Lab 2
 
 오늘은 세 Part로 갑니다.
 첫 번째는 Bedrock에 어떻게 붙는지예요. 두 번째는 회사 정책을 어떻게 파일로 내려보내는지, 세 번째는 위험한 동작을 어떻게 막고 기록하는지입니다.
@@ -730,7 +730,7 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local을 씁니다. 그
 @type: content
 @fit: off
 
-## 138명 중 51명이 고른 주제
+## 142명 중 51명이 고른 주제
 사전 설문, 망분리와 보안(DLP, 감사로그)에 대한 기대
 
 :::html
@@ -738,13 +738,13 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local을 씁니다. 그
   <div class="sv-big">
     <span class="eyebrow">PRE-SURVEY</span>
     <div class="num"><span id="c3-survey-num">51</span></div>
-    <p class="lead">참가 확정자 <b>138명 중 51명</b>이 "망분리, 보안(<span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>, 감사로그)"를 기대 주제로 골랐습니다.</p>
+    <p class="lead">참가 확정자 <b>142명 중 51명</b>이 "망분리, 보안(<span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>, 감사로그)"를 기대 주제로 골랐습니다.</p>
     <p class="why">이 챕터는 그 기대에 답하는 시간입니다. 무엇을 막을 수 있고, 무엇이 기록으로 남는지 정리합니다.</p>
   </div>
   <div class="bars" id="c3-survey-bars">
     <div class="bar lo" data-v="51"><span class="lb">망분리, 보안</span><span class="tr"><i></i></span><span class="v">51명</span></div>
-    <div class="bar" data-v="44"><span class="lb">규제, 감사 대응</span><span class="tr"><i></i></span><span class="v">44명</span></div>
-    <div class="bar" data-v="58"><span class="lb">팀 표준화</span><span class="tr"><i></i></span><span class="v">58명</span></div>
+    <div class="bar" data-v="45"><span class="lb">규제, 감사 대응</span><span class="tr"><i></i></span><span class="v">45명</span></div>
+    <div class="bar" data-v="60"><span class="lb">팀 표준화</span><span class="tr"><i></i></span><span class="v">60명</span></div>
     <p class="cap">복수 선택 응답, 막대 길이는 응답 인원</p>
   </div>
 </div>
@@ -754,7 +754,7 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local을 씁니다. 그
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var host = document.getElementById('c3-survey-bars');
   var bars = Array.prototype.slice.call(host.querySelectorAll('.bar'));
-  function grow(on) { bars.forEach(function (b, i) { var w = on ? (b.dataset.v / 58 * 100) : 0; setTimeout(function () { b.querySelector('i').style.width = w + '%'; }, on ? 120 * i : 0); }); }
+  function grow(on) { bars.forEach(function (b, i) { var w = on ? (b.dataset.v / 60 * 100) : 0; setTimeout(function () { b.querySelector('i').style.width = w + '%'; }, on ? 120 * i : 0); }); }
   F.countUp('#c3-survey-num', 51, { decimals: 0, suffix: '' });
   F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
   grow(true);
@@ -764,15 +764,15 @@ Managed를 빼면 2번 CLI 인자, 그것도 빼면 3번 Local을 씁니다. 그
 :::notes
 {timing: 1.5min}
 [요약]
-• 참가 확정자 138명 중 51명이 망분리, 보안(DLP, 감사로그)을 기대 주제로 선택
-• 규제, 감사 대응 44명, 팀 표준화 58명 (복수 선택)
+• 참가 확정자 142명 중 51명이 망분리, 보안(DLP, 감사로그)을 기대 주제로 선택
+• 규제, 감사 대응 45명, 팀 표준화 60명 (복수 선택)
 
 {cue: pause}
-사전 설문에서 138명 중 51명이 망분리와 보안, 특히 DLP와 감사로그를 기대 주제로 골라 주셨어요. 규제와 감사 대응도 44명이었고요.
+사전 설문에서 142명 중 51명이 망분리와 보안, 특히 DLP와 감사로그를 기대 주제로 골라 주셨어요. 규제와 감사 대응도 45명이었고요.
 이번 챕터에서 그 질문에 답해 보려고 합니다. 무엇을 막을 수 있는지, 막지 못한 것은 어떤 기록으로 남는지까지 정리할게요.
 
 [출처]
-• 이번 워크숍 사전 설문, 참가 확정자 138명, 복수 선택
+• 이번 워크숍 사전 설문, 참가 확정자 142명, 복수 선택 (2026-11-14 집계)
 :::
 ---
 <!-- Slide 17: Permission evaluation order -->
@@ -1191,7 +1191,7 @@ Chapter 2 Key Takeaways
 • 정책은 managed-settings.json, managed가 이기고 /status로 확인
 • deny가 먼저, 훅은 exit 2만 차단, DLP는 다섯 겹과 기록
 
-자, 오늘 50분을 여섯 줄로 정리해 볼게요.
+자, 오늘 내용을 여섯 줄로 정리해 볼게요.
 {cue: pause}
 연결은 환경변수 두 개면 돼요. 로그인은 장기 키 대신 SSO 프로필과 awsAuthRefresh를 쓰고, 모델은 반드시 고정하고, 팀별 비용은 프로필 ARN으로 나눕니다.
 정책은 managed-settings.json 파일로 내려요. 같은 키가 부딪히면 managed가 이기죠. 배포한 뒤에는 /status로 꼭 확인하세요.
@@ -1202,15 +1202,15 @@ Chapter 2 Key Takeaways
 @type: thankyou
 @toc: toc.html
 @next: 03-ch3-subagents.html
-@next-label: Chapter 3 (14:00)
-@message: 다음은 점심입니다. 13:00 통합 랩에서 Preflight와 Ch1 Lab을 마친 뒤, 오늘 본 정책과 훅을 Ch2 Lab 1, Lab 2에서 직접 배포하고 뚫어 봅니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
+@next-label: Chapter 3
+@message: 다음은 점심입니다. 식사 후 통합 랩에서 Preflight와 Ch1 Lab을 마친 뒤, 오늘 본 정책과 훅을 Ch2 Lab 1, Lab 2에서 직접 배포하고 뚫어 봅니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.
 
 :::notes
 {timing: 0.5min}
 [요약]
-• 다음은 점심, 13:00 통합 랩에서 Preflight와 Ch1 Lab, 이어서 Ch2 Lab 1과 Lab 2
+• 다음은 점심, 식사 후 통합 랩에서 Preflight와 Ch1 Lab, 이어서 Ch2 Lab 1과 Lab 2
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 이제 점심 시간이에요. 13시 통합 랩에서 Preflight와 Ch1 Lab을 마치고 나면, 오늘 본 정책과 훅을 Ch2 Lab 1과 Lab 2에서 직접 배포하고 뚫어 볼 거예요.
+감사합니다. 이제 점심 시간이에요. 식사 후 통합 랩에서 Preflight와 Ch1 Lab을 마치고 나면, 오늘 본 정책과 훅을 Ch2 Lab 1과 Lab 2에서 직접 배포하고 뚫어 볼 거예요.
 질문 있으시면 Slack 채널에 언제든 편하게 남겨 주세요.
 :::

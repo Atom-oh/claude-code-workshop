@@ -625,7 +625,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 <div class="archive-note">예전 예시입니다. 새 캡스톤은 <a href="ClaudeCode_Capstone_Overview.html">여기</a>.</div>
 
 <header class="hero">
-  <span class="eyebrow">CAPSTONE 7 / PLAYBOOK FOUNDRY / 135 MIN</span>
+  <span class="eyebrow">CAPSTONE 7 / PLAYBOOK FOUNDRY</span>
   <h1>내 기술분야 플레이북, 파운드리</h1>
   <div class="subtitle">신호 필터 → 페이지 생성 → 신선도 게이트 → 출고, 스스로 안 낡는 지식 자산</div>
   <p class="lede">
@@ -633,10 +633,9 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     나만의 플레이북 사이트를 만듭니다. Claude Code가 마스터 프롬프트 하나로 페이지를 규격대로 찍어내고,
     신선도 메타데이터와 출고 게이트가 문서가 낡는 것을 감시합니다. 실존 프로젝트
     <a href="https://comeddy.github.io/pai-playbook/" style="color:#c9a2ff">pai-playbook</a>(Physical AI Playbook,
-    4개 언어 운영)의 골격을 135분 스코프로 압축했습니다. API 키가 필요 없고, 로컬에서 완결됩니다.
+    4개 언어 운영)의 골격을 워크샵 스코프로 압축했습니다. API 키가 필요 없고, 로컬에서 완결됩니다.
   </p>
   <div class="hero-meta">
-    <span>소요 시간 <strong>135분</strong></span>
     <span>미션 <strong>5개 + 피날레</strong></span>
     <span>산출물 <strong>출고 게이트를 통과한 내 도메인 플레이북</strong></span>
     <span>Update <strong>2026.08</strong></span>
@@ -647,29 +646,28 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="timeline-inner">
     <span class="timeline-label">진행 <strong id="progress-count">0/6</strong></span>
     <div class="segments" id="segments">
-      <button class="seg" data-task="m0" style="flex:10" title="M0 사전 준비, 10분"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
-      <button class="seg" data-task="m1" style="flex:25" title="M1 도메인과 마스터 프롬프트, 25분"><span class="fill"></span><span class="seg-txt">M1 마스터 프롬프트</span></button>
-      <button class="seg" data-task="m2" style="flex:35" title="M2 뼈대와 다섯 페이지, 35분"><span class="fill"></span><span class="seg-txt">M2 페이지</span></button>
-      <button class="seg" data-task="m3" style="flex:30" title="M3 신선도 게이트, 30분"><span class="fill"></span><span class="seg-txt">M3 신선도</span></button>
-      <button class="seg" data-task="m4" style="flex:20" title="M4 출고 게이트, 20분"><span class="fill"></span><span class="seg-txt">M4 출고 게이트</span></button>
-      <button class="seg" data-task="m5" style="flex:15" title="M5 피날레, THE FILTER 실사격, 15분"><span class="fill"></span><span class="seg-txt">M5 피날레</span></button>
+      <button class="seg" data-task="m0" style="flex:10" title="M0 사전 준비"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
+      <button class="seg" data-task="m1" style="flex:25" title="M1 도메인과 마스터 프롬프트"><span class="fill"></span><span class="seg-txt">M1 마스터 프롬프트</span></button>
+      <button class="seg" data-task="m2" style="flex:35" title="M2 뼈대와 다섯 페이지"><span class="fill"></span><span class="seg-txt">M2 페이지</span></button>
+      <button class="seg" data-task="m3" style="flex:30" title="M3 신선도 게이트"><span class="fill"></span><span class="seg-txt">M3 신선도</span></button>
+      <button class="seg" data-task="m4" style="flex:20" title="M4 출고 게이트"><span class="fill"></span><span class="seg-txt">M4 출고 게이트</span></button>
+      <button class="seg" data-task="m5" style="flex:15" title="M5 피날레, THE FILTER 실사격"><span class="fill"></span><span class="seg-txt">M5 피날레</span></button>
     </div>
-    <span class="timeline-label">135 min</span>
   </div>
 </nav>
 
 <div class="layout">
 
 <aside class="sidenav" aria-label="미션 목차">
-  <div class="nav-title">MISSIONS / 135분</div>
+  <div class="nav-title">MISSIONS</div>
   <a href="#brief" data-nav="brief"><span class="dot"></span>브리핑<span class="nav-time"></span></a>
-  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 사전 준비<span class="nav-time">10분</span></a>
-  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 마스터 프롬프트<span class="nav-time">25분</span></a>
-  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 뼈대와 페이지<span class="nav-time">35분</span></a>
-  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 신선도 게이트<span class="nav-time">30분</span></a>
-  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 출고 게이트<span class="nav-time">20분</span></a>
-  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 피날레<span class="nav-time">15분</span></a>
-  <a href="#opt-pages" data-nav="opt-pages"><span class="dot"></span>OPT 웹 공개<span class="nav-time">+15분</span></a>
+  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 사전 준비<span class="nav-time"></span></a>
+  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 마스터 프롬프트<span class="nav-time"></span></a>
+  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 뼈대와 페이지<span class="nav-time"></span></a>
+  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 신선도 게이트<span class="nav-time"></span></a>
+  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 출고 게이트<span class="nav-time"></span></a>
+  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 피날레<span class="nav-time"></span></a>
+  <a href="#opt-pages" data-nav="opt-pages"><span class="dot"></span>OPT 웹 공개<span class="nav-time">옵션</span></a>
   <a href="#appx" data-nav="appx"><span class="dot"></span>부록<span class="nav-time"></span></a>
   <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리<span class="nav-time"></span></a>
 </aside>
@@ -730,7 +728,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   </div>
 </section>
 <section class="task" id="m0">
-  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비, 도구와 원작 견학</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비, 도구와 원작 견학</h2></div>
   <p class="task-goal">이 캡스톤은 <strong>API 키가 필요 없습니다</strong>. Python 가상환경과 MkDocs만 준비하면 끝입니다.</p>
 
   <div class="step-title"><span class="step-no">1</span>작업 디렉토리와 가상환경</div>
@@ -751,7 +749,7 @@ mkdocs --version</code></pre>
     <code class="inline">mkdocs: command not found</code>가 보이면 십중팔구 활성화를 빼먹은 것입니다.
   </div>
 
-  <div class="step-title"><span class="step-no">2</span>원작 견학, 5분</div>
+  <div class="step-title"><span class="step-no">2</span>원작 견학</div>
   <p class="body"><a href="https://comeddy.github.io/pai-playbook/" style="color:#c9a2ff">comeddy.github.io/pai-playbook</a>을
   열고 세 가지만 관찰하세요. 오늘 전부 직접 만들 것들입니다.</p>
   <table class="tbl">
@@ -766,12 +764,12 @@ mkdocs --version</code></pre>
   </div>
 </section>
 <section class="task" id="m1">
-  <div class="task-head"><span class="task-num">MISSION 01</span><h2>도메인 선정과 마스터 프롬프트</h2><span class="time-badge">25분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 01</span><h2>도메인 선정과 마스터 프롬프트</h2></div>
   <p class="task-goal">플레이북의 헌법을 만듭니다: 도메인, 독자, 필러 5개, 그리고 <strong>THE FILTER 4기준</strong>.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 세션 운용과
   <a href="ClaudeCode_Capstone_Setup.html" style="color:#c9a2ff">Capstone Setup</a>의 superpowers 워크플로.</p>
 
-  <div class="step-title"><span class="step-no">1</span>도메인 고르기, 3분 안에</div>
+  <div class="step-title"><span class="step-no">1</span>도메인 고르기, 빠르게</div>
   <p class="body">세 가지가 겹치는 분야가 정답입니다: ① 내가 실제로 질문받는 분야
   ② 후보 항목이 20개 이상 바로 떠오르는 분야 ③ 6개월이면 낡는 정보가 섞여 있는 분야.
   마땅치 않으면 아래에서 하나를 가져가세요.</p>
@@ -875,7 +873,7 @@ PSKEOF</code></pre>
   </div>
 </section>
 <section class="task" id="m2">
-  <div class="task-head"><span class="task-num">MISSION 02</span><h2>뼈대와 다섯 페이지</h2><span class="time-badge">35분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 02</span><h2>뼈대와 다섯 페이지</h2></div>
   <p class="task-goal">사이트 뼈대를 깔고, 마스터 프롬프트로 필러 페이지 5장을 <strong>같은 규격으로</strong> 찍어냅니다.</p>
 
   <div class="step-title"><span class="step-no">1</span>뼈대 배치, 파일 두 장</div>
@@ -985,7 +983,7 @@ INFO    -  [15:30:00] Serving on http://127.0.0.1:8000/</code></pre>
   </div>
 </section>
 <section class="task" id="m3">
-  <div class="task-head"><span class="task-num">MISSION 03</span><h2>신선도 게이트, 테스트 먼저</h2><span class="time-badge">30분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 03</span><h2>신선도 게이트, 테스트 먼저</h2></div>
   <p class="task-goal">모든 페이지의 <code class="inline">updated + volatility</code>로 리뷰 기한을 판정하는
   스크립트를 <strong>TDD로</strong> 만듭니다. 스펙은 테스트가 말합니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Capstone_Setup.html" style="color:#c9a2ff">Capstone Setup</a>에서 설치한
@@ -1180,7 +1178,7 @@ if __name__ == "__main__":
   </div>
 </section>
 <section class="task" id="m4">
-  <div class="task-head"><span class="task-num">MISSION 04</span><h2>출고 게이트, 규율의 자동화</h2><span class="time-badge">20분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 04</span><h2>출고 게이트, 규율의 자동화</h2></div>
   <p class="task-goal">신선도, 라벨 lint, strict 빌드를 한 줄로 묶습니다. <strong>셋 중 하나라도 실패하면 출고가 없습니다</strong>.</p>
 
   <div class="step-title"><span class="step-no">1</span>게이트 배치</div>
@@ -1257,7 +1255,7 @@ exit=0</code></pre>
   </div>
 </section>
 <section class="task" id="m5">
-  <div class="task-head"><span class="task-num">MISSION 05</span><h2>피날레, THE FILTER 실사격</h2><span class="time-badge">15분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 05</span><h2>피날레, THE FILTER 실사격</h2></div>
   <p class="task-goal">진짜 후보들을 필터에 태웁니다. <strong>떨어지는 후보가 있어야 필터입니다</strong>.</p>
 
   <div class="step-title"><span class="step-no">1</span>후보 6건 판정</div>
@@ -1291,7 +1289,7 @@ exit=0</code></pre>
   </div>
 </section>
 <section class="task" id="opt-pages">
-  <div class="task-head"><span class="task-num">OPTION</span><h2>웹 공개, GitHub Pages</h2><span class="time-badge">+15분</span></div>
+  <div class="task-head"><span class="task-num">OPTION</span><h2>웹 공개, GitHub Pages</h2><span class="time-badge">옵션</span></div>
   <p class="task-goal">출고 게이트를 통과한 사이트를 진짜 URL로 만듭니다. GitHub 계정과 gh CLI 인증이 있는 경우에만 진행하세요.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1319,9 +1317,9 @@ mkdocs gh-deploy --force</code></pre>
   <p class="body"><strong>시간이 부족하면 이 순서로 잘라내세요.</strong> 피날레(M5)는 남기는 것이 원칙입니다.</p>
   <table class="tbl">
     <tr><th>상황</th><th>컷라인</th></tr>
-    <tr><td>20분 부족</td><td>M3 step 3(낡음 실험)과 M4 step 3(실패 주입)을 건너뛰고 통과 경로만 확인</td></tr>
-    <tr><td>40분 부족</td><td>위에 더해, 필러를 3장으로 축소(mkdocs.yml nav에서 p4/p5 제거, index.md 표도 3행으로) 후 M5 후보는 3건만</td></tr>
-    <tr><td>60분 부족</td><td>위에 더해, M3 구현을 솔루션 접기에서 복사해 배치하고 pytest 통과만 확인</td></tr>
+    <tr><td>조금 부족</td><td>M3 step 3(낡음 실험)과 M4 step 3(실패 주입)을 건너뛰고 통과 경로만 확인</td></tr>
+    <tr><td>더 부족</td><td>위에 더해, 필러를 3장으로 축소(mkdocs.yml nav에서 p4/p5 제거, index.md 표도 3행으로) 후 M5 후보는 3건만</td></tr>
+    <tr><td>많이 부족</td><td>위에 더해, M3 구현을 솔루션 접기에서 복사해 배치하고 pytest 통과만 확인</td></tr>
   </table>
   <p class="body"><strong>막히면 여기부터.</strong></p>
   <table class="tbl">
