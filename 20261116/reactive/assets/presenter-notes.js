@@ -4,7 +4,8 @@
  * The compiled notes read "<cue emoji> [N min] [요약]" bullets, then the script, then "[출처]",
  * each a blank-line paragraph (README section 3). On stage the presenter reads the script, so
  * the view puts it at the top and moves the summary and sources under a divider in smaller,
- * dimmer text. The cue emoji and "[N min]" stay on a line above the script. The .md sources and
+ * dimmer text. The cue emoji and "[N min]" stay on a line above the script. A "↓" in the
+ * script marks where the presenter presses ↓ for the next step, drawn as an orange badge. The .md sources and
  * the PDF are unchanged: this only reorders what the presenter window shows.
  *
  * common/ is overwritten by every compiler build, so this file patches
@@ -61,6 +62,15 @@
       return head + top +
         '<div class="fsi-notes-meta" style="margin-top:1.4em;padding-top:0.9em;border-top:1px solid #2d3250;' +
         'font-size:0.82em;opacity:0.72;">' + bottom + '</div>';
+    };
+    // "↓" in the script marks where the presenter presses ↓ for the next step on the slide.
+    var reorder = PV.prototype.renderRichNotes;
+    PV.prototype.renderRichNotes = function (text) {
+      var html = reorder.call(this, text);
+      if (typeof html !== 'string') return html;
+      return html.replace(/↓/g, '<span class="fsi-step-mark" title="여기서 ↓" style="display:inline-block;' +
+        'margin:0 0.15em;padding:0 0.35em;border-radius:4px;background:#ffb454;color:#1a1a2e;' +
+        'font-weight:800;line-height:1.3;">↓</span>');
     };
     PV.prototype.__fsiNotes = true;
     return true;

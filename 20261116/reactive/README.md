@@ -158,6 +158,11 @@ The decks use a small subset of Remarp:
   under a divider, so keep a blank line between the summary, the script and the sources. Keep the `{timing}` values of a chapter close to its `duration` in
   `_presentation.md` (Ch3 matches exactly; Ch1 and Ch4 currently run a few
   minutes over).
+- In the spoken script, put `↓` right after the sentence that finishes a
+  step (`PC에 오래 쓰는 키는 없어요.↓`), one mark per ↓ press the slide takes
+  (a quick check counts one). The presenter view draws it as an orange badge,
+  and the cue under the arrow buttons says whether a step is left. The script
+  itself never says what to press: it is read aloud.
 
 ## 4. House style for these decks
 
