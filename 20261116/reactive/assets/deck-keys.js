@@ -5,11 +5,11 @@
  *   P O I U Y   laser, pen, highlighter, eraser, magnifier   (was Option+P/O/I/U/Y)
  *   C           clear this slide's drawing  (was Option+T; T stays the theme switch)
  *   1-9         stroke size 1-3, colour 4-9, magnifier zoom 1-3   (was Option+1-9)
- *   C and 1-9 act only while the pen is on, so digits stay free for slides otherwise.
+ *   C and 1-9 act only while the pen is on (before compiler 3.0.10; natively they always act).
  *   F S H T, arrows, Space, Esc, /   unchanged
  *
  * Compiler 3.0.10 made these keys native; on such a build this file only adds the Korean jamo
- * (ㅜ, ㅎ) for N and G and patches nothing else.
+ * for N, G, H and T (ㅜ, ㅎ, ㅗ, ㅅ) and patches nothing else.
  *
  * common/ is overwritten by every compiler build, so this file patches the framework at run
  * time instead of editing it: SlideFramework.prototype.getKeyAction (used by the deck and the
@@ -111,13 +111,15 @@
     if (!FW || !FW.prototype || typeof FW.prototype.getKeyAction !== 'function') return null;
     try { return FW.prototype.getKeyAction.call({ keyMappings: {} }, 'n') === 'presenter'; } catch (e) { return null; }
   }
+  // Korean IME jamo on the native single-key actions: ㅜ N, ㅎ G, ㅗ H, ㅅ T.
+  var JAMO = { 'ㅜ': 'presenter', 'ㅎ': 'overview', 'ㅗ': 'hide', 'ㅅ': 'theme' };
   var nat = nativeKeys();
   if (nat) {
     var FWn = window.SlideFramework || SlideFramework; // eslint-disable-line no-undef
     if (!FWn.prototype.__fsiKeys) {
       var origN = FWn.prototype.getKeyAction;
       FWn.prototype.getKeyAction = function (key) {
-        if (key === 'ㅜ' || key === 'ㅎ') return ACTIONS[key];
+        if (Object.prototype.hasOwnProperty.call(JAMO, key)) return JAMO[key];
         return origN.call(this, key);
       };
       FWn.prototype.__fsiKeys = true;
