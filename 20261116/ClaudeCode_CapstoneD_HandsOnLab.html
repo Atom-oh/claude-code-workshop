@@ -626,7 +626,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 <header class="hero">
   <span class="eyebrow">Capstone Hands-on Lab D / Ch1~Ch6 통합</span>
   <h1>Mission: Grounded, 근거로만 답하는 사내 사서를 고용하라</h1>
-  <div class="subtitle">Claude Code Deep Dive Workshop, Capstone D - 지식 검색 풀스택, RAG의 원리 (135분 목표 / 150분 상한)</div>
+  <div class="subtitle">Claude Code Deep Dive Workshop, Capstone D - 지식 검색 풀스택, RAG의 원리</div>
   <p class="lede">
     이번 미션의 정체성은 <strong>"기억하는 Claude"</strong>, 엔터프라이즈의 단골 요구인
     사내 지식 서비스입니다. 문서를 <strong>임베딩해 서가(DynamoDB)에 꽂고</strong>, 질문이 오면
@@ -646,28 +646,27 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="timeline-inner">
     <span class="timeline-label">진행 <strong id="progress-count">0/6</strong></span>
     <div class="segments" id="segments">
-      <button class="seg" data-task="m0" style="flex:15" title="M0 발사 준비, 15분"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
-      <button class="seg" data-task="m1" style="flex:30" title="M1 입고 라인, 30분"><span class="fill"></span><span class="seg-txt">M1 입고 라인</span></button>
-      <button class="seg" data-task="m2" style="flex:20" title="M2 열람실, 20분"><span class="fill"></span><span class="seg-txt">M2 열람실</span></button>
-      <button class="seg" data-task="m3" style="flex:30" title="M3 사서의 답변, 30분"><span class="fill"></span><span class="seg-txt">M3 사서의 답변</span></button>
-      <button class="seg" data-task="m4" style="flex:20" title="M4 자격시험, 20분"><span class="fill"></span><span class="seg-txt">M4 자격시험</span></button>
-      <button class="seg" data-task="m5" style="flex:15" title="M5 셀프 인터뷰, 15분"><span class="fill"></span><span class="seg-txt">M5 인터뷰</span></button>
+      <button class="seg" data-task="m0" style="flex:15" title="M0 발사 준비"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
+      <button class="seg" data-task="m1" style="flex:30" title="M1 입고 라인"><span class="fill"></span><span class="seg-txt">M1 입고 라인</span></button>
+      <button class="seg" data-task="m2" style="flex:20" title="M2 열람실"><span class="fill"></span><span class="seg-txt">M2 열람실</span></button>
+      <button class="seg" data-task="m3" style="flex:30" title="M3 사서의 답변"><span class="fill"></span><span class="seg-txt">M3 사서의 답변</span></button>
+      <button class="seg" data-task="m4" style="flex:20" title="M4 자격시험"><span class="fill"></span><span class="seg-txt">M4 자격시험</span></button>
+      <button class="seg" data-task="m5" style="flex:15" title="M5 셀프 인터뷰"><span class="fill"></span><span class="seg-txt">M5 인터뷰</span></button>
     </div>
-    <span class="timeline-label">130 min</span>
   </div>
 </nav>
 
 <div class="layout">
 
 <aside class="sidenav" aria-label="랩 목차">
-  <div class="nav-title">MISSIONS / 130분 + 버퍼</div>
-  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 발사 준비<span class="nav-time">15분</span></a>
-  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 입고 라인<span class="nav-time">30분</span></a>
-  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 열람실<span class="nav-time">20분</span></a>
-  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 사서의 답변<span class="nav-time">30분</span></a>
-  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 사서 자격시험<span class="nav-time">20분</span></a>
-  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 셀프 인터뷰<span class="nav-time">15분</span></a>
-  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">+15분</span></a>
+  <div class="nav-title">MISSIONS</div>
+  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 발사 준비<span class="nav-time"></span></a>
+  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 입고 라인<span class="nav-time"></span></a>
+  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 열람실<span class="nav-time"></span></a>
+  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 사서의 답변<span class="nav-time"></span></a>
+  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 사서 자격시험<span class="nav-time"></span></a>
+  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 셀프 인터뷰<span class="nav-time"></span></a>
+  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">옵션</span></a>
   <div class="nav-title" style="margin-top:18px">부록</div>
   <a href="#apx-b" data-nav="apx-b"><span class="dot"></span>부록 컷라인과 트러블슈팅<span class="nav-time"></span></a>
   <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리, 챕터 소환 지도<span class="nav-time"></span></a>
@@ -701,7 +700,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     <span>규칙 3 - 막히면 "막힐 때 열어보기" 완성본으로 복구하고 전진한다</span>
   </div>
   <p style="margin-top:14px">
-    A/B/C를 마친 계정이라면 M0은 확인만으로 통과합니다. 90분 시점에 M3 미착수면
+    A/B/C를 마친 계정이라면 M0은 확인만으로 통과합니다. 진행이 늦어 M3 미착수면
     <a href="#apx-b" style="color:#c9a2ff">부록 컷라인</a>을 적용하세요.
   </p>
 </section>
@@ -711,7 +710,6 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="task-head">
     <span class="task-num">MISSION 00</span>
     <h2>발사 준비, 계획 승인까지</h2>
-    <span class="time-badge">15분</span>
   </div>
   <p class="task-goal">스캐폴드와 superpowers를 준비하고 4-Phase 계획을 승인합니다.</p>
 
@@ -810,7 +808,6 @@ git add -A &amp;&amp; git commit -m "chore: cdk scaffold" 2&gt;/dev/null || true
   <div class="task-head">
     <span class="task-num">MISSION 01</span>
     <h2>입고 라인, 임베딩을 실물로 본다</h2>
-    <span class="time-badge">30분</span>
   </div>
   <p class="task-goal">
     Phase 1을 배포하고 가상 회사 <strong>한빛제과의 문서 3편을 서가에 입고</strong>합니다.
@@ -1240,7 +1237,6 @@ export const handler = async (event) =&gt; {
   <div class="task-head">
     <span class="task-num">MISSION 02</span>
     <h2>열람실, 서가가 화면이 된다</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     <strong>서브에이전트가 열람실 페이지를 만드는 동안</strong> Phase 2(S3+CloudFront)를 붙입니다.
@@ -1426,7 +1422,6 @@ document.getElementById("ask").addEventListener("click", function () {
   <div class="task-head">
     <span class="task-num">MISSION 03</span>
     <h2>사서의 답변, 인용과 거절</h2>
-    <span class="time-badge">30분</span>
   </div>
   <p class="task-goal">
     Phase 3을 배포하고 두 장면을 확인합니다. <strong>근거가 있으면 [번호]로 인용</strong>하는 답,
@@ -1520,7 +1515,6 @@ curl -s -X POST "$API/ask" -H 'Content-Type: application/json' \
   <div class="task-head">
     <span class="task-num">MISSION 04</span>
     <h2>사서 자격시험, 환각을 게이트로 막다</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     정답 5문항 채점에 <strong>함정 1문항</strong>을 섞은 자격시험을 만듭니다. 함정에 답을 지어내면
@@ -1640,7 +1634,6 @@ echo "새 세션에서 /librarian 사용 가능"</code></pre>
   <div class="task-head">
     <span class="task-num">MISSION 05</span>
     <h2>셀프 인터뷰, 내가 면접관</h2>
-    <span class="time-badge">15분</span>
   </div>
   <p class="task-goal">
     본인 소개 문서를 서가에 넣고, 이번에는 <strong>여러분이 면접관</strong>이 됩니다.
@@ -1692,7 +1685,7 @@ git add -A &amp;&amp; git commit -m "feat: grounded librarian capstone"
   <div class="task-head">
     <span class="task-num">OPTION</span>
     <h2>하네스 엔지니어링, 작품을 성숙시키고 등급을 받다</h2>
-    <span class="time-badge">+15분 옵션</span>
+    <span class="time-badge">옵션</span>
   </div>
   <p class="task-goal">
     지금까지 만든 것은 <strong>결과물</strong>입니다. 이 옵션은 그 결과물을 만든 <strong>작업 환경, 즉 하네스</strong>
@@ -1776,13 +1769,13 @@ claude plugin list</code></pre>
     <h2>컷라인과 트러블슈팅</h2>
     <span class="time-badge">비상용</span>
   </div>
-  <p class="task-goal">90분 시점 기준, 순서대로 적용합니다. 어떤 컷에서도 M3의 인용/거절 두 장면과 M4의 자격시험은 지킵니다.</p>
+  <p class="task-goal">진행이 늦으면 순서대로 적용합니다. 어떤 컷에서도 M3의 인용/거절 두 장면과 M4의 자격시험은 지킵니다.</p>
 
   <table class="tbl">
-    <tr><th>컷</th><th>조치</th><th>절약</th></tr>
-    <tr><td>CUT 1</td><td>M4의 /librarian 스킬 생략, 자격시험만 응시</td><td>~6분</td></tr>
-    <tr><td>CUT 2</td><td>M2 열람실을 완성본 배치로 대체</td><td>~8분</td></tr>
-    <tr><td>CUT 3</td><td>M5 인터뷰를 정상 1장 + 함정 1장으로 축소</td><td>~4분</td></tr>
+    <tr><th>컷</th><th>조치</th></tr>
+    <tr><td>CUT 1</td><td>M4의 /librarian 스킬 생략, 자격시험만 응시</td></tr>
+    <tr><td>CUT 2</td><td>M2 열람실을 완성본 배치로 대체</td></tr>
+    <tr><td>CUT 3</td><td>M5 인터뷰를 정상 1장 + 함정 1장으로 축소</td></tr>
   </table>
 
   <div class="step-title"><span class="step-no">T</span>트러블슈팅 표</div>

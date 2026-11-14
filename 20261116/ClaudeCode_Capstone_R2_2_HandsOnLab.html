@@ -795,7 +795,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 
 <header class="hero">
   <span class="eyebrow">HANDS-ON LAB / CAPSTONE R2-2</span>
-  <p class="round" data-round="R2">R2 · Day 2 · 미션 45분</p>
+  <p class="round" data-round="R2">R2 · Day 2 · 미션</p>
   <h1>R2-2 기획안 작성: 같은 plugin으로 분석 결과를 상품이나 서비스 기획안으로</h1>
   <div class="subtitle">R2-1과 같은 agent를 그대로 쓰고, plugin의 proposal-draft skill이 정한 형식으로 기획안을 만든 뒤, 두 업무 모두 agent와 skill을 새로 짜지 않았음을 보인다</div>
   <p class="lede">
@@ -833,11 +833,11 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 
 <aside class="sidenav" aria-label="목차">
   <div class="nav-title">R2-2</div>
-  <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 시작 전 확인<span class="nav-time">5분</span></a>
-  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 기획안 초안<span class="nav-time">15분</span></a>
-  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 검토 반영<span class="nav-time">10분</span></a>
-  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 재사용 확인<span class="nav-time">10분</span></a>
-  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 정리와 출품<span class="nav-time">5분</span></a>
+  <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 시작 전 확인<span class="nav-time"></span></a>
+  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 기획안 초안<span class="nav-time"></span></a>
+  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 검토 반영<span class="nav-time"></span></a>
+  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 재사용 확인<span class="nav-time"></span></a>
+  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 정리와 출품<span class="nav-time"></span></a>
 </aside>
 
 <main>
@@ -852,7 +852,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 </div>
 
 <section class="task" id="task-00" data-min="5">
-  <div class="task-head"><span class="task-num">00</span><h2>시작 전 확인</h2><span class="time-badge">5분</span></div>
+  <div class="task-head"><span class="task-num">00</span><h2>시작 전 확인</h2></div>
   <p class="task-goal">plugin이 설치돼 있고 지문이 그대로인지, 근거로 쓸 리포트가 있는지 봅니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> <code class="inline">proposal-draft</code> skill의 입력은 근거 리포트 파일입니다. 리포트가 있어야 기획안의 수치가 그 파일을 출처로 삼습니다.</p>
   <div class="viz" data-viz="copy-r22-check"></div>
@@ -877,7 +877,7 @@ ls -A .claude</code></pre>
 </section>
 
 <section class="task" id="task-01" data-min="15">
-  <div class="task-head"><span class="task-num">01</span><h2>기획안 초안</h2><span class="time-badge">15분</span></div>
+  <div class="task-head"><span class="task-num">01</span><h2>기획안 초안</h2></div>
   <p class="task-goal">근거 리포트 파일과 기획 주제를 주고 <code class="inline">/my-kit:proposal-draft</code>로 기획안을 <code class="inline">proposals/</code>에 만듭니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> R2-1과 다른 업무지만 같은 plugin의 두 agent를 그대로 씁니다. 바뀌는 것은 skill(절차와 출력 형식을 적은 <code class="inline">SKILL.md</code>) 하나입니다. 아래 그림의 단계를 넘기며 R2-1과 무엇이 같은지 봅니다.</p>
   <div class="viz" data-viz="r22-flow"></div>
@@ -915,7 +915,7 @@ for f in proposals/*.md; do echo "== $f"; grep -E '^#|^[0-9]\.' "$f" | head -14;
 </section>
 
 <section class="task" id="task-02" data-min="10">
-  <div class="task-head"><span class="task-num">02</span><h2>검토 반영</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">02</span><h2>검토 반영</h2></div>
   <p class="task-goal">검토 agent가 낸 WARN이나 FAIL을 프롬프트로 고치고 다시 검토받습니다. skill과 agent 파일은 그대로 둡니다.</p>
   <p class="body">기획안 끝의 검토 결과가 PASS면 이 단계는 건너뜁니다. WARN이나 FAIL이면 아래처럼 고칠 부분만 요청합니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 이번 기획안 하나의 문제를 프롬프트로 고치면 skill과 agent 파일이 그대로 남아, 03의 지문 검사가 통과합니다.</p>
@@ -940,7 +940,7 @@ for f in proposals/*.md; do echo "== $f"; grep -E '^#|^[0-9]\.' "$f" | head -14;
 </section>
 
 <section class="task" id="task-03" data-min="10">
-  <div class="task-head"><span class="task-num">03</span><h2>재사용 확인</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">03</span><h2>재사용 확인</h2></div>
   <p class="task-goal">리포트와 기획안, 두 업무를 같은 plugin 하나로 해 냈고 그동안 agent와 skill을 새로 짜지 않았음을 보입니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 리포트와 기획안 두 업무를 같은 plugin으로 해 냈다는 것이 완주 체크리스트 6번입니다. 지문 검사가 그 기준입니다.</p>
   <div class="viz" data-viz="copy-r22-reuse"></div>
@@ -974,7 +974,7 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
 </section>
 
 <section class="task" id="task-04" data-min="5">
-  <div class="task-head"><span class="task-num">04</span><h2>정리와 출품</h2><span class="time-badge">5분</span></div>
+  <div class="task-head"><span class="task-num">04</span><h2>정리와 출품</h2></div>
   <p class="task-goal">결과물에 개인정보 패턴과 키가 없는지 보고, 출품 양식을 채웁니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 출품 양식은 Slack 워크숍 채널에 올라가 모두가 봅니다. 올리기 전에 결과물에 개인정보 패턴과 키가 없는지 확인합니다.</p>
   <div class="viz" data-viz="copy-r22-scan"></div>

@@ -129,7 +129,10 @@
   .sched-day { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px 8px; min-width: 0; }
   .sched-day h3 { font-size: 16.5px; margin-bottom: 8px; }
   .sched-day h3 .dn { color: var(--orange); letter-spacing: .08em; font-size: 13px; font-weight: 800; margin-right: 8px; }
-  .sl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .sl-list { list-style: none; margin: 0; padding: 0; counter-reset: sl; }
+  .sl:not(.quiet) { counter-increment: sl; }
+  .sl:not(.quiet) .t::before { content: counter(sl, decimal-leading-zero); }
+  .sl { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
   .sl .t { color: var(--text); font-weight: 700; font-size: 13.5px; font-variant-numeric: tabular-nums; }
   .sl .nm { font-size: 14.5px; font-weight: 700; min-width: 0; }
   .sl .nm .c { color: var(--orange); font-weight: 800; font-size: 12px; letter-spacing: .08em; margin-right: 6px; }
@@ -142,8 +145,7 @@
   .sec-title .toc-link { margin-left: auto; font-size: 12.5px; font-weight: 700; color: var(--orange); white-space: nowrap; }
   .sec-title .toc-link:hover { text-decoration: underline; }
   @media (max-width: 720px) {
-    .sl { grid-template-columns: 1fr; }
-    .sl .lks { grid-column: 1; }
+    .sl { grid-template-columns: 28px minmax(0, 1fr); }
     .sec-title { flex-wrap: wrap; }
     .sec-title .toc-link { margin-left: 0; flex-basis: 100%; }
   }
@@ -222,7 +224,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
     <span>구성 <strong>준비 1 + Chapter 6 (랩 7) + Capstone R1·R2 + Reference 3</strong></span>
     <span>환경 <strong>EC2 code-server + Amazon Bedrock + Claude Apps Gateway</strong></span>
     <span>리전 <strong>us-east-1</strong></span>
-    <span>일시 <strong>2026.11.16–17 · 양일 10:00–18:00</strong></span>
+    <span>일시 <strong>2026.11.16–17 (양일)</strong></span>
     <span>장소 <strong>센터필드 18층 · 300 · 301 · 400 · 401호</strong></span>
   </div>
 </header>
@@ -246,36 +248,40 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
 <main>
 
 <section class="wrap" id="schedule">
-  <div class="sec-title"><h2>시간표</h2><span class="tag">DAY 1 · DAY 2 / 강의자료와 랩</span><a class="toc-link" href="reactive/toc.html?theme=dark">전체 강의자료 목차 →</a></div>
-  <p class="sec-desc">세션별 강의자료와 랩을 시간 순서로 모았습니다. 일정은 운영 상황에 따라 변경될 수 있습니다.</p>
+  <div class="sec-title"><h2>진행 순서</h2><span class="tag">DAY 1 · DAY 2 / 강의자료와 랩</span><a class="toc-link" href="reactive/toc.html?theme=dark">전체 강의자료 목차 →</a></div>
+  <p class="sec-desc">세션별 강의자료와 랩을 진행 순서대로 모았습니다. 시간표는 <a href="eDM.html" style="color:var(--orange)">초대장(eDM)</a>을 확인해 주세요.</p>
   <div class="sched">
     <div class="sched-day" id="sched-day1">
       <h3><span class="dn">DAY 1</span>11/16(월)</h3>
-      <div class="sl quiet"><span class="t">10:00–10:10</span><span class="nm">AWS 인사</span></div>
-      <div class="sl"><span class="t">10:10–10:40</span><span class="nm"><span class="c">CH 01</span>Claude Code는 어떻게 동작하는가</span><span class="lks"><a href="reactive/01-ch1-how-it-works.html?theme=dark">강의자료</a></span></div>
-      <div class="sl quiet"><span class="t">10:40–10:50</span><span class="nm">Break</span></div>
-      <div class="sl"><span class="t">10:50–11:40</span><span class="nm"><span class="c">CH 02</span>Bedrock 위에서 안전하게 쓰기</span><span class="lks"><a href="reactive/02-ch2-bedrock-safe.html?theme=dark">강의자료</a></span></div>
-      <div class="sl quiet"><span class="t">11:40–13:00</span><span class="nm">점심 식사</span></div>
-      <div class="sl"><span class="t">13:00–14:00</span><span class="nm"><span class="c">PRE + CH 01 · 02 LAB</span>실습 환경 점검부터 정책과 DLP 훅까지</span><span class="lks"><a class="lab" href="ClaudeCode_Preflight_Check.html">Preflight</a><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Ch1 Lab</a><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1 · 정책</a><a class="lab" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 · 가드레일</a></span></div>
-      <div class="sl"><span class="t">14:00–14:40</span><span class="nm"><span class="c">CH 03</span>Subagent로 일 나눠 맡기기</span><span class="lks"><a href="reactive/03-ch3-subagents.html?theme=dark">강의자료</a></span></div>
-      <div class="sl"><span class="t">14:40–15:40</span><span class="nm"><span class="c">CH 03 LAB</span>역할별 에이전트 3종 만들기</span><span class="lks"><a class="lab" href="ClaudeCode_Ch3_HandsOnLab.html">Hands-on Lab</a></span></div>
-      <div class="sl quiet"><span class="t">15:40–15:50</span><span class="nm">Break</span></div>
-      <div class="sl"><span class="t">15:50–17:40</span><span class="nm"><span class="c">CAPSTONE R1</span>내 agents와 가드레일</span><span class="lks"><a class="lab" href="ClaudeCode_Capstone_Overview.html#missions-r1">R1 미션 안내</a><a class="lab" href="ClaudeCode_Capstone_R1A_HandsOnLab.html">R1-A</a><a class="lab" href="ClaudeCode_Capstone_R1B_HandsOnLab.html">R1-B</a><a class="lab" href="ClaudeCode_Capstone_R1C_HandsOnLab.html">R1-C</a></span></div>
-      <div class="sl quiet"><span class="t">17:40–18:00</span><span class="nm">쇼케이스 1</span></div>
+      <ol class="sl-list">
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">AWS 인사</span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 01</span>Claude Code는 어떻게 동작하는가</span><span class="lks"><a href="reactive/01-ch1-how-it-works.html?theme=dark">강의자료</a></span></li>
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">Break</span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 02</span>Bedrock 위에서 안전하게 쓰기</span><span class="lks"><a href="reactive/02-ch2-bedrock-safe.html?theme=dark">강의자료</a></span></li>
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">점심 식사</span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">PRE + CH 01 · 02 LAB</span>실습 환경 점검부터 정책과 DLP 훅까지</span><span class="lks"><a class="lab" href="ClaudeCode_Preflight_Check.html">Preflight</a><a class="lab" href="ClaudeCode_Ch1_HandsOnLab.html">Ch1 Lab</a><a class="lab" href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1 · 정책</a><a class="lab" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 · 가드레일</a></span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 03</span>Subagent로 일 나눠 맡기기</span><span class="lks"><a href="reactive/03-ch3-subagents.html?theme=dark">강의자료</a></span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 03 LAB</span>역할별 에이전트 3종 만들기</span><span class="lks"><a class="lab" href="ClaudeCode_Ch3_HandsOnLab.html">Hands-on Lab</a></span></li>
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">Break</span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CAPSTONE R1</span>내 agents와 가드레일</span><span class="lks"><a class="lab" href="ClaudeCode_Capstone_Overview.html#missions-r1">R1 미션 안내</a><a class="lab" href="ClaudeCode_Capstone_R1A_HandsOnLab.html">R1-A</a><a class="lab" href="ClaudeCode_Capstone_R1B_HandsOnLab.html">R1-B</a><a class="lab" href="ClaudeCode_Capstone_R1C_HandsOnLab.html">R1-C</a></span></li>
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">쇼케이스 1</span></li>
+      </ol>
     </div>
     <div class="sched-day" id="sched-day2">
       <h3><span class="dn">DAY 2</span>11/17(화)</h3>
-      <div class="sl quiet"><span class="t">10:00–10:10</span><span class="nm">환영인사 / 리캡</span></div>
-      <div class="sl"><span class="t">10:10–10:45</span><span class="nm"><span class="c">CH 04</span>Claude Code 확장하기</span><span class="lks"><a href="reactive/04-ch4-extending.html?theme=dark">강의자료</a></span></div>
-      <div class="sl"><span class="t">10:45–11:40</span><span class="nm"><span class="c">CH 04 LAB</span>팀 스타터 킷과 첫 mod</span><span class="lks"><a class="lab" href="ClaudeCode_Ch4_HandsOnLab.html">Hands-on Lab</a></span></div>
-      <div class="sl quiet"><span class="t">11:40–13:00</span><span class="nm">점심 식사</span></div>
-      <div class="sl"><span class="t">13:00–13:20</span><span class="nm"><span class="c">CH 05</span>비용 효율적으로 쓰기</span><span class="lks"><a href="reactive/05-ch5-cost-efficient.html?theme=dark">강의자료</a></span></div>
-      <div class="sl"><span class="t">13:20–14:00</span><span class="nm"><span class="c">CH 05 LAB</span>내 세션의 토큰 줄이기</span><span class="lks"><a class="lab" href="ClaudeCode_Ch5_HandsOnLab.html">Hands-on Lab</a></span></div>
-      <div class="sl"><span class="t">14:00–16:40</span><span class="nm"><span class="c">CAPSTONE R2</span>내 plugin 배포와 재사용</span><span class="lks"><a class="lab" href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html">plugin으로 묶기</a><a class="lab" href="ClaudeCode_Capstone_Overview.html#missions-r2">R2 미션 안내</a><a class="lab" href="ClaudeCode_Capstone_R2_1_HandsOnLab.html">R2-1</a><a class="lab" href="ClaudeCode_Capstone_R2_2_HandsOnLab.html">R2-2</a><a class="lab" href="ClaudeCode_Capstone_R2_3_HandsOnLab.html">R2-3 선택</a></span></div>
-      <div class="sl quiet"><span class="t">16:40–16:50</span><span class="nm">Break</span></div>
-      <div class="sl"><span class="t">16:50–17:10</span><span class="nm"><span class="c">CH 06</span>조직의 비용 보고 통제하기</span><span class="lks"><a href="reactive/06-ch6-org-cost.html?theme=dark">강의자료</a></span></div>
-      <div class="sl"><span class="t">17:10–17:40</span><span class="nm"><span class="c">CH 06 LAB</span>게이트웨이 로그인과 지출 한도</span><span class="lks"><a class="lab" href="ClaudeCode_Ch6_HandsOnLab.html">Hands-on Lab</a></span></div>
-      <div class="sl quiet"><span class="t">17:40–18:00</span><span class="nm">쇼케이스 2 &amp; Closing</span></div>
+      <ol class="sl-list">
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">환영인사 / 리캡</span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 04</span>Claude Code 확장하기</span><span class="lks"><a href="reactive/04-ch4-extending.html?theme=dark">강의자료</a></span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 04 LAB</span>팀 스타터 킷과 첫 mod</span><span class="lks"><a class="lab" href="ClaudeCode_Ch4_HandsOnLab.html">Hands-on Lab</a></span></li>
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">점심 식사</span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 05</span>비용 효율적으로 쓰기</span><span class="lks"><a href="reactive/05-ch5-cost-efficient.html?theme=dark">강의자료</a></span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 05 LAB</span>내 세션의 토큰 줄이기</span><span class="lks"><a class="lab" href="ClaudeCode_Ch5_HandsOnLab.html">Hands-on Lab</a></span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CAPSTONE R2</span>내 plugin 배포와 재사용</span><span class="lks"><a class="lab" href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html">plugin으로 묶기</a><a class="lab" href="ClaudeCode_Capstone_Overview.html#missions-r2">R2 미션 안내</a><a class="lab" href="ClaudeCode_Capstone_R2_1_HandsOnLab.html">R2-1</a><a class="lab" href="ClaudeCode_Capstone_R2_2_HandsOnLab.html">R2-2</a><a class="lab" href="ClaudeCode_Capstone_R2_3_HandsOnLab.html">R2-3 선택</a></span></li>
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">Break</span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 06</span>조직의 비용 보고 통제하기</span><span class="lks"><a href="reactive/06-ch6-org-cost.html?theme=dark">강의자료</a></span></li>
+      <li class="sl"><span class="t" aria-hidden="true"></span><span class="nm"><span class="c">CH 06 LAB</span>게이트웨이 로그인과 지출 한도</span><span class="lks"><a class="lab" href="ClaudeCode_Ch6_HandsOnLab.html">Hands-on Lab</a></span></li>
+      <li class="sl quiet"><span class="t" aria-hidden="true"></span><span class="nm">쇼케이스 2 &amp; Closing</span></li>
+      </ol>
     </div>
   </div>
 </section>
@@ -291,7 +297,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>핸즈온 랩 시작 전 확인</h3>
         <p>Workshop Studio 참가, Event outputs의 IDEUrl, code-server 접속, Claude Code와 게이트웨이 도달 확인, 마이데이터 키트 내려받기까지 프리플라이트.</p>
       </span>
-      <span class="side"><span class="time">Day 1 13:00</span>체크 6개 <span class="go">열기 →</span></span>
+      <span class="side"><span class="time">Day 1</span>체크 6개 <span class="go">열기 →</span></span>
     </a>
 
     <a class="row" href="ClaudeCode_Ch1_HandsOnLab.html">
@@ -300,7 +306,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>Claude Code는 어떻게 동작하는가</h3>
         <p>Bedrock 위의 에이전트 루프. 가명 처리된 마이데이터로 컨텍스트와 /context, 세션 파일과 체크포인트(/rewind), auto mode, Bedrock 데이터 경로를 직접 확인.</p>
       </span>
-      <span class="side"><span class="time">Day 1 13:00</span>준비 + 4 Task <span class="go">랩 열기 →</span></span>
+      <span class="side"><span class="time">Day 1</span>준비 + 4 Task <span class="go">랩 열기 →</span></span>
     </a>
 
     <div class="row">
@@ -310,7 +316,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <p><b>LAB 1 정책 배포</b>: 모델 고정, 최소 IAM, managed settings와 drop-in 배포, Claude Apps Gateway로 그룹별 모델 정책 비교 (준비 + 6 Task).
         <b>LAB 2 가드레일과 DLP</b>: 관리형 DLP 훅과 fail-closed, auto mode 경계 설계(ask 규칙, environment, critique), 선택으로 샌드박스, Bedrock Guardrails, 확장 통제 (준비 + 필수 3 Task + 선택 3 + 원복).</p>
       </span>
-      <span class="side"><span class="time">Day 1 13:00</span>랩 2개 <a class="go" href="ClaudeCode_Ch2_HandsOnLab.html">LAB 1 열기 →</a><a class="go" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">LAB 2 열기 →</a></span>
+      <span class="side"><span class="time">Day 1</span>랩 2개 <a class="go" href="ClaudeCode_Ch2_HandsOnLab.html">LAB 1 열기 →</a><a class="go" href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">LAB 2 열기 →</a></span>
     </div>
 
     <a class="row" href="ClaudeCode_Ch3_HandsOnLab.html">
@@ -319,7 +325,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>Subagent로 일 나눠 맡기기</h3>
         <p>spending-analyst, portfolio-analyst, risk-reviewer 에이전트 3종 정의, 도구 권한 격리, 자동, 명시, 병렬 디스패치로 고객 세그먼트 나누기, 선택으로 헤드리스 JSON 후처리.</p>
       </span>
-      <span class="side"><span class="time">Day 1 14:40</span>준비 + 4 Task + 선택 1 <span class="go">랩 열기 →</span></span>
+      <span class="side"><span class="time">Day 1</span>준비 + 4 Task + 선택 1 <span class="go">랩 열기 →</span></span>
     </a>
 
     <a class="row" href="ClaudeCode_Ch4_HandsOnLab.html">
@@ -328,7 +334,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>Claude Code 확장하기</h3>
         <p>Plugins와 Mods로 팀의 플랫폼까지. retirement-gap 스킬로 노후 연금 격차 계산을 고정하고 asset-team-kit 플러그인과 로컬 마켓플레이스로 배포해 연금상품 기획서를 완성, 첫 mod와 hot reload, 선택으로 Bedrock idle compaction mod, 조직의 mod 통제.</p>
       </span>
-      <span class="side"><span class="time">Day 2 10:45</span>준비 + 7 Task + 선택 1 <span class="go">랩 열기 →</span></span>
+      <span class="side"><span class="time">Day 2</span>준비 + 7 Task + 선택 1 <span class="go">랩 열기 →</span></span>
     </a>
 
     <a class="row" href="ClaudeCode_Ch5_HandsOnLab.html">
@@ -337,7 +343,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>비용 효율적으로 쓰기</h3>
         <p>같은 일을 더 적은 토큰으로. 카드 거래 CSV로 기준선 재기, 출력 필터 훅, CLAUDE.md 다이어트와 모델 선택, 압축과 auto-compact window.</p>
       </span>
-      <span class="side"><span class="time">Day 2 13:20</span>준비 + 4 Task <span class="go">랩 열기 →</span></span>
+      <span class="side"><span class="time">Day 2</span>준비 + 4 Task <span class="go">랩 열기 →</span></span>
     </a>
 
     <a class="row" href="ClaudeCode_Ch6_HandsOnLab.html">
@@ -346,7 +352,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>조직의 비용 보고 통제하기</h3>
         <p>쓴 만큼 보고, 넘치면 막는다. OTel 텔레메트리 경로, Apps Gateway 그룹별 모델 정책과 사용자별 지출 한도, 선택으로 계약 단가 비용 표시.</p>
       </span>
-      <span class="side"><span class="time">Day 2 17:10</span>준비 + 3 Task + 선택 1 <span class="go">랩 열기 →</span></span>
+      <span class="side"><span class="time">Day 2</span>준비 + 3 Task + 선택 1 <span class="go">랩 열기 →</span></span>
     </a>
 
   </div>
@@ -356,8 +362,8 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
   <div class="sec-title"><h2>Capstone Missions</h2><span class="tag">이틀 2라운드 / 내 agents, 가드레일, plugin</span></div>
   <p class="sec-desc">
     캡스톤의 목적은 나만의 agents와 가드레일을 만들고, 그것을 plugin으로 묶어 사내에 배포해 다시 쓰는 것입니다.
-    <b>R1 (Day 1 15:50-17:40, 110분)</b>은 데이터 미션 셋 중 하나를 골라 Subagent 2개 이상과 실제로 막는 가드레일을 만들고,
-    <b>R2 (Day 2 14:00-16:40, 160분)</b>는 공통 단계에서 그 결과를 plugin으로 묶어 마켓플레이스에 올린 뒤 미션 둘 이상을 진행합니다.
+    <b>R1 (Day 1)</b>은 데이터 미션 셋 중 하나를 골라 Subagent 2개 이상과 실제로 막는 가드레일을 만들고,
+    <b>R2 (Day 2)</b>는 공통 단계에서 그 결과를 plugin으로 묶어 마켓플레이스에 올린 뒤 미션 둘 이상을 진행합니다.
     먼저 <a href="ClaudeCode_Capstone_Overview.html" style="color:var(--orange)">캡스톤 개요</a>를 읽고 시작하세요.
   </p>
   <div class="rows" style="margin-bottom:14px">
@@ -367,7 +373,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>Capstone 시작 전, 설치하면 좋은 것들</h3>
         <p>Claude HUD 계기판, superpowers, Agent Toolkit for AWS 6종, 풀 스택 플러그인 32종 일괄 설치.</p>
       </span>
-      <span class="side"><span class="time">15분</span>단계 4개 <span class="go">열기 →</span></span>
+      <span class="side"><span class="time">R1 전</span>단계 4개 <span class="go">열기 →</span></span>
     </a>
   </div>
 
@@ -390,21 +396,21 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <span class="identity">고객 맞춤 서비스</span>
       <h3>마이데이터로 에이전트와 가드레일</h3>
       <p class="desc">고객 한 명의 상담 준비를 맡길 자기 Subagent와, 개인정보 패턴과 원본 raw/ 접근을 막는 가드레일을 만듭니다.</p>
-      <span class="foot"><span>Day 1 · 110분 중 하나</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>Day 1 · 셋 중 하나</span><span class="go">시작 →</span></span>
     </a>
     <a class="card" href="ClaudeCode_Capstone_R1B_HandsOnLab.html">
       <span class="mnum">R1-B</span>
       <span class="identity">서울 부동산 시세</span>
       <h3>공공데이터 MCP와 에이전트, 가드레일</h3>
       <p class="desc">실거래가 MCP 서버(골격 제공), 시세 정리와 이상 거래 탐지 Subagent 2개, 키 유출과 호출 대상을 막는 가드레일. 키 발급 전에는 mock 모드로 진행합니다.</p>
-      <span class="foot"><span>Day 1 · 110분 중 하나</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>Day 1 · 셋 중 하나</span><span class="go">시작 →</span></span>
     </a>
     <a class="card" href="ClaudeCode_Capstone_R1C_HandsOnLab.html">
       <span class="mnum">R1-C</span>
       <span class="identity">내가 고른 MCP</span>
       <h3>이미 있는 MCP 서버 위에 에이전트 세우기</h3>
       <p class="desc">MCP 서버를 직접 만들지 않고 연결해, 자료를 찾아 정리하는 Subagent 2개와 외부 호스트를 묶는 가드레일을 세웁니다.</p>
-      <span class="foot"><span>Day 1 · 110분 중 하나</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>Day 1 · 셋 중 하나</span><span class="go">시작 →</span></span>
     </a>
   </div>
 
@@ -416,7 +422,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
         <h3>R2 공통 단계, plugin으로 묶어 마켓플레이스 배포</h3>
         <p>R1에서 만든 agent, 훅, 설정을 plugin 하나로 묶어 마켓플레이스에 올리고 동료 폴더에서 설치합니다.</p>
       </span>
-      <span class="side"><span class="time">75분</span><span class="go">열기 →</span></span>
+      <span class="side"><span class="time">R2 먼저</span><span class="go">열기 →</span></span>
     </a>
   </div>
   <div class="cards">
@@ -425,14 +431,14 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <span class="identity">정기 분석 리포트</span>
       <h3>설치한 plugin으로 같은 형식의 리포트 반복</h3>
       <p class="desc">동료 폴더에서 periodic-report skill을 대상이나 기간만 바꿔 두 번 돌려, 형식이 같은지와 agent와 skill이 plugin에서 왔는지 봅니다.</p>
-      <span class="foot"><span>Day 2 · 미션 45분</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>Day 2 · 미션</span><span class="go">시작 →</span></span>
     </a>
     <a class="card" href="ClaudeCode_Capstone_R2_2_HandsOnLab.html">
       <span class="mnum">R2-2</span>
       <span class="identity">기획안 작성</span>
       <h3>같은 plugin으로 분석을 기획안으로</h3>
       <p class="desc">리포트 하나를 근거로 proposal-draft skill을 돌려 기획안을 만들고, 같은 agent를 다시 쓰는 모습을 확인합니다.</p>
-      <span class="foot"><span>Day 2 · 미션 45분</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>Day 2 · 미션</span><span class="go">시작 →</span></span>
     </a>
     <a class="card" href="ClaudeCode_Capstone_R2_3_HandsOnLab.html">
       <span class="mnum">R2-3 선택</span>
@@ -456,7 +462,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="desc"><b>Day 1, 라운드 1.</b> Claude Code 마스코트 Clawd의 슈퍼마리오풍 플랫포머. 엔진, 물리, 타일 레벨, 코인과 깃발까지
       전부 superpowers로 시켜서 만들고 CloudFront로 개장합니다. Bedrock 미사용, API 키 불필요.</p>
       <p class="finale">피날레: <b>내가 만든 게임 URL을 Slack에 공유, 서로 플레이</b></p>
-      <span class="foot"><span>135분 / 미션 5 + DoD</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>미션 5 + DoD</span><span class="go">시작 →</span></span>
     </a>
 
     <a class="card" href="ClaudeCode_Capstone2_HandsOnLab.html">
@@ -466,7 +472,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="desc"><b>Day 2, 라운드 2.</b> FastAPI + React + lightweight-charts로 지표 바, 지수 카드, 종목 테이블, 캔들 차트를 짓고,
       Bedrock 종목 분석이 SSE로 타자기처럼 흐릅니다. 캐시는 single-flight, 실행은 make run 하나. 원작 stock-monitoring 축소판.</p>
       <p class="finale">피날레: <b>브라우저에서 뛰는 내 데스크 스크린샷을 Slack에</b></p>
-      <span class="foot"><span>135분 / 미션 5 + DoD</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>미션 5 + DoD</span><span class="go">시작 →</span></span>
     </a>
 
     <a class="card" href="ClaudeCode_Capstone3_HandsOnLab.html">
@@ -476,7 +482,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="desc"><b>Day 1, 라운드 1.</b> 제너러티브 아트 두 점으로 여는 인터랙티브 미디어 아트 전시. 첫 작품을 추상 없이 끝까지 밀고,
       두 번째 작품이 도착하는 순간 공통 계약을 추출합니다. 추상이 태어나는 순간을 손으로 겪는 랩. Bedrock 미사용, API 키 불필요.</p>
       <p class="finale">피날레: <b>내 전시 URL을 Slack에 공유, 서로 관람</b></p>
-      <span class="foot"><span>120분 / 미션 6 + DoD</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>미션 6 + DoD</span><span class="go">시작 →</span></span>
     </a>
 
     <a class="card" href="ClaudeCode_Capstone4_HandsOnLab.html">
@@ -486,7 +492,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="desc"><b>Day 2, 라운드 2.</b> 급상승 30을 주기 수집해 스냅샷으로 쌓고, 순위 변동(▲▼)과 NEW, 카테고리 점유율의 흐름을 읽습니다.
       브리핑은 Bedrock을 SDK 없이 REST로 직접 호출, now/daily 두 모드. 원작 youtube-trend 축소판.</p>
       <p class="finale">피날레: <b>흐름이 읽히는 레이더 스크린샷을 Slack에</b></p>
-      <span class="foot"><span>135분 / 미션 5 + DoD</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>미션 5 + DoD</span><span class="go">시작 →</span></span>
     </a>
 
     <a class="card" href="ClaudeCode_Capstone5_HandsOnLab.html">
@@ -496,7 +502,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="desc"><b>Day 1, 라운드 1 (2시간 트랙).</b> USGS 실시간 피드를 멱등 수집해 세계지도 SVG에 진앙 펄스로 띄우고,
       Bedrock이 "지난 24시간, 지구는"을 절제된 한국어로 해설합니다. 키 발급 없음, CloudFront 실배포로 개장.</p>
       <p class="finale">피날레: <b>누구나 열리는 내 지진 워치 URL을 Slack에</b></p>
-      <span class="foot"><span>120분 / 미션 5 + DoD</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>미션 5 + DoD</span><span class="go">시작 →</span></span>
     </a>
 
     <a class="card" href="ClaudeCode_Capstone6_HandsOnLab.html">
@@ -506,7 +512,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="desc"><b>Day 2, 라운드 2 (2시간 트랙).</b> BBC, Guardian, NHK, 연합뉴스 RSS를 수집해 공통 토픽을 묶고,
       매체별 프레임을 한국어로 나란히 비교합니다. LLM 출력을 JSON 계약으로 화면에 - 요약을 넘어 관점을 읽는 도구.</p>
       <p class="finale">피날레: <b>내 미디어 렌즈 URL을 Slack에</b></p>
-      <span class="foot"><span>120분 / 미션 5 + DoD</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>미션 5 + DoD</span><span class="go">시작 →</span></span>
     </a>
 
     <a class="card" href="ClaudeCode_Capstone7_HandsOnLab.html">
@@ -516,7 +522,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
       <p class="desc"><b>자율 라운드.</b> 가장 자주 질문받는 기술분야를 골라 검증 우선(THE FILTER) 플레이북 사이트를 짓습니다.
       마스터 프롬프트로 페이지를 규격대로 찍고, 신선도 메타데이터와 출고 게이트가 낡음을 감시합니다. 원작 pai-playbook 축소판. Bedrock 미사용, API 키 불필요.</p>
       <p class="finale">피날레: <b>후보 6건을 필터에 태워 승급/대기 판정, 출고 게이트 통과</b></p>
-      <span class="foot"><span>135분 / 미션 5 + DoD</span><span class="go">시작 →</span></span>
+      <span class="foot"><span>미션 5 + DoD</span><span class="go">시작 →</span></span>
     </a>
   </div>  </details>
 </section>
@@ -596,7 +602,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
 
 <div class="note">
   <div class="note-inner">
-    모든 캡스톤의 마지막에는 <b>OPTION 하네스 엔지니어링 (+15분)</b>이 있습니다.
+    모든 캡스톤의 마지막에는 <b>OPTION 하네스 엔지니어링</b>이 있습니다.
     <code class="inline">project-init</code>으로 작업 환경을 표준 구조로 성숙시키고
     <code class="inline">harness-eval</code>로 6개 차원 등급을 받습니다.
   </div>
@@ -610,7 +616,7 @@ html.light code.inline { background: #E8EDF3; color: #9A4E00; }
     <a href="https://github.com/whchoi98/claude-code-workshop">Claude Code Deep Dive Workshop 저장소</a> /
     <a href="https://github.com/whchoi98/claude-code-workshop/tree/main/tech_doc">기타 Tech Doc</a>
   </div>
-  <div>2026년 11월 16일(월)–17일(화) · 양일 10:00–18:00</div>
+  <div>2026년 11월 16일(월)–17일(화)</div>
   <div>센터필드 18층 · 300 · 301 · 400 · 401호</div>
 </footer>
 

@@ -626,7 +626,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 <header class="hero">
   <span class="eyebrow">Capstone Hands-on Lab / Ch1~Ch6 통합</span>
   <h1>Mission: Ship It, 나의 Claude Ops Center를 배포하라</h1>
-  <div class="subtitle">Claude Code Deep Dive Workshop, Capstone - AWS Full Stack 실전 (135분 목표 / 150분 상한)</div>
+  <div class="subtitle">Claude Code Deep Dive Workshop, Capstone - AWS Full Stack 실전</div>
   <p class="lede">
     지난 5개 챕터의 학습을 전부 소환하는 캡스톤입니다. 각자 <strong>superpowers 플러그인</strong>의
     brainstorm → plan → execute 워크플로로 <strong>공개 URL로 접속되는 풀스택 서비스</strong>를 배포합니다.
@@ -646,28 +646,27 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="timeline-inner">
     <span class="timeline-label">진행 <strong id="progress-count">0/6</strong></span>
     <div class="segments" id="segments">
-      <button class="seg" data-task="m0" style="flex:20" title="M0 발사 준비, 20분"><span class="fill"></span><span class="seg-txt">M0 발사 준비</span></button>
-      <button class="seg" data-task="m1" style="flex:30" title="M1 코어 스택, 30분"><span class="fill"></span><span class="seg-txt">M1 코어 스택</span></button>
-      <button class="seg" data-task="m2" style="flex:20" title="M2 프론트 병렬, 20분"><span class="fill"></span><span class="seg-txt">M2 프론트</span></button>
-      <button class="seg" data-task="m3" style="flex:25" title="M3 AI /ask, 25분"><span class="fill"></span><span class="seg-txt">M3 /ask</span></button>
-      <button class="seg" data-task="m4" style="flex:20" title="M4 자기관측 루프, 20분"><span class="fill"></span><span class="seg-txt">M4 관측 루프</span></button>
-      <button class="seg" data-task="m5" style="flex:15" title="M5 셀프 착륙, 15분"><span class="fill"></span><span class="seg-txt">M5 착륙</span></button>
+      <button class="seg" data-task="m0" style="flex:20" title="M0 발사 준비"><span class="fill"></span><span class="seg-txt">M0 발사 준비</span></button>
+      <button class="seg" data-task="m1" style="flex:30" title="M1 코어 스택"><span class="fill"></span><span class="seg-txt">M1 코어 스택</span></button>
+      <button class="seg" data-task="m2" style="flex:20" title="M2 프론트 병렬"><span class="fill"></span><span class="seg-txt">M2 프론트</span></button>
+      <button class="seg" data-task="m3" style="flex:25" title="M3 AI /ask"><span class="fill"></span><span class="seg-txt">M3 /ask</span></button>
+      <button class="seg" data-task="m4" style="flex:20" title="M4 자기관측 루프"><span class="fill"></span><span class="seg-txt">M4 관측 루프</span></button>
+      <button class="seg" data-task="m5" style="flex:15" title="M5 셀프 착륙"><span class="fill"></span><span class="seg-txt">M5 착륙</span></button>
     </div>
-    <span class="timeline-label">130 min</span>
   </div>
 </nav>
 
 <div class="layout">
 
 <aside class="sidenav" aria-label="랩 목차">
-  <div class="nav-title">MISSIONS / 130분 + 버퍼</div>
-  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 발사 준비<span class="nav-time">20분</span></a>
-  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 코어 스택<span class="nav-time">30분</span></a>
-  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 프론트 병렬 빌드<span class="nav-time">20분</span></a>
-  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 AI /ask (Bedrock)<span class="nav-time">25분</span></a>
-  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 자기관측 루프<span class="nav-time">20분</span></a>
-  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 착륙, 셀프 검증<span class="nav-time">15분</span></a>
-  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">+15분</span></a>
+  <div class="nav-title">MISSIONS</div>
+  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 발사 준비<span class="nav-time"></span></a>
+  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 코어 스택<span class="nav-time"></span></a>
+  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 프론트 병렬 빌드<span class="nav-time"></span></a>
+  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 AI /ask (Bedrock)<span class="nav-time"></span></a>
+  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 자기관측 루프<span class="nav-time"></span></a>
+  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 착륙, 셀프 검증<span class="nav-time"></span></a>
+  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">옵션</span></a>
   <div class="nav-title" style="margin-top:18px">부록</div>
   <a href="#apx-b" data-nav="apx-b"><span class="dot"></span>부록 컷라인과 트러블슈팅<span class="nav-time"></span></a>
   <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리, 챕터 소환 지도<span class="nav-time"></span></a>
@@ -699,7 +698,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     <span>규칙 3 - 막히면 "막힐 때 열어보기" 완성본으로 복구하고 전진한다</span>
   </div>
   <p style="margin-top:14px">
-    시간 배분은 130분 설계 + 20분 버퍼입니다. 90분 경과 시점에 M3를 시작하지 못했다면
+    진행이 늦어 M3를 시작하지 못했다면
     <a href="#apx-b" style="color:#c9a2ff">부록 컷라인</a>을 적용하세요.
   </p>
 </section>
@@ -709,7 +708,6 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="task-head">
     <span class="task-num">MISSION 00</span>
     <h2>발사 준비, superpowers 장착과 설계 승인</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     환경을 점검하고, <strong>superpowers</strong>를 설치한 뒤, 제공된 요구사항으로
@@ -846,7 +844,6 @@ echo "bootstrap은 백그라운드 진행 중. tail -f /tmp/bootstrap.log 로 �
   <div class="task-head">
     <span class="task-num">MISSION 01</span>
     <h2>코어 스택, 첫 배포와 첫 왕복</h2>
-    <span class="time-badge">30분</span>
   </div>
   <p class="task-goal">
     Phase 1(DynamoDB + events Lambda + HTTP API)을 실행시키고 배포해,
@@ -871,8 +868,8 @@ echo "bootstrap은 백그라운드 진행 중. tail -f /tmp/bootstrap.log 로 �
 npx cdk deploy --require-approval never --outputs-file cdk-outputs.json</code></pre>
   </div>
   <p class="body">
-    첫 배포는 3~5분입니다. <strong>기다리지 말고 지금 바로 M2의 Step 1(프론트 병렬 빌드)을 시작하세요.</strong>
-    이 겹침이 캡스톤 시간표의 핵심입니다.
+    첫 배포는 몇 분 걸립니다. <strong>기다리지 말고 지금 바로 M2의 Step 1(프론트 병렬 빌드)을 시작하세요.</strong>
+    이 겹침이 캡스톤 진행의 핵심입니다.
   </p>
 
   <div class="step-title"><span class="step-no">3</span>첫 왕복 검증</div>
@@ -1074,7 +1071,6 @@ export const handler = async (event) =&gt; {
   <div class="task-head">
     <span class="task-num">MISSION 02</span>
     <h2>프론트 병렬 빌드, 대시보드 개장</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     M1 배포가 도는 동안 <strong>서브에이전트로 SPA를 병렬 제작</strong>하고(Ch3),
@@ -1261,7 +1257,6 @@ setInterval(refresh, 5000);
   <div class="task-head">
     <span class="task-num">MISSION 03</span>
     <h2>AI /ask, Global Inference Profile 연결</h2>
-    <span class="time-badge">25분</span>
   </div>
   <p class="task-goal">
     Bedrock Converse를 호출하는 <code class="inline">/ask</code>를 붙입니다. Ch2에서 읽기만 했던
@@ -1373,7 +1368,6 @@ export const handler = async (event) =&gt; {
   <div class="task-head">
     <span class="task-num">MISSION 04</span>
     <h2>자기관측 루프, 도구가 자신을 보기 시작한다</h2>
-    <span class="time-badge">20분</span>
   </div>
   <p class="task-goal">
     Ch2 Lab 2와 Ch4의 Hook을 달아 <strong>지금 이 세션의 활동이 방금 배포한 대시보드로 흐르게</strong> 만들고,
@@ -1499,7 +1493,6 @@ echo "스킬 설치됨. 새 세션에서 /ship 사용 가능"</code></pre>
   <div class="task-head">
     <span class="task-num">MISSION 05</span>
     <h2>착륙, 원커맨드 재배포와 셀프 검증</h2>
-    <span class="time-badge">15분</span>
   </div>
   <p class="task-goal">
     <code class="inline">/ship</code> 한 번으로 synth → deploy → smoke까지 완주한 뒤,
@@ -1570,7 +1563,7 @@ git add -A &amp;&amp; git commit -m "feat: claude ops center capstone"
   <div class="task-head">
     <span class="task-num">OPTION</span>
     <h2>하네스 엔지니어링, 작품을 성숙시키고 등급을 받다</h2>
-    <span class="time-badge">+15분 옵션</span>
+    <span class="time-badge">옵션</span>
   </div>
   <p class="task-goal">
     지금까지 만든 것은 <strong>결과물</strong>입니다. 이 옵션은 그 결과물을 만든 <strong>작업 환경, 즉 하네스</strong>
@@ -1654,13 +1647,13 @@ claude plugin list</code></pre>
     <h2>컷라인과 트러블슈팅</h2>
     <span class="time-badge">비상용</span>
   </div>
-  <p class="task-goal">90분 경과 시점 기준으로 판단하세요. 컷은 순서대로 적용하고, 어떤 경우에도 M4의 관측 루프와 M5의 셀프 검증은 지킵니다.</p>
+  <p class="task-goal">진행이 늦으면 컷을 순서대로 적용하고, 어떤 경우에도 M4의 관측 루프와 M5의 셀프 검증은 지킵니다.</p>
 
   <table class="tbl">
-    <tr><th>컷</th><th>조치</th><th>절약</th></tr>
-    <tr><td>CUT 1</td><td>M2 프론트를 뒤로 미루고 M3까지 curl로만 진행, 프론트는 M4 전에 완성본으로 배치</td><td>~15분</td></tr>
-    <tr><td>CUT 2</td><td>M3 모델 교체 실험 생략, Sonnet 4.6 기본값 고정</td><td>~5분</td></tr>
-    <tr><td>CUT 3</td><td>M4의 ops-track/비용 차트 생략, Hook 피드만 (WoW 유지)</td><td>~7분</td></tr>
+    <tr><th>컷</th><th>조치</th></tr>
+    <tr><td>CUT 1</td><td>M2 프론트를 뒤로 미루고 M3까지 curl로만 진행, 프론트는 M4 전에 완성본으로 배치</td></tr>
+    <tr><td>CUT 2</td><td>M3 모델 교체 실험 생략, Sonnet 4.6 기본값 고정</td></tr>
+    <tr><td>CUT 3</td><td>M4의 ops-track/비용 차트 생략, Hook 피드만 (WoW 유지)</td></tr>
   </table>
 
   <div class="step-title"><span class="step-no">T</span>트러블슈팅 표</div>

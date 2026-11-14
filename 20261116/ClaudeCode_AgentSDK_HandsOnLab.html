@@ -628,10 +628,9 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     지금까지는 터미널에서 Claude Code와 대화했습니다. 이 랩에서는 <strong>같은 에이전트 루프를
     여러분의 프로그램 안으로</strong> 가져옵니다. query 한 번으로 도구를 쓰는 에이전트를 호출하고,
     session을 이어 <strong>대화 기억</strong>을 만들고, 내 함수를 <strong>커스텀 도구</strong>로 쥐여 주고,
-    프로세스가 죽어도 기억을 이어 가는 <strong>미니 상주 점검원</strong>까지 60분에 완주합니다.
+    프로세스가 죽어도 기억을 이어 가는 <strong>미니 상주 점검원</strong>까지 완주합니다.
   </p>
   <div class="hero-meta">
-    <span>소요 시간 <strong>60분 내외</strong></span>
     <span>Task <strong>준비 + 4개</strong></span>
     <span>SDK <strong>@anthropic-ai/claude-agent-sdk</strong></span>
     <span>Update <strong>2026.07</strong></span>
@@ -642,26 +641,25 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="timeline-inner">
     <span class="timeline-label">진행 <strong id="progress-count">0/5</strong></span>
     <div class="segments" id="segments">
-      <button class="seg" data-task="t0" style="flex:10" title="준비, 10분"><span class="fill"></span><span class="seg-txt">준비</span></button>
-      <button class="seg" data-task="t1" style="flex:12" title="Task 1 첫 query, 12분"><span class="fill"></span><span class="seg-txt">1 첫 query</span></button>
-      <button class="seg" data-task="t2" style="flex:12" title="Task 2 대화 메모리, 12분"><span class="fill"></span><span class="seg-txt">2 대화 메모리</span></button>
-      <button class="seg" data-task="t3" style="flex:14" title="Task 3 커스텀 도구, 14분"><span class="fill"></span><span class="seg-txt">3 커스텀 도구</span></button>
-      <button class="seg" data-task="t4" style="flex:12" title="Task 4 미니 상주 점검원, 12분"><span class="fill"></span><span class="seg-txt">4 상주 점검원</span></button>
+      <button class="seg" data-task="t0" style="flex:10" title="준비"><span class="fill"></span><span class="seg-txt">준비</span></button>
+      <button class="seg" data-task="t1" style="flex:12" title="Task 1 첫 query"><span class="fill"></span><span class="seg-txt">1 첫 query</span></button>
+      <button class="seg" data-task="t2" style="flex:12" title="Task 2 대화 메모리"><span class="fill"></span><span class="seg-txt">2 대화 메모리</span></button>
+      <button class="seg" data-task="t3" style="flex:14" title="Task 3 커스텀 도구"><span class="fill"></span><span class="seg-txt">3 커스텀 도구</span></button>
+      <button class="seg" data-task="t4" style="flex:12" title="Task 4 미니 상주 점검원"><span class="fill"></span><span class="seg-txt">4 상주 점검원</span></button>
     </div>
-    <span class="timeline-label">60 min</span>
   </div>
 </nav>
 
 <div class="layout">
 
 <aside class="sidenav" aria-label="랩 목차">
-  <div class="nav-title">TASKS / 60분</div>
-  <a href="#t0" data-nav="t0"><span class="dot"></span>사전 준비, SDK 설치<span class="nav-time">10분</span></a>
-  <a href="#t1" data-nav="t1"><span class="dot"></span>Task 1 첫 query<span class="nav-time">12분</span></a>
-  <a href="#t2" data-nav="t2"><span class="dot"></span>Task 2 대화 메모리<span class="nav-time">12분</span></a>
-  <a href="#t3" data-nav="t3"><span class="dot"></span>Task 3 커스텀 도구<span class="nav-time">14분</span></a>
-  <a href="#t4" data-nav="t4"><span class="dot"></span>Task 4 미니 상주 점검원<span class="nav-time">12분</span></a>
-  <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리, 캡스톤 이식 지도<span class="nav-time"></span></a>
+  <div class="nav-title">TASKS</div>
+  <a href="#t0" data-nav="t0"><span class="dot"></span>사전 준비, SDK 설치</a>
+  <a href="#t1" data-nav="t1"><span class="dot"></span>Task 1 첫 query</a>
+  <a href="#t2" data-nav="t2"><span class="dot"></span>Task 2 대화 메모리</a>
+  <a href="#t3" data-nav="t3"><span class="dot"></span>Task 3 커스텀 도구</a>
+  <a href="#t4" data-nav="t4"><span class="dot"></span>Task 4 미니 상주 점검원</a>
+  <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리, 캡스톤 이식 지도</a>
 </aside>
 
 <main>
@@ -671,7 +669,6 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="task-head">
     <span class="task-num">TASK 00</span>
     <h2>사전 준비, SDK 설치와 인증 상속</h2>
-    <span class="time-badge">10분</span>
   </div>
   <p class="task-goal">
     Agent SDK는 <strong>Claude Code CLI를 자식 프로세스로 구동</strong>합니다. 그래서 설치만 하면
@@ -711,7 +708,6 @@ claude /status                 # CLI 인증이 살아 있으면 SDK도 그대로
   <div class="task-head">
     <span class="task-num">TASK 01</span>
     <h2>첫 query, CLI의 프로그래매틱 쌍둥이</h2>
-    <span class="time-badge">12분</span>
   </div>
   <p class="task-goal">
     <code class="inline">claude -p</code>로 하던 일을 <code class="inline">query()</code> 함수로 합니다.
@@ -771,7 +767,6 @@ node hello.mjs</code></pre>
   <div class="task-head">
     <span class="task-num">TASK 02</span>
     <h2>대화 메모리, resume이 기억을 만든다</h2>
-    <span class="time-badge">12분</span>
   </div>
   <p class="task-goal">
     query는 기본적으로 매번 새 대화입니다. 첫 응답의 <strong>session_id를 붙잡아 다음 query의
@@ -835,7 +830,6 @@ node chat.mjs</code></pre>
   <div class="task-head">
     <span class="task-num">TASK 03</span>
     <h2>커스텀 도구, 내 함수가 에이전트의 손이 된다</h2>
-    <span class="time-badge">14분</span>
   </div>
   <p class="task-goal">
     에이전트에게 <strong>여러분의 코드가 가진 능력</strong>(DB 조회, 사내 API, 이 랩에서는 가상의 사내 정책 노트 검색)을 쥐여 줍니다.
@@ -918,7 +912,6 @@ node notes-agent.mjs "이체 한도를 바꾸려면 누구 승인이 필요해?"
   <div class="task-head">
     <span class="task-num">TASK 04</span>
     <h2>미니 상주 점검원, 프로세스를 넘는 기억</h2>
-    <span class="time-badge">12분</span>
   </div>
   <p class="task-goal">
     session_id를 <strong>파일에 저장</strong>하면 프로세스가 죽어도 기억이 이어집니다.

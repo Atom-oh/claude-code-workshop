@@ -795,7 +795,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 
 <header class="hero">
   <span class="eyebrow">HANDS-ON LAB / CAPSTONE R2-3</span>
-  <p class="round" data-round="R2">R2 · Day 2 · 선택 미션 60분</p>
+  <p class="round" data-round="R2">R2 · Day 2 · 선택 미션</p>
   <h1>R2-3 AgentCore 앱: 같은 agent와 skill을 Claude Code 밖에서 돌리기</h1>
   <div class="subtitle">설치한 my-kit의 agent 지침과 skill 파일을 고치지 않고 Amazon Bedrock AgentCore harness에 올려, 터미널 명령과 작은 Python 앱으로 호출한 뒤, 만든 리소스를 모두 지운다</div>
   <p class="lede">
@@ -835,12 +835,12 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 
 <aside class="sidenav" aria-label="목차">
   <div class="nav-title">R2-3</div>
-  <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 선택 미션 안내와 준비<span class="nav-time">10분</span></a>
-  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 가드레일: ask 규칙<span class="nav-time">5분</span></a>
-  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 AgentCore에 올리기<span class="nav-time">20분</span></a>
-  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 Claude Code 밖에서 호출<span class="nav-time">10분</span></a>
-  <a href="#cleanup" data-nav="cleanup"><span class="dot"></span>04 정리<span class="nav-time">10분</span></a>
-  <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 출품<span class="nav-time">5분</span></a>
+  <a href="#task-00" data-nav="task-00"><span class="dot"></span>00 선택 미션 안내와 준비<span class="nav-time"></span></a>
+  <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 가드레일: ask 규칙<span class="nav-time"></span></a>
+  <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 AgentCore에 올리기<span class="nav-time"></span></a>
+  <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 Claude Code 밖에서 호출<span class="nav-time"></span></a>
+  <a href="#cleanup" data-nav="cleanup"><span class="dot"></span>04 정리<span class="nav-time"></span></a>
+  <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 출품<span class="nav-time"></span></a>
 </aside>
 
 <main>
@@ -855,7 +855,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 </div>
 
 <section class="task" id="task-00" data-min="10">
-  <div class="task-head"><span class="task-num">00</span><h2>선택 미션 안내와 준비</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">00</span><h2>선택 미션 안내와 준비</h2></div>
   <p class="task-goal">이 미션을 고를지 정하고, AgentCore CLI와 AWS 자격 증명, 근거로 쓸 리포트를 확인합니다.</p>
   <table class="tbl"><thead><tr><th>항목</th><th>내용</th></tr></thead><tbody>
     <tr><td>세는 방법</td><td>선택 미션입니다. 고르면 R2 미션 두 개 중 하나로 셉니다(R2-1 + R2-3, 또는 R2-2 + R2-3). 고르지 않아도 완주입니다.</td></tr>
@@ -904,7 +904,7 @@ claude plugin list --json | jq -r '.[] | select(.id | startswith("aws-agents@"))
 </section>
 
 <section class="task" id="task-01" data-min="5">
-  <div class="task-head"><span class="task-num">01</span><h2>가드레일: 지우거나 비용이 드는 AWS 명령은 확인받기</h2><span class="time-badge">5분</span></div>
+  <div class="task-head"><span class="task-num">01</span><h2>가드레일: 지우거나 비용이 드는 AWS 명령은 확인받기</h2></div>
   <p class="task-goal">Administrator 권한에서는 Claude가 AWS를 바꾸는 명령도 막힘없이 실행됩니다. 배포하기 전에, 이 폴더에서 그런 명령은 매번 묻도록 권한 <code class="inline">ask</code> 규칙을 둡니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> 02의 배포와 04의 정리를 Claude에게 맡겨도, 리소스를 만들거나 지우는 순간에는 사람이 명령을 읽고 승인하게 됩니다.</p>
   <div class="viz" data-viz="copy-r23-ask"></div>
@@ -956,7 +956,7 @@ jq -r '.permissions.ask[]' .claude/settings.json</code></pre>
 </section>
 
 <section class="task" id="task-02" data-min="20">
-  <div class="task-head"><span class="task-num">02</span><h2>같은 agent와 skill을 AgentCore에 올리기</h2><span class="time-badge">20분</span></div>
+  <div class="task-head"><span class="task-num">02</span><h2>같은 agent와 skill을 AgentCore에 올리기</h2></div>
   <p class="task-goal">빈 AgentCore 프로젝트에 harness 하나를 더하고, 시스템 프롬프트에 my-kit의 agent 지침과 <code class="inline">SKILL.md</code>를 그대로 붙여 배포합니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> harness에는 Claude Code의 subagent, 훅, plugin MCP 서버가 없습니다. 그래서 agent 지침과 skill(절차와 출력 형식을 적은 <code class="inline">SKILL.md</code>)을 시스템 프롬프트에 그대로 붙여 같은 지침을 씁니다.</p>
   <div class="step-title"><span class="step-no">1</span>프로젝트와 harness 만들기</div>
@@ -1046,7 +1046,7 @@ agentcore status</code></pre>
 </section>
 
 <section class="task" id="task-03" data-min="10">
-  <div class="task-head"><span class="task-num">03</span><h2>Claude Code 밖에서 호출해 보기</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">03</span><h2>Claude Code 밖에서 호출해 보기</h2></div>
   <p class="task-goal">보낼 자료를 파일로 만들고, AgentCore CLI와 작은 Python 앱으로 harness를 불러 같은 형식의 리포트가 나오는지 봅니다. Claude 세션은 열지 않습니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> Claude 세션 없이 터미널 명령과 다른 프로그램에서도 같은 형식의 리포트가 나와야, 같은 agent와 skill을 Claude Code 밖에서 다시 썼다고 말할 수 있습니다.</p>
   <div class="step-title"><span class="step-no">1</span>보낼 자료 만들기: 고른 트랙 블록 하나만</div>
@@ -1167,7 +1167,7 @@ grep -nE '^#|^[0-9]\.' ~/claude-lab/capstone-agentcore/out-app.md | head -12</co
 </section>
 
 <section class="task" id="cleanup" data-min="10">
-  <div class="task-head"><span class="task-num">04</span><h2>정리: 만든 AgentCore 리소스 지우기</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">04</span><h2>정리: 만든 AgentCore 리소스 지우기</h2></div>
   <p class="task-goal">프로젝트의 모든 리소스를 지우고, 남은 것이 없는지 확인합니다. 출품할 캡처는 지우기 전에 받아 둡니다(<a href="#task-05">05</a>의 양식 5번).</p>
   <div class="callout warn">
     <span class="co-title">지우지 않으면 비용이 남습니다</span>
@@ -1212,7 +1212,7 @@ aws logs describe-log-groups --region "$REGION" \
 </section>
 
 <section class="task" id="task-05" data-min="5">
-  <div class="task-head"><span class="task-num">05</span><h2>출품</h2><span class="time-badge">5분</span></div>
+  <div class="task-head"><span class="task-num">05</span><h2>출품</h2></div>
   <p class="task-goal">출품 양식의 3번과 5번에 이 미션의 결과를 적습니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> harness는 04에서 지웠으므로, 출품 양식의 ARN과 캡처가 만들었던 것의 기록이 됩니다.</p>
   <div class="viz" data-viz="copy-r23-submit"></div>

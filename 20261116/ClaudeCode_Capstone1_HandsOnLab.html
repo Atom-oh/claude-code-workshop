@@ -624,7 +624,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 <div class="archive-note">예전 예시입니다. 새 캡스톤은 <a href="ClaudeCode_Capstone_Overview.html">여기</a>.</div>
 
 <header class="hero">
-  <span class="eyebrow">CAPSTONE 1 / PRESS START / 135 MIN</span>
+  <span class="eyebrow">CAPSTONE 1 / PRESS START</span>
   <h1>Clawd Jump, 에이전틱 게임 개발</h1>
   <div class="subtitle">Claude Code 캐릭터로 만드는 슈퍼마리오풍 플랫포머</div>
   <p class="lede">
@@ -634,7 +634,6 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     이 캡스톤은 <strong>Bedrock을 쓰지 않으므로 API 키가 필요 없습니다</strong>.
   </p>
   <div class="hero-meta">
-    <span>소요 시간 <strong>135분</strong></span>
     <span>미션 <strong>5개 + DoD</strong></span>
     <span>산출물 <strong>플레이 가능한 URL</strong></span>
     <span>Update <strong>2026.07</strong></span>
@@ -645,29 +644,28 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <div class="timeline-inner">
     <span class="timeline-label">진행 <strong id="progress-count">0/9</strong></span>
     <div class="segments" id="segments">
-      <button class="seg" data-task="m0" style="flex:10" title="M0 사전 준비, 10분"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
-      <button class="seg" data-task="m1" style="flex:15" title="M1 설계, 15분"><span class="fill"></span><span class="seg-txt">M1 설계</span></button>
-      <button class="seg" data-task="m2" style="flex:30" title="M2 엔진, 30분"><span class="fill"></span><span class="seg-txt">M2 엔진</span></button>
-      <button class="seg" data-task="m3" style="flex:50" title="M3 게임플레이, 50분"><span class="fill"></span><span class="seg-txt">M3 게임플레이</span></button>
-      <button class="seg" data-task="m4" style="flex:30" title="M4 배포, 30분"><span class="fill"></span><span class="seg-txt">M4 배포</span></button>
+      <button class="seg" data-task="m0" style="flex:10" title="M0 사전 준비"><span class="fill"></span><span class="seg-txt">M0 준비</span></button>
+      <button class="seg" data-task="m1" style="flex:15" title="M1 설계"><span class="fill"></span><span class="seg-txt">M1 설계</span></button>
+      <button class="seg" data-task="m2" style="flex:30" title="M2 엔진"><span class="fill"></span><span class="seg-txt">M2 엔진</span></button>
+      <button class="seg" data-task="m3" style="flex:50" title="M3 게임플레이"><span class="fill"></span><span class="seg-txt">M3 게임플레이</span></button>
+      <button class="seg" data-task="m4" style="flex:30" title="M4 배포"><span class="fill"></span><span class="seg-txt">M4 배포</span></button>
     </div>
-    <span class="timeline-label">135 min</span>
   </div>
 </nav>
 
 <div class="layout">
 
 <aside class="sidenav" aria-label="미션 목차">
-  <div class="nav-title">MISSIONS / 135분</div>
+  <div class="nav-title">MISSIONS</div>
   <a href="#brief" data-nav="brief"><span class="dot"></span>브리핑<span class="nav-time"></span></a>
   <a href="#blueprint" data-nav="blueprint"><span class="dot"></span>구현 청사진<span class="nav-time">참고</span></a>
-  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 사전 준비<span class="nav-time">10분</span></a>
-  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 설계<span class="nav-time">15분</span></a>
-  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 엔진<span class="nav-time">30분</span></a>
-  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 게임플레이<span class="nav-time">50분</span></a>
-  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 배포와 개장<span class="nav-time">30분</span></a>
+  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 사전 준비<span class="nav-time"></span></a>
+  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 설계<span class="nav-time"></span></a>
+  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 엔진<span class="nav-time"></span></a>
+  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 게임플레이<span class="nav-time"></span></a>
+  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 배포와 개장<span class="nav-time"></span></a>
   <a href="#gq" data-nav="gq"><span class="dot"></span>BONUS 퀄리티 강화<span class="nav-time">+α</span></a>
-  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">+15분</span></a>
+  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">옵션</span></a>
   <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리<span class="nav-time"></span></a>
 </aside>
 
@@ -774,7 +772,7 @@ index.html ──> S3(비공개 버킷) <── OAC ── CloudFront ──> �
 
 
 <section class="task" id="m0">
-  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비</h2><span class="time-badge">10분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비</h2></div>
   <p class="task-goal">프로젝트 폴더와 배포용 CDK 뼈대, 그리고 <strong>로컬 미리보기 방법</strong>을 준비합니다. Bedrock 키는 필요 없습니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -809,7 +807,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
 </section>
 
 <section class="task" id="m1">
-  <div class="task-head"><span class="task-num">MISSION 01</span><h2>설계, 브레인스토밍</h2><span class="time-badge">15분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 01</span><h2>설계, 브레인스토밍</h2></div>
   <p class="task-goal">게임 스펙 7개 조항을 superpowers에 넘겨 <strong>설계와 Phase 계획</strong>을 뽑습니다. Clawd 픽셀 배열이 프롬프트에 들어 있습니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 세션 운용과 Capstone Setup의 superpowers 워크플로.</p>
   <div class="code-wrap">
@@ -857,7 +855,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
 </section>
 
 <section class="task" id="m2">
-  <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 엔진</h2><span class="time-badge">30분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 02</span><h2>Phase 1, 엔진</h2></div>
   <p class="task-goal">게임 루프, 입력, 중력과 점프, 그리고 <strong>Clawd가 화면에 서 있는 것</strong>까지가 이 Phase의 전부입니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 지시 → 실행 → 검증 루프. 여유가 있다면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>에서 배운 방식으로 code-reviewer 서브에이전트를 만들어 물리/충돌 코드 리뷰를 맡겨 보세요.</p>
   <div class="code-wrap prompt">
@@ -907,7 +905,7 @@ function step(dt) {
 </section>
 
 <section class="task" id="m3">
-  <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2 + 3, 레벨과 게임플레이</h2><span class="time-badge">50분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 03</span><h2>Phase 2 + 3, 레벨과 게임플레이</h2></div>
   <p class="task-goal">타일 맵과 카메라, 그리고 코인/가시/깃발까지. <strong>게임이 게임이 되는</strong> 구간입니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 병렬 감각. 레벨 배열을 설계하는 동안 코인/가시 로직 보강을 서브에이전트로 병행할 수 있습니다.</p>
   <div class="code-wrap prompt">
@@ -950,7 +948,7 @@ XXXX...XXXXX...XXXXXXXXXXXXXX...XXXXXXXX..XXXXXXXXXX</code></pre>
 </section>
 
 <section class="task" id="m4">
-  <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 4, 배포와 개장</h2><span class="time-badge">30분</span></div>
+  <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 4, 배포와 개장</h2></div>
   <p class="task-goal">S3 + CloudFront로 세상에 공개합니다. 이 캡스톤의 deploy는 <strong>.env 로드가 필요 없습니다</strong>(Bedrock 미사용).</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 검증 루프가 배포 스모크(curl 200)로 확장됩니다. 자동화가 궁금하면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴이 다음입니다.</p>
   <div class="code-wrap prompt">
@@ -1066,7 +1064,7 @@ echo "$URL" &amp;&amp; curl -s -o /dev/null -w "%{http_code}\n" "$URL"</code></p
   <div class="task-head">
     <span class="task-num">OPTION</span>
     <h2>하네스 엔지니어링, 작품을 성숙시키고 등급을 받다</h2>
-    <span class="time-badge">+15분 옵션</span>
+    <span class="time-badge">옵션</span>
   </div>
   <p class="task-goal">
     지금까지 만든 것은 <strong>결과물</strong>입니다. 이 옵션은 그 결과물을 만든 <strong>작업 환경, 즉 하네스</strong>
