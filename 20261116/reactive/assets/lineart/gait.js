@@ -15,41 +15,41 @@
 //   phase += dt / walk.period;  x += dir * walk.speed * scale * dt;
 //   const p = walk.pose(phase);  // hip, feet[0..1] { ankle, knee, pitch, stance }, front, bob
 
-                                    
 
-                                                  
 
-                              
-                  
-                                               
-                  
-                                                                             
-                
-                                                                      
-                  
-                                         
-                
-                                                                 
-                   
-                                                                                         
-                    
-                 
-                
-                                                                                                  
-                  
-                  
-                                                                       
-               
- 
 
-                                                                               
-                                                                                 
-                                                     
-                                                                                 
-                
-                                                                                                    
-                                         
- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const clamp = (x        , a        , b        ) => Math.max(a, Math.min(b, x));
 const smooth = (e0        , e1        , x        ) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); };

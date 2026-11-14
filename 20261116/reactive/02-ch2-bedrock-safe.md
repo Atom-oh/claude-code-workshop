@@ -76,10 +76,8 @@ window.__c3codepick = function (F, name, preId, lines, map) {
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var host = document.querySelector('.slide-deck #c2-survey-bars') || document.getElementById('c2-survey-bars');
   var bars = Array.prototype.slice.call(host.querySelectorAll('.bar'));
-  function grow(on) { bars.forEach(function (b, i) { var w = on ? (b.dataset.v / 87 * 100) : 0; setTimeout(function () { b.querySelector('i').style.width = w + '%'; }, on ? 120 * i : 0); }); }
-  F.countUp('#c2-survey-num', 87, { decimals: 0, suffix: '명' });
-  F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
-  grow(true);
+  /* static: bars drawn at full length, no count-up (Ch2 keeps motion to the flow scenes and a few diagrams) */
+  bars.forEach(function (b) { var i = b.querySelector('i'); i.style.transition = 'none'; i.style.width = (b.dataset.v / 87 * 100) + '%'; });
 });
 :::
 
@@ -202,13 +200,14 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
   zones: [
     { box: [-0.4, 0, 0, 9.2, 4.2, 0.4], label: '사내망 (망분리)', labelAt: [-0.2, 0, -0.75] },
     { box: [11.6, 0, 0, 15.4, 4.2, 0.4], label: 'AWS 리전 us-east-1', labelAt: [11.8, 0, -0.75] },
-    { box: [12.2, 0.4, 0.4, 9.6, 3.4, 0.25], label: '회사 VPC 10.20.0.0/16, private subnet', labelAt: [12.4, 0.4, -0.5], sub: true }
+    { box: [12.2, 0.4, 0.4, 9.6, 3.4, 0.25], label: '고객 VPC (회사 AWS 계정) 10.20.0.0/16, private subnet', labelAt: [12.4, 0.4, -0.5], sub: true }
   ],
   parts: {
     pc: { boxes: [[1.4, 1.2, 0.4, 1.8, 1.4, 0.8], [1.7, 2.4, 1.2, 1.2, 0.15, 1.0]] },
     dns: { boxes: [[4.0, 2.4, 0.4, 1.0, 1.0, 1.9]] },
     fw: { boxes: [[7.2, 0.6, 0.4, 0.5, 3.0, 1.7]] },
     net: { clouds: [[[6.4, 3.0, 5.0], 58, 20, '인터넷']] },
+    onep: { boxes: [[9.4, 3.0, 4.4, 1.4, 1.0, 1.0]] },
     dx: { pipes: [[[7.7, 2.0, 1.0], [12.6, 2.0, 1.0]]] },
     vgw: { boxes: [[12.6, 1.4, 0.65, 0.8, 1.2, 1.0]] },
     r53: { boxes: [[14.4, 2.6, 0.65, 1.3, 1.0, 1.2]] },
@@ -223,17 +222,20 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
   ],
   wires: {
     inet: { pts: [[3.0, 2.0, 1.6], [6.0, 2.4, 2.6], [6.8, 2.4, 3.6]], cls: 'fs-alt' },
+    inet1p: { pts: [[3.0, 2.0, 1.6], [6.0, 2.4, 2.6], [6.4, 3.0, 4.6], [10.1, 3.5, 5.0]], cls: 'fs-alt fs-bad' },
+    inetpub: { pts: [[3.0, 2.0, 1.6], [6.0, 2.4, 2.6], [6.4, 3.0, 4.6], [15.0, 3.6, 6.2], [24.4, 2.4, 3.3]], cls: 'fs-alt fs-bad' },
     dns: { pts: [[3.0, 2.4, 1.8], [4.5, 2.9, 2.0], [7.45, 2.0, 1.5], [7.7, 2.0, 1.0], [12.6, 2.0, 1.0], [13.0, 2.0, 1.4], [15.0, 3.1, 1.6]], cls: 'fs-alt' },
     req: { pts: [[3.2, 1.9, 1.0], [7.45, 1.9, 1.0], [7.7, 2.0, 1.0], [12.6, 2.0, 1.0], [13.0, 2.0, 1.2], [17.1, 2.0, 1.3], [20.8, 2.0, 1.3], [24.4, 2.2, 1.6]] }
   },
   callouts: [
     { id: 'pc', n: 1, anchor: [2.3, 1.2, 1.2], at: [40, 430], title: '개발자 PC, Claude Code', sub: 'SSO 임시 자격증명으로 서명' },
-    { id: 'net', n: 2, anchor: [6.4, 3.0, 4.6], at: [420, 58], title: '인터넷 차단', sub: '부가 통신도 끔' },
+    { id: 'net', n: 2, anchor: [6.4, 3.0, 4.6], at: [150, 40], title: 'PrivateLink가 없으면 인터넷', sub: '망분리에서는 막힘, 부가 통신도 끔' },
+    { id: 'onep', n: 2, anchor: [10.1, 3.5, 5.4], at: [380, 40], title: 'Anthropic API (1P)', sub: 'api.anthropic.com, 회사 밖 인터넷' },
     { id: 'dns', n: 3, anchor: [4.5, 2.4, 2.3], at: [150, 150], title: '사내 DNS, Route 53 Resolver', sub: '이름을 사설 IP로' },
     { id: 'dx', n: 4, anchor: [10.1, 2.0, 1.2], at: [290, 462], title: 'Direct Connect 전용선', sub: 'private VIF, 공용 인터넷 아님' },
     { id: 'vpce', n: 5, anchor: [17.1, 1.3, 1.2], at: [520, 470], title: 'VPC 엔드포인트 (PrivateLink)', sub: 'ENI 10.20.1.15, SG는 443만' },
     { id: 'iam', n: 6, anchor: [20.6, 3.3, 2.9], at: [560, 120], title: 'IAM 판단 4단계', sub: '하나라도 거부면 멈춤' },
-    { id: 'bedrock', n: 7, anchor: [24.4, 3.4, 3.2], at: [720, 190], title: 'Amazon Bedrock', sub: '추론 프로필로 모델 선택' }
+    { id: 'bedrock', n: 7, anchor: [24.4, 3.4, 3.2], at: [720, 190], title: 'Amazon Bedrock (AWS 서비스)', sub: '공용 엔드포인트와 PrivateLink 입구' }
   ],
   figures: [{ at: [0.6, 1.9, 0.4], scale: 0.9, pose: 'type', act: { start: 'type' } }],
   code: [
@@ -247,16 +249,18 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
   ],
   checks: ['서명 확인 (SigV4, SSO 임시 자격증명)', '역할 정책에 bedrock:InvokeModel*', '엔드포인트 정책이 허용', '조직 SCP가 막지 않음'],
   checksDoneAfter: 'iam',
-  overview: { label: '전체 그림', title: '사내망에서 Bedrock까지, 공용 인터넷 없이', say: '출발, 이름 찾기, 전용선, 엔드포인트, IAM 판단, 모델. Part 1은 이 길을 하나씩 엽니다.' },
+  overview: { label: '전체 그림', title: '인터넷으로 가는 길과 사설로 가는 길', say: '빨간 점선은 PrivateLink 없이 인터넷으로 가는 길(1P API, Bedrock 공용 엔드포인트), 주황 선은 전용선과 PrivateLink로 가는 사설 길입니다. Part 1은 사설 길을 하나씩 엽니다.' },
   phases: [
     { key: 'start', d: 2.8, focus: ['pc'], cam: ['pc', 'dns'], zoom: 0.3, badge: 'pc', lines: [1, 3], label: '1  출발', title: '요청은 사내망의 개발자 PC에서', say: 'Claude Code가 Bedrock 모드로 요청을 만들고, <b>SSO로 받은 임시 자격증명</b>으로 서명합니다. PC에 오래 쓰는 키는 없습니다.' },
-    { key: 'inet', d: 2.8, focus: ['pc', 'net'], cam: ['pc', 'fw', 'net'], badge: 'net', lines: [4], packet: { wire: 'inet', mode: 'block', mark: 'x' }, label: '2  인터넷은 막힘', title: '인터넷으로 가는 길은 없다', say: '망분리 환경이라 인터넷 길은 막혀 있습니다. 업데이트나 오류 리포트 같은 부가 통신도 <b>환경변수 하나로</b> 끕니다.' },
-    { key: 'dns', d: 5.2, focus: ['pc', 'dns', 'dx', 'vgw', 'r53'], badge: 'dns', lines: [6], packet: { wire: 'dns', mode: 'pingpong', colour: 'var(--info)' }, label: '3  이름 찾기', title: 'Bedrock 주소를 사설 IP로 바꾼다', say: '사내 DNS가 질문을 전용선 너머 <b>Route 53 Resolver</b>로 넘기면, Bedrock 주소가 <b>VPC 안의 사설 IP</b>로 돌아옵니다.' },
-    { key: 'dx', d: 4.2, focus: ['pc', 'fw', 'dx', 'vgw'], cam: ['dx'], zoom: 0.3, segment: false, badge: 'dx', lines: [2], packet: { wire: 'req', span: [0, 4] }, label: '4  전용선', title: '요청은 전용선으로 회사 VPC에', say: '요청은 방화벽을 지나 <b>Direct Connect 전용선</b>으로 회사 VPC에 들어갑니다. 공용 인터넷을 거치지 않습니다.' },
-    { key: 'vpce', d: 2.8, focus: ['vpce'], badge: 'vpce', lines: [6], packet: { wire: 'req', span: [4, 5] }, label: '5  PrivateLink', title: 'VPC 엔드포인트가 Bedrock의 입구', say: '사설 IP의 주인은 <b>Bedrock Runtime VPC 엔드포인트</b>입니다. 보안 그룹은 443 포트만 엽니다.' },
-    { key: 'iam', d: 4.6, focus: ['iam'], zoom: 0.26, badge: 'iam', lines: [3, 7], checks: true, packet: { wire: 'req', span: [5, 6], mode: 'wait', waitAt: 0.55, hold: 0.82 }, label: '6  IAM 판단', title: '네 번 확인하고, 하나라도 거부면 멈춤', say: '서명, 역할 정책, 엔드포인트 정책, 조직 SCP를 차례로 봅니다. <b>모두 허용일 때만</b> 지나갑니다.' },
-    { key: 'model', d: 2.8, focus: ['bedrock'], zoom: 0.28, badge: 'bedrock', lines: [5], packet: { wire: 'req', span: [6, 7] }, label: '7  모델', title: '이름표가 가리키는 모델이 답한다', say: '요청의 <b>모델 ID(추론 프로필)</b>가 어떤 Claude가 답할지 정합니다.' },
-    { key: 'back', d: 5.0, focus: ['bedrock', 'iam', 'vpce', 'dx', 'pc'], lines: [], packet: { wire: 'req', span: [7, 0] }, label: '8  응답', title: '답은 같은 길로 돌아온다', say: '답도 같은 길로 돌아옵니다. <b>처음부터 끝까지 공용 인터넷을 지나지 않습니다.</b>' }
+    { key: 'onep', d: 3.6, focus: ['pc', 'net', 'onep'], badge: 'onep', lines: [], packet: { wire: 'inet1p', colour: 'var(--danger)' }, label: '2  PrivateLink가 없으면 (1)', title: 'Claude API를 바로 쓰면, 인터넷으로', say: 'Bedrock이 아니라 <b>Anthropic API(1P)</b>를 바로 쓰면, 요청은 회사 밖 인터넷을 지나 api.anthropic.com으로 갑니다.' },
+    { key: 'pub', d: 4.4, focus: ['pc', 'net', 'bedrock'], badge: 'bedrock', lines: [1], packet: { wire: 'inetpub', colour: 'var(--danger)' }, label: '3  PrivateLink가 없으면 (2)', title: 'Bedrock도 공용 엔드포인트로, 인터넷으로', say: 'Bedrock을 쓰더라도 <b>VPC 엔드포인트가 없으면</b> Bedrock 주소는 공용 IP로 풀리고, 요청은 인터넷 구간을 지나 <b>Bedrock 공용 엔드포인트</b>로 갑니다.' },
+    { key: 'inet', d: 2.8, focus: ['pc', 'net'], cam: ['pc', 'fw', 'net'], badge: 'net', lines: [4], packet: { wire: 'inet', mode: 'block', mark: 'x' }, label: '4  망분리에서는 막힘', title: '두 길 모두 인터넷, 망분리에서는 막힌다', say: '망분리 환경에서는 이 두 길이 모두 방화벽에서 막힙니다. 업데이트나 오류 리포트 같은 부가 통신도 <b>환경변수 하나로</b> 끕니다. 그래서 인터넷 없이 닿는 길이 필요합니다.' },
+    { key: 'dns', d: 5.2, focus: ['pc', 'dns', 'dx', 'vgw', 'r53'], badge: 'dns', lines: [6], packet: { wire: 'dns', mode: 'pingpong', colour: 'var(--info)' }, label: '5  이름 찾기', title: 'Bedrock 주소를 사설 IP로 바꾼다', say: '사내 DNS가 질문을 전용선 너머 <b>Route 53 Resolver</b>로 넘기면, Bedrock 주소가 <b>VPC 안의 사설 IP</b>로 돌아옵니다.' },
+    { key: 'dx', d: 4.2, focus: ['pc', 'fw', 'dx', 'vgw'], cam: ['dx'], zoom: 0.3, segment: false, badge: 'dx', lines: [2], packet: { wire: 'req', span: [0, 4] }, label: '6  전용선', title: '요청은 전용선으로 고객 VPC에', say: '요청은 방화벽을 지나 <b>Direct Connect 전용선</b>으로 고객 VPC(회사 AWS 계정)에 들어갑니다. 공용 인터넷을 거치지 않습니다.' },
+    { key: 'vpce', d: 2.8, focus: ['vpce'], badge: 'vpce', lines: [6], packet: { wire: 'req', span: [4, 5] }, label: '7  PrivateLink', title: 'VPC 엔드포인트가 Bedrock의 사설 입구', say: '사설 IP의 주인은 고객 VPC 안의 <b>Bedrock Runtime VPC 엔드포인트</b>입니다. 요청은 여기서 AWS 사설망으로 Bedrock에 닿습니다. 보안 그룹은 443 포트만 엽니다.' },
+    { key: 'iam', d: 4.6, focus: ['iam'], zoom: 0.26, badge: 'iam', lines: [3, 7], checks: true, packet: { wire: 'req', span: [5, 6], mode: 'wait', waitAt: 0.55, hold: 0.82 }, label: '8  IAM 판단', title: '네 번 확인하고, 하나라도 거부면 멈춤', say: '서명, 역할 정책, 엔드포인트 정책, 조직 SCP를 차례로 봅니다. <b>모두 허용일 때만</b> 지나갑니다.' },
+    { key: 'model', d: 2.8, focus: ['bedrock'], zoom: 0.28, badge: 'bedrock', lines: [5], packet: { wire: 'req', span: [6, 7] }, label: '9  모델', title: '이름표가 가리키는 모델이 답한다', say: '요청의 <b>모델 ID(추론 프로필)</b>가 어떤 Claude가 답할지 정합니다.' },
+    { key: 'back', d: 5.0, focus: ['bedrock', 'iam', 'vpce', 'dx', 'pc'], lines: [], packet: { wire: 'req', span: [7, 0] }, label: '10  응답', title: '답은 같은 길로 돌아온다', say: '답도 같은 길로 돌아옵니다. <b>처음부터 끝까지 공용 인터넷을 지나지 않습니다.</b> 2, 3단계의 길과 비교해 보세요.' }
   ],
   frame: function (c) {
     var rings = c.parts.iam.querySelectorAll('.fs-box');
@@ -267,7 +271,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 :::
 
 :::notes
-{timing: 2.5min}
+{timing: 3min}
 [요약]
 • 사내망 개발자 PC → 사내 DNS와 Route 53 Resolver(사설 IP) → Direct Connect 전용선 → Bedrock Runtime VPC 엔드포인트(PrivateLink) → IAM 판단 → Bedrock
 • 인터넷 길은 막혀 있고, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1로 부가 통신도 끔
@@ -277,14 +281,24 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 {cue: demo}
 장면을 누를 때마다 한 단계씩 넘어가요. 사내망에 있는 개발자 PC에서 요청 하나가 Bedrock까지 어떻게 가는지, 구간마다 가까이 가서 볼게요.
 먼저 Claude Code가 Bedrock 모드로 요청을 만들고, SSO로 받은 임시 자격증명으로 서명합니다. PC에 오래 쓰는 키는 없어요.
-인터넷 쪽 길은 막혀 있습니다. 업데이트나 오류 리포트 같은 부가 통신도 환경변수 하나로 끕니다.
+그런데 PrivateLink가 없으면 어떻게 될까요? Anthropic API, 1P를 바로 쓰면 요청은 인터넷을 지나 api.anthropic.com으로 갑니다. Bedrock을 쓰더라도 VPC 엔드포인트가 없으면 Bedrock 공용 엔드포인트로, 역시 인터넷 구간을 지나요.
+망분리 환경에서는 이 두 길이 모두 방화벽에서 막힙니다. 업데이트나 오류 리포트 같은 부가 통신도 환경변수 하나로 끕니다. 그래서 인터넷 없이 닿는 길이 필요해요.
 그다음 이름 찾기예요. 사내 DNS가 질문을 전용선 너머 Route 53 Resolver로 넘기면, Bedrock 주소가 VPC 안의 사설 IP로 돌아옵니다.
-요청은 방화벽을 지나 Direct Connect 전용선으로 회사 VPC에 들어가고, 그 사설 IP의 주인인 VPC 엔드포인트, 즉 PrivateLink로 들어갑니다.
+요청은 방화벽을 지나 Direct Connect 전용선으로 고객 VPC, 그러니까 회사 AWS 계정의 VPC에 들어가고, 그 사설 IP의 주인인 VPC 엔드포인트, 즉 PrivateLink를 통해 AWS 사설망으로 Bedrock에 닿습니다.
 여기서 IAM이 네 번 확인해요. 서명이 맞는지, 역할에 호출 권한이 있는지, 엔드포인트 정책이 허용하는지, 조직 SCP가 막지 않는지. 하나라도 거부면 멈춥니다.
 모두 통과하면 모델 이름표, 추론 프로필이 가리키는 Claude가 답하고, 답은 같은 길로 돌아옵니다. 처음부터 끝까지 공용 인터넷을 지나지 않아요.
 
 {cue: transition}
 이제 이 길을 하나씩 열어 보겠습니다. 먼저 환경변수부터요.
+
+[약어]
+• VPC: Virtual Private Cloud. 회사 AWS 계정 안의 사설 네트워크
+• PrivateLink, VPC 엔드포인트: 인터넷 없이 VPC 안에서 AWS 서비스에 닿는 사설 입구
+• Direct Connect, private VIF: 사내망과 AWS를 잇는 전용선과 그 위의 사설 연결
+• Route 53 Resolver 인바운드 엔드포인트: 사내 DNS가 VPC 안의 이름을 물어볼 수 있게 하는 입구
+• ENI: 엔드포인트가 VPC 안에 받는 네트워크 카드와 사설 IP, SG(보안 그룹)는 그 방화벽 규칙
+• SigV4: AWS 요청 서명 방식, SCP: AWS Organizations가 계정 전체에 거는 권한 상한
+• 1P: Anthropic이 직접 제공하는 Claude API (api.anthropic.com)
 
 [출처]
 • docs.aws.amazon.com/bedrock/latest/userguide/vpc-interface-endpoints.html
@@ -293,7 +307,53 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 • code.claude.com/docs/en/network-config
 :::
 ---
-<!-- Slide 6: Part 01 divider -->
+<!-- Slide 6: Air-gapped checklist -->
+@type: content
+@fit: off
+
+## 망분리 환경의 여덟 가지 점검
+인터넷 없이 Bedrock만 열려 있을 때 먼저 확인할 것
+
+:::html
+<div class="fsi c2-air8">
+  <div class="fsi-grid-4">
+    <div class="pick"><span class="k">모델 호출</span><span class="t">Bedrock Runtime VPC 엔드포인트</span><span class="d">PrivateLink로 계정 안에서 추론 (앞 장의 길)</span></div>
+    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인</span></div>
+    <div class="pick"><span class="k">사내 프록시</span><span class="t">HTTPS_PROXY, NO_PROXY</span><span class="d">프록시를 거쳐야 하는 경우</span></div>
+    <div class="pick"><span class="k">사내 인증서</span><span class="t">NODE_EXTRA_CA_CERTS</span><span class="d">프록시가 TLS를 다시 서명할 때</span></div>
+    <div class="pick"><span class="k">외부 통신 끄기</span><span class="t">CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</span><span class="d">자동 업데이트, 오류 리포트 등을 한 번에</span></div>
+    <div class="pick"><span class="k">설치와 업데이트</span><span class="t">사내 배포, DISABLE_AUTOUPDATER=1</span><span class="d">버전을 정해 단말에 배포</span></div>
+    <div class="pick"><span class="k">플러그인</span><span class="t">사내 git 마켓플레이스</span><span class="d">Ch4에서 실습</span></div>
+    <div class="pick"><span class="k">웹 접근</span><span class="t">WebFetch deny 또는 허용 도메인</span><span class="d">Bedrock에는 WebSearch가 없음</span></div>
+  </div>
+</div>
+:::
+
+:::notes
+{timing: 1min}
+[요약]
+• 모델 호출은 Bedrock Runtime VPC 엔드포인트(PrivateLink), SSO 로그인은 Identity Center, OIDC, STS 엔드포인트에 닿아야 함
+• 사내 프록시 HTTPS_PROXY와 NO_PROXY, 사내 인증서 NODE_EXTRA_CA_CERTS
+• 외부 통신은 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1, 업데이트는 사내 배포와 DISABLE_AUTOUPDATER=1
+• 플러그인은 사내 git 마켓플레이스(Ch4), WebFetch는 deny 또는 허용 도메인만
+
+망분리 환경, 그러니까 인터넷 없이 Bedrock만 열린 환경이라면 이 여덟 가지를 먼저 확인하세요.
+모델 호출은 방금 본 VPC 엔드포인트로 끝나요. SSO 로그인은 Identity Center 포털과 OIDC, STS 엔드포인트에 닿아야 하니, aws sso login이 되는지부터 봅니다.
+사내 프록시를 거친다면 HTTPS_PROXY와 NO_PROXY, 프록시가 TLS를 다시 서명한다면 NODE_EXTRA_CA_CERTS로 사내 인증서를 지정합니다.
+자동 업데이트와 오류 리포트 같은 외부 통신은 환경변수 하나로 한 번에 끄고, 설치와 업데이트는 버전을 정해 사내에서 배포합니다. 플러그인은 사내 git 마켓플레이스로 받고, 웹 접근은 WebFetch를 막거나 허용 도메인만 엽니다.
+
+[약어]
+• OIDC: OpenID Connect. 로그인 결과를 토큰으로 넘겨주는 표준
+• STS: Security Token Service. 짧게 쓰는 임시 AWS 자격증명을 발급
+• TLS: Transport Layer Security. HTTPS 암호화 통신 규약
+
+[출처]
+• code.claude.com/docs/en/network-config
+• code.claude.com/docs/en/amazon-bedrock
+• code.claude.com/docs/en/settings (DISABLE_AUTOUPDATER, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC)
+:::
+---
+<!-- Slide 7: Part 01 divider -->
 @type: content
 @fit: off
 
@@ -320,7 +380,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 먼저 환경변수와 IAM 권한, 그다음 키 대신 SSO로 로그인하는 방법, 마지막으로 여러 명이 쓸 때 꼭 정해야 하는 모델 고정과 팀 이름표를 보겠습니다.
 :::
 ---
-<!-- Slide 7: Manual setup and region order -->
+<!-- Slide 8: Manual setup and region order -->
 @type: content
 @fit: off
 
@@ -379,7 +439,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
      edges:[{f:'cc',t:'st',c:'success',o:0}],
      loop:true,
      snip:{hd:'확인',path:'Claude Code 프롬프트',lines:['/status'],hl:[1],note:'Lab에서도 연결 직후 <b>/status</b>부터 봅니다.'}}
-  ], {legend:[['accent','Bedrock 연결'],['info','Bedrock 리전'],['warning','경유지 (선택)'],['success','확인']]});
+  ], { static: true,legend:[['accent','Bedrock 연결'],['info','Bedrock 리전'],['warning','경유지 (선택)'],['success','확인']]});
 });
 :::
 
@@ -405,7 +465,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 • code.claude.com/docs/en/amazon-bedrock (Set up manually, 3. Configure Claude Code)
 :::
 ---
-<!-- Slide 8: IAM permissions -->
+<!-- Slide 9: IAM permissions -->
 @type: content
 @fit: off
 
@@ -464,7 +524,7 @@ Claude Code가 부르는 API마다 필요한 권한
      edges:[{f:'iv',t:'mk',c:'warning',l:'구독 확인',o:0}],
      loop:true,
      snip:{hd:'문장 3',path:'claude-code-bedrock-policy.json',lines:['{ "Effect": "Allow",','  "Action": [ "aws-marketplace:ViewSubscriptions",','              "aws-marketplace:Subscribe" ],','  "Resource": "*",','  "Condition": { "StringEquals": {','    "aws:CalledViaLast": "bedrock.amazonaws.com" } } }'],hl:[2,3,6],note:'모델 사용 신청(use case 양식)은 계정마다 한 번, 콘솔에서 합니다.'}}
-  ], {legend:[['accent','모델 호출'],['info','프로필 조회'],['warning','Marketplace']]});
+  ], { static: true,legend:[['accent','모델 호출'],['info','프로필 조회'],['warning','Marketplace']]});
 });
 :::
 
@@ -493,7 +553,7 @@ IAM 권한은 Claude Code가 부르는 API를 따라가면 쉬워요. 위에서�
 • docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrock.html
 :::
 ---
-<!-- Slide 9: Key leak versus SSO -->
+<!-- Slide 10: Key leak versus SSO -->
 @type: content
 @fit: off
 
@@ -609,7 +669,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-key', {
 • docs.aws.amazon.com/singlesignon/latest/userguide/howtogetcredentials.html
 :::
 ---
-<!-- Slide 10: Five credential methods -->
+<!-- Slide 11: Five credential methods -->
 @type: content
 @fit: off
 
@@ -668,7 +728,7 @@ Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
      edges:[{f:'ap',t:'br',c:'warning',curve:70,o:0}],
      loop:true,
      snip:{hd:'Bedrock API 키',path:'Terminal',lines:['export AWS_BEARER_TOKEN_BEDROCK=...','# 체인과 자격증명 캐시를 거치지 않음'],hl:[1],note:'키 하나가 곧 권한이라, <b>나눠 주는 키</b>와 같은 문제가 생깁니다.'}}
-  ], {legend:[['success','권장'],['info','보조'],['danger','장기 키'],['warning','체인 밖']]});
+  ], { static: true,legend:[['success','권장'],['info','보조'],['danger','장기 키'],['warning','체인 밖']]});
 });
 :::
 
@@ -694,7 +754,7 @@ aws login 콘솔 자격증명은 최대 12시간짜리 보조 수단이고요, B
 • SSO: Single Sign-On
 :::
 ---
-<!-- Slide 11: SSO auto refresh -->
+<!-- Slide 12: SSO auto refresh -->
 @type: content
 @fit: off
 
@@ -779,7 +839,7 @@ SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport
 • TLS: Transport Layer Security
 :::
 ---
-<!-- Slide 12: Quick check 1 -->
+<!-- Slide 13: Quick check 1 -->
 @type: content
 @fit: off
 
@@ -804,7 +864,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 :::
 
 :::notes
-{timing: 1min}
+{timing: 0.5min}
 {cue: poll}
 [요약]
 • 정답 B, Opus 5.5
@@ -819,7 +879,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • code.claude.com/docs/en/amazon-bedrock (4. Pin model versions)
 :::
 ---
-<!-- Slide 13: Model version pinning -->
+<!-- Slide 14: Model version pinning -->
 @type: content
 @fit: off
 
@@ -878,7 +938,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      edges:[{f:'al',t:'df',c:'warning',o:0},{f:'df',t:'px',c:'info',o:1},{f:'px',t:'i3',c:'info',o:2}],
      loop:true, stagger:0.7,
      snip:{hd:'prefix만',path:'환경변수',lines:['export ANTHROPIC_BEDROCK_REGION_PREFIX=global','# opus → global.anthropic.','#        claude-opus-5-5'],hl:[1],note:'예를 들어 us-* 리전에서도 <b>global.</b> 프로필을 쓰게 합니다.'}}
-  ], {legend:[['accent','별칭'],['warning','내장 기본값'],['success','고정'],['info','prefix']]});
+  ], { static: true,legend:[['accent','별칭'],['warning','내장 기본값'],['success','고정'],['info','prefix']]});
 });
 :::
 
@@ -901,7 +961,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • code.claude.com/docs/en/amazon-bedrock (4. Pin model versions, Startup model checks, Cross-region inference profile prefixes)
 :::
 ---
-<!-- Slide 14: Team cost tagging -->
+<!-- Slide 15: Team cost tagging -->
 @type: content
 @fit: off
 
@@ -967,7 +1027,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      edges:[{f:'pa',t:'md',c:'info',o:0}],
      loop:true,
      snip:{hd:'이름표 만들기',path:'Terminal',lines:['aws bedrock create-inference-profile \\','  --inference-profile-name sonnet-team-a \\','  --model-source copyFrom=arn:aws:bedrock:\\','us-east-1:111122223333:inference-profile/\\','global.anthropic.claude-sonnet-5-5 \\','  --tags key=team,value=team-a','# 결과','arn:aws:bedrock:us-east-1:111122223333:','application-inference-profile/a1b2c3d4e5f6'],hl:[2,6,8,9],note:'ARN은 화면 폭 때문에 나눠 적었습니다. 실제로는 한 줄입니다.'}}
-  ], {legend:[['accent','팀'],['info','이름표'],['success','기록'],['warning','통제'],['danger','거부']]});
+  ], { static: true,legend:[['accent','팀'],['info','이름표'],['success','기록'],['warning','통제'],['danger','거부']]});
 });
 :::
 
@@ -1000,7 +1060,7 @@ Part 1 마지막은 팀마다 다른 이름표예요. A팀과 B팀이 같은 Son
 • ARN: Amazon Resource Name
 :::
 ---
-<!-- Slide 15: Part 02 divider -->
+<!-- Slide 16: Part 02 divider -->
 @type: content
 @fit: off
 
@@ -1026,7 +1086,7 @@ Part 1 마지막은 팀마다 다른 이름표예요. A팀과 B팀이 같은 Son
 두 번째 Part는 정책은 파일로입니다. Bedrock으로 쓸 때는 claude.ai 같은 관리 콘솔을 쓸 수 없잖아요. 그래서 회사 정책을 파일 한 장으로 모든 PC에 내려보냅니다. 그 파일이 어떻게 이기는지, 어떤 잠금을 거는지, 그리고 적용됐는지 확인하는 방법까지 보겠습니다.
 :::
 ---
-<!-- Slide 16: Policy delivery channels -->
+<!-- Slide 17: Policy delivery channels -->
 @type: content
 @fit: off
 
@@ -1164,7 +1224,7 @@ Claude Code는 시작할 때 이 파일을 읽고, 파일이 바뀌면 다시 �
 • Ch2 Lab 1 TASK 02, TASK 03
 :::
 ---
-<!-- Slide 17: Settings precedence -->
+<!-- Slide 18: Settings precedence -->
 @type: content
 @fit: off
 
@@ -1256,7 +1316,7 @@ Claude Code는 시작할 때 이 파일을 읽고, 파일이 바뀌면 다시 �
 • code.claude.com/docs/en/settings-reference (cleanupPeriodDays 기본 30일)
 :::
 ---
-<!-- Slide 18: Lock keys -->
+<!-- Slide 19: Lock keys -->
 @type: content
 @fit: off
 
@@ -1326,7 +1386,7 @@ managed-settings.json에 넣는 잠금 키와 그 효과
 • Ch2 Lab 1 TASK 03
 :::
 ---
-<!-- Slide 19: Lab policy file -->
+<!-- Slide 20: Lab policy file -->
 @type: content
 @fit: off
 
@@ -1374,7 +1434,7 @@ managed-settings.json, 줄마다 담은 뜻
      facts:['실행은 exit=0으로 끝남','우회 모드만 꺼짐'],
      zones:Z, nodes:ALL, hot:['f4','r4'], edges:[E(4)], loop:true,
      snip:sn([9,10],'랩 TASK 03에서 <b>직접 확인</b>합니다.')}
-  ], {legend:[['accent','모델'],['info','보존 기간'],['warning','원본 데이터'],['success','우회 모드']]});
+  ], { static: true,legend:[['accent','모델'],['info','보존 기간'],['warning','원본 데이터'],['success','우회 모드']]});
 });
 :::
 
@@ -1398,7 +1458,7 @@ deny에는 원본 데이터 경로를 실제 경로와 링크 경로 둘 다 넣
 • code.claude.com/docs/en/settings-reference (availableModels, enforceAvailableModels, cleanupPeriodDays, permissions.disableBypassPermissionsMode)
 :::
 ---
-<!-- Slide 20: Quick check broken JSON -->
+<!-- Slide 21: Quick check broken JSON -->
 @type: content
 @fit: off
 
@@ -1423,7 +1483,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 :::
 
 :::notes
-{timing: 1min}
+{timing: 0.5min}
 {cue: poll}
 [요약]
 • 정답 C, 시작을 거부 ("Managed settings document could not be parsed", claude -p는 exit=1)
@@ -1442,7 +1502,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • Ch2 Lab 1 TASK 04 Step 2
 :::
 ---
-<!-- Slide 21: Verification -->
+<!-- Slide 22: Verification -->
 @type: content
 @fit: off
 
@@ -1485,7 +1545,7 @@ QUICK CHECK, 손을 들어 답해 주세요
     st(3,'STEP 4','개인이 되돌릴 수 없나','개인 <b>settings.json</b>에 allow를 넣어도 읽기는 여전히 거부됩니다. 우회 플래그를 줘도 우회 모드로 들어가지 않습니다.',
        ['권한 규칙은 합쳐지고 deny가 먼저','끝나면 개인 설정을 원복'],
        {hd:'Terminal', path:'~/claude-lab/ch2', lines:['# ~/.claude/settings.json에 allow 추가','"allow": ["Read(~/claude-lab/ch2/raw/**)"]','claude -p "Use the Read tool to read raw/customers.csv"','# → 여전히 거부','claude --dangerously-skip-permissions -p "hi"','# → exit=0, 우회 모드는 꺼진 채'], hl:[2,3,5], note:'이 확인이 <b>정책이 강제된다</b>는 증거입니다.'})
-  ], {legend:[['info','확인할 것'],['success','보여야 하는 것']]});
+  ], { static: true,legend:[['info','확인할 것'],['success','보여야 하는 것']]});
 });
 :::
 
@@ -1511,7 +1571,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • Ch2 Lab 1 TASK 02 Step 2, TASK 03
 :::
 ---
-<!-- Slide 22: Part 03 divider -->
+<!-- Slide 23: Part 03 divider -->
 @type: content
 @fit: off
 
@@ -1539,7 +1599,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 권한 규칙과 분류기부터 보고, 위험한 명령 하나가 어느 층에서 멈추는지, 주민번호가 든 프롬프트를 어떻게 모델 앞에서 막는지 본 다음, 그걸 정책으로 강제하고 기록으로 남기는 데까지 갈게요.
 :::
 ---
-<!-- Slide 23: Permission evaluation order -->
+<!-- Slide 24: Permission evaluation order -->
 @type: content
 @fit: off
 
@@ -1633,7 +1693,7 @@ ask에 일치하면 사람에게 물어보고, allow에 일치하면 묻지 않�
 • MCP: Model Context Protocol, 외부 시스템을 도구로 붙이는 표준
 :::
 ---
-<!-- Slide 24: Quick check 2 -->
+<!-- Slide 25: Quick check 2 -->
 @type: content
 @fit: off
 
@@ -1672,7 +1732,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • code.claude.com/docs/en/permissions (Settings precedence)
 :::
 ---
-<!-- Slide 25: Auto mode two gates -->
+<!-- Slide 26: Auto mode two gates -->
 @type: content
 @fit: off
 
@@ -1724,7 +1784,7 @@ auto mode의 판정 순서
      facts:['hard_deny: 무조건 막음','soft_deny: 막되 allow 예외나 명시 의도로 풀림','"정리해 줘"는 명시 의도 아님, "force push 해 줘"는 명시 의도'],
      zones:Z, nodes:N, hot:['rq','g4','o4'], edges:chain(3).concat([{f:'g4',t:'o4',c:'info',o:4}]), stagger:0.4,
      snip:{hd:'분류기 판정 순서',path:'GATE 2',lines:['hard_deny          # 무조건','soft_deny          # 기본 차단','allow 예외         # soft_deny를 풂','사용자 명시 의도   # 정확히 그 동작을 지시'],hl:[1,2,3,4],note:'분류기는 <b>별도 모델 호출</b>이라 Bedrock에서는 토큰이 듭니다.'}}
-  ], {legend:[['danger','거부'],['warning','사람 확인'],['success','바로 실행'],['info','분류기 판정']]});
+  ], { static: true,legend:[['danger','거부'],['warning','사람 확인'],['success','바로 실행'],['info','분류기 판정']]});
 });
 :::
 
@@ -1749,7 +1809,7 @@ Bash npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집�
 • Ch2 Lab 2 TASK 03
 :::
 ---
-<!-- Slide 26: Classifier defaults -->
+<!-- Slide 27: Classifier defaults -->
 @type: content
 @fit: off
 
@@ -1804,12 +1864,12 @@ Bash npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집�
      facts:['작업 폴더 파일, lock 의존성, 읽기 HTTP','현재 저장소 push는 기본 통과 (기본 브랜치 포함)','push만은 묻게: permissions.ask'],
      zones:[], nodes:N, hot:['cl','ps'], edges:[{f:'cl',t:'ps',c:'success',o:0}],
      snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[8,9,10],note:'규칙을 더할 때는 <b>"$defaults"</b>를 남겨 기본 규칙을 지킵니다.'}}
-  ], {legend:[['warning','soft_deny'],['danger','hard_deny'],['success','통과'],['info','분류기']]});
+  ], { static: true,legend:[['warning','soft_deny'],['danger','hard_deny'],['success','통과'],['info','분류기']]});
 });
 :::
 
 :::notes
-{timing: 1min}
+{timing: 0.5min}
 [요약]
 • 분류기는 설정하지 않아도 기본 규칙으로 네 범주를 막음: 외부 코드 실행, 데이터 반출, 되돌릴 수 없는 일, 운영
 • 반출은 기본 hard_deny(지시해도 안 풀림), 나머지는 soft_deny(정확히 그 동작을 지시하면 풀림)
@@ -1827,7 +1887,7 @@ Bash npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집�
 • code.claude.com/docs/en/auto-mode-config (Common boundaries, Override the block and allow rules)
 :::
 ---
-<!-- Slide 27: DLP 5 layers -->
+<!-- Slide 28: DLP 5 layers -->
 @type: content
 @fit: off
 
@@ -1949,7 +2009,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-layers', {
 • Ch2 Lab 2 TASK 01, 선택 TASK 04
 :::
 ---
-<!-- Slide 28: DLP before the prompt -->
+<!-- Slide 29: DLP before the prompt -->
 @type: content
 @fit: off
 
@@ -2055,7 +2115,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-dlp', {
 • Ch2 Lab 2 TASK 01, TASK 02, 선택 TASK 05
 :::
 ---
-<!-- Slide 29: DLP hook script and fail-open -->
+<!-- Slide 30: DLP hook script and fail-open -->
 @type: content
 @fit: off
 
@@ -2079,6 +2139,12 @@ DLP 훅 예제와 fail-open, 그리고 수정본
   var script = ['#!/bin/bash','INPUT=$(cat)','TEXT=$(echo "$INPUT" | jq -r \'.prompt // (.tool_input | tostring)\')','# 주민번호, 카드번호, 휴대폰, 계좌번호, AWS 액세스 키 (탐지 예시)',PAT,'if echo "$TEXT" | grep -Eq "$PAT"; then','  echo "DLP: 민감정보 패턴이 감지되어 차단했습니다" >&2','  exit 2','fi','exit 0'];
   var fixed = ['#!/bin/bash','INPUT=$(cat)','command -v jq >/dev/null || { echo "DLP: 검사기 오류(jq 없음)" >&2; exit 2; }','TEXT=$(echo "$INPUT" | jq -r \'.prompt // (.tool_input | tostring)\') \\','  || { echo "DLP: 입력 해석 실패" >&2; exit 2; }','PAT=\'...\'   # 위와 같음','echo "$TEXT" | grep -Eq "$PAT"; RC=$?','[ "$RC" -eq 1 ] && exit 0   # 1 = 패턴 없음, 통과','echo "DLP: 차단 (grep $RC)" >&2   # 0 일치, 2+ 검사기 오류','exit 2'];
   F.stepviz('#c3-sv-hook', [
+    {kicker:'OVERVIEW', title:'결과는 셋, 막는 것은 exit 2뿐',
+     body:'훅의 결과는 세 갈래입니다. <b>exit 0</b>은 통과, <b>exit 2</b>는 차단, 그 밖의 종료(검사가 돌지 못한 경우 포함)는 <b>비차단 오류로 진행</b>합니다. 그래서 수정본은 오류 경로도 <b>exit 2</b>로 보냅니다.',
+     facts:['exit 0 통과, exit 2 차단','jq 없음 등 검사 실패: exit 0 또는 127, 둘 다 진행','수정본: command -v jq || exit 2, onFailure: "block"'],
+     zones:[], nodes:N, hot:['in','hk','o0','o2','ox','cc'],
+     edges:[{f:'in',t:'hk',c:'accent'},{f:'hk',t:'o0',c:'success'},{f:'hk',t:'o2',c:'danger'},{f:'hk',t:'ox',c:'muted'},{f:'o0',t:'cc',c:'success',l:'진행'},{f:'ox',t:'cc',c:'muted',l:'진행'}],
+     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'Lab 2 TASK 01 원본',lines:script,hl:[5,6,7,8,10],note:'exit 2가 아닌 종료는 막지 못합니다.'}},
     {kicker:'CASE 1', title:'민감 패턴이 없으면 통과합니다',
      body:'패턴이 없으면 <b>exit 0</b>으로 통과합니다.<br>검사 대상은 <b>.prompt</b>(UserPromptSubmit) 또는 <b>.tool_input</b>(PreToolUse)입니다.',
      facts:['UserPromptSubmit은 .prompt 검사','PreToolUse는 .tool_input 검사','탐지 예시일 뿐, 운영 룰은 사내 DLP 기준'],
@@ -2103,7 +2169,7 @@ DLP 훅 예제와 fail-open, 그리고 수정본
      zones:[], nodes:N, hot:['in','hk','o2','cc'],
      edges:[{f:'in',t:'hk',c:'accent',o:0},{f:'hk',t:'o2',c:'danger',o:1},{f:'o2',t:'cc',c:'danger',o:2}], loop:true,
      snip:{hd:'/opt/dlp/dlp-guard.sh',path:'수정본 요약 (Lab 2 TASK 02)',lines:fixed,hl:[3,4,5,7,8,9,10],note:'<b>if grep ...; then</b> 형태는 grep 오류를 불일치처럼 통과시킵니다.'}}
-  ], {legend:[['accent','입력'],['success','통과'],['danger','차단'],['muted','검사 실패']]});
+  ], { static: true,legend:[['accent','입력'],['success','통과'],['danger','차단'],['muted','검사 실패']]});
 });
 :::
 
@@ -2129,7 +2195,7 @@ DLP 훅 예제와 fail-open, 그리고 수정본
 • Ch2 Lab 2 TASK 01, TASK 02
 :::
 ---
-<!-- Slide 30: Quick check 3 -->
+<!-- Slide 31: Quick check 3 -->
 @type: content
 @fit: off
 
@@ -2174,11 +2240,11 @@ QUICK CHECK, 손을 들어 답해 주세요
 • code.claude.com/docs/en/hooks (Exit code output, onFailure)
 :::
 ---
-<!-- Slide 31: Enforce hooks by policy -->
+<!-- Slide 32: Enforce hooks by policy -->
 @type: content
 @fit: off
 
-## 훅은 정책으로 강제한다
+## 정책으로 강제하는 훅
 사용자가 끄지 못하게, 고장 나도 막히게
 
 :::html
@@ -2228,7 +2294,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      facts:['managed hooks only 표시 확인','managed 훅은 목록에 안 보임','managed 설정이 있으면 mod가 승인해도 훅 차단은 유지'],
      zones:[], nodes:N, hot:['ms','hc'], edges:[{f:'ms',t:'hc',c:'info',o:0}],
      snip:{hd:'확인',path:'Claude 입력창',lines:['/hooks','# managed hooks only','# Only hooks from managed settings run here'],hl:[1,2,3],note:'랩 TASK 01 마지막 단계에서 직접 봅니다.'}}
-  ], {legend:[['danger','정책, 강제'],['accent','훅 지점'],['warning','스크립트'],['muted','무시됨']]});
+  ], { static: true,legend:[['danger','정책, 강제'],['accent','훅 지점'],['warning','스크립트'],['muted','무시됨']]});
 });
 :::
 
@@ -2255,7 +2321,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • Ch2 Lab 2 TASK 01, TASK 02
 :::
 ---
-<!-- Slide 32: MCP server control -->
+<!-- Slide 33: MCP server control -->
 @type: content
 @fit: off
 
@@ -2304,7 +2370,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      facts:['플러그인, claude.ai 커넥터도 검사','managed-mcp.json: 정해 둔 서버만, 나머지 금지','사용 현황은 OTel로 (OTEL_LOG_TOOL_DETAILS=1)'],
      zones:[], nodes:N, hot:['cc','po','p1'], edges:[base,{f:'po',t:'p1',c:'warning',o:1}],
      snip:{hd:'managed-settings.json (MCP)',path:'',lines:code,hl:[2,8],note:'플러그인 자체의 허용 목록은 <b>Ch4</b>에서 다룹니다.'}}
-  ], {legend:[['success','허용, 연결'],['danger','거부'],['muted','목록에 없음'],['warning','플러그인 경로']]});
+  ], { static: true,legend:[['success','허용, 연결'],['danger','거부'],['muted','목록에 없음'],['warning','플러그인 경로']]});
 });
 :::
 
@@ -2327,7 +2393,7 @@ allowManagedMcpServersOnly를 켜면 managed에 적은 허용 목록만 인정�
 • code.claude.com/docs/en/managed-mcp (Policy-based control with allowlists and denylists, How a server is evaluated)
 :::
 ---
-<!-- Slide 33: What remains as records -->
+<!-- Slide 34: What remains as records -->
 @type: content
 @fit: off
 
@@ -2404,7 +2470,7 @@ OTel을 켜면 사용자별 토큰, 비용, 도구 사용이 우리 사내 수�
 • docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html
 :::
 ---
-<!-- Slide 34: Deeper topics move to the labs -->
+<!-- Slide 35: Deeper topics move to the labs -->
 @type: content
 @fit: off
 
@@ -2440,7 +2506,7 @@ Lab 2에서는 DLP 훅을 만들어서 정책으로 강제합니다. 그다음 �
 망분리 환경 준비물이나 OS별 차이 같은 운영 주제는 PDF 덱의 더 알아보기를 참고하시면 돼요.
 :::
 ---
-<!-- Slide 35: Key Takeaways -->
+<!-- Slide 36: Key Takeaways -->
 @type: content
 @fit: off
 
@@ -2450,32 +2516,33 @@ Chapter 2 Key Takeaways
 :::html
 <div class="fsi fsi-recap c2-recap">
   <div class="fsi-grid-3">
-    <div class="rc"><b>01</b><span>CLAUDE_CODE_USE_BEDROCK + 리전이면 연결 완료</span></div>
+    <div class="rc"><b>01</b><span>전용선과 PrivateLink면 인터넷 없이 Bedrock에, 연결은 USE_BEDROCK과 리전</span></div>
     <div class="rc"><b>02</b><span>장기 키 대신 SSO 프로필 + awsAuthRefresh</span></div>
-    <div class="rc"><b>03</b><span>모델은 반드시 고정, 팀별 비용은 프로필 ARN으로</span></div>
+    <div class="rc"><b>03</b><span>모델은 반드시 고정, 팀마다 다른 이름표(추론 프로필)로 누구의 호출인지</span></div>
     <div class="rc"><b>04</b><span>정책은 managed-settings.json, 충돌하면 managed가 이기고 /status로 확인</span></div>
-    <div class="rc"><b>05</b><span>권한은 deny가 먼저, 훅은 exit 2만 차단하니 오류 경로도 exit 2로</span></div>
-    <div class="rc"><b>06</b><span>네이티브 DLP는 없다, 다섯 겹을 쌓고 못 막은 것은 기록으로</span></div>
+    <div class="rc"><b>05</b><span>요청은 훅, 권한 규칙, 분류기, 샌드박스를 차례로 지남, 훅은 exit 2만 차단</span></div>
+    <div class="rc"><b>06</b><span>DLP는 프롬프트 앞에서, 못 막은 것은 기록으로</span></div>
   </div>
+  <p class="c2-lead">비용을 줄이는 법은 Ch5(개인), 조직이 비용을 보고 통제하는 법은 Ch6에서 이어집니다.</p>
 </div>
 :::
 
 :::notes
 {timing: 1min}
 [요약]
-• 연결은 환경변수 두 개, 로그인은 SSO와 awsAuthRefresh
-• 모델 고정, 팀별 비용은 프로필 ARN
+• 사내망에서는 전용선과 PrivateLink로 인터넷 없이, 연결은 환경변수 두 개, 로그인은 SSO와 awsAuthRefresh
+• 모델 고정, 팀마다 다른 추론 프로필로 누구의 호출인지 남김, 비용은 Ch5와 Ch6
 • 정책은 managed-settings.json, managed가 이기고 /status로 확인
 • deny가 먼저, 훅은 exit 2만 차단, DLP는 다섯 겹과 기록
 
 자, 오늘 내용을 여섯 줄로 정리해 볼게요.
 {cue: pause}
-연결은 환경변수 두 개면 돼요. 로그인은 장기 키 대신 SSO 프로필과 awsAuthRefresh를 쓰고, 모델은 반드시 고정하고, 팀별 비용은 프로필 ARN으로 나눕니다.
+연결은 환경변수 두 개면 돼요. 로그인은 장기 키 대신 SSO 프로필과 awsAuthRefresh를 쓰고, 모델은 반드시 고정하고, 팀마다 다른 추론 프로필로 누구의 호출인지 남깁니다. 비용 이야기는 Ch5와 Ch6에서 이어 갈게요.
 정책은 managed-settings.json 파일로 내려요. 같은 키가 부딪히면 managed가 이기죠. 배포한 뒤에는 /status로 꼭 확인하세요.
 권한 규칙은 deny가 먼저예요. 훅은 exit 2일 때만 막으니까 오류 경로도 exit 2로 닫아야 합니다. DLP 기능이 따로 있는 게 아니라 다섯 겹을 쌓는 거고, 못 막은 것은 기록으로 답합니다.
 :::
 ---
-<!-- Slide 36: Thank you -->
+<!-- Slide 37: Thank you -->
 @type: thankyou
 @toc: toc.html
 @next: 03-ch3-subagents.html

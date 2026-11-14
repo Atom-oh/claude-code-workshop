@@ -16,7 +16,7 @@ export function seeded(seed = 11)                                     {
 /** Layered sines: organic drift for idle motion that doesn't read as a loop. */
 export const wobble = (t        , k = 1)         => Math.sin(t * 1.3 * k) * 0.6 + Math.sin(t * 2.7 * k + 1.7) * 0.3 + Math.sin(t * 5.1 * k + 4.1) * 0.1;
 
-                                                                                                                 
+
 
 /**
  * Damped spring toward a moving target. Use for anything attached to a moving body:
@@ -30,7 +30,7 @@ export function spring(stiffness = 40, damping = 6, x = 0)         {
   };
 }
 
-                                                                                                                  
+
 
 /**
  * Pendulum (angle in radians) for hanging things: lanterns, curtains, chimes, signs, a briefcase.
@@ -44,7 +44,7 @@ export function pendulum(stiffness = 10, damping = 1.1, a = 0)           {
   };
 }
 
-                                                                
+
 
 /** Wind from pointer movement plus a slow breeze; `value` ≈ -2.4…2.4. A quick sideways swipe gusts it. */
 export function pointerWind(target             , base = 0.3)       {
@@ -66,7 +66,7 @@ export function pointerWind(target             , base = 0.3)       {
   return w;
 }
 
-                                                                     
+
 
 /** A timed sequence of named poses for an interaction (sleep → sit → stretch …). Returns null when finished. */
 export function sequence(steps                                        )                                     {

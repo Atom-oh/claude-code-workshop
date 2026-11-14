@@ -76,8 +76,12 @@
     const root = typeof sel === 'string' ? D(sel) : sel;
     if (!root || !STEPS || !STEPS.length) return;
     opt = opt || {};
+    /* opt.static: draw only the first (overview) step, with no moving packets and no step keys. */
+    const STATIC = !!opt.static;
+    if (STATIC) STEPS = STEPS.slice(0, 1);
     const W = opt.w || 1180, H = opt.h || 470;
     root.classList.add('sv');
+    if (STATIC) root.classList.add('sv-static');
     root.innerHTML =
       '<div class="sv-main">' +
         '<div class="sv-head"><span class="sv-kicker"></span><span class="sv-title"></span></div>' +
@@ -177,7 +181,7 @@
       });
 
       P.innerHTML = '';
-      pkts = paths.filter(x => !x.e.dash && x.e.pkt !== false).map(({ p, e, i }) => {
+      pkts = paths.filter(x => !STATIC && !x.e.dash && x.e.pkt !== false).map(({ p, e, i }) => {
         const g = svgEl('g', { class: 'sv-pkt' });
         const c = svgEl('circle', { r: 8 }); c.style.fill = col(e.c || 'accent'); g.appendChild(c);
         P.appendChild(g);
@@ -224,7 +228,7 @@
       }
       requestAnimationFrame(tick);
     }
-    bindKeys(root, {
+    if (!STATIC) bindKeys(root, {
       down: () => { if (step < STEPS.length - 1) { go(step + 1); return true; } return false; },
       up: () => { if (step > 0) { go(step - 1); return true; } return false; }
     });

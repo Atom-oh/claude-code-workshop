@@ -9,10 +9,10 @@
 //  - Create nodes once, then update `d`/attributes each frame. Nothing here allocates DOM per frame.
 
 /** A point produced by the library. */
-                                   
+
 /** Any point you pass in: a tuple or a plain [x, y] array. */
-                                   
-                                                    
+
+
 
 export const NS = 'http://www.w3.org/2000/svg';
 export const INK = 'currentColor';
@@ -46,11 +46,11 @@ export const blot = (parent         )                 => el('path', { fill: INK 
 export const paint = (parent         , colour        , w = PEN)                 =>
   el('path', { fill: colour, stroke: INK, 'stroke-width': w, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, parent);
 
-                       
-                 
-                                                                                                              
-                                                                        
- 
+
+
+
+
+
 
 /**
  * A limb drawn as two separate pen lines either side of a soft curve through the
@@ -143,7 +143,7 @@ export const place = (g             , x        , y        , dir         = 1, s =
 /** Scene coordinates of a figure-local point (for glows or effects drawn outside the figure). */
 export const toScene = (x        , y        , dir        , lx        , ly        , s = 0.5)      => [x + dir * s * (lx - 40), y + s * (ly - 120)];
 
-                                                                                  
+
 
 /** Wobble filter (so lines read as ink, not vector) and a stripe hatch for striped clothes. */
 export function inkDefs(svg               , id = 'ink')          {
@@ -159,7 +159,7 @@ export function inkDefs(svg               , id = 'ink')          {
   return { defs, filter: `url(#${id}-edge)`, stripes: `url(#${id}-stripes)` };
 }
 
-                                                                             
+
 
 /**
  * Animation loop calling draw(t, dt) with t and dt in seconds.

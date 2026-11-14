@@ -5,8 +5,8 @@
 // warm light from windows and lanterns. The ink flips while the paper is mid-dark,
 // so the low-contrast moment lasts about a second of a three-minute day.
 
-                                           
-                                              
+
+
 
 export const toRGB = (h        )      => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))       ;
 export const rgb = (c     )         => `rgb(${c.map((v) => Math.round(v)).join(',')})`;
@@ -31,17 +31,17 @@ export const SKY_BOTTOM       = [[0, '#1a2240'], [0.19, '#283050'], [0.235, '#d4
 export const PAPERS       = [[0, '#1a2036'], [0.19, '#1f263e'], [0.235, '#4a4561'], [0.27, '#ede4d8'], [0.33, '#fbf8f1'], [0.5, '#fdfcf8'], [0.68, '#faf4e8'], [0.735, '#f0dbc4'], [0.756, '#5d5571'], [0.8, '#262c48'], [0.86, '#1a2036']];
 const INK_DARK = toRGB('#1c1c1c'), INK_LIGHT = toRGB('#efe6cf');
 
-                          
-                                              
-                                                                       
-               
-                                                                                             
-               
-                                     
-                
-                                                 
-                 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 export function palette(tau        )          {
   const top = ramp(SKY_TOP, tau), bottom = ramp(SKY_BOTTOM, tau), paper = ramp(PAPERS, tau);

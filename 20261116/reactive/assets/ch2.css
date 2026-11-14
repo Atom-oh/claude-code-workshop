@@ -219,3 +219,9 @@
 .fs-side { overflow: hidden; }
 .slide-deck #c2-pl .fs-code { font-size: .74rem; line-height: 1.5; }
 .slide-deck #c2-pl .fs-checks { gap: 2px; }
+.fs-wire.fs-bad.on { stroke: var(--danger); }
+.fs-wire.fs-bad { stroke: var(--danger); opacity: .55; } .fs-wire.fs-bad.on { opacity: 1; }
+/* Air-gap checklist: eight static cards; long env names may wrap */
+.c2-air8 .fsi-grid-4 { gap: var(--space-4); }
+.c2-air8 .pick { cursor: default; }
+.c2-air8 .pick .t { overflow-wrap: anywhere; }
