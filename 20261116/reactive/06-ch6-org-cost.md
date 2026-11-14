@@ -238,49 +238,51 @@ AWS의 관측 도구와는 구분하시면 됩니다.
 
 :::script
 import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
-  aria: '개발자 PC의 Claude Code가 지표와 이벤트를 PC 안의 수집기로 보내고, 수집기가 프롬프트 본문을 지운 뒤 ClickHouse와 CloudWatch로 내보내며, ccdash가 이를 읽어 관리자 화면과 Ask Claude 답변을 만드는 흐름',
+  aria: '개발자 PC의 Claude Code가 지표와 이벤트를 PC 안의 수집기로 보내고, 수집기가 프롬프트 본문을 지운 뒤 조직이 고른 OTel 저장소(CloudWatch, ClickHouse, DuckDB 등)로 내보내며, 대시보드가 이를 읽어 관리자 화면과 Ask Claude 답변을 만드는 흐름',
   zones: [
     { box: [-0.4, 0, 0, 9.2, 4.2, 0.4], label: '개발자 PC', labelAt: [-0.2, 0, -1.05] },
-    { box: [11.4, 0, 0, 15.2, 4.2, 0.4], label: 'AWS 관측 환경', labelAt: [11.6, 0, -1.05], icon: 'Group-AWS-Cloud' },
-    { box: [12.0, 0.4, 0.4, 8.6, 3.4, 0.25], label: 'EKS 클러스터 (ccdash)', labelAt: [12.2, 0.4, -0.5], sub: true, icon: 'EKS' }
+    { box: [11.0, 0, 0, 7.6, 4.2, 0.4], label: 'OTel 저장소 (조직이 선택)', labelAt: [11.2, 0, -1.05] },
+    { box: [19.6, 0, 0, 7.8, 4.2, 0.4], label: '대시보드와 질문', labelAt: [19.8, 0, -1.05] }
   ],
   parts: {
     pc: { boxes: [[1.4, 1.2, 0.4, 1.8, 1.4, 0.8], [1.7, 2.4, 1.2, 1.2, 0.15, 1.0]] },
     col: { boxes: [[5.4, 1.3, 0.4, 1.4, 1.4, 1.3]], rings: [[[6.1, 2.0, 0.42], 34, 12]] },
-    ch: { boxes: [[13.2, 1.2, 0.65, 1.0, 1.6, 2.0], [14.3, 1.2, 0.65, 1.0, 1.6, 2.0]] },
-    api: { boxes: [[17.4, 1.2, 0.65, 1.8, 1.6, 1.4]] },
-    cw: { boxes: [[22.6, 0.3, 0.4, 1.6, 1.2, 1.2]] },
-    bedrock: { boxes: [[22.6, 2.4, 0.4, 2.0, 1.6, 2.0]] }
+    cw: { boxes: [[11.6, 1.4, 0.4, 1.6, 1.0, 1.1]] },
+    ch: { boxes: [[13.9, 1.4, 0.4, 0.75, 1.0, 1.5], [14.75, 1.4, 0.4, 0.75, 1.0, 1.5]] },
+    duck: { boxes: [[16.2, 1.4, 0.4, 1.6, 1.0, 0.9]] },
+    api: { boxes: [[20.4, 1.2, 0.4, 1.8, 1.6, 1.4]] },
+    bedrock: { boxes: [[24.6, 2.4, 0.4, 2.0, 1.6, 2.0]] }
   },
   icons: [
-    { part: 'cw', at: [23.4, 0.9, 1.9], name: 'CloudWatch' },
-    { part: 'bedrock', at: [23.6, 3.2, 2.7], name: 'Bedrock', size: 34 }
+    { part: 'cw', at: [12.4, 1.9, 1.75], name: 'CloudWatch', size: 28 },
+    { part: 'bedrock', at: [25.6, 3.2, 2.7], name: 'Bedrock', size: 34 }
   ],
   tags: [
     { id: 'evt', at: [6.6, 3.2, 3.4], text: 'api_request: model, 토큰, cost_usd', show: ['emit'], overview: false },
     { id: 'scrub', at: [6.6, 3.2, 3.4], text: 'prompt 본문 ✕  prompt_length만', show: ['scrub'], overview: false },
-    { id: 'sql', at: [20.6, 4.0, 3.6], text: 'SELECT … (읽기 전용)', show: ['ask'], overview: false }
+    { id: 'sql', at: [22.6, 4.0, 3.6], text: 'SELECT … (읽기 전용)', show: ['ask'], overview: false }
   ],
   wires: {
     emit: { pts: [[3.2, 1.9, 1.0], [5.4, 2.0, 1.0]] },
-    exp: { pts: [[6.8, 2.0, 1.1], [9.8, 2.0, 1.1], [13.2, 2.0, 1.3]] },
-    cwl: { pts: [[6.8, 1.5, 0.8], [9.8, 0.15, 0.8], [22.0, 0.15, 0.8], [22.6, 0.8, 0.9]], cls: 'fs-alt' },
-    read: { pts: [[15.3, 2.0, 1.5], [17.4, 2.0, 1.5]] },
-    view: { pts: [[19.2, 1.7, 1.2], [20.4, 0.5, 1.6]] },
-    ask: { pts: [[19.2, 2.4, 1.6], [21.0, 3.2, 1.6], [22.6, 3.2, 1.6]] }
+    toch: { pts: [[6.8, 2.0, 1.1], [9.8, 2.0, 1.1], [13.4, 2.0, 1.1], [14.7, 1.9, 1.9]] },
+    tocw: { pts: [[6.8, 1.6, 0.9], [9.8, 0.6, 0.9], [12.4, 0.6, 0.9], [12.4, 1.9, 1.5]], cls: 'fs-alt' },
+    toduck: { pts: [[6.8, 2.4, 1.2], [9.8, 3.6, 1.2], [17.0, 3.6, 1.2], [17.0, 1.9, 1.3]], cls: 'fs-alt' },
+    read: { pts: [[15.5, 1.9, 1.9], [18.8, 2.0, 1.6], [20.4, 2.0, 1.4]] },
+    view: { pts: [[22.2, 1.6, 1.2], [23.0, 0.6, 1.6]] },
+    ask: { pts: [[22.2, 2.4, 1.4], [24.6, 3.2, 1.4]] }
   },
   callouts: [
     { id: 'pc', n: 1, anchor: [2.3, 1.2, 1.2], at: [40, 440], title: '개발자 PC, Claude Code', sub: 'OTel은 managed settings로 켜짐' },
-    { id: 'col', n: 2, anchor: [6.1, 1.3, 1.7], at: [120, 70], title: '수집기 (PC 안)', sub: 'loopback 4317, 디스크 큐' },
-    { id: 'ch', n: 3, anchor: [14.3, 1.2, 2.65], at: [330, 70], title: 'ClickHouse', sub: '지표와 이벤트를 저장' },
-    { id: 'cw', n: 4, anchor: [23.4, 0.3, 1.0], at: [650, 470], title: 'Amazon CloudWatch', sub: '랩 환경은 두 곳으로 전송' },
-    { id: 'api', n: 5, anchor: [18.3, 1.2, 2.05], at: [320, 470], title: 'ccdash (Express + React)', sub: '읽기 쿼리로 화면을 만듦' },
-    { id: 'admin', n: 6, anchor: [20.6, 0.4, 2.3], at: [520, 120], title: '관리자, 브라우저', sub: 'Overview, Users, Cost' },
-    { id: 'bedrock', n: 7, anchor: [23.6, 2.4, 2.4], at: [680, 200], title: 'Amazon Bedrock', sub: 'Ask Claude: 질문을 SQL로' }
+    { id: 'col', n: 2, anchor: [6.1, 1.3, 1.7], at: [110, 70], title: '수집기 (PC 안)', sub: 'loopback 4317, 디스크 큐' },
+    { id: 'cw', n: 3, anchor: [12.4, 1.4, 0.9], at: [320, 470], title: 'Amazon CloudWatch', sub: 'AWS 관리형 로그와 지표' },
+    { id: 'ch', n: 4, anchor: [14.7, 1.4, 1.9], at: [300, 40], title: 'ClickHouse', sub: '대량 이벤트 분석, ccdash가 사용' },
+    { id: 'duck', n: 5, anchor: [17.0, 1.4, 1.3], at: [490, 40], title: 'DuckDB', sub: '파일로 받아 가볍게 분석' },
+    { id: 'api', n: 6, anchor: [21.3, 1.2, 1.8], at: [600, 470], title: '대시보드 (ccdash 등)', sub: '저장소를 읽어 화면으로' },
+    { id: 'bedrock', n: 7, anchor: [25.6, 2.4, 2.4], at: [680, 180], title: 'Amazon Bedrock', sub: 'Ask Claude: 질문을 SQL로' }
   ],
   figures: [
     { at: [0.6, 1.9, 0.4], scale: 0.9, pose: 'type', act: { start: 'type', emit: 'type' } },
-    { at: [20.6, 0.4, 0.65], scale: 0.9, dir: -1, colour: 'var(--info)', act: { view: 'raise', ask: 'raise' } }
+    { at: [23.0, 0.4, 0.4], scale: 0.9, dir: -1, colour: 'var(--info)', act: { view: 'raise', ask: 'raise' } }
   ],
   code: [
     'CLAUDE_CODE_ENABLE_TELEMETRY=1',
@@ -294,14 +296,14 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
     '#   cache_read_tokens, cost_usd, duration_ms',
     '# 프롬프트 본문: 기본 미전송 (길이만)'
   ],
-  overview: { label: '전체 그림', title: '내 PC에서 관리자 화면까지', say: '프롬프트를 보내면 Claude Code는 답과 별도로 <b>무엇을 얼마나 썼는지</b>를 기록합니다. 그 기록이 PC 안의 수집기를 거쳐 저장되고, ccdash 화면의 숫자가 됩니다.' },
+  overview: { label: '전체 그림', title: '내 PC에서 관리자 화면까지', say: '프롬프트를 보내면 Claude Code는 답과 별도로 <b>무엇을 얼마나 썼는지</b>를 기록합니다. 그 기록이 PC 안의 수집기를 거쳐 <b>조직이 고른 저장소</b>에 쌓이고, 대시보드의 숫자가 됩니다.' },
   phases: [
     { key: 'start', d: 2.6, focus: ['pc'], cam: ['pc', 'col'], zoom: 0.3, badge: 'pc', lines: [1], label: '1  입력', title: '개발자가 프롬프트를 보낸다', say: '정책으로 OTel이 켜진 PC에서는 개발자가 따로 할 일이 없습니다. 평소처럼 Claude Code를 쓰면 <b>사용 기록이 자동으로</b> 남습니다.' },
     { key: 'emit', d: 2.8, focus: ['pc', 'col'], cam: ['pc', 'col'], zoom: 0.3, badge: 'col', lines: [2, 3, 7, 8, 9], packet: { wire: 'emit' }, label: '2  기록', title: '요청마다 이벤트, 1분마다 지표', say: '모델 호출 한 번마다 <b>api_request</b> 이벤트가 생기고 모델, 토큰, 추정 비용이 담깁니다. token.usage 같은 지표는 기본 1분마다 모아서 보냅니다.' },
     { key: 'scrub', d: 2.6, focus: ['col'], cam: ['col'], zoom: 0.28, badge: 'col', lines: [10], label: '3  지우기', title: '본문은 보내지 않는다', say: '프롬프트 본문은 <b>기본으로 보내지 않고 길이만</b> 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막습니다.' },
-    { key: 'store', d: 3.2, focus: ['col', 'ch'], badge: 'ch', lines: [4, 5, 6], packet: { wire: 'exp' }, label: '4  저장', title: '수집기가 ClickHouse에 쌓는다', say: 'PC 안의 수집기가 받아서 <b>ClickHouse</b>에 씁니다. 연결이 잠깐 끊겨도 디스크 큐에 모아 두었다가 다시 보냅니다.' },
-    { key: 'cw', d: 3.6, focus: ['col', 'cw'], badge: 'cw', lines: [], packet: { wire: 'cwl', colour: 'var(--info)' }, label: '5  한 갈래 더', title: 'CloudWatch에도 보낸다', say: '이번 랩 환경은 같은 기록을 <b>Amazon CloudWatch</b>에도 보냅니다. 받는 곳은 조직이 정합니다.' },
-    { key: 'view', d: 3.0, focus: ['ch', 'api'], cam: ['ch', 'api', 'admin'], badge: 'admin', lines: [], packet: { wire: 'read' }, label: '6  화면', title: 'ccdash가 읽어서 화면으로', say: 'ccdash가 ClickHouse를 <b>읽기 쿼리</b>로 조회해 Overview, Users, Cost 화면을 만듭니다. 브라우저는 데이터베이스에 직접 붙지 않습니다.' },
+    { key: 'store', d: 3.2, focus: ['col', 'cw', 'ch', 'duck'], badge: 'ch', lines: [4, 5, 6], packet: { wire: 'toch' }, label: '4  저장', title: '수집기가 고른 저장소로 보낸다', say: '수집기는 OTLP로 받아 <b>조직이 고른 저장소</b>로 내보냅니다. 이번 랩 대시보드(ccdash)는 <b>ClickHouse</b>에 쌓고, 끊겨도 디스크 큐에 모아 두었다가 다시 보냅니다.' },
+    { key: 'cw', d: 3.2, focus: ['col', 'cw', 'duck'], badge: 'cw', lines: [], packet: { wire: 'tocw', colour: 'var(--info)' }, label: '5  다른 선택', title: 'CloudWatch, DuckDB도 된다', say: 'AWS 안에서 끝내려면 <b>CloudWatch</b>, 가볍게 시작하려면 파일로 받아 <b>DuckDB</b>로 분석해도 됩니다. 이번 랩은 CloudWatch에도 함께 보냅니다.' },
+    { key: 'view', d: 3.0, focus: ['ch', 'api'], badge: 'api', lines: [], packet: { wire: 'read' }, label: '6  화면', title: '대시보드가 읽어서 화면으로', say: 'ccdash 같은 대시보드가 저장소를 <b>읽기 쿼리</b>로 조회해 Overview, Users, Cost 화면을 만듭니다. 브라우저는 데이터베이스에 직접 붙지 않습니다.' },
     { key: 'ask', d: 3.4, focus: ['api', 'bedrock'], badge: 'bedrock', lines: [], packet: { wire: 'ask', mode: 'pingpong', colour: 'var(--success)' }, label: '7  질문', title: 'Ask Claude, 말로 묻고 표로 받기', say: '“오류가 많은 도구는?”처럼 물으면 Bedrock의 Claude가 <b>읽기 전용 SQL</b>로 조회하고, 표와 해석으로 답합니다.' }
   ]
 }); });
@@ -310,19 +312,20 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
 :::notes
 {timing: 2.5min}
 [요약]
-• 요청 하나가 남기는 기록의 길: Claude Code, PC 안 수집기, ClickHouse와 CloudWatch, ccdash 화면, Ask Claude
+• 요청 하나가 남기는 기록의 길: Claude Code, PC 안 수집기, OTel 저장소, 대시보드, Ask Claude
 • 모델 호출마다 api_request 이벤트(모델, 토큰, cost_usd), 지표는 기본 1분마다 전송
 • 프롬프트 본문은 기본 미전송(길이만), 랩 수집기는 내보내기 전에 로그 본문을 한 번 더 지움
-• 수집기는 디스크 큐로 끊겨도 다시 보냄, ccdash는 읽기 쿼리로 화면 구성
+• 저장소는 조직이 선택: CloudWatch(AWS 관리형), ClickHouse(대량 분석, ccdash), DuckDB(파일로 받아 가볍게)
+• 수집기는 디스크 큐로 끊겨도 다시 보냄, 대시보드는 읽기 쿼리로 화면 구성
 
 {cue: demo}
 OTel을 켜면 실제로 무슨 일이 일어나는지, 요청 하나를 따라가 볼게요.↓
 개발자는 평소처럼 Claude Code에 프롬프트를 보내요. 정책으로 이미 켜져 있으니까 따로 할 일은 없습니다.↓
 모델을 한 번 부를 때마다 api_request라는 이벤트가 생기는데요, 여기에 모델, 토큰, 추정 비용이 담겨요. 토큰 사용량 같은 지표는 기본 1분마다 모아서 보냅니다.↓
 금융권에서 제일 많이 물어보시는 게 이거예요. 프롬프트 본문은 기본으로 보내지 않고 길이만 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막아요.↓
-PC 안의 수집기가 이걸 받아서 ClickHouse에 씁니다. 연결이 잠깐 끊겨도 디스크에 모아 뒀다가 다시 보내요.↓
-이번 랩 환경은 같은 기록을 CloudWatch에도 보냅니다. 어디로 보낼지는 조직이 정하시면 돼요.↓
-ccdash가 ClickHouse를 읽어서 관리자가 보는 화면을 만듭니다.↓
+PC 안의 수집기가 이걸 받아서 조직이 고른 저장소로 보내요. 이번 랩 대시보드인 ccdash는 ClickHouse에 쌓고요, 연결이 잠깐 끊겨도 디스크에 모아 뒀다가 다시 보냅니다.↓
+저장소는 정하시기 나름이에요. AWS 안에서 끝내려면 CloudWatch, 가볍게 시작하려면 파일로 받아서 DuckDB로 분석하셔도 됩니다. 이번 랩은 CloudWatch에도 같이 보내요.↓
+ccdash 같은 대시보드가 저장소를 읽어서 관리자가 보는 화면을 만듭니다.↓
 그리고 Ask Claude에 말로 물어보면, Bedrock의 Claude가 읽기 전용 SQL로 조회해서 표로 답해 줘요.
 
 {cue: transition}
