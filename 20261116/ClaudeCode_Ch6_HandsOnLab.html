@@ -259,13 +259,13 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch6 &amp;&amp; claude</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
 <ol>
-<li data-lines="1">작업 폴더에서 Claude Code를 엽니다. 처음 여는 폴더라 <strong>Accessing workspace</strong> 창이 먼저 뜨면 ↓로 <strong>Yes, I trust this folder</strong>를 고르고 Enter를 누릅니다. 로그인 화면이 뜨면 alice@workshop.example로 로그인합니다.</li>
+<li data-lines="1">작업 폴더에서 Claude Code를 엽니다. 처음 여는 폴더라 <strong>Accessing workspace</strong> 창이 먼저 뜨면 ↓로 <strong>Yes, I trust this folder</strong>를 고르고 Enter를 누릅니다. 로그인 화면이 뜨면 <code>alice@workshop.example</code>(비밀번호 <code>DemoPassword123!</code>, 팀 Outputs의 <code>GatewayDemoPassword</code>)로 로그인합니다.</li>
 </ol></details>
 
 <ol>
 <li>로그인 화면이 뜨면 안내를 따릅니다. 세션 안이라면 <code>/login</code>을 입력합니다.</li>
 <li><strong>신뢰하지 않는 게이트웨이</strong> 경고가 나오면 <strong>Yes, trust this gateway</strong>를 고릅니다. 랩 게이트웨이가 자체 서명 인증서를 쓰기 때문입니다.</li>
-<li>터미널에 표시된 URL을 브라우저에서 열고 코드를 확인한 뒤 <code>alice@workshop.example</code>로 로그인합니다.</li>
+<li>터미널에 표시된 URL을 브라우저에서 열고 코드를 확인한 뒤 <code>alice@workshop.example</code>(비밀번호 <code>DemoPassword123!</code>, 팀 Outputs의 <code>GatewayDemoPassword</code>)로 로그인합니다.</li>
 <li>터미널로 돌아와 로그인 완료를 확인합니다.</li>
 </ol>
 <p>로그인하기 전에는 시작 화면과 상태줄에 <code>Opus 4.7 · Cloud gateway</code>처럼 게이트웨이와 무관한 기본 모델 이름이 보일 수 있습니다. 로그인하면 Claude Code가 조직 설정을 받으려고 스스로 다시 시작하고, <code>Using … 5.5 (from managed settings)</code> 줄과 함께 게이트웨이가 그룹별로 정한 5.5 모델로 바뀝니다.</p>
@@ -305,7 +305,7 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <p>bob은 <strong>Chrome 시크릿 창</strong>(⌘+Shift+N 또는 Ctrl+Shift+N)에서 승인합니다. 시크릿 창에는 alice의 로그인이 남아 있지 않기 때문입니다. 다음 로그인 때 code-server가 묻는 외부 사이트 열기 창은 <strong>Cancel</strong>로 닫고, 터미널에 나온 <code>https://…cloudfront.net/device</code> 주소를 시크릿 창에 열어 bob으로 로그인합니다. 이미 열려 있는 시크릿 창이 있으면 모두 닫고 새로 엽니다. 시크릿 창끼리는 로그인을 함께 쓰기 때문입니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>같은 창에서 하려면: 로그아웃 주소 열기</strong></p>
 <p><code>gateway_logout</code>이 출력한 <code>https://…amazoncognito.com/logout?…</code> 주소를 승인 페이지를 열었던 같은 브라우저에서 열어도 됩니다. 빈 로그인 화면이 나오면 브라우저 쪽 로그인이 지워진 것입니다. 다만 주소가 길어 터미널에서 여러 줄로 접혀 보이므로 마우스로 정확히 고르기 어렵습니다(실습 환경에서 확인). 어려우면 위의 시크릿 창 방법을 씁니다.</p></div></div>
-<p>다시 <code>claude</code>를 실행하고, 위처럼 시크릿 창에서 <code>bob@workshop.example</code>로 로그인합니다. 로그아웃 뒤 처음 열면 Welcome 화면, <strong>Trust gateway</strong>(↑ 키로 Yes, trust this gateway를 고르고 Enter), Security notes(Enter), Terminal setup(Esc로 건너뜀) 창이 차례로 다시 나올 수 있습니다. 같은 창에서 승인했는데 비밀번호를 묻지 않고 바로 승인되면 브라우저 쪽 로그인이 남아 있는 것입니다. <code>/model</code>에 Opus가 보이면 아직 alice이므로, <code>/logout</code> 뒤 <code>gateway_logout</code>부터 다시 하고 이번에는 새 시크릿 창에서 승인합니다.</p>
+<p>다시 <code>claude</code>를 실행하고, 위처럼 시크릿 창에서 <code>bob@workshop.example</code>(비밀번호 <code>DemoPassword123!</code>, 팀 Outputs의 <code>GatewayDemoPassword</code>)로 로그인합니다. 로그아웃 뒤 처음 열면 Welcome 화면, <strong>Trust gateway</strong>(↑ 키로 Yes, trust this gateway를 고르고 Enter), Security notes(Enter), Terminal setup(Esc로 건너뜀) 창이 차례로 다시 나올 수 있습니다. 같은 창에서 승인했는데 비밀번호를 묻지 않고 바로 승인되면 브라우저 쪽 로그인이 남아 있는 것입니다. <code>/model</code>에 Opus가 보이면 아직 alice이므로, <code>/logout</code> 뒤 <code>gateway_logout</code>부터 다시 하고 이번에는 새 시크릿 창에서 승인합니다.</p>
 <p><code>/model</code>에서 <strong>Opus가 없는 것</strong>을 확인한 뒤, 지출 기록이 생기도록 질문을 하나 보냅니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 폴더의 pseudo 디렉터리에 어떤 파일이 있는지 이름만 알려줘</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
