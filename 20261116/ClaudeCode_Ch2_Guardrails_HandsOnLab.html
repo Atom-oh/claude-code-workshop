@@ -91,13 +91,13 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <blockquote>
 <p><strong>Claude Code Deep Dive Workshop, Chapter 2 Lab 2 - Bedrock 위에서 안전하게 쓰기, 가드레일과 DLP 실습</strong></p>
 </blockquote>
-<p>Claude Code에는 네이티브 DLP 기능이 없습니다. 이번 이야기의 주인공은 <strong>IT보안·플랫폼 담당자</strong>입니다. 분석팀이 마이데이터 고객 데이터를 Claude Code로 다루게 되면서, 원본 식별자가 프롬프트나 도구 입력으로 새어 나가지 않게 막는 일이 맡겨졌습니다. Ch2 강의에 이어지는 55분 실습 세션으로, 강의에서 본 <strong>DLP 5층</strong> 중 핵심인 <strong>훅(3층)</strong>을 managed 정책으로 강제하고, 고장 난 훅이 조용히 통과되는 <strong>fail-open</strong> 문제를 직접 확인합니다.
+<p>Claude Code에는 네이티브 DLP 기능이 없습니다. 이번 이야기의 주인공은 <strong>IT보안·플랫폼 담당자</strong>입니다. 분석팀이 마이데이터 고객 데이터를 Claude Code로 다루게 되면서, 원본 식별자가 프롬프트나 도구 입력으로 새어 나가지 않게 막는 일이 맡겨졌습니다. Ch2 강의에 이어지는 실습 세션으로, 강의에서 본 <strong>DLP 5층</strong> 중 핵심인 <strong>훅(3층)</strong>을 managed 정책으로 강제하고, 고장 난 훅이 조용히 통과되는 <strong>fail-open</strong> 문제를 직접 확인합니다.
 이어서 확인 창을 줄이는 <strong>auto mode</strong>에서 사람의 확인과 분류기의 판단 사이에 경계를 긋습니다. 시간이 남으면 선택 트랙으로 Sandbox(2층), Bedrock Guardrails(4층), 확장 통제(5층)를 이어서 해 봅니다.</p>
-<p>소요 시간 <strong>필수 35분 + 선택 20분</strong> · Task <strong>준비 + 필수 3개 + 선택 3개 + 원복</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
+<p>Task <strong>준비 + 필수 3개 + 선택 3개 + 원복</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>테스트 데이터만 사용하세요</strong></p>
 <p>이 랩의 주민등록번호·카드번호·휴대폰·계좌번호는 형식만 맞춘 가짜 값입니다. <code>raw/</code> 폴더도 데모용 가짜 데이터입니다. 실제 개인정보를 입력하지 마세요.</p></div></div>
 
-<h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</h2>
+<h2 id="task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인</h2>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>Ch2 Lab 1까지 마치지 못했다면, 먼저 catchup</strong></p>
 <p>앞 랩이 중간에 실패했거나 건너뛰었다면, 실행 중인 <code>claude</code>를 모두 종료한 뒤 아래 한 줄로 이 랩을 시작할 수 있는 상태를 맞추고 TASK 00 블록을 실행합니다. 앞 랩을 마쳤다면 건너뜁니다.</p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>catchup ch2-lab2</code></pre></div>
@@ -154,7 +154,7 @@ use_bedrock_direct</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span><code>customers.csv</code>·<code>cards.csv</code>(가짜 데모 데이터)와 <code>pseudo</code> 링크가 있고 managed-settings를 백업했다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-01-dlp-훅을-정책으로-강제-10분">TASK 01 · DLP 훅을 정책으로 강제 (10분)</h2>
+<h2 id="task-01-dlp-훅을-정책으로-강제-10분">TASK 01 · DLP 훅을 정책으로 강제</h2>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>회사 PC(macOS · Windows)라면</strong></p>
 <p>이 스크립트는 bash와 jq를 전제로 합니다. macOS는 같은 스크립트를 쓰되 jq를 함께 배포하고, Windows는 Git Bash로 실행하거나 PowerShell 스크립트(<code>powershell -File …</code>)로 다시 작성해야 합니다. 의존성이 빠진 PC에서는 훅이 오류로 끝나며 <strong>조용히 통과(fail-open)</strong> 하므로, TASK 02의 fail-closed 원칙이 더 중요해집니다. 샌드박스(선택 TASK 04)는 macOS는 내장 Seatbelt, Linux·WSL2는 bubblewrap을 쓰며 네이티브 Windows는 지원하지 않습니다.</p></div></div>
 
@@ -302,7 +302,7 @@ sudo jq . /etc/claude-code/managed-settings.json &gt;/dev/null &amp;&amp; echo &
 <li class="check"><label><input type="checkbox"> <span>Bash 리다이렉션 경로는 PreToolUse 훅이 보지 못한다는 점을 설명할 수 있다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정 (5분)</h2>
+<h2 id="task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정</h2>
 <p>스크립트가 고장 났을 때 훅이 막는지 통과시키는지를 먼저 그림으로 비교합니다.</p>
 <figure class="viz" data-viz="fail-open-closed">
 <figcaption>그림: 훅이 고장 났을 때의 fail-open과 fail-closed — 1) 정상일 때 훅이 dlp-guard.sh를 부르고, 패턴이 있으면 exit 2로 차단합니다. 2) jq 없음, 고치기 전: jq를 못 찾아도 스크립트는 exit=0으로 끝나고, exit 2가 아닌 종료는 비차단 오류라서 민감정보가 그대로 통과합니다(fail-open). 3) jq 없음, 고친 뒤: command -v jq 확인과 grep 종료 코드(0 일치, 1 불일치, 그 밖 오류) 구분으로, 오류는 모두 exit 2로 차단합니다(fail-closed). 4) 스크립트 없음 또는 멈춤(시간 초과): 스크립트 안의 처리가 실행되지 않아 고친 뒤에도 통과합니다. 5) onFailure: block(v2.1.295+): 훅 설정에 넣으면 이런 실패도 차단으로 처리됩니다.</figcaption>
@@ -389,7 +389,7 @@ sudo mv /opt/dlp/dlp-guard.sh.off /opt/dlp/dlp-guard.sh</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span><code>onFailure: &quot;block&quot;</code>으로 스크립트가 없을 때도 차단되는 것을 확인했다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기 (15분)</h2>
+<h2 id="task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기</h2>
 <p>Claude Code를 쓰면서 가장 많이 누르는 것이 확인 창입니다. <strong>auto mode</strong>는 사람 대신 별도의 <strong>분류기 모델</strong>이 매 동작을 판정해, 되돌릴 수 없거나 환경 밖으로 나가는 동작만 막고 나머지는 묻지 않고 실행합니다. 이 Task에서는 ① 분류기 모델을 확인하고 ② 무엇이 통과·차단되는지 보고 ③ 사람이 반드시 확인할 지점을 넣고 ④ 우리 회사의 민감 위치를 알려 주고 ⑤ 조직이 auto 자체를 잠그는 방법까지 확인합니다.</p>
 <table>
 <thead>
@@ -722,7 +722,7 @@ cd ~/claude-lab/ch2 &amp;&amp; claude --permission-mode auto</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span>managed <code>disableAutoMode</code>로 조직이 auto를 잠글 수 있음을 확인했다</span></label></li>
 </ul></div></div>
 
-<h2 id="선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기 (7분)</h2>
+<h2 id="선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기</h2>
 <p>권한 규칙 <code>deny: Bash(curl *)</code>는 <code>python3 -c "import urllib.request..."</code> 같은 우회를 막지 못합니다. Sandbox는 Claude가 실행하는 Bash 명령의 네트워크를 <strong>OS 수준에서</strong> 허용 목록으로 묶습니다.</p>
 <h3 id="step-1-필요-도구-확인">Step 1 · 필요 도구 확인</h3>
 <p>Linux의 sandbox는 <code>bubblewrap</code>과 <code>socat</code>을 사용합니다.</p>
@@ -776,7 +776,7 @@ cd ~/claude-lab/ch2 &amp;&amp; claude</code></pre></div>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>범위</strong></p>
 <p>Sandbox는 Claude가 실행하는 Bash에 적용됩니다. Ch4에서 다룰 mod가 띄운 프로세스는 sandbox 밖에서 돕니다.</p></div></div>
 
-<h2 id="선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터 (7분)</h2>
+<h2 id="선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터</h2>
 <p>Guardrails는 PC가 아니라 <strong>AWS 계정 쪽에서</strong> 동작하는 층입니다. 한국 주민등록번호 정규식을 차단하는 Guardrail을 만들고 판정을 직접 확인합니다.</p>
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><code>create-guardrail</code>이 권한·할당량 오류(<code>AccessDenied</code>, <code>ServiceQuotaExceeded</code>)로 실패하면 이 선택 TASK는 강사 화면으로 보고 TASK 06으로 갑니다.</p></div></div>
 
@@ -812,7 +812,7 @@ aws bedrock-runtime apply-guardrail --region us-east-1 --guardrail-identifier &q
 <div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>cross-region 추론 프로파일을 쓸 때</strong></p>
 <p>이 환경처럼 global/us 추론 프로파일을 쓰면 Guardrail에도 cross-region 설정이 필요합니다. 연결 전 공식 문서의 Guardrails 절을 확인하세요.</p></div></div>
 
-<h2 id="선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기 (4분)</h2>
+<h2 id="선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기</h2>
 <p>허가되지 않은 플러그인을 로컬 디렉터리로 몰래 싣는 것(사이드로드)을 막습니다.</p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo jq &#x27;. + {&quot;strictKnownMarketplaces&quot;: [], &quot;disableSideloadFlags&quot;: true}&#x27; \
   /etc/claude-code/managed-settings.json | sudo tee /tmp/ms.json &gt;/dev/null &amp;&amp; sudo mv /tmp/ms.json /etc/claude-code/managed-settings.json
@@ -826,7 +826,7 @@ cd ~/claude-lab/ch2 &amp;&amp; claude --plugin-dir /tmp/rogue -p &quot;hi&quot;;
 </ol></details>
 
 <p><code>--plugin-dir</code>가 정책으로 거부됩니다. 허용 목록(<code>strictKnownMarketplaces</code>)만으로는 사이드로드를 막지 못해서 <code>disableSideloadFlags</code>를 함께 씁니다.</p>
-<h2 id="task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요 (2분)</h2>
+<h2 id="task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요</h2>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>sudo cp ~/claude-lab/ch2/managed-settings.backup.json /etc/claude-code/managed-settings.json
 sudo jq . /etc/claude-code/managed-settings.json
@@ -868,7 +868,7 @@ done</code></pre></div>
 <ul>
 <li>이전: <a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1. 정책 배포</a></li>
 <li>다음: <a href="ClaudeCode_Ch3_HandsOnLab.html">Ch3. Subagent로 일 나눠 맡기기</a></li>
-</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch2_HandsOnLab.html"><small>이전</small>Ch2 Lab 1. 정책 배포</a><a class="next" href="ClaudeCode_Ch3_HandsOnLab.html"><small>다음</small>Ch3. Subagent로 일 나눠 맡기기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인 (3분)</a></li><li><a href="#task-01-dlp-훅을-정책으로-강제-10분">TASK 01 · DLP 훅을 정책으로 강제 (10분)</a></li><li><a href="#task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정 (5분)</a></li><li><a href="#task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기 (15분)</a></li><li><a href="#선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기 (7분)</a></li><li><a href="#선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터 (7분)</a></li><li><a href="#선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기 (4분)</a></li><li><a href="#task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요 (2분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+</ul><div class="pager"><a class="prev" href="ClaudeCode_Ch2_HandsOnLab.html"><small>이전</small>Ch2 Lab 1. 정책 배포</a><a class="next" href="ClaudeCode_Ch3_HandsOnLab.html"><small>다음</small>Ch3. Subagent로 일 나눠 맡기기</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-3분">TASK 00 · 사전 준비 확인</a></li><li><a href="#task-01-dlp-훅을-정책으로-강제-10분">TASK 01 · DLP 훅을 정책으로 강제</a></li><li><a href="#task-02-fail-open-함정-확인과-수정-5분">TASK 02 · fail-open 함정 확인과 수정</a></li><li><a href="#task-03-auto-mode-확인-창을-줄이고-경계를-긋기-15분">TASK 03 · auto mode, 확인 창을 줄이고 경계를 긋기</a></li><li><a href="#선택-task-04-sandbox로-curl-갭-막기-7분">선택 TASK 04 · Sandbox로 curl 갭 막기</a></li><li><a href="#선택-task-05-bedrock-guardrails로-계정-쪽-필터-7분">선택 TASK 05 · Bedrock Guardrails로 계정 쪽 필터</a></li><li><a href="#선택-task-06-확장-통제-맛보기-4분">선택 TASK 06 · 확장 통제 맛보기</a></li><li><a href="#task-07-전체-원복-중요-2분">TASK 07 · 전체 원복, 중요</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;

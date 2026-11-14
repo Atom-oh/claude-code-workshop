@@ -1,7 +1,6 @@
 """Guard the workshop lab pages against drift from the MyData kit."""
 import html
 import re
-import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -46,11 +45,15 @@ KIT_VAR_RE = re.compile(r"^\s*KIT=[\"']?(?:\$\{WS_KIT:-)?" + KIT_URI_RE.pattern,
 EVENT_KIT_RE = re.compile(r"^\s*KIT=\$\{WS_KIT:-" + KIT_URI_RE.pattern + r"\}\s*$", re.M)
 S3_CP_RE = re.compile(r"\baws s3 cp\b")
 S3_CP_VAR_RE = re.compile(r"\baws s3 cp\s+(?:--?[\w-]+\s+)*[\"']?\$\{?KIT\}?[\"']?(?:\s|$)")
-# Rule 4: required TASK minutes may exceed the baseline by this much.
-TIME_TOLERANCE_MIN = 30
+# Rule 4: session times live in the eDM (eDM.html timetable), not on the lab pages. A lab page
+# states no minutes in its TASK/CHECK headings and has no "소요 시간" line.
 PAT_RE = re.compile(r"PAT='([^']*)'")
 H2_RE = re.compile(r"<h2\b[^>]*>(.*?)</h2>", re.S)
-MINUTES_RE = re.compile(r"\((\d+)\s*분\)\s*$")
+STATED_MINUTES_RE = re.compile(r"\d+\s*분(?![기위할석류])")  # minutes, not 1분기 / 5분위 / 2분할
+# Session-length prose outside code: "55분 실습 세션", "7분 프리플라이트", "20분 랩".
+SESSION_PROSE_RE = re.compile(r"\d+\s*분\s*(?:짜리\s*)?(?:실습|프리플라이트|세션|랩)")
+CODE_RE = re.compile(r"<(pre|code)\b.*?</\1>", re.S)
+TIMED_HEADING = ("TASK", "선택 TASK", "CHECK")
 GUARDRAILS = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"
 
 
@@ -92,34 +95,14 @@ def _sections(raw):
         yield _text(m.group(1)), raw[m.end():end]
 
 
-def required_minutes(raw):
-    """Return (sum of required-task minutes, headings without parsable minutes)."""
-    total, bad = 0, []
-    for heading, _ in _sections(raw):
-        if not heading.startswith(("TASK", "선택 TASK")):
-            continue
-        m = MINUTES_RE.search(heading)
-        if not m:
-            bad.append(heading)
-        elif heading.startswith("TASK"):
-            total += int(m.group(1))
-    return total, bad
+def stated_minutes(raw):
+    """Return headings (TASK, 선택 TASK, CHECK) that still state minutes, e.g. "(5분)"."""
+    return [h for h, _ in _sections(raw) if h.startswith(TIMED_HEADING) and STATED_MINUTES_RE.search(h)]
 
 
-def _rev_exists(repo_root, rev):
-    r = subprocess.run(
-        ["git", "rev-parse", "--verify", "--quiet", "%s^{commit}" % rev],
-        cwd=repo_root, capture_output=True, text=True,
-    )
-    return r.returncode == 0
-
-
-def _baseline_page(repo_root, rev, name):
-    r = subprocess.run(
-        ["git", "show", "%s:20261116/%s" % (rev, name)],
-        cwd=repo_root, capture_output=True, text=True, encoding="utf-8",
-    )
-    return r.stdout if r.returncode == 0 else None
+def session_prose(raw):
+    """Return session-length phrases in the page text outside <pre>/<code>."""
+    return [m.group(0) for m in SESSION_PROSE_RE.finditer(_text(CODE_RE.sub(" ", raw)))]
 
 
 def _path_known(path, entries):
@@ -133,14 +116,11 @@ def _path_known(path, entries):
     return rel in entries or any(e.startswith(rel + "/") for e in entries)
 
 
-def check(labs_dir, manifest, baseline_rev="1c58d26"):
+def check(labs_dir, manifest):
     labs_dir = Path(labs_dir)
     entries = set(manifest)
     expected_pat = load_pattern().pattern
     errors, urls = [], {}
-    baseline_ok = _rev_exists(labs_dir.parent, baseline_rev)
-    if not baseline_ok:
-        errors.append("rule 4: baseline %s not found" % baseline_rev)
     for name in PAGES:
         path = labs_dir / name
         if not path.is_file():
@@ -189,19 +169,12 @@ def check(labs_dir, manifest, baseline_rev="1c58d26"):
                 if not downloads_kit(task00):
                     err(3, "TASK 00 lacks aws s3 cp of mydata-kit.zip")
 
-        if name != PREFLIGHT:  # rule 4
-            now, bad = required_minutes(raw)
-            for h in bad:
-                err(4, "cannot parse minutes in heading: %s" % h)
-            base = _baseline_page(labs_dir.parent, baseline_rev, name) if baseline_ok else None
-            if base is not None:
-                then = required_minutes(base)[0]
-                if now > then + TIME_TOLERANCE_MIN:
-                    err(
-                        4,
-                        "required TASK minutes %d exceed baseline %d + %d"
-                        % (now, then, TIME_TOLERANCE_MIN),
-                    )
+        for h in stated_minutes(raw):  # rule 4
+            err(4, "heading states minutes (times come from the eDM): %s" % h)
+        if "소요 시간" in text:
+            err(4, "states 소요 시간 (times come from the eDM)")
+        for phrase in session_prose(raw):
+            err(4, "states a session length (times come from the eDM): %s" % phrase)
         if name in NO_TRANSACTIONS:  # rule 5
             for f in TRANSACTION_FILES:
                 if f in text:

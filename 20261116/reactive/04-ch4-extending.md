@@ -83,11 +83,11 @@ AWS Korea
 :::
 
 ---
-<!-- Slide 2: Agenda (PDF p2) -->
+<!-- Slide 3: Agenda (PDF p3) -->
 @type: content
 @fit: off
 
-## 강의 35분 + 필수 랩 약 60분 (선택 12분)
+## 강의 35분 + 랩 55분 (선택 12분)
 세 개의 Part와 Super Lab, 개인 설정에서 팀의 플랫폼까지
 
 :::html
@@ -96,7 +96,7 @@ AWS Korea
     <div class="pick"><span class="k">PART 01 / 12분</span><span class="t">Plugins</span><span class="d">여섯 가지 확장 방법, 플러그인 구조, 설치</span></div>
     <div class="pick"><span class="k">PART 02 / 10분</span><span class="t">사내 배포</span><span class="d">마켓플레이스, 강제 설치, 망분리</span></div>
     <div class="pick"><span class="k">PART 03 / 13분</span><span class="t">Mods</span><span class="d">Claude Code 안에서 도는 코드</span></div>
-    <div class="pick lab"><span class="k">SUPER LAB / 약 60분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
+    <div class="pick lab"><span class="k">SUPER LAB / 55분</span><span class="t">팀 스타터 킷 + mod</span><span class="d">플러그인 하나로 묶기</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">폴더 구성, 마켓플레이스 소스, 조직 배포 설정, mod 이벤트와 호출, mod 리뷰, 운영 지표</span></div>
 </div>
@@ -106,13 +106,13 @@ AWS Korea
 {timing: 0.5min}
 [요약]
 • 강의는 세 Part, 12분 10분 13분으로 35분
-• 이어서 필수 Super Lab 약 60분(선택 TASK 06 12분 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
-• 진행자 메모: 강의 35분 + 랩 약 61분으로 약 95분, 90분 슬롯보다 5분 정도 김. 모자라면 TASK 07~08(mod 통제와 체크리스트, 약 10분)을 Capstone R2 시작 때 진행
+• 이어서 Super Lab 55분(10:45–11:40, 선택 TASK 06 12분 별도), 팀 스타터 킷과 mod를 플러그인 하나로 묶기
+• 진행자 메모: 랩 칸은 55분이라 시간이 모자라면 TASK 07~08(mod 통제와 체크리스트)을 Capstone R2 시작 때 진행
 • 더 알아보기는 질문이 나오면 펼침
 
 오늘은 세 Part로 갑니다. 첫 번째는 플러그인이 뭔지, 어떻게 생겼는지예요. 두 번째는 회사에서 어떻게 강제로 배포하고 출처를 제한하는지, 세 번째는 Claude Code 안에서 도는 코드인 mod입니다.
-강의 35분이 끝나면 약 60분 동안 Super Lab에서 팀 스타터 킷을 직접 만들어 볼 거예요. 선택 TASK 06은 12분이 더 걸리고요.
-진행자 메모인데요. 강의랑 랩을 합치면 약 95분이라 90분 슬롯보다 5분 정도 길어요. 시간이 모자라면 TASK 07과 08, mod 통제와 체크리스트 약 10분은 Capstone Round 2를 시작할 때 진행합니다.
+강의 35분이 끝나면 10시 45분부터 55분 동안 Super Lab에서 팀 스타터 킷을 직접 만들어 볼 거예요. 선택 TASK 06은 12분이 더 걸리고요.
+랩이 빠듯하면 TASK 07과 08, mod 통제와 체크리스트는 Capstone Round 2를 시작할 때 이어서 하셔도 됩니다.
 :::
 
 ---

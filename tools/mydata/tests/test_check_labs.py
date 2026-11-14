@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.mydata.check_labs import TIME_TOLERANCE_MIN, check
+from tools.mydata.check_labs import check
 from tools.mydata.validate import load_pattern
 
 URL = "s3://example-bucket/abc/mydata-kit.zip"
@@ -23,11 +23,8 @@ CURL_RESTORE = (
 )
 
 
-def page(task00="", body="", minutes=2):
-    return (
-        "<html><body><h2>TASK 00 &middot; prep (%d분)</h2>%s%s</body></html>"
-        % (minutes, task00 or RESTORE, body)
-    )
+def page(task00="", body=""):
+    return "<html><body><h2>TASK 00 &middot; prep</h2>%s%s</body></html>" % (task00 or RESTORE, body)
 
 
 def full_set(**overrides):
@@ -81,11 +78,9 @@ class CheckLabsTest(unittest.TestCase):
         self.git("commit", "-qm", "base")
         return self.git("rev-parse", "HEAD")
 
-    def run_check(self, pages, **kw):
-        # The committed pages double as the rule 4 baseline, so only the
-        # rule under test can fail.
-        rev = self.commit(pages)
-        return check(self.labs, MANIFEST, baseline_rev=kw.pop("baseline_rev", rev))
+    def run_check(self, pages):
+        self.write(pages)
+        return check(self.labs, MANIFEST)
 
     def test_clean_set_passes(self):
         self.assertEqual(self.run_check(full_set()), [])
@@ -140,15 +135,40 @@ class CheckLabsTest(unittest.TestCase):
         errs = self.run_check(full_set(**{name: placeholder}))
         self.assertEqual(errs, [name + ": rule 6: stale curl kit download"])
 
-    def test_time_budget_exceeded(self):
+    def test_lab_pages_state_no_minutes(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"
-        rev = self.commit(full_set(**{name: page(minutes=5) + "<h2>선택 TASK 09 (99분)</h2>"}))
-        # Same total (optional task ignored) passes; a larger required total fails.
-        self.assertEqual(check(self.labs, MANIFEST, baseline_rev=rev), [])
-        self.write({name: page(minutes=5 + TIME_TOLERANCE_MIN + 1)})  # uncommitted edit vs baseline
-        errs = check(self.labs, MANIFEST, baseline_rev=rev)
+        for heading in ("TASK 01 · x (5분)", "선택 TASK 02 · y (7분)", "TASK 03 · z (5~7분)", "TASK 04 · w (약 5분)",
+                        "TASK 05 · v (5분 내외)", "TASK 06 · u (10분 남짓)", "TASK 07 · t (5분) — 선택"):
+            errs = self.run_check(full_set(**{name: page(body="<h2>%s</h2>" % heading)}))
+            self.assertEqual(len(errs), 1, heading)
+            self.assertTrue(errs[0].startswith(name + ": rule 4: heading states minutes"), errs)
+        pre = "ClaudeCode_Preflight_Check.html"
+        errs = self.run_check(full_set(**{pre: "<html>%s<h2>CHECK 01 · 접속 (1분)</h2></html>" % RESTORE}))
         self.assertEqual(len(errs), 1)
-        self.assertTrue(errs[0].startswith(name + ": rule 4"))
+        self.assertTrue(errs[0].startswith(pre + ": rule 4"))
+        errs = self.run_check(full_set(**{name: page(body="<p>소요 시간 <strong>20분</strong></p>")}))
+        self.assertEqual(errs, [name + ": rule 4: states 소요 시간 (times come from the eDM)"])
+
+    def test_session_length_prose_is_flagged(self):
+        name = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"
+        base = full_set()[name]
+        for phrase in ("Ch2 강의에 이어지는 55분 실습 세션으로", "7분 프리플라이트", "20분 랩"):
+            errs = self.run_check(full_set(**{name: base.replace("</body>", "<p>%s</p></body>" % phrase)}))
+            self.assertEqual(len(errs), 1, phrase)
+            self.assertTrue(errs[0].startswith(name + ": rule 4: states a session length"), errs)
+        in_code = base.replace("</body>", "<pre>echo 5분 실습</pre></body>")
+        self.assertEqual(self.run_check(full_set(**{name: in_code})), [])
+
+    def test_finance_terms_in_headings_are_not_minutes(self):
+        name = "ClaudeCode_Ch5_HandsOnLab.html"
+        body = "<h2>TASK 01 · 1분기 거래와 소득 5분위</h2>"
+        self.assertEqual(self.run_check(full_set(**{name: full_set()[name].replace("</body>", body + "</body>")})), [])
+
+    def test_operational_minutes_in_prose_are_fine(self):
+        name = "ClaudeCode_Ch5_HandsOnLab.html"
+        body = "<h2>TASK 01 · 캐시</h2><p>캐시 수명(TTL)은 5분입니다. 2~3분 뒤 새로고침합니다.</p>"
+        ch5 = full_set()[name].replace("</body>", body + "</body>")
+        self.assertEqual(self.run_check(full_set(**{name: ch5})), [])
 
     def test_rule3_requires_real_download_command(self):
         name = "ClaudeCode_Ch1_HandsOnLab.html"
@@ -193,13 +213,6 @@ class CheckLabsTest(unittest.TestCase):
         single = RESTORE + '<pre>curl -fsSL &quot;$URL&quot; -o /tmp/mydata-kit.zip</pre>'
         self.assertEqual(self.run_check(full_set(**{name: page(task00=single)})), [stale])
 
-    def test_time_budget_within_tolerance(self):
-        name = "ClaudeCode_Ch1_HandsOnLab.html"
-        rev = self.commit(full_set(**{name: page(minutes=5)}))
-        self.write({name: page(minutes=5 + TIME_TOLERANCE_MIN)})
-        self.assertEqual(TIME_TOLERANCE_MIN, 30)
-        self.assertEqual(check(self.labs, MANIFEST, baseline_rev=rev), [])
-
     def test_ch1_ch3_do_not_reference_transaction_files(self):
         for name in ("ClaudeCode_Ch1_HandsOnLab.html", "ClaudeCode_Ch3_HandsOnLab.html"):
             for f in ("bank_transactions.csv", "card_transactions.csv"):
@@ -225,20 +238,6 @@ class CheckLabsTest(unittest.TestCase):
         self.assertEqual(errs, ["ClaudeCode_Ch5_HandsOnLab.html: missing lab page"])
         empty = check(self.root / "empty", MANIFEST)
         self.assertEqual(sum(e.endswith("missing lab page") for e in empty), 8)
-
-    def test_unresolvable_baseline_is_an_error(self):
-        errs = self.run_check(full_set(), baseline_rev="deadbeef0000")
-        self.assertEqual(errs, ["rule 4: baseline deadbeef0000 not found"])
-
-    def test_unparsable_task_minutes_is_an_error(self):
-        name = "ClaudeCode_Ch1_HandsOnLab.html"
-        for bad in ("(5~7분)", "(약 5분)"):
-            body = "<h2>TASK 01 · x %s</h2><h2>선택 TASK 02 · y %s</h2>" % (bad, bad)
-            errs = self.run_check(full_set(**{name: page(body=body)}))
-            self.assertEqual(len(errs), 2, bad)
-            self.assertTrue(all(e.startswith(name + ": rule 4") and "minutes" in e for e in errs))
-        ok = "<h2>TASK 01 · x (5 분)</h2>"
-        self.assertEqual(self.run_check(full_set(**{name: page(body=ok)})), [])
 
     def test_guardrails_requires_a_pat(self):
         name = "ClaudeCode_Ch2_Guardrails_HandsOnLab.html"

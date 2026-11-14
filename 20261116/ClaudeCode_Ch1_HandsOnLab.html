@@ -95,8 +95,8 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 <p>강의에서 본 <strong>에이전트 루프, 컨텍스트, 세션, 권한, 데이터 경로</strong>를 이 환경에서 직접 눈으로 확인합니다.
 오늘 시나리오는 <strong>고객자산 분석 담당자의 첫 세션</strong>입니다. 아침에 Claude Code를 처음 열고, 마이데이터 고객 파일로 작은 분석을 맡겨 보면서 동작 원리를 확인합니다.
 이 랩의 ccb-endpoint는 기본적으로 <strong>Amazon Bedrock을 인스턴스 역할(SigV4)로 직접 호출</strong>합니다. 키를 입력할 필요가 없습니다.</p>
-<p>소요 시간 <strong>20분 내외</strong> · Task <strong>준비 + 4개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
-<h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</h2>
+<p>Task <strong>준비 + 4개</strong> · 기준 버전 <strong>Claude Code 2.1.x</strong> · Update <strong>2026.11</strong></p>
+<h2 id="task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인</h2>
 <h3 id="step-1-버전과-모드-확인">Step 1 · 버전과 모드 확인</h3>
 <p>이 환경은 두 가지 모드가 있습니다. 기본은 Bedrock 직접 호출(<code>use_bedrock_direct</code>)이고, Ch2 Lab 1의 TASK 06과 Ch6의 게이트웨이 랩에서만 <code>use_gateway</code>로 바꿉니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
@@ -161,7 +161,7 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;
 <li class="check"><label><input type="checkbox"> <span><code>~/claude-lab/ch1/data</code>가 <code>pseudo/</code>를 가리키고, 고객 이름이 <code>고객0001</code> 형태로 보인다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-01-에이전트-루프-관찰-5분">TASK 01 · 에이전트 루프 관찰 (5분)</h2>
+<h2 id="task-01-에이전트-루프-관찰-5분">TASK 01 · 에이전트 루프 관찰</h2>
 <h3 id="step-1-첫-세션과-status">Step 1 · 첫 세션과 /status</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch1 &amp;&amp; claude</code></pre></div>
@@ -197,7 +197,7 @@ git add . &amp;&amp; git commit -qm &quot;init&quot; &amp;&amp; ls -l data &amp;
 <li class="check"><label><input type="checkbox"> <span>수집·수행·검증 단계를 도구 호출 순서로 구분할 수 있다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-02-컨텍스트와-세션-파일-6분">TASK 02 · 컨텍스트와 세션 파일 (6분)</h2>
+<h2 id="task-02-컨텍스트와-세션-파일-6분">TASK 02 · 컨텍스트와 세션 파일</h2>
 <h3 id="step-1-context로-무엇이-자리를-차지하는지-보기">Step 1 · /context로 무엇이 자리를 차지하는지 보기</h3>
 <p>같은 세션에서 실행합니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/context</code></pre></div>
@@ -248,7 +248,7 @@ grep -o &#x27;고객0&#x27; &quot;$F&quot; | wc -l</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span>세션 JSONL 파일 위치를 확인하고, <code>고객0</code> 건수가 0이 아님을 확인했다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-03-체크포인트와-권한-모드-5분">TASK 03 · 체크포인트와 권한 모드 (5분)</h2>
+<h2 id="task-03-체크포인트와-권한-모드-5분">TASK 03 · 체크포인트와 권한 모드</h2>
 <h3 id="step-1-되돌릴-수-있는-것">Step 1 · 되돌릴 수 있는 것</h3>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch1 &amp;&amp; claude --continue</code></pre></div>
 <details class="cmd-explain"><summary>이 블록이 하는 일 (붙여넣는 곳: 터미널)</summary>
@@ -281,7 +281,7 @@ grep -o &#x27;고객0&#x27; &quot;$F&quot; | wc -l</code></pre></div>
 <li class="check"><label><input type="checkbox"> <span>plan 모드에서는 변경 없이 계획만 나오는 것을 확인했다</span></label></li>
 </ul></div></div>
 
-<h2 id="task-04-bedrock-데이터-경로-확인-2분">TASK 04 · Bedrock 데이터 경로 확인 (2분)</h2>
+<h2 id="task-04-bedrock-데이터-경로-확인-2분">TASK 04 · Bedrock 데이터 경로 확인</h2>
 <p>Bedrock 호출이 내 AWS 계정을 거쳐 기록된다는 것을 AWS 쪽 기록으로 확인합니다. 실제로 어느 리전에서 처리되는지는 추론 프로필이 정합니다.</p>
 <p><strong>Terminal, 전체 복사</strong></p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>aws sts get-caller-identity --query Arn --output text
@@ -319,7 +319,7 @@ aws cloudtrail lookup-events --region us-east-1 --max-results 5 \
 <ul>
 <li>이전: <a href="ClaudeCode_Preflight_Check.html">Preflight. 시작 전 확인</a></li>
 <li>다음: <a href="ClaudeCode_Ch2_HandsOnLab.html">Ch2 Lab 1. 정책 배포</a></li>
-</ul><div class="pager"><a class="prev" href="ClaudeCode_Preflight_Check.html"><small>이전</small>Preflight. 시작 전 확인</a><a class="next" href="ClaudeCode_Ch2_HandsOnLab.html"><small>다음</small>Ch2 Lab 1. 정책 배포</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인 (2분)</a></li><li><a href="#task-01-에이전트-루프-관찰-5분">TASK 01 · 에이전트 루프 관찰 (5분)</a></li><li><a href="#task-02-컨텍스트와-세션-파일-6분">TASK 02 · 컨텍스트와 세션 파일 (6분)</a></li><li><a href="#task-03-체크포인트와-권한-모드-5분">TASK 03 · 체크포인트와 권한 모드 (5분)</a></li><li><a href="#task-04-bedrock-데이터-경로-확인-2분">TASK 04 · Bedrock 데이터 경로 확인 (2분)</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
+</ul><div class="pager"><a class="prev" href="ClaudeCode_Preflight_Check.html"><small>이전</small>Preflight. 시작 전 확인</a><a class="next" href="ClaudeCode_Ch2_HandsOnLab.html"><small>다음</small>Ch2 Lab 1. 정책 배포</a></div></article><nav class="toc" aria-label="이 페이지"><div class="toc-title">이 페이지</div><ol><li><a href="#task-00-사전-준비-확인-2분">TASK 00 · 사전 준비 확인</a></li><li><a href="#task-01-에이전트-루프-관찰-5분">TASK 01 · 에이전트 루프 관찰</a></li><li><a href="#task-02-컨텍스트와-세션-파일-6분">TASK 02 · 컨텍스트와 세션 파일</a></li><li><a href="#task-03-체크포인트와-권한-모드-5분">TASK 03 · 체크포인트와 권한 모드</a></li><li><a href="#task-04-bedrock-데이터-경로-확인-2분">TASK 04 · Bedrock 데이터 경로 확인</a></li><li><a href="#마무리-학습-목표-체크리스트">마무리, 학습 목표 체크리스트</a></li><li><a href="#이전-다음">이전 / 다음</a></li></ol></nav></main>
 </div>
 <script>(function(){
   var root=document.documentElement, page=document.body.dataset.page;
