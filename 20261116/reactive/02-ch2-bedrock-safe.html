@@ -58,13 +58,13 @@
 <div class="slide" data-remarp-id="s2" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s2-header"><h2>핵심은 강의, 깊이는 실습</h2></div>
   <div class="slide-body" data-remarp-id="s2-body">
-    <p><!-- Slide 2: Agenda --></p>
+    <p><!-- Slide 3: Agenda --></p>
 <p>세 개의 Part, 연결에서 정책과 가드레일까지</p>
 <div class="fsi fsi-agenda">
   <div class="fsi-grid-3">
-    <div class="pick"><span class="k">PART 01</span><span class="t">Bedrock에 연결하기</span><span class="d">환경변수 두 개, SSO 로그인, 모델 고정과 팀별 비용</span></div>
-    <div class="pick"><span class="k">PART 02</span><span class="t">정책은 파일로</span><span class="d">managed settings, 우선순위, /status로 확인</span></div>
-    <div class="pick"><span class="k">PART 03</span><span class="t">무엇을 못 하게 할 것인가</span><span class="d">deny가 이긴다, 훅은 exit 2, DLP 다섯 겹, 남는 기록</span></div>
+    <div class="pick"><span class="k">PART 01</span><span class="t">Bedrock에 연결하기</span><span class="d">사내망에서 Bedrock까지의 길, 환경변수와 IAM, 키 대신 SSO, 모델 고정과 팀 이름표</span></div>
+    <div class="pick"><span class="k">PART 02</span><span class="t">정책은 파일로</span><span class="d">파일 한 장이 모든 PC로, 키 충돌과 잠금 스위치, 배포 후 확인</span></div>
+    <div class="pick"><span class="k">PART 03</span><span class="t">무엇을 못 하게 할 것인가</span><span class="d">deny가 이긴다, 요청이 지나는 문들, DLP는 프롬프트 앞에서, 남는 기록</span></div>
   </div>
   <div class="fsi-grid-2">
     <div class="pick lab"><span class="k">LAB / Ch2 Lab 1</span><span class="t">정책 배포, managed settings와 게이트웨이 그룹 정책</span><span class="d">정책을 배포하고, 개인 설정으로 우회가 안 되는지 확인</span></div>
@@ -77,7 +77,7 @@
 <div class="slide" data-remarp-id="s3" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s3-header"><h2>금융권이 Bedrock을 고르는 이유</h2></div>
   <div class="slide-body" data-remarp-id="s3-body">
-    <p><!-- Slide 3: Why Bedrock --></p>
+    <p><!-- Slide 4: Why Bedrock --></p>
 <p>대신 claude.ai의 관리 콘솔, Analytics, 정책 서버가 없음</p>
 <div class="fsi c2-why">
   <div class="fsi-grid-2">
@@ -94,7 +94,7 @@
 <div class="slide" data-remarp-id="s4" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s4-header"><h2>사내망에서 Bedrock까지, 인터넷 없이</h2></div>
   <div class="slide-body" data-remarp-id="s4-body">
-    <p><!-- Slide 4: Private path to Bedrock --></p>
+    <p><!-- Slide 5: Private path to Bedrock --></p>
 <p>요청 하나가 지나가는 길 (사내망과 전용선 기준)</p>
 <div class="fsi fs" id="c2-pl">
   <div class="fs-stage"></div>
@@ -114,7 +114,7 @@
 <div class="slide" data-remarp-id="s5" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
 
   <div class="slide-body" data-remarp-id="s5-body">
-    <p><!-- Slide 5: Part 01 divider --></p>
+    <p><!-- Slide 6: Part 01 divider --></p>
 <div class="fsi fsi-section">
   <span class="num">CHAPTER 02 / PART 01</span>
   <div class="name">Bedrock에 연결하기</div>
@@ -131,7 +131,7 @@
 <div class="slide" data-remarp-id="s6" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s6-header"><h2>환경변수 두 개로 연결</h2></div>
   <div class="slide-body" data-remarp-id="s6-body">
-    <p><!-- Slide 6: Manual setup and region order --></p>
+    <p><!-- Slide 7: Manual setup and region order --></p>
 <p>변수마다 바뀌는 것 하나: 목적지, 리전, 경유지</p>
 <div id="c2-sv-env"></div>
   </div>
@@ -140,7 +140,7 @@
 <div class="slide" data-remarp-id="s7" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s7-header"><h2>IAM 권한은 호출, 조회, Marketplace</h2></div>
   <div class="slide-body" data-remarp-id="s7-body">
-    <p><!-- Slide 99: IAM permissions --></p>
+    <p><!-- Slide 8: IAM permissions --></p>
 <p>Claude Code가 부르는 API마다 필요한 권한</p>
 <div id="c2-sv-iam"></div>
   </div>
@@ -149,7 +149,7 @@
 <div class="slide" data-remarp-id="s8" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s8-header"><h2>복사되는 키, 만료되는 SSO</h2></div>
   <div class="slide-body" data-remarp-id="s8-body">
-    <p><!-- Slide 99: Key leak versus SSO --></p>
+    <p><!-- Slide 9: Key leak versus SSO --></p>
 <p>키는 나눠 주지 않고, 로그인해서 짧게 빌려 쓰기</p>
 <div class="fsi fs" id="c2-key">
   <div class="fs-stage"></div>
@@ -168,7 +168,7 @@
 <div class="slide" data-remarp-id="s9" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s9-header"><h2>다섯 가지 중 권장은 하나</h2></div>
   <div class="slide-body" data-remarp-id="s9-body">
-    <p><!-- Slide 7: Five credential methods --></p>
+    <p><!-- Slide 10: Five credential methods --></p>
 <p>Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음</p>
 <div id="c2-sv-cred"></div>
   </div>
@@ -177,7 +177,7 @@
 <div class="slide" data-remarp-id="s10" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s10-header"><h2>만료 시 자동 재로그인</h2></div>
   <div class="slide-body" data-remarp-id="s10-body">
-    <p><!-- Slide 8: SSO auto refresh --></p>
+    <p><!-- Slide 11: SSO auto refresh --></p>
 <p>SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport</p>
 <div id="c2-sv-sso"></div>
   </div>
@@ -186,7 +186,7 @@
 <div class="slide" data-remarp-id="s11" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s11-header"><h2>고정하지 않으면 무엇이 도는가?</h2></div>
   <div class="slide-body" data-remarp-id="s11-body">
-    <p><!-- Slide 9: Quick check 1 --></p>
+    <p><!-- Slide 12: Quick check 1 --></p>
 <p>QUICK CHECK, 손을 들어 답해 주세요</p>
 <div class="fsi qc" id="c2-qc-1">
   <p class="q">모델을 고정하지 않은 Bedrock 배포에서 기본 주 모델은?</p>
@@ -204,7 +204,7 @@
 <div class="slide" data-remarp-id="s12" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s12-header"><h2>여러 사용자에게 배포하면 반드시 고정</h2></div>
   <div class="slide-body" data-remarp-id="s12-body">
-    <p><!-- Slide 10: Model version pinning --></p>
+    <p><!-- Slide 13: Model version pinning --></p>
 <p>별칭이 어느 모델 ID로 가는지 정하기</p>
 <div id="c2-sv-pin"></div>
   </div>
@@ -213,7 +213,7 @@
 <div class="slide" data-remarp-id="s13" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s13-header"><h2>팀마다 다른 이름표, 추론 프로필</h2></div>
   <div class="slide-body" data-remarp-id="s13-body">
-    <p><!-- Slide 11: Team cost tagging --></p>
+    <p><!-- Slide 14: Team cost tagging --></p>
 <p>누구의 호출이 어느 프로필을 지났는지 남기기</p>
 <div id="c2-sv-tag"></div>
   </div>
@@ -222,7 +222,7 @@
 <div class="slide" data-remarp-id="s14" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
 
   <div class="slide-body" data-remarp-id="s14-body">
-    <p><!-- Slide 12: Part 02 divider --></p>
+    <p><!-- Slide 15: Part 02 divider --></p>
 <div class="fsi fsi-section">
   <span class="num">CHAPTER 02 / PART 02</span>
   <div class="name">정책은 파일로</div>
@@ -239,7 +239,7 @@
 <div class="slide" data-remarp-id="s15" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s15-header"><h2>콘솔 대신 파일과 MDM</h2></div>
   <div class="slide-body" data-remarp-id="s15-body">
-    <p><!-- Slide 13: Policy delivery channels --></p>
+    <p><!-- Slide 16: Policy delivery channels --></p>
 <p>정책 파일 한 장이 모든 개발자 PC로 가는 길</p>
 <div class="fsi fs" id="c2-mdm">
   <div class="fs-stage"></div>
@@ -259,7 +259,7 @@
 <div class="slide" data-remarp-id="s16" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s16-header"><h2>키 충돌 시 상위 우선</h2></div>
   <div class="slide-body" data-remarp-id="s16-body">
-    <p><!-- Slide 14: Settings precedence --></p>
+    <p><!-- Slide 17: Settings precedence --></p>
 <p>같은 키가 다섯 층에 있을 때 이기는 값</p>
 <div id="c2-sv-prec"></div>
   </div>
@@ -268,7 +268,7 @@
 <div class="slide" data-remarp-id="s17" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s17-header"><h2>조직이 거는 잠금 스위치 여섯 개</h2></div>
   <div class="slide-body" data-remarp-id="s17-body">
-    <p><!-- Slide 99: Lock keys --></p>
+    <p><!-- Slide 18: Lock keys --></p>
 <p>managed-settings.json에 넣는 잠금 키와 그 효과</p>
 <div id="c2-sv-lock"></div>
   </div>
@@ -277,7 +277,7 @@
 <div class="slide" data-remarp-id="s18" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s18-header"><h2>Lab에서 배포할 정책 한 장</h2></div>
   <div class="slide-body" data-remarp-id="s18-body">
-    <p><!-- Slide 99: Lab policy file --></p>
+    <p><!-- Slide 19: Lab policy file --></p>
 <p>managed-settings.json, 줄마다 담은 뜻</p>
 <div id="c2-sv-ms"></div>
   </div>
@@ -286,7 +286,7 @@
 <div class="slide" data-remarp-id="s19" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s19-header"><h2>JSON이 깨지면 어떻게 될까?</h2></div>
   <div class="slide-body" data-remarp-id="s19-body">
-    <p><!-- Slide 99: Quick check broken JSON --></p>
+    <p><!-- Slide 20: Quick check broken JSON --></p>
 <p>QUICK CHECK, 손을 들어 답해 주세요</p>
 <div class="fsi qc" id="c2-qc-json">
   <p class="q">managed-settings.json에 JSON 문법 오류가 있으면?</p>
@@ -304,7 +304,7 @@
 <div class="slide" data-remarp-id="s20" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="slide-header" data-remarp-id="s20-header"><h2>배포 이후가 진짜 시작</h2></div>
   <div class="slide-body" data-remarp-id="s20-body">
-    <p><!-- Slide 15: Verification --></p>
+    <p><!-- Slide 21: Verification --></p>
 <p>적용 검증 4단계, 랩 순서 그대로</p>
 <div id="c2-sv-verify"></div>
   </div>
@@ -313,55 +313,33 @@
 <div class="slide" data-remarp-id="s21" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
 
   <div class="slide-body" data-remarp-id="s21-body">
-    <p><!-- Slide 16: Part 03 divider --></p>
+    <p><!-- Slide 22: Part 03 divider --></p>
 <div class="fsi fsi-section">
   <span class="num">CHAPTER 02 / PART 03</span>
   <div class="name">무엇을 못 하게 할 것인가</div>
-  <p class="what">앞에서 막고, 못 막은 것은 기록으로</p>
+  <p class="what">앞에서 막고, 놓친 것은 뒤에서, 남는 것은 기록으로</p>
   <ol>
-    <li><b>01</b>deny 절대 우선</li>
-    <li><b>02</b>훅은 exit 2만 차단</li>
-    <li><b>03</b>DLP 다섯 겹과 남는 기록</li>
+    <li><b>01</b>권한 규칙과 분류기, 두 개의 문</li>
+    <li><b>02</b>층마다 잡는 것, 프롬프트 앞의 DLP 훅</li>
+    <li><b>03</b>정책으로 강제, 남는 기록</li>
   </ol>
 </div>
   </div>
 </div>
 
 <div class="slide" data-remarp-id="s22" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s22-header"><h2>142명 중 51명이 고른 주제</h2></div>
+  <div class="slide-header" data-remarp-id="s22-header"><h2>deny 절대 우선</h2></div>
   <div class="slide-body" data-remarp-id="s22-body">
-    <p><!-- Slide 17: Pre-survey --></p>
-<p>사전 설문, 망분리와 보안(DLP, 감사로그)에 대한 기대</p>
-<div class="fsi fsi-survey c3-survey">
-  <div class="sv-big">
-    <span class="eyebrow">PRE-SURVEY</span>
-    <div class="num"><span id="c3-survey-num">51</span></div>
-    <p class="lead">참가 확정자 <b>142명 중 51명</b>이 "망분리, 보안(<span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>, 감사로그)"를 기대 주제로 골랐습니다.</p>
-    <p class="why">이 챕터는 그 기대에 답하는 시간입니다. 무엇을 막을 수 있고, 무엇이 기록으로 남는지 정리합니다.</p>
-  </div>
-  <div class="bars" id="c3-survey-bars">
-    <div class="bar lo" data-v="51"><span class="lb">망분리, 보안</span><span class="tr"><i></i></span><span class="v">51명</span></div>
-    <div class="bar" data-v="45"><span class="lb">규제, 감사 대응</span><span class="tr"><i></i></span><span class="v">45명</span></div>
-    <div class="bar" data-v="60"><span class="lb">팀 표준화</span><span class="tr"><i></i></span><span class="v">60명</span></div>
-    <p class="cap">복수 선택 응답, 막대 길이는 응답 인원</p>
-  </div>
-</div>
-  </div>
-</div>
-
-<div class="slide" data-remarp-id="s23" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s23-header"><h2>deny 절대 우선</h2></div>
-  <div class="slide-body" data-remarp-id="s23-body">
-    <p><!-- Slide 18: Permission evaluation order --></p>
+    <p><!-- Slide 23: Permission evaluation order --></p>
 <p>권한 평가 순서와 Tool(specifier) 규칙 문법</p>
 <div id="c3-sv-eval"></div>
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s24" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s24-header"><h2>user allow, managed deny라면?</h2></div>
-  <div class="slide-body" data-remarp-id="s24-body">
-    <p><!-- Slide 19: Quick check 2 --></p>
+<div class="slide" data-remarp-id="s23" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s23-header"><h2>user allow, managed deny라면?</h2></div>
+  <div class="slide-body" data-remarp-id="s23-body">
+    <p><!-- Slide 24: Quick check 2 --></p>
 <p>QUICK CHECK, 손을 들어 답해 주세요</p>
 <div class="fsi qc" id="c3-qc-1">
   <p class="q">user settings에 allow "Bash(curl *)", managed에 deny "Bash(curl *)". 결과는?</p>
@@ -376,70 +354,125 @@
   </div>
 </div>
 
+<div class="slide" data-remarp-id="s24" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s24-header"><h2>권한 규칙이 첫 문, 분류기가 둘째 문</h2></div>
+  <div class="slide-body" data-remarp-id="s24-body">
+    <p><!-- Slide 25: Auto mode two gates --></p>
+<p>auto mode의 판정 순서</p>
+<div id="c3-sv-auto"></div>
+  </div>
+</div>
+
 <div class="slide" data-remarp-id="s25" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s25-header"><h2>앞 층이 놓친 것은 다음 층에서</h2></div>
+  <div class="slide-header" data-remarp-id="s25-header"><h2>설정하지 않아도 막는 네 가지</h2></div>
   <div class="slide-body" data-remarp-id="s25-body">
-    <p><!-- Slide 20: DLP 5 layers --></p>
-<p>DLP 5층과 층마다의 설정</p>
-<div id="c3-sv-dlp"></div>
+    <p><!-- Slide 26: Classifier defaults --></p>
+<p>분류기의 기본 규칙이 막는 것과 통과시키는 것</p>
+<div id="c2p3-sv-cats"></div>
   </div>
 </div>
 
 <div class="slide" data-remarp-id="s26" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s26-header"><h2>차단은 exit 2뿐</h2></div>
+  <div class="slide-header" data-remarp-id="s26-header"><h2>앞 층이 놓친 것은 다음 층에서</h2></div>
   <div class="slide-body" data-remarp-id="s26-body">
-    <p><!-- Slide 21: DLP hook script and fail-open --></p>
-<p>3층 DLP 훅 예제와 fail-open, 그리고 수정본</p>
-<div id="c3-sv-hook"></div>
+    <p><!-- Slide 27: DLP 5 layers --></p>
+<p>위험한 명령 하나가 지나가는 검사 순서</p>
+<div class="fsi fs" id="c2-layers">
+  <div class="fs-stage"></div>
+  <div class="fs-side">
+    <div class="fs-step"></div>
+    <div class="fs-title"></div>
+    <pre class="fs-code"></pre>
+    <div class="fs-say"></div>
+    <div class="fs-prog"><i></i></div>
+    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 폴더 이름은 예시 값</div>
+  </div>
+</div>
   </div>
 </div>
 
 <div class="slide" data-remarp-id="s27" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s27-header"><h2>jq 없이 exit 127이면?</h2></div>
+  <div class="slide-header" data-remarp-id="s27-header"><h2>DLP는 프롬프트 앞에서</h2></div>
   <div class="slide-body" data-remarp-id="s27-body">
-    <p><!-- Slide 22: Quick check 3 --></p>
+    <p><!-- Slide 28: DLP before the prompt --></p>
+<p>UserPromptSubmit 훅이 모델보다 먼저 본다</p>
+<div class="fsi fs" id="c2-dlp">
+  <div class="fs-stage"></div>
+  <div class="fs-side">
+    <div class="fs-step"></div>
+    <div class="fs-title"></div>
+    <pre class="fs-code"></pre>
+    <div class="fs-say"></div>
+    <div class="fs-prog"><i></i></div>
+    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 주민번호는 형식만 맞춘 가짜 값</div>
+  </div>
+</div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s28" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s28-header"><h2>차단은 exit 2뿐</h2></div>
+  <div class="slide-body" data-remarp-id="s28-body">
+    <p><!-- Slide 29: DLP hook script and fail-open --></p>
+<p>DLP 훅 예제와 fail-open, 그리고 수정본</p>
+<div id="c3-sv-hook"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s29" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s29-header"><h2>jq 없이 exit 127이면?</h2></div>
+  <div class="slide-body" data-remarp-id="s29-body">
+    <p><!-- Slide 30: Quick check 3 --></p>
 <p>QUICK CHECK, 손을 들어 답해 주세요</p>
-<div class="fsi qc" id="c3-qc-3">
+<div class="fsi qc c2p3-qc" id="c3-qc-3">
   <p class="q">DLP 훅이 jq 미설치로 exit 127로 끝나면 어떻게 될까요?</p>
+  <div class="c2p3-lanes" aria-label="훅 종료 코드별 결과">
+    <div class="ln ok"><code>exit 0</code><i></i><span>진행</span></div>
+    <div class="ln no"><code>exit 2</code><i></i><span>차단</span></div>
+    <div class="ln q127"><code>exit 127</code><i></i><span class="hide">?</span><span class="show">비차단 오류, 진행</span></div>
+  </div>
   <div class="opts">
     <button class="opt"><b>A</b>차단된다</button>
     <button class="opt right"><b>B</b>통과된다</button>
     <button class="opt"><b>C</b>세션이 종료된다</button>
     <button class="opt"><b>D</b>자동 재시도</button>
   </div>
-  <p class="ans">정답 B. exit 2만 차단입니다. 그 외 0이 아닌 종료는 비차단 오류로 처리되어 그대로 진행됩니다.</p>
+  <p class="ans">정답 B. exit 2만 차단입니다. 그 외 0이 아닌 종료는 비차단 오류로 처리되어 그대로 진행됩니다. onFailure: "block"을 걸면 이 경우도 차단됩니다.</p>
 </div>
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s28" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s28-header"><h2>감사 근거가 남는 네 곳</h2></div>
-  <div class="slide-body" data-remarp-id="s28-body">
-    <p><!-- Slide 23: What remains as records --></p>
-<p>무엇이 기록으로 남는가, 그리고 주의할 것</p>
-<div class="fsi c3-two">
-  <div class="col">
-    <h4>남는 것</h4>
-    <div class="it">PC: 세션 <span class="rp-detail" tabindex="0" data-tip="JSON Lines. 한 줄에 JSON 객체 하나씩 적는 텍스트 형식">JSONL</span><small>cleanupPeriodDays로 보존 기간</small></div>
-    <div class="it">AWS: CloudTrail의 Bedrock 호출 이력</div>
-    <div class="it">AWS: Bedrock model invocation logging<small>선택, 프롬프트 원문 포함</small></div>
-    <div class="it"><span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span>: 사용자별 토큰, 비용, 도구<small>Ch6</small></div>
-  </div>
-  <div class="col warn">
-    <h4>주의할 것</h4>
-    <div class="it">invocation logging은 원문이 저장되므로 저장소, 보존 정책 필요</div>
-    <div class="it">Anthropic으로 가는 텔레메트리는 Bedrock에서 기본 꺼짐<small>단, WebFetch 사전 검사는 호스트명을 api.anthropic.com으로 보냄 (skipWebFetchPreflight로 끔)</small></div>
-    <div class="it"><span class="rp-detail" tabindex="0" data-tip="Zero Data Retention. 요청과 응답 데이터를 보존하지 않는 약정">ZDR</span>은 AWS 계약 조건에 따름</div>
-    <div class="it">세션 로그도 고객 데이터를 담을 수 있음</div>
-  </div>
-</div>
+<div class="slide" data-remarp-id="s30" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s30-header"><h2>훅은 정책으로 강제한다</h2></div>
+  <div class="slide-body" data-remarp-id="s30-body">
+    <p><!-- Slide 31: Enforce hooks by policy --></p>
+<p>사용자가 끄지 못하게, 고장 나도 막히게</p>
+<div id="c2p3-sv-hookpol"></div>
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s29" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s29-header"><h2>더 깊은 내용은 실습에서 손으로</h2></div>
-  <div class="slide-body" data-remarp-id="s29-body">
-    <p><!-- Slide 24: Deeper topics move to the labs --></p>
+<div class="slide" data-remarp-id="s31" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s31-header"><h2>MCP 서버 하나가 통로 하나</h2></div>
+  <div class="slide-body" data-remarp-id="s31-body">
+    <p><!-- Slide 32: MCP server control --></p>
+<p>새 반출 채널을 정책으로 닫는다</p>
+<div id="c2p3-sv-mcp"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s32" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s32-header"><h2>감사 근거가 남는 네 곳</h2></div>
+  <div class="slide-body" data-remarp-id="s32-body">
+    <p><!-- Slide 33: What remains as records --></p>
+<p>요청 하나가 어디에 무엇을 남기는가</p>
+<div id="c2p3-sv-audit"></div>
+  </div>
+</div>
+
+<div class="slide" data-remarp-id="s33" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s33-header"><h2>더 깊은 내용은 실습에서 손으로</h2></div>
+  <div class="slide-body" data-remarp-id="s33-body">
+    <p><!-- Slide 34: Deeper topics move to the labs --></p>
 <p>강의에서 줄인 주제와 실습 TASK</p>
 <div class="fsi fsi-lab c23-labmap">
   <ol class="steps">
@@ -455,10 +488,10 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s30" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
-  <div class="slide-header" data-remarp-id="s30-header"><h2>기억할 여섯 줄</h2></div>
-  <div class="slide-body" data-remarp-id="s30-body">
-    <p><!-- Slide 25: Key Takeaways --></p>
+<div class="slide" data-remarp-id="s34" data-fit="off" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+  <div class="slide-header" data-remarp-id="s34-header"><h2>기억할 여섯 줄</h2></div>
+  <div class="slide-body" data-remarp-id="s34-body">
+    <p><!-- Slide 35: Key Takeaways --></p>
 <p>Chapter 2 Key Takeaways</p>
 <div class="fsi fsi-recap c2-recap">
   <div class="fsi-grid-3">
@@ -473,7 +506,7 @@
   </div>
 </div>
 
-<div class="slide" data-remarp-id="s31" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
+<div class="slide" data-remarp-id="s35" data-block="02-ch2-bedrock-safe" data-block-title="Chapter 2. Bedrock 위에서 안전하게 쓰기">
   <div class="center-content" style="height:100%; gap:1.5rem;">
     <h1 style="font-family:var(--font-display); letter-spacing:var(--tracking-tight, -0.02em); font-size:3rem; color:var(--text-primary);">Thank You</h1>
     <p style="color:var(--text-secondary); font-size:1.1rem;">다음은 점심입니다. 식사 후 통합 랩에서 Preflight와 Ch1 Lab을 마친 뒤, 오늘 본 정책과 훅을 Ch2 Lab 1, Lab 2에서 직접 배포하고 뚫어 봅니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에서 언제든 받습니다.</p>
@@ -1267,18 +1300,6 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 <script>
 (function(){
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var host = document.getElementById('c3-survey-bars');
-  var bars = Array.prototype.slice.call(host.querySelectorAll('.bar'));
-  function grow(on) { bars.forEach(function (b, i) { var w = on ? (b.dataset.v / 60 * 100) : 0; setTimeout(function () { b.querySelector('i').style.width = w + '%'; }, on ? 120 * i : 0); }); }
-  F.countUp('#c3-survey-num', 51, { decimals: 0, suffix: '' });
-  F.onEnter(host, function () { grow(false); setTimeout(function () { grow(true); }, 60); });
-  grow(true);
-});
-})();
-</script>
-<script>
-(function(){
-(window.__fsiq = window.__fsiq || []).push(function (F) {
   var S1 = {id:'s1',x:30,y:70,w:230,h:76,t:'Managed',s:'관리자 배포',c:'danger'};
   var S2 = {id:'s2',x:30,y:197,w:230,h:76,t:'Project',s:'.claude/settings.json',c:'success'};
   var S3 = {id:'s3',x:30,y:324,w:230,h:76,t:'User',s:'~/.claude/settings.json',c:'accent'};
@@ -1295,6 +1316,12 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
   var merge = [{f:'s1',t:'m',c:'danger',side:'h',o:0},{f:'s2',t:'m',c:'success',side:'h',o:0},{f:'s3',t:'m',c:'accent',side:'h',o:0}];
   var rule = ['"deny": [','  "Read(./.env)",            // 정확한 파일','  "Read(./secrets/**)",      // gitignore 스타일 글롭','  "Bash(curl *)",            // 명령 패턴','  "WebFetch(domain:pastebin.com)",','  "mcp__untrusted-server"    // MCP 서버 전체','],','"ask":   ["Bash(git push *)"],','"allow": ["Bash(npm run test *)"]'];
   F.stepviz('#c3-sv-eval', [
+    {kicker:'OVERVIEW', title:'합치고, deny부터 위에서 아래로',
+     body:'세 스코프의 규칙이 <b>한 목록으로 합쳐진 뒤</b>, <b>deny, ask, allow</b> 순서로 봅니다. 위에서 처음 맞는 줄이 결과입니다. 더 구체적인 allow가 있어도 순서는 바뀌지 않습니다.',
+     facts:['스코프별 규칙이 한 목록으로 합쳐짐','deny, ask, allow 순서, 처음 맞는 것이 결과','어디에 적혔든 deny에 걸리면 거부'],
+     zones:[{x:10,y:30,w:270,h:400,l:'스코프'}],
+     nodes:ALL, edges:merge.concat([{f:'m',t:'d1',c:'ink',side:'h',o:1},{f:'d1',t:'d2',c:'muted',o:2},{f:'d2',t:'d3',c:'muted',o:3},{f:'d3',t:'d4',c:'muted',o:4},{f:'d1',t:'r1',c:'danger',o:2},{f:'d2',t:'r2',c:'warning',o:3},{f:'d3',t:'r3',c:'success',o:4},{f:'d4',t:'r4',c:'muted',o:5}]), stagger:0.35,
+     snip:{hd:'규칙 문법',path:'permissions (Tool(specifier) 한 가지 형식)',lines:rule,hl:[],note:'아래 화살표로 <b>합치기</b>부터 한 단계씩 봅니다.'}},
     {kicker:'STEP 1', title:'모든 스코프를 합친 뒤 평가합니다',
      body:'규칙은 <b>Managed, Project, User</b> 등 모든 스코프에서 <b>합쳐진 뒤</b> 평가됩니다. 어느 파일에 적혔는지보다 <b>무엇이 적혔는지</b>가 결과를 정합니다.',
      facts:['스코프별 규칙이 한 목록으로 합쳐짐','평가는 deny, ask, allow 순서','어디에 있든 deny에 걸리면 거부'],
@@ -1320,12 +1347,12 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
      nodes:ALL, hot:['m','d1','d2','d3','r3'], edges:[{f:'m',t:'d1',c:'ink',side:'h',o:0},{f:'d1',t:'d2',c:'muted',o:1},{f:'d2',t:'d3',c:'muted',l:'일치 없음',o:2},{f:'d3',t:'r3',c:'success',o:3}],
      snip:{hd:'allow 예시',path:'permissions.allow',lines:rule,hl:[9],note:'Bash 패턴은 파이프나 서브셸로 <b>우회가 쉽습니다</b>. 그래서 샌드박스와 함께 씁니다.'}},
     {kicker:'STEP 5', title:'4 일치 없음: 모드가 정합니다',
-     body:'어느 규칙에도 일치하지 않으면 <b>현재 권한 모드의 기본 동작</b>을 따릅니다. 복잡한 판단은 규칙 대신 <b>훅</b>으로 넘깁니다.',
-     facts:['default면 확인, acceptEdits면 편집 자동 등','모드는 Ch1에서 본 Shift+Tab','복잡한 판단은 훅 (이 Part 뒤쪽)'],
+     body:'어느 규칙에도 일치하지 않으면 <b>현재 권한 모드의 기본 동작</b>을 따릅니다. auto mode라면 여기서 <b>분류기</b>가 판정합니다.',
+     facts:['Manual이면 확인, acceptEdits면 편집 자동 등','auto mode면 분류기가 판정 (다음 장)','복잡한 판단은 훅 (이 Part 뒤쪽)'],
      zones:[{x:10,y:30,w:270,h:400,l:'스코프'}],
      nodes:ALL, hot:['m','d1','d2','d3','d4','r4'], edges:[{f:'m',t:'d1',c:'ink',side:'h',o:0},{f:'d1',t:'d2',c:'muted',o:1},{f:'d2',t:'d3',c:'muted',o:2},{f:'d3',t:'d4',c:'muted',l:'일치 없음',o:3},{f:'d4',t:'r4',c:'muted',o:4}],
      stagger:0.4,
-     snip:{hd:'현장에서 걸리는 지점',path:'',lines:['# Bash 패턴은 우회가 쉬움: 샌드박스와 함께','# 경로는 ./ 기준 상대 경로','# MCP는 mcp__서버명 단위','# 복잡한 판단은 훅으로'],hl:[],note:'규칙은 <b>문법</b>이고, 강제력은 다음 장의 <b>잠금 키</b>에서 나옵니다.'}}
+     snip:{hd:'현장에서 걸리는 지점',path:'',lines:['# Bash 패턴은 우회가 쉬움: 샌드박스와 함께','# 경로는 ./ 기준 상대 경로','# MCP는 mcp__서버명 단위','# 복잡한 판단은 훅으로'],hl:[],note:'사용자가 이 규칙을 못 바꾸게 하는 건 <b>Part 2의 잠금 키</b>입니다.'}}
   ], {legend:[['danger','거부'],['warning','사람 확인'],['success','바로 실행'],['muted','다음 단계로']]});
 });
 })();
@@ -1338,53 +1365,234 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 <script>
 (function(){
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var L = [
-    {id:'l1',x:20,y:30,w:640,h:72,t:'1 권한 규칙',s:'permissions.deny',c:'accent'},
-    {id:'l2',x:50,y:116,w:640,h:72,t:'2 샌드박스',s:'sandbox.network',c:'accent'},
-    {id:'l3',x:80,y:202,w:640,h:72,t:'3 훅',s:'PreToolUse',c:'accent'},
-    {id:'l4',x:110,y:288,w:640,h:72,t:'4 Bedrock Guardrails',s:'AWS 쪽, X-Amzn-Bedrock-*',c:'info'},
-    {id:'l5',x:140,y:374,w:640,h:72,t:'5 반출 채널',s:'managed allowlist',c:'accent'}];
-  function B(y, t, s) { return {id:'b',x:860,y:y,w:300,h:80,t:t,s:s,c:'danger'}; }
-  var down = [{f:'l1',t:'l2',c:'muted',o:0},{f:'l2',t:'l3',c:'muted',o:1},{f:'l3',t:'l4',c:'muted',o:2},{f:'l4',t:'l5',c:'muted',o:3}];
-  function st(i, b, extra) { var ids = ['l1','l2','l3','l4','l5']; return { nodes: L.concat([b]), hot: [ids[i], 'b'], edges: [{f:ids[i],t:'b',c:'danger',side:'h',l:'차단',o:0}].concat(extra || []) }; }
-  var s1 = st(0, B(26, '민감 파일 읽기', '위험 명령 차단'));
-  var s2 = st(1, B(112, '허용 목록 밖 도메인', 'Bash의 curl 빈틈'));
-  var s3 = st(2, B(198, '민감 패턴', 'exit 2로 차단'));
-  var s4 = st(3, B(284, 'PII, 민감정보', '모델로 가기 전 필터'));
-  var s5 = st(4, B(370, '웹, MCP, 플러그인, mod', '다른 통로'));
-  F.stepviz('#c3-sv-dlp', [
-    {kicker:'OVERVIEW', title:'다섯 층이 차례로 좁힙니다',
-     body:'한 층으로 다 막을 수는 없습니다. <b>각 층은 앞 층이 놓친 것</b>을 잡습니다. 1, 2, 3, 5층은 PC에서, 4층 Guardrails는 <b>AWS 쪽</b>에서 동작합니다.',
-     facts:['1 권한 규칙: 민감 파일, 위험 명령','2 샌드박스: Bash의 파일, 네트워크 격리','3 훅: 프롬프트, 도구 인자 패턴 검사 예제','4 Guardrails: 모델로 가는 PII(개인 식별 정보) 필터','5 반출 채널: 웹, MCP, 플러그인, mod'],
-     zones:[], nodes:L, edges:down, stagger:0.5, loop:true,
-     snip:{hd:'다섯 층과 대표 설정',path:'',lines:['1 권한 규칙       permissions.deny','2 샌드박스        sandbox.network','3 훅              PreToolUse','4 Guardrails      X-Amzn-Bedrock-*','5 반출 채널       managed allowlist'],hl:[1,2,3,4,5],note:'아래 화살표로 한 층씩 보겠습니다.'}},
-    {kicker:'LAYER 1', title:'권한 규칙: 읽기와 명령을 막습니다',
-     body:'민감 파일 읽기와 위험 명령을 차단합니다. 하지만 <b>Bash 우회에 약합니다</b>. 파이프나 서브셸로 같은 일을 하면 패턴이 놓칩니다.',
-     facts:['민감 파일 읽기, 위험 명령 차단','Bash 우회에 약함','그래서 2층 샌드박스가 필요'],
-     zones:[], nodes:s1.nodes, hot:s1.hot, edges:s1.edges,
-     snip:{hd:'앞에서 본 규칙',path:'permissions.deny',lines:['"deny": [','  "Read(./secrets/**)",','  "Bash(curl *)",','  "WebFetch(domain:pastebin.com)"',']'],hl:[2,3,4],note:'"Bash(curl *)"는 다른 명령 모양으로 <b>쉽게 우회</b>됩니다.'}},
-    {kicker:'LAYER 2', title:'샌드박스: curl 빈틈을 OS가 막습니다',
-     body:'Claude가 실행하는 <b>Bash 명령</b>의 파일과 네트워크를 <b>OS 수준에서 격리</b>합니다. allowManagedDomainsOnly가 있으면 목록 밖 도메인으로는 연결 자체가 안 됩니다.',
-     facts:['Claude가 실행하는 Bash에 적용','allowManagedDomainsOnly: 목록 밖 도메인 연결 불가','failIfUnavailable, 비격리 재시도 금지로 우회 차단','mod가 띄운 프로세스는 샌드박스 밖 (Ch4)'],
-     zones:[], nodes:s2.nodes, hot:s2.hot, edges:s2.edges,
-     snip:{hd:'managed-settings.json (sandbox)',path:'예시 도메인',lines:['{','  "sandbox": {','    "enabled": true,','    "failIfUnavailable": true,','    "allowUnsandboxedCommands": false,','    "network": {','      "allowManagedDomainsOnly": true,','      "allowedDomains": [','        "api.github.example.com",','        "nexus.corp.example.com"','      ]','    }','  }','}'],hl:[4,5,7,8],note:'권한 규칙이 못 막는 우회도 <b>나가는 연결 자체</b>를 막아서 잡습니다.'}},
-    {kicker:'LAYER 3', title:'훅: 내용을 보고 막습니다',
-     body:'프롬프트와 도구 인자의 <b>내용을 패턴으로 검사</b>하는 예제입니다. 걸리면 <b>exit 2</b>로 차단합니다. 다음 장에서 스크립트를 자세히 봅니다.',
-     facts:['UserPromptSubmit: .prompt 검사, 차단 사유는 사용자에게','PreToolUse: .tool_input 검사, 사유(stderr)는 Claude에게','exit 2만 차단'],
-     zones:[], nodes:s3.nodes, hot:s3.hot, edges:s3.edges,
-     snip:{hd:'등록 위치',path:'managed-settings.json (hooks), 요약',lines:['"UserPromptSubmit": [ dlp-guard.sh ]','"PreToolUse":       [ dlp-guard.sh ]','','# 스크립트: /opt/dlp/dlp-guard.sh'],hl:[1,2],note:'훅은 <b>내용</b>을 봅니다. 권한 규칙과 샌드박스가 못 보는 부분입니다.'}},
-    {kicker:'LAYER 4', title:'Guardrails: AWS 쪽에서 거릅니다',
-     body:'모델로 가는 내용의 <b>PII(개인 식별 정보)와 민감정보</b>를 Bedrock Guardrails가 걸러냅니다. Bedrock을 쓸 때 <b>AWS 계정 쪽</b>에서 거는 층입니다.',
-     facts:['콘솔에서 Guardrail 생성 후 버전 발행, 민감정보 필터로 PII 마스킹, 차단','cross-region profile이면 Guardrail에도 Cross-Region inference 활성화','호출 역할에 bedrock:ApplyGuardrail 권한 필요','조직 강제: IAM 조건 bedrock:GuardrailIdentifier'],
-     zones:[{x:100,y:280,w:1070,h:90,l:'',tone:'info'}], nodes:s4.nodes, hot:s4.hot, edges:s4.edges,
-     snip:{hd:'managed-settings.json (env)',path:'예시 Guardrail ID',lines:['{','  "env": {','    "ANTHROPIC_CUSTOM_HEADERS":','      "X-Amzn-Bedrock-GuardrailIdentifier: gr-abc123\\nX-Amzn-Bedrock-GuardrailVersion: 1"','  }','}'],hl:[3,4],note:'<b>모델로 가는 내용</b>은 AWS 쪽에서 한 번 더 거릅니다.'}},
-    {kicker:'LAYER 5', title:'반출 채널: 다른 통로를 닫습니다',
-     body:'웹, MCP, 플러그인, mod처럼 <b>데이터가 나갈 수 있는 다른 통로</b>를 허용 목록으로 닫습니다.',
-     facts:['웹: Bedrock은 내장 WebSearch 없음, WebFetch는 deny 또는 domain: 규칙, 검색 MCP도 허용 목록','WebFetch 사전 검사가 호스트명을 Anthropic으로 보냄, skipWebFetchPreflight로 끔','MCP: allowedMcpServers, allowManagedMcpServersOnly','플러그인, mod: 마켓플레이스 허용 목록, 사이드로드 금지, 사용자 mod 차단'],
-     zones:[], nodes:s5.nodes, hot:s5.hot, edges:s5.edges,
-     snip:{hd:'통로별 장치',path:'managed allowlist',lines:['# 웹','WebFetch: deny 또는 domain: 규칙','skipWebFetchPreflight  # 사전 검사 끔','# MCP','allowedMcpServers','allowManagedMcpServersOnly','# 플러그인, mod','마켓플레이스 허용 목록, 사이드로드 금지','사용자 mod 차단 (Ch4)'],hl:[2,3,5,6,8,9],note:'MCP 서버 하나, 플러그인 하나가 <b>새 통로 하나</b>입니다.'}}
-  ], {legend:[['accent','PC 쪽 층'],['info','AWS 쪽 층'],['danger','그 층이 막는 것'],['muted','앞 층이 놓친 것']]});
+  var RQ = {id:'rq',x:10,y:200,w:190,h:84,t:'도구 호출',s:'Bash, Edit 등',c:'accent'};
+  var G1 = {id:'g1',x:230,y:200,w:210,h:84,t:'permissions.deny',c:'danger'};
+  var G2 = {id:'g2',x:460,y:200,w:210,h:84,t:'permissions.ask',c:'warning'};
+  var G3 = {id:'g3',x:690,y:200,w:210,h:84,t:'좁은 allow',s:'읽기, 작업 폴더 편집',c:'success'};
+  var G4 = {id:'g4',x:950,y:200,w:210,h:84,t:'분류기',s:'별도 모델 호출',c:'info'};
+  var O1 = {id:'o1',x:230,y:360,w:210,h:76,t:'즉시 거부',s:'분류기도 못 풂',c:'danger'};
+  var O2 = {id:'o2',x:460,y:360,w:210,h:76,t:'항상 사람 확인',s:'분류기가 대신 못 함',c:'warning'};
+  var O3 = {id:'o3',x:690,y:360,w:210,h:76,t:'바로 실행',s:'분류기 생략',c:'success'};
+  var O4 = {id:'o4',x:950,y:360,w:210,h:76,t:'차단 또는 허용',c:'info'};
+  var N = [RQ,G1,G2,G3,G4,O1,O2,O3,O4];
+  var Z = [{x:220,y:150,w:690,h:300,l:'GATE 1 권한 규칙'},{x:930,y:150,w:240,h:300,l:'GATE 2',tone:'info'}];
+  var chain = function (k) { var e = [{f:'rq',t:'g1',c:'accent',o:0}]; var ids = ['g1','g2','g3','g4']; for (var i = 0; i < k; i++) e.push({f:ids[i],t:ids[i+1],c:'muted',o:i+1}); return e; };
+  var outs = [{f:'g1',t:'o1',c:'danger',o:1},{f:'g2',t:'o2',c:'warning',o:2},{f:'g3',t:'o3',c:'success',o:3},{f:'g4',t:'o4',c:'info',o:4}];
+  F.stepviz('#c3-sv-auto', [
+    {kicker:'OVERVIEW', title:'문이 두 개입니다',
+     body:'auto mode에서도 <b>deny와 ask는 분류기보다 먼저</b> 평가됩니다. 권한 규칙이 첫 번째 문, 분류기가 두 번째 문입니다. 처음 맞는 문이 결과를 정합니다.',
+     facts:['1 permissions.deny','2 permissions.ask','3 좁은 allow, 읽기, 작업 폴더 안 편집','4 나머지는 분류기'],
+     zones:Z, nodes:N, edges:chain(3).concat(outs), stagger:0.45,
+     snip:{hd:'판정 순서',path:'auto mode',lines:['1 permissions.deny  → 즉시 거부','2 permissions.ask   → 항상 사람 확인','3 좁은 allow, 읽기, 작업 폴더 편집','                    → 분류기 없이 실행','4 분류기            → 별도 모델이 판정'],hl:[1,2,3,4,5],note:'<b>Bash(*)</b> 같은 넓은 allow는 auto에 들어가는 순간 <b>꺼지고</b>, 나오면 돌아옵니다.'}},
+    {kicker:'GATE 1-1', title:'deny는 누구도 못 풉니다',
+     body:'permissions.deny에 걸리면 <b>즉시 거부</b>입니다. 분류기도, 사용자의 의도 표현도 풀지 못합니다.',
+     facts:['분류기, 사용자 의도로 못 풂','가장 단단한 경계','고객 원장 경로, 운영 DB 도구 등'],
+     zones:Z, nodes:N, hot:['rq','g1','o1'], edges:[{f:'rq',t:'g1',c:'accent',o:0},{f:'g1',t:'o1',c:'danger',o:1}],
+     snip:{hd:'예시',path:'permissions',lines:['"deny": ["Read(./secrets/**)"]'],hl:[1],note:'deny는 auto mode에서도 <b>첫 번째</b>입니다.'}},
+    {kicker:'GATE 1-2', title:'ask는 분류기가 대신 못 합니다',
+     body:'permissions.ask에 걸리면 <b>항상 사람에게</b> 확인합니다. 분류기가 안전하다고 판단해도 대신 승인하지 못합니다.',
+     facts:['사람 확인이 반드시 필요한 동작','git push, PR 생성, 배포 스크립트','auto에서도 그대로 확인 창 (Lab 2 TASK 03)'],
+     zones:Z, nodes:N, hot:['rq','g1','g2','o2'], edges:chain(1).concat([{f:'g2',t:'o2',c:'warning',o:2}]),
+     snip:{hd:'예시',path:'permissions',lines:['"ask": ["Bash(git push *)", "Bash(gh pr create *)"]'],hl:[1],note:'"push만은 꼭 묻게" 하고 싶다면 <b>ask</b>입니다.'}},
+    {kicker:'GATE 1-3', title:'좁은 allow는 바로 통과합니다',
+     body:'<b>Bash(npm test)</b> 같은 좁은 allow와 읽기, 작업 폴더 안 편집은 <b>분류기를 거치지 않고</b> 실행합니다.',
+     facts:['분류기 호출이 없어 빠르고 토큰도 안 씀','Bash(*), Bash(python*) 같은 넓은 allow는 auto 동안 꺼짐','모든 셸 명령을 분류기로: autoMode.classifyAllShell'],
+     zones:Z, nodes:N, hot:['rq','g1','g2','g3','o3'], edges:chain(2).concat([{f:'g3',t:'o3',c:'success',o:3}]), stagger:0.4,
+     snip:{hd:'예시',path:'permissions',lines:['"allow": ["Bash(npm test)"]','','# 넓은 패턴은 auto 동안 꺼짐','"allow": ["Bash(*)"]'],hl:[1],note:'넓게 열어 둔 allow는 auto에서 <b>효과가 없습니다</b>.'}},
+    {kicker:'GATE 2', title:'남은 것은 분류기가 판정합니다',
+     body:'앞의 문을 모두 지난 호출은 <b>분류기</b>가 판정합니다. 순서는 <b>hard_deny, soft_deny, allow 예외, 사용자 명시 의도</b>입니다.',
+     facts:['hard_deny: 무조건 막음','soft_deny: 막되 allow 예외나 명시 의도로 풀림','"정리해 줘"는 명시 의도 아님, "force push 해 줘"는 명시 의도'],
+     zones:Z, nodes:N, hot:['rq','g4','o4'], edges:chain(3).concat([{f:'g4',t:'o4',c:'info',o:4}]), stagger:0.4,
+     snip:{hd:'분류기 판정 순서',path:'GATE 2',lines:['hard_deny          # 무조건','soft_deny          # 기본 차단','allow 예외         # soft_deny를 풂','사용자 명시 의도   # 정확히 그 동작을 지시'],hl:[1,2,3,4],note:'분류기는 <b>별도 모델 호출</b>이라 Bedrock에서는 토큰이 듭니다.'}}
+  ], {legend:[['danger','거부'],['warning','사람 확인'],['success','바로 실행'],['info','분류기 판정']]});
 });
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var E1 = {id:'e1',x:20,y:30,w:330,h:82,t:'외부 코드 실행',s:'curl | bash',c:'warning'};
+  var E2 = {id:'e2',x:20,y:140,w:330,h:82,t:'데이터 반출',s:'민감 데이터 외부 전송',c:'danger'};
+  var E3 = {id:'e3',x:20,y:250,w:330,h:82,t:'되돌릴 수 없는 일',s:'force push, 기존 파일 영구 삭제',c:'warning'};
+  var E4 = {id:'e4',x:20,y:360,w:330,h:82,t:'운영',s:'운영 배포, 마이그레이션',c:'warning'};
+  var CL = {id:'cl',x:430,y:190,w:250,h:92,t:'분류기',s:'기본 규칙 ($defaults)',c:'info'};
+  var SD = {id:'sd',x:770,y:40,w:390,h:92,t:'soft_deny: 차단',s:'정확히 그 동작을 지시하면 풀림',c:'warning'};
+  var HD = {id:'hd',x:770,y:190,w:390,h:92,t:'hard_deny: 무조건 차단',s:'지시해도 안 풀림',c:'danger'};
+  var PS = {id:'ps',x:770,y:340,w:390,h:92,t:'allow: 묻지 않고 통과',s:'작업 폴더, lock 의존성, 읽기 HTTP',c:'success'};
+  var N = [E1,E2,E3,E4,CL,SD,HD,PS];
+  var into = function (id, c) { return {f:id,t:'cl',c:c,side:'h',o:0}; };
+  var codes = ['$ claude auto-mode defaults','soft_deny:','  Code from External     # curl | bash','  Git Destructive        # force push','  Production Deploy      # 운영 배포','hard_deny:','  Data Exfiltration      # 민감 데이터 반출','allow:','  작업 폴더 파일, lock 의존성, 읽기 HTTP','# "$defaults"를 빼고 쓰면 그 목록이 통째로 사라짐'];
+  F.stepviz('#c2p3-sv-cats', [
+    {kicker:'OVERVIEW', title:'아무것도 안 적어도 켜져 있습니다',
+     body:'분류기는 설정이 없어도 <b>기본 규칙</b>으로 판정합니다. 네 범주는 막고, 일상 작업은 묻지 않고 통과시킵니다. 반출만 <b>무조건</b> 막습니다.',
+     facts:['막는 것: 외부 코드 실행, 반출, 되돌릴 수 없는 일, 운영','통과: 작업 폴더 파일, lock 파일 의존성 설치, 읽기 전용 HTTP','기본은 현재 저장소와 그 원격만 신뢰'],
+     zones:[], nodes:N, edges:[into('e1','warning'),into('e2','danger'),into('e3','warning'),into('e4','warning'),{f:'cl',t:'sd',c:'warning',o:1},{f:'cl',t:'hd',c:'danger',o:1},{f:'cl',t:'ps',c:'success',o:1}], stagger:0.5,
+     snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[],note:'거부 메시지의 <b>[...]</b> 안에 이 규칙 이름이 나옵니다.'}},
+    {kicker:'1 EXEC', title:'외부 코드 실행',
+     body:'인터넷에서 받은 스크립트를 <b>바로 실행</b>하는 것을 막습니다. <code>curl ... | bash</code>가 대표 예입니다.',
+     facts:['다운로드 후 바로 실행','soft_deny: 정확히 그 명령을 지시하면 풀림','Lab 2 TASK 03에서 확인'],
+     zones:[], nodes:N, hot:['e1','cl','sd'], edges:[into('e1','warning'),{f:'cl',t:'sd',c:'warning',o:1}],
+     snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[2,3],note:'모델이 먼저 받아 내용을 확인하는 쪽을 고르기도 합니다.'}},
+    {kicker:'2 EXFIL', title:'데이터 반출',
+     body:'민감 데이터를 <b>신뢰 범위 밖</b>으로 보내는 것을 막습니다. 기본 <b>hard_deny</b>라 사용자가 지시해도 풀리지 않습니다.',
+     facts:['신뢰 범위 밖 = autoMode.environment에 없는 곳','hard_deny: 명시 의도로도 안 풀림','민감 위치는 environment에 이름으로 적기'],
+     zones:[], nodes:N, hot:['e2','cl','hd'], edges:[into('e2','danger'),{f:'cl',t:'hd',c:'danger',o:1}],
+     snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[6,7],note:'"외부"의 기준은 <b>autoMode.environment</b>가 정합니다.'}},
+    {kicker:'3 DESTROY', title:'되돌릴 수 없는 일',
+     body:'force push, 원격 이력 덮어쓰기, <b>세션 전부터 있던 파일의 영구 삭제</b>, 클라우드 저장소 대량 삭제를 막습니다.',
+     facts:['force push, 원격 브랜치 삭제','세션 전부터 있던 파일 영구 삭제','루트, 홈, 작업 폴더 rm은 분류기가 아니라 항상 사람 확인'],
+     zones:[], nodes:N, hot:['e3','cl','sd'], edges:[into('e3','warning'),{f:'cl',t:'sd',c:'warning',o:1}],
+     snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[2,4],note:'루트, 홈, 작업 폴더를 지우는 rm은 <b>allow 규칙이나 훅으로도</b> 승인되지 않습니다.'}},
+    {kicker:'4 PROD', title:'운영',
+     body:'<b>운영 배포와 마이그레이션</b>을 막습니다. 이름에 prod, production이 든 원격 대상은 민감한 곳으로 봅니다.',
+     facts:['운영 배포, DB 마이그레이션','prod 이름의 원격 대상','사내 운영 대상은 environment에 이름으로'],
+     zones:[], nodes:N, hot:['e4','cl','sd'], edges:[into('e4','warning'),{f:'cl',t:'sd',c:'warning',o:1}],
+     snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[2,5],note:'운영 대상을 이름으로 적으면 추측 대신 <b>그 목록</b>으로 판정합니다.'}},
+    {kicker:'PASS', title:'묻지 않고 통과하는 것',
+     body:'작업 폴더 파일 작업, lock 파일에 선언된 의존성 설치, 읽기 전용 HTTP는 통과합니다. <b>현재 저장소로의 push도 기본 통과</b>라서, 꼭 묻게 하려면 ask를 겁니다.',
+     facts:['작업 폴더 파일, lock 의존성, 읽기 HTTP','현재 저장소 push는 기본 통과 (기본 브랜치 포함)','push만은 묻게: permissions.ask'],
+     zones:[], nodes:N, hot:['cl','ps'], edges:[{f:'cl',t:'ps',c:'success',o:0}],
+     snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[8,9,10],note:'규칙을 더할 때는 <b>"$defaults"</b>를 남겨 기본 규칙을 지킵니다.'}}
+  ], {legend:[['warning','soft_deny'],['danger','hard_deny'],['success','통과'],['info','분류기']]});
+});
+})();
+</script>
+<script>
+(function(){
+import('./assets/flowscene.js').then(function (m) { m.mount('#c2-layers', {
+  aria: '개발자의 정리 요청으로 Claude가 만든 rm -rf 명령이 PreToolUse 훅을 지나 권한 규칙 deny에서 멈추고, 모양을 바꾼 find -delete 명령은 auto 분류기와 샌드박스가 막는 흐름. 네 층의 설정은 managed 정책이 잠금',
+  zones: [
+    { box: [-0.4, 0, 0, 25.4, 4.4, 0.4], label: '개발자 PC, 도구 실행 전과 실행 중', labelAt: [-0.2, 0, -1.6] }
+  ],
+  parts: {
+    pc: { boxes: [[1.2, 1.2, 0.4, 1.8, 1.4, 0.8], [1.5, 2.4, 1.2, 1.2, 0.15, 1.0]] },
+    cc: { boxes: [[3.9, 1.3, 0.4, 1.5, 1.5, 1.4]] },
+    managed: { boxes: [[6.6, 0.2, 0.4, 12.4, 3.8, 0.14]] },
+    hook: { boxes: [[7.6, 0.6, 0.54, 0.5, 3.0, 2.0]] },
+    rules: { boxes: [[10.8, 0.6, 0.54, 0.5, 3.0, 2.0]] },
+    cls: { boxes: [[14.0, 0.6, 0.54, 0.5, 3.0, 2.0]] },
+    sbx: { boxes: [[17.4, 0.3, 0.54, 0.35, 3.6, 2.8]] },
+    target: { boxes: [[20.6, 1.0, 0.4, 2.6, 2.2, 1.1], [20.9, 1.3, 1.5, 2.0, 1.6, 0.35]] }
+  },
+  marks: [{ id: 'xr', at: [10.4, 2.0, 1.25] }, { id: 'xc', at: [13.6, 3.0, 1.05] }, { id: 'xs', at: [17.0, 3.0, 1.05] }],
+  tags: [
+    { id: 'cmd1', at: [6.2, 2.0, 2.6], text: 'rm -rf ../shared-ledger', show: ['hook', 'rules'] },
+    { id: 'cmd2', at: [12.0, 3.4, 3.6], text: 'find ../shared-ledger -delete', show: ['alt', 'sbx'] },
+    { id: 'e0', at: [7.85, 0.6, -0.9], text: 'exit 0, 패턴 없음', show: ['hook'] },
+    { id: 'dn', at: [11.05, 0.6, -0.9], text: 'deny Bash(rm -rf *)', show: ['rules'] },
+    { id: 'cb', at: [14.25, 0.6, -0.9], text: '되돌릴 수 없는 삭제', show: ['alt'] },
+    { id: 'op', at: [17.6, 0.3, -0.9], text: 'Operation not permitted', show: ['sbx'] },
+    { id: 'tg', at: [21.9, 1.0, -0.9], text: '../shared-ledger (작업 폴더 밖)', show: [] }
+  ],
+  wires: {
+    req: { pts: [[5.4, 2.0, 1.25], [7.85, 2.0, 1.25], [11.05, 2.0, 1.25], [14.25, 2.0, 1.25], [17.6, 2.0, 1.25], [20.6, 2.0, 1.0]] },
+    alt: { pts: [[5.4, 3.0, 1.05], [7.85, 3.0, 1.05], [11.05, 3.0, 1.05], [14.25, 3.0, 1.05], [17.6, 3.0, 1.05], [20.6, 3.0, 0.95]], cls: 'fs-alt' }
+  },
+  callouts: [
+    { id: 'pc', n: 1, anchor: [2.1, 1.2, 1.2], at: [30, 478], title: '"공간 좀 정리해 줘"', sub: '일반 요청, 삭제를 지시하진 않음' },
+    { id: 'hook', n: 2, anchor: [7.85, 2.0, 2.6], at: [120, 110], title: 'PreToolUse 훅', sub: '도구 입력을 패턴 검사 (랩 3층)' },
+    { id: 'rules', n: 3, anchor: [11.05, 2.0, 2.6], at: [290, 52], title: '권한 규칙', sub: 'deny, ask, allow 순서 (랩 1층)' },
+    { id: 'cls', n: 4, anchor: [14.25, 2.0, 2.6], at: [470, 110], title: 'auto 분류기', sub: 'Manual이면 사람 확인' },
+    { id: 'sbx', n: 5, anchor: [17.6, 2.0, 3.4], at: [620, 52], title: '샌드박스 (OS)', sub: '작업 폴더 밖 쓰기 불가 (랩 2층)' },
+    { id: 'managed', n: 6, anchor: [9.2, 0.2, 0.5], at: [330, 470], title: 'managed 정책', sub: '네 층의 설정을 사용자가 못 끔' }
+  ],
+  figures: [
+    { at: [0.4, 1.9, 0.4], scale: 0.9, pose: 'type', act: { ask: 'type' } },
+    { at: [6.3, -0.7, 0.4], scale: 0.8, colour: 'var(--info)', act: { managed: 'raise' } }
+  ],
+  code: [
+    '요청: "공간 좀 정리해 줘"',
+    'Bash: rm -rf ../shared-ledger',
+    'PreToolUse dlp-guard.sh   → exit 0',
+    '"deny": ["Bash(rm -rf *)"] → 거부',
+    'Bash: find ../shared-ledger -delete',
+    'auto 분류기: soft_deny     → 차단',
+    '"sandbox": { "enabled": true } → 쓰기 불가',
+    '/etc/claude-code/managed-settings.json'
+  ],
+  overview: { label: '전체 그림', title: '훅, 규칙, 분류기, 샌드박스 순서로', say: '명령 하나가 네 층을 차례로 지납니다. 이번엔 <b>권한 규칙</b>에서 멈추고, 모양을 바꾼 명령은 <b>뒤의 층</b>이 잡습니다.' },
+  phases: [
+    { key: 'ask', d: 2.8, focus: ['pc', 'cc'], badge: 'pc', lines: [1, 2], label: '1  요청', title: '정리해 달랬더니 rm -rf', say: '개발자는 <b>정리</b>만 부탁했는데, Claude가 작업 폴더 밖 <b>../shared-ledger</b>를 지우는 명령을 만듭니다.' },
+    { key: 'hook', d: 3.0, focus: ['cc', 'hook'], badge: 'hook', lines: [3], packet: { wire: 'req', span: [0, 1] }, label: '2  PreToolUse 훅', title: '훅이 가장 먼저 봅니다', say: '도구 실행 직전에 <b>훅</b>이 먼저 돕니다. DLP 훅은 주민번호 같은 패턴만 보니 <b>exit 0</b>으로 통과시킵니다.' },
+    { key: 'rules', d: 3.4, focus: ['hook', 'rules'], badge: 'rules', lines: [4], packet: { wire: 'req', span: [1, 2], mode: 'block', mark: 'xr', stopAt: 0.55 }, label: '3  권한 규칙', title: 'deny에 걸려 여기서 멈춤', say: 'managed의 <b>deny Bash(rm -rf *)</b>에 일치해 즉시 거부됩니다. user의 allow로도 풀 수 없습니다.' },
+    { key: 'alt', d: 3.8, focus: ['rules', 'cls'], cam: ['hook', 'rules', 'cls'], badge: 'cls', lines: [5, 6], packet: { wire: 'alt', span: [0, 3], mode: 'block', mark: 'xc', stopAt: 0.72, colour: 'var(--info)' }, label: '4  모양을 바꾸면', title: '규칙이 놓친 것은 분류기가', say: '<b>find -delete</b>는 deny 패턴에 안 걸립니다. auto 분류기가 <b>세션 전부터 있던 파일의 영구 삭제</b>로 보고 막습니다. Manual이면 사람에게 묻습니다.' },
+    { key: 'sbx', d: 3.6, focus: ['cls', 'sbx', 'target'], badge: 'sbx', lines: [7], packet: { wire: 'alt', span: [3, 4], mode: 'block', mark: 'xs', stopAt: 0.6, colour: 'var(--info)' }, label: '5  샌드박스', title: '사람이 승인해도 OS가 막음', say: '누가 승인해도 명령은 <b>샌드박스</b> 안에서 돕니다. 작업 폴더 밖 쓰기는 OS가 <b>Operation not permitted</b>로 막습니다.' },
+    { key: 'managed', d: 3.4, focus: ['managed', 'hook', 'rules', 'cls', 'sbx'], cam: ['managed', 'hook', 'sbx'], badge: 'managed', lines: [8], label: '6  managed 정책', title: '네 층을 정책 파일이 잠근다', say: '훅, deny, auto 설정, 샌드박스를 <b>managed-settings.json</b>에 두면 사용자가 끄거나 덮어쓸 수 없습니다.' }
+  ],
+  frame: function (c) {
+    var paint = function (part, on, col) { c.parts[part].querySelectorAll('.fs-face').forEach(function (f) { f.style.stroke = on ? col : ''; }); };
+    paint('hook', c.ph.key === 'hook' && c.u > 0.8, 'var(--success)');
+    paint('rules', (c.ph.key === 'rules' && c.u > 0.55) || c.all, 'var(--danger)');
+    paint('cls', c.ph.key === 'alt' && c.u > 0.72, 'var(--danger)');
+    paint('sbx', c.ph.key === 'sbx' && c.u > 0.6, 'var(--danger)');
+    paint('managed', c.ph.key === 'managed', 'var(--accent)');
+    if (c.all) ['e0', 'dn', 'cb', 'op'].forEach(function (id) { c.tags[id].style.opacity = 0; });
+  }
+}); });
+})();
+</script>
+<script>
+(function(){
+import('./assets/flowscene.js').then(function (m) { m.mount('#c2-dlp', {
+  aria: '분석가의 프롬프트가 UserPromptSubmit 훅 dlp-guard.sh를 지나 Bedrock으로 가는 흐름. 가명 데이터 요청은 exit 0으로 통과, 가짜 주민번호가 든 요청은 exit 2로 차단, jq가 없는 고장 난 훅은 통과시켜 Guardrails가 다음 그물이 되고, fail-closed 수정본과 onFailure block은 다시 막음',
+  zones: [
+    { box: [-0.4, 0, 0, 12.6, 4.2, 0.4], label: '분석가 PC', labelAt: [-0.2, 0, -0.75] },
+    { box: [13.4, 0, 0, 10.8, 4.2, 0.4], label: 'AWS 계정, Amazon Bedrock', labelAt: [13.6, 0, -0.75] }
+  ],
+  parts: {
+    pc: { boxes: [[1.2, 1.2, 0.4, 1.8, 1.4, 0.8], [1.5, 2.4, 1.2, 1.2, 0.15, 1.0]] },
+    cc: { boxes: [[4.2, 1.3, 0.4, 1.5, 1.5, 1.4]] },
+    hook: { boxes: [[8.2, 0.6, 0.4, 0.5, 3.0, 2.2]] },
+    guard: { boxes: [[15.4, 0.6, 0.4, 0.5, 3.0, 2.2]] },
+    bedrock: { boxes: [[19.2, 1.0, 0.4, 2.4, 2.4, 2.8]] }
+  },
+  marks: [{ id: 'xh', at: [7.8, 2.0, 1.25] }, { id: 'xg', at: [15.0, 2.0, 1.25] }],
+  tags: [
+    { id: 'p1', at: [4.6, 3.4, 3.0], text: '"pseudo/customers.csv 연령대 분포를 요약해줘"', show: ['clean'] },
+    { id: 'p2', at: [4.6, 3.4, 3.7], text: '"고객 900101-1****** 의 가입 이력을 정리해줘"', show: ['dirty', 'broken', 'fixed'] },
+    { id: 'e0', at: [8.45, 0.6, -0.8], text: 'exit 0: 통과', show: ['clean'] },
+    { id: 'e2', at: [8.45, 0.6, -1.4], text: 'exit 2: 차단, 문장은 입력창으로', show: ['dirty', 'fixed'] },
+    { id: 'e9', at: [8.45, 0.6, -2.0], text: 'jq 없음: exit 0 또는 127, 비차단', show: ['broken'] },
+    { id: 'gi', at: [15.65, 0.6, -1.5], text: 'GUARDRAIL_INTERVENED', show: ['broken'] }
+  ],
+  wires: {
+    req: { pts: [[3.2, 1.9, 1.0], [4.2, 2.0, 1.1], [5.7, 2.0, 1.25], [8.45, 2.0, 1.25], [15.65, 2.0, 1.25], [19.2, 2.2, 1.6]] }
+  },
+  callouts: [
+    { id: 'pc', n: 1, anchor: [2.1, 1.2, 1.2], at: [30, 478], title: '분석가의 프롬프트', sub: 'Enter를 누른 순간' },
+    { id: 'hook', n: 2, anchor: [8.45, 2.0, 2.8], at: [200, 96], title: 'UserPromptSubmit 훅', sub: 'dlp-guard.sh, 모델보다 먼저' },
+    { id: 'guard', n: 3, anchor: [15.65, 2.0, 2.8], at: [470, 96], title: 'Bedrock Guardrails', sub: '선택, AWS 쪽 다음 그물 (랩 4층)' },
+    { id: 'bedrock', n: 4, anchor: [20.4, 3.4, 3.2], at: [650, 200], title: 'Claude 모델', sub: '여기 닿기 전에 막는다' }
+  ],
+  figures: [
+    { at: [0.4, 1.9, 0.4], scale: 0.9, pose: 'type', act: { clean: 'type', dirty: 'type' } },
+    { at: [10.9, -0.7, 0.4], scale: 0.8, colour: 'var(--info)', act: { fixed: 'raise' } }
+  ],
+  code: [
+    '"UserPromptSubmit": [{ "hooks": [{',
+    '  "command": "/opt/dlp/dlp-guard.sh",',
+    '  "onFailure": "block" }] }]  # 2.1.295+',
+    'PAT=\'...[0-9]{6}-[1-4][0-9]{6}...\'',
+    '일치     → exit 2  # 차단, 사유는 사용자에게',
+    '불일치   → exit 0  # Bedrock으로',
+    'jq 없음  → exit 0, 127  # 비차단, 통과',
+    'command -v jq || exit 2  # 수정본'
+  ],
+  overview: { label: '전체 그림', title: '프롬프트는 훅을 지나야 모델에 닿는다', say: 'Enter를 누르면 <b>UserPromptSubmit 훅</b>이 먼저 검사합니다. 통과, 차단, 고장, 수정본 네 경우를 차례로 봅니다.' },
+  phases: [
+    { key: 'clean', d: 3.8, focus: ['pc', 'cc', 'hook', 'guard', 'bedrock'], badge: 'hook', lines: [1, 2, 6], packet: { wire: 'req', mode: 'pingpong', colour: 'var(--success)' }, label: '1  가명 데이터', title: '패턴이 없으면 exit 0, 그대로 Bedrock으로', say: '가명 토큰만 든 분석 요청은 패턴이 없어 <b>exit 0</b>입니다. 평소 일은 막지 않습니다.' },
+    { key: 'dirty', d: 3.4, focus: ['pc', 'cc', 'hook'], badge: 'hook', lines: [4, 5], packet: { wire: 'req', span: [0, 3], mode: 'block', mark: 'xh', stopAt: 0.6 }, label: '2  주민번호', title: '주민번호 형식이면 exit 2, 모델에 안 감', say: '주민번호 형식이 보이면 <b>exit 2</b>로 막습니다. 프롬프트는 Claude에 <b>닿지 않고</b>, 문장은 입력창으로 돌아옵니다.' },
+    { key: 'broken', d: 4.2, focus: ['hook', 'guard'], cam: ['cc', 'hook', 'guard'], badge: 'guard', lines: [7], packet: { wire: 'req', span: [0, 4], mode: 'block', mark: 'xg', stopAt: 0.78, colour: 'var(--warning)' }, label: '3  훅이 고장 나면', title: 'jq가 없으면 검사 없이 통과', say: 'jq가 없는 PC에서는 검사 없이 끝나 <b>통과</b>합니다(fail-open). 127로 끝나도 exit 2가 아니면 진행됩니다. Guardrails를 걸어 뒀다면 AWS 쪽에서 한 번 더 잡습니다.' },
+    { key: 'fixed', d: 3.6, focus: ['cc', 'hook'], badge: 'hook', lines: [3, 8], packet: { wire: 'req', span: [0, 3], mode: 'block', mark: 'xh', stopAt: 0.6 }, label: '4  fail-closed', title: '오류 경로도 exit 2로 막는다', say: '수정본은 jq가 없으면 <b>exit 2</b>입니다. 스크립트가 아예 없거나 시간이 초과돼도 <b>onFailure: block</b>이 막습니다.' }
+  ],
+  frame: function (c) {
+    var paint = function (part, on, col) { c.parts[part].querySelectorAll('.fs-face').forEach(function (f) { f.style.stroke = on ? col : ''; }); };
+    var k = c.ph.key;
+    paint('hook', (k === 'clean' && c.u > 0.3) ? true : ((k === 'dirty' || k === 'fixed') && c.u > 0.6) || k === 'broken', k === 'clean' ? 'var(--success)' : (k === 'broken' ? 'var(--warning)' : 'var(--danger)'));
+    paint('guard', k === 'broken' && c.u > 0.78, 'var(--danger)');
+    c.parts.bedrock.querySelector('.fs-top').style.fill = k === 'clean' && c.u > 0.4 && c.u < 0.6 ? 'var(--accent)' : '';
+  }
+}); });
 })();
 </script>
 <script>
@@ -1394,36 +1602,37 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
   var HK = {id:'hk',x:310,y:190,w:250,h:90,t:'dlp-guard.sh',s:'UserPromptSubmit, PreToolUse',c:'warning'};
   var O0 = {id:'o0',x:640,y:50,w:250,h:84,t:'exit 0',s:'통과',c:'success'};
   var O2 = {id:'o2',x:640,y:193,w:250,h:84,t:'exit 2',s:'차단',c:'danger'};
-  var OX = {id:'ox',x:640,y:336,w:250,h:84,t:'검사 실패',s:'예: jq 실패, exit 127',c:'muted'};
+  var OX = {id:'ox',x:640,y:336,w:250,h:84,t:'검사 실패',s:'jq 없음: exit 0, 127 등',c:'muted'};
   var CC = {id:'cc',x:950,y:190,w:210,h:90,t:'다음 동작',s:'사유는 사용자 또는 Claude',c:'ink'};
   var N = [IN,HK,O0,O2,OX,CC];
-  var script = ['#!/bin/bash','INPUT=$(cat)','TEXT=$(echo "$INPUT" | jq -r \'.prompt // (.tool_input | tostring)\')','# 주민등록번호, 카드번호, AWS 액세스 키 (탐지 예시)','PAT=\'[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}\'','if echo "$TEXT" | grep -Eq "$PAT"; then','  echo "DLP: 민감정보 패턴이 감지되어 차단했습니다" >&2','  exit 2   # 차단 (사유: UserPromptSubmit은 사용자, PreToolUse는 Claude)','fi','exit 0'];
-  var fixed = ['#!/bin/bash','INPUT=$(cat)','TEXT=$(echo "$INPUT" | jq -r \'.prompt // (.tool_input | tostring)\') \\','  || { echo "DLP: 입력 해석 실패 - 차단" >&2; exit 2; }','PAT=\'[0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|AKIA[0-9A-Z]{16}\'','echo "$TEXT" | grep -Eq "$PAT"; RC=$?','[ "$RC" -eq 1 ] && exit 0   # 1 불일치, 통과','echo "DLP: 차단(grep $RC: 0 일치, 2+ 실행 오류)" >&2; exit 2'];
+  var PAT = 'PAT=\'(^|[^0-9])([0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4}|[0-9]{3}-[0-9]{2,6}-[0-9]{5,7})([^0-9]|$)|AKIA[0-9A-Z]{16}\'';
+  var script = ['#!/bin/bash','INPUT=$(cat)','TEXT=$(echo "$INPUT" | jq -r \'.prompt // (.tool_input | tostring)\')','# 주민번호, 카드번호, 휴대폰, 계좌번호, AWS 액세스 키 (탐지 예시)',PAT,'if echo "$TEXT" | grep -Eq "$PAT"; then','  echo "DLP: 민감정보 패턴이 감지되어 차단했습니다" >&2','  exit 2','fi','exit 0'];
+  var fixed = ['#!/bin/bash','INPUT=$(cat)','command -v jq >/dev/null || { echo "DLP: 검사기 오류(jq 없음)" >&2; exit 2; }','TEXT=$(echo "$INPUT" | jq -r \'.prompt // (.tool_input | tostring)\') \\','  || { echo "DLP: 입력 해석 실패" >&2; exit 2; }','PAT=\'...\'   # 위와 같음','echo "$TEXT" | grep -Eq "$PAT"; RC=$?','[ "$RC" -eq 1 ] && exit 0   # 1 = 패턴 없음, 통과','echo "DLP: 차단 (grep $RC)" >&2   # 0 일치, 2+ 검사기 오류','exit 2'];
   F.stepviz('#c3-sv-hook', [
     {kicker:'CASE 1', title:'민감 패턴이 없으면 통과합니다',
      body:'패턴이 없으면 <b>exit 0</b>으로 통과합니다.<br>검사 대상은 <b>.prompt</b>(UserPromptSubmit) 또는 <b>.tool_input</b>(PreToolUse)입니다.',
      facts:['UserPromptSubmit은 .prompt 검사','PreToolUse는 .tool_input 검사','탐지 예시일 뿐, 운영 룰은 사내 DLP 기준'],
      zones:[], nodes:N, hot:['in','hk','o0','cc'],
      edges:[{f:'in',t:'hk',c:'accent',o:0},{f:'hk',t:'o0',c:'success',o:1},{f:'o0',t:'cc',c:'success',l:'진행',o:2}], loop:true,
-     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'예제 (5층 중 3층)',lines:script,hl:[2,3,10],note:'훅은 표준 입력으로 JSON을 받습니다.'}},
+     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'Lab 2 TASK 01 원본',lines:script,hl:[2,3,10],note:'훅은 표준 입력으로 JSON을 받습니다.'}},
     {kicker:'CASE 2', title:'패턴이 보이면 exit 2로 막습니다',
-     body:'예: 테스트용 가짜 주민번호 <b>900101-1234567</b>이 들어오면 grep이 걸리고 <b>exit 2</b>로 차단합니다. 차단 사유는 UserPromptSubmit이면 <b>사용자에게</b>, PreToolUse면 stderr가 <b>Claude에게</b> 갑니다.',
-     facts:['exit 2만 차단','UserPromptSubmit: 사유는 사용자에게','PreToolUse: 사유(stderr)는 Claude에게'],
+     body:'형식만 맞춘 가짜 주민번호(예: <b>900101-1******</b> 형식)가 들어오면 grep이 걸리고 <b>exit 2</b>로 차단합니다. 사유(stderr)는 UserPromptSubmit이면 <b>사용자에게</b>, PreToolUse면 <b>Claude에게</b> 갑니다.',
+     facts:['exit 2만 차단','UserPromptSubmit: 프롬프트가 Claude에 닿지 않음','PreToolUse: 도구 호출이 멈추고 사유는 Claude에게'],
      zones:[], nodes:N, hot:['in','hk','o2','cc'],
      edges:[{f:'in',t:'hk',c:'accent',o:0},{f:'hk',t:'o2',c:'danger',o:1},{f:'o2',t:'cc',c:'danger',o:2}], loop:true,
-     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'예제 (5층 중 3층)',lines:script,hl:[5,6,7,8],note:'주민번호, 카드번호, AWS 액세스 키 패턴은 <b>탐지 예시</b>입니다.'}},
-    {kicker:'CASE 3', title:'이 상태는 jq 실패 시 통과합니다',
-     body:'이 예제 그대로는 <b>jq가 실패하면 검사 없이 통과</b>합니다. 또 훅이 exit 2가 아닌 0이 아닌 코드(예: exit 127)로 끝나면 비차단 오류라 <b>그대로 진행</b>됩니다. 검사가 실패했는데 통과하는 것, fail-open입니다.',
-     facts:['exit 2만 차단','exit 127 같은 그 밖의 종료는 진행','검사 실패가 통과로 이어짐 (fail-open)'],
+     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'Lab 2 TASK 01 원본',lines:script,hl:[5,6,7,8],note:'앞뒤가 숫자로 이어지면 안 걸리게 감싸, 금액이나 기간 표기를 잘못 잡지 않습니다.'}},
+    {kicker:'CASE 3', title:'이 상태는 jq가 없으면 통과합니다',
+     body:'jq가 없으면 TEXT가 비고 grep이 못 찾아 <b>exit 0</b>으로 끝납니다. 127처럼 2가 아닌 코드로 끝나도 비차단 오류라 <b>그대로 진행</b>됩니다. 검사가 실패했는데 통과하는 것, fail-open입니다.',
+     facts:['exit 2만 차단','jq 없음: 스크립트는 exit 0','exit 127 같은 그 밖의 종료도 진행'],
      zones:[], nodes:N, hot:['in','hk','ox','cc'],
-     edges:[{f:'in',t:'hk',c:'accent',o:0},{f:'hk',t:'ox',c:'muted',l:'jq 실패',o:1},{f:'ox',t:'cc',c:'warning',l:'그대로 진행',o:2}], loop:true,
-     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'예제, jq 줄에 실패 처리가 없음',lines:script,hl:[3],note:'바로 다음 퀴즈의 상황입니다. 랩 TASK 02에서 직접 확인합니다.'}},
+     edges:[{f:'in',t:'hk',c:'accent',o:0},{f:'hk',t:'ox',c:'muted',l:'jq 없음',o:1},{f:'ox',t:'cc',c:'warning',l:'그대로 진행',o:2}], loop:true,
+     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'원본, jq 줄에 실패 처리가 없음',lines:script,hl:[3],note:'바로 다음 퀴즈의 상황입니다. 랩 TASK 02에서 직접 확인합니다.'}},
     {kicker:'CASE 4', title:'수정본은 오류 경로도 막습니다',
-     body:'수정본은 jq 해석이 실패하면 <b>exit 2</b>로 막고, grep 결과가 <b>1(불일치)일 때만</b> 통과시킵니다. 0(일치)과 2 이상(실행 오류)은 모두 차단합니다. 이것이 <b>fail-closed</b>입니다.',
-     facts:['jq 해석 실패: exit 2로 차단','grep 1(불일치)만 통과','0 일치, 2+ 실행 오류는 차단'],
+     body:'수정본은 jq가 없거나 해석이 실패하면 <b>exit 2</b>로 막고, grep 결과가 <b>1(불일치)일 때만</b> 통과시킵니다. 0(일치)과 2 이상(검사기 오류)은 모두 차단합니다. 이것이 <b>fail-closed</b>입니다.',
+     facts:['jq 없음, 해석 실패: exit 2','grep 1(불일치)만 통과','스크립트 자체가 없으면: onFailure: block (다음 장)'],
      zones:[], nodes:N, hot:['in','hk','o2','cc'],
      edges:[{f:'in',t:'hk',c:'accent',o:0},{f:'hk',t:'o2',c:'danger',o:1},{f:'o2',t:'cc',c:'danger',o:2}], loop:true,
-     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'수정본 (fail-closed)',lines:fixed,hl:[3,4,6,7,8],note:'다음 장에서 이 수정본을 <b>정책으로 강제</b>합니다.'}}
+     snip:{hd:'/opt/dlp/dlp-guard.sh',path:'수정본 요약 (Lab 2 TASK 02)',lines:fixed,hl:[3,4,5,7,8,9,10],note:'<b>if grep ...; then</b> 형태는 grep 오류를 불일치처럼 통과시킵니다.'}}
   ], {legend:[['accent','입력'],['success','통과'],['danger','차단'],['muted','검사 실패']]});
 });
 })();
@@ -1434,13 +1643,147 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 })();
 </script>
 <script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var MS = {id:'ms',x:20,y:170,w:290,h:100,t:'managed-settings.json',s:'/etc/claude-code',c:'danger'};
+  var UH = {id:'uh',x:20,y:340,w:290,h:84,t:'user, project 훅',s:'무시됨',c:'muted'};
+  var E1 = {id:'e1',x:390,y:50,w:320,h:84,t:'UserPromptSubmit',s:'모든 프롬프트',c:'accent'};
+  var E2 = {id:'e2',x:390,y:190,w:320,h:84,t:'PreToolUse',s:'Bash|Write|Edit|WebFetch',c:'accent'};
+  var HC = {id:'hc',x:390,y:340,w:320,h:84,t:'/hooks',s:'managed hooks only 표시',c:'info'};
+  var SH = {id:'sh',x:800,y:110,w:360,h:92,t:'/opt/dlp/dlp-guard.sh',s:'root만 쓰기 (755)',c:'warning'};
+  var OF = {id:'of',x:800,y:290,w:360,h:92,t:'onFailure: block',s:'없음, 시작 실패, 시간 초과도 차단',c:'danger'};
+  var N = [MS,UH,E1,E2,HC,SH,OF];
+  var code = ['"allowManagedHooksOnly": true,','"hooks": {','  "UserPromptSubmit": [{ "hooks": [{','    "type": "command",','    "command": "/opt/dlp/dlp-guard.sh",','    "onFailure": "block" }] }],','  "PreToolUse": [{','    "matcher": "Bash|Write|Edit|WebFetch",','    "hooks": [ 위와 같은 훅 ] }]','}'];
+  var all = [{f:'ms',t:'e1',c:'danger',o:0},{f:'ms',t:'e2',c:'danger',o:0},{f:'uh',t:'ms',c:'muted',dash:true},{f:'e1',t:'sh',c:'accent',o:1},{f:'e2',t:'sh',c:'accent',o:1},{f:'sh',t:'of',c:'danger',side:'v',o:2}];
+  F.stepviz('#c2p3-sv-hookpol', [
+    {kicker:'OVERVIEW', title:'정책 파일 한 장이 훅을 붙잡는다',
+     body:'관리자가 <b>managed-settings.json</b>에 훅을 등록하고, 다른 출처의 훅은 끄고, 스크립트는 관리자만 고칠 수 있는 곳에 둡니다. 고장 나도 <b>차단</b>되게 합니다.',
+     facts:['managed 훅만, 두 지점에 같은 스크립트','스크립트는 root만 쓰는 경로','onFailure: block으로 고장도 차단'],
+     zones:[], nodes:N, edges:all, stagger:0.5,
+     snip:{hd:'managed-settings.json (hooks)',path:'요약, Lab 2 TASK 01, TASK 02',lines:code,hl:[1,5,6],note:'아래 화살표로 한 줄씩 봅니다.'}},
+    {kicker:'STEP 1', title:'managed 훅만 돕니다',
+     body:'<b>allowManagedHooksOnly: true</b>면 user, project, local, 플러그인 훅은 돌지 않습니다. 사용자가 DLP 훅을 끄거나 덮어쓸 수 없습니다.',
+     facts:['user, project, local, 플러그인 훅 무시','managed가 강제 설치한 플러그인의 훅은 예외','disableAllHooks로도 managed 훅은 못 끔'],
+     zones:[], nodes:N, hot:['ms','uh'], edges:[{f:'uh',t:'ms',c:'muted',dash:true,l:'무시'}],
+     snip:{hd:'managed-settings.json (hooks)',path:'',lines:code,hl:[1],note:'훅을 만드는 것보다 <b>못 끄게</b> 하는 것이 먼저입니다.'}},
+    {kicker:'STEP 2', title:'프롬프트와 도구, 두 지점',
+     body:'같은 스크립트를 <b>UserPromptSubmit</b>(모든 프롬프트)과 <b>PreToolUse</b>(Bash, Write, Edit, WebFetch 직전)에 겁니다.',
+     facts:['UserPromptSubmit: .prompt 검사','PreToolUse: .tool_input 검사','Read 결과, Bash 리다이렉션 출력은 못 봄 (Lab 2 TASK 01)'],
+     zones:[], nodes:N, hot:['ms','e1','e2'], edges:[{f:'ms',t:'e1',c:'danger',o:0},{f:'ms',t:'e2',c:'danger',o:0}],
+     snip:{hd:'managed-settings.json (hooks)',path:'',lines:code,hl:[3,7,8,9],note:'훅은 <b>입력</b>만 봅니다. 민감 파일 읽기는 deny와 샌드박스로 막습니다.'}},
+    {kicker:'STEP 3', title:'스크립트도 관리자만 고친다',
+     body:'정책이 가리키는 <b>/opt/dlp/dlp-guard.sh</b>를 사용자가 고칠 수 있으면 정책은 의미가 없습니다. root만 쓰고 모두 실행만 하게 둡니다.',
+     facts:['sudo로 /opt/dlp에 배치','chmod 755: 쓰기는 root만','사용자 홈 아래 경로는 금지'],
+     zones:[], nodes:N, hot:['e1','e2','sh'], edges:[{f:'e1',t:'sh',c:'accent',o:0},{f:'e2',t:'sh',c:'accent',o:0}],
+     snip:{hd:'managed-settings.json (hooks)',path:'',lines:code,hl:[5],note:'정책 파일과 스크립트, <b>둘 다</b> 관리자 소유입니다.'}},
+    {kicker:'STEP 4', title:'고장 나도 막힌다',
+     body:'<b>onFailure: "block"</b>(v2.1.295+)이면 스크립트가 없거나, 시작하지 못하거나, 0과 2가 아닌 코드로 끝나거나, 시간이 초과돼도 <b>exit 2처럼</b> 차단합니다.',
+     facts:['대상: 시작 실패, 0, 2 아닌 종료, 시간 초과, 잘못된 출력','PreToolUse 시간 초과는 원래 통과, block이면 차단','command, http 훅에만 적용'],
+     zones:[], nodes:N, hot:['sh','of'], edges:[{f:'sh',t:'of',c:'danger',side:'v',o:0}],
+     snip:{hd:'managed-settings.json (hooks)',path:'',lines:code,hl:[6],note:'스크립트 안의 fail-closed와 <b>설정의 onFailure</b>, 둘 다 겁니다.'}},
+    {kicker:'STEP 5', title:'/hooks로 확인합니다',
+     body:'세션에서 <b>/hooks</b>를 열면 <b>managed hooks only</b> 표시와 "Only hooks from managed settings run here"가 보입니다. managed 훅 자체는 이 목록에 나오지 않습니다.',
+     facts:['managed hooks only 표시 확인','managed 훅은 목록에 안 보임','managed 설정이 있으면 mod가 승인해도 훅 차단은 유지'],
+     zones:[], nodes:N, hot:['ms','hc'], edges:[{f:'ms',t:'hc',c:'info',o:0}],
+     snip:{hd:'확인',path:'Claude 입력창',lines:['/hooks','# managed hooks only','# Only hooks from managed settings run here'],hl:[1,2,3],note:'랩 TASK 01 마지막 단계에서 직접 봅니다.'}}
+  ], {legend:[['danger','정책, 강제'],['accent','훅 지점'],['warning','스크립트'],['muted','무시됨']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var CC = {id:'cc',x:20,y:190,w:220,h:92,t:'Claude Code',s:'MCP 서버를 켤 때',c:'accent'};
+  var PO = {id:'po',x:320,y:190,w:280,h:92,t:'managed 목록',s:'거부 먼저, 허용은 그다음',c:'danger'};
+  var A1 = {id:'a1',x:690,y:14,w:470,h:76,t:'https://mcp.corp.example.com',s:'serverUrl 일치, 연결',c:'success'};
+  var A2 = {id:'a2',x:690,y:106,w:470,h:76,t:'python /opt/mcp/jira.py',s:'serverCommand 일치, 연결',c:'success'};
+  var B1 = {id:'b1',x:690,y:198,w:470,h:76,t:'사용자가 추가한 서버',s:'허용 목록에 없음, 차단',c:'muted'};
+  var B2 = {id:'b2',x:690,y:290,w:470,h:76,t:'https://x.paste.example.com',s:'deniedMcpServers, 무조건 차단',c:'danger'};
+  var P1 = {id:'p1',x:690,y:382,w:470,h:76,t:'플러그인에 든 MCP 서버',s:'같은 검사를 받음',c:'warning'};
+  var N = [CC,PO,A1,A2,B1,B2,P1];
+  var code = ['"allowManagedMcpServersOnly": true,','"allowedMcpServers": [','  { "serverUrl":','      "https://mcp.corp.example.com/*" },','  { "serverCommand":','      ["python", "/opt/mcp/jira.py"] }','],','"deniedMcpServers": [','  { "serverUrl":','      "https://*.paste.example.com/*" }',']'];
+  var base = {f:'cc',t:'po',c:'accent',o:0};
+  F.stepviz('#c2p3-sv-mcp', [
+    {kicker:'OVERVIEW', title:'서버마다 문 하나, 목록으로 연다',
+     body:'MCP 서버 하나는 데이터가 나갈 수 있는 <b>새 통로 하나</b>입니다. 켜기 전에 <b>거부 목록</b>을 먼저 보고, 그다음 <b>managed 허용 목록</b>에 있는 것만 엽니다.',
+     facts:['거부 목록이 늘 먼저, 아무것도 못 풂','허용 목록은 managed 것만 인정','목적지는 이름이 아니라 URL, 명령으로'],
+     zones:[], nodes:N, edges:[base,{f:'po',t:'a1',c:'success',o:1},{f:'po',t:'a2',c:'success',o:1},{f:'po',t:'b1',c:'muted',dash:true},{f:'po',t:'b2',c:'danger',dash:true},{f:'po',t:'p1',c:'warning',o:1}], stagger:0.5,
+     snip:{hd:'managed-settings.json (MCP)',path:'예시 도메인',lines:code,hl:[1,4,6,10],note:'아래 화살표로 한 줄씩 봅니다.'}},
+    {kicker:'STEP 1', title:'managed 허용 목록만 인정',
+     body:'<b>allowManagedMcpServersOnly: true</b>면 user, project 설정의 허용 목록은 무시됩니다. 목록에 없는 서버는 <b>추가해도 켜지지 않습니다</b>.',
+     facts:['user, project 허용 목록 무시','claude mcp add도 정책 오류로 거절','allowManagedPermissionRulesOnly와는 별개 키'],
+     zones:[], nodes:N, hot:['cc','po','b1'], edges:[base,{f:'po',t:'b1',c:'muted',dash:true,l:'차단'}],
+     snip:{hd:'managed-settings.json (MCP)',path:'',lines:code,hl:[1],note:'이 키가 없으면 사용자가 자기 설정으로 <b>허용 목록을 넓힐 수</b> 있습니다.'}},
+    {kicker:'STEP 2', title:'목적지를 URL과 명령으로 고정',
+     body:'원격 서버는 <b>serverUrl</b>, 로컬 서버는 <b>serverCommand</b>로 허용합니다. serverName은 사용자가 붙이는 <b>이름표</b>일 뿐이라 통제 수단이 아닙니다.',
+     facts:['serverUrl: 와일드카드 가능','serverCommand: 명령과 인자가 정확히 같아야','serverName: 누구나 github라고 이름 붙일 수 있음'],
+     zones:[], nodes:N, hot:['cc','po','a1','a2'], edges:[base,{f:'po',t:'a1',c:'success',o:1},{f:'po',t:'a2',c:'success',o:1}],
+     snip:{hd:'managed-settings.json (MCP)',path:'',lines:code,hl:[2,3,4,5,6,7],note:'허용 목록에 URL 항목이 하나라도 있으면 원격 서버는 <b>URL이 맞아야</b> 켜집니다.'}},
+    {kicker:'STEP 3', title:'거부 목록이 이깁니다',
+     body:'<b>deniedMcpServers</b>에 맞으면 허용 목록에 있어도 차단입니다. 거부 목록은 모든 스코프에서 합쳐지고, 무엇으로도 풀리지 않습니다.',
+     facts:['허용과 거부에 모두 맞으면 거부','거부는 URL, 명령, 이름 어느 것으로든','외부 붙여넣기 사이트 같은 곳을 미리 닫기'],
+     zones:[], nodes:N, hot:['cc','po','b2'], edges:[base,{f:'po',t:'b2',c:'danger',dash:true,l:'거부'}],
+     snip:{hd:'managed-settings.json (MCP)',path:'',lines:code,hl:[8,9,10,11],note:'포트까지 막으려면 <b>https://host:*/*</b>처럼 적습니다.'}},
+    {kicker:'STEP 4', title:'플러그인에 든 MCP도 같은 검사',
+     body:'플러그인이 가져온 MCP 서버도 <b>같은 허용, 거부 목록</b>을 지나야 켜집니다. 플러그인으로 우회할 수 없습니다. 서버 목록을 통째로 고정하려면 <b>managed-mcp.json</b>을 씁니다.',
+     facts:['플러그인, claude.ai 커넥터도 검사','managed-mcp.json: 정해 둔 서버만, 나머지 금지','사용 현황은 OTel로 (OTEL_LOG_TOOL_DETAILS=1)'],
+     zones:[], nodes:N, hot:['cc','po','p1'], edges:[base,{f:'po',t:'p1',c:'warning',o:1}],
+     snip:{hd:'managed-settings.json (MCP)',path:'',lines:code,hl:[2,8],note:'플러그인 자체의 허용 목록은 <b>Ch4</b>에서 다룹니다.'}}
+  ], {legend:[['success','허용, 연결'],['danger','거부'],['muted','목록에 없음'],['warning','플러그인 경로']]});
+});
+})();
+</script>
+<script>
+(function(){
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var CC = {id:'cc',x:40,y:190,w:220,h:92,t:'Claude Code',s:'개발자 PC',c:'accent'};
+  var J = {id:'j',x:320,y:56,w:370,h:88,t:'세션 JSONL',s:'~/.claude/projects, 기본 30일',c:'accent'};
+  var OT = {id:'ot',x:320,y:330,w:370,h:88,t:'OTel 수집기 (사내)',s:'사용자별 토큰, 비용, 도구',c:'success'};
+  var BR = {id:'br',x:790,y:193,w:370,h:86,t:'Amazon Bedrock',s:'추론 프로필로 호출',c:'ink'};
+  var CT = {id:'ct',x:790,y:56,w:370,h:88,t:'CloudTrail',s:'누가, 언제, 어떤 모델 (기본 기록)',c:'info'};
+  var IL = {id:'il',x:790,y:330,w:370,h:88,t:'invocation logging',s:'선택, 프롬프트 원문까지',c:'warning'};
+  var N = [CC,J,OT,BR,CT,IL];
+  var Z = [{x:10,y:14,w:700,h:440,l:'PC와 사내망'},{x:760,y:14,w:420,h:440,l:'AWS 계정',tone:'info'}];
+  var E = {j:{f:'cc',t:'j',c:'accent'},ot:{f:'cc',t:'ot',c:'success'},br:{f:'cc',t:'br',c:'ink',side:'h'},ct:{f:'br',t:'ct',c:'info',side:'v'},il:{f:'br',t:'il',c:'warning',side:'v'}};
+  var e = function (k, o) { var x = {}; for (var p in E[k]) x[p] = E[k][p]; x.o = o; return x; };
+  F.stepviz('#c2p3-sv-audit', [
+    {kicker:'OVERVIEW', title:'PC에 둘, AWS에 둘',
+     body:'요청 하나가 <b>PC</b>에는 세션 기록과 OTel 지표를, <b>AWS 계정</b>에는 CloudTrail 호출 이력과 (켰다면) 원문 로그를 남깁니다. 감사 질문마다 볼 곳이 다릅니다.',
+     facts:['PC: 세션 JSONL','사내: OTel 수집기','AWS: CloudTrail, invocation logging (선택)'],
+     zones:Z, nodes:N, edges:[e('j',0),e('br',0),e('ot',0),e('ct',1),e('il',1)], stagger:0.6,
+     snip:{hd:'네 곳 요약',path:'',lines:['1 세션 JSONL          무엇을 시켰나, 무엇을 했나','2 CloudTrail           누가 언제 어떤 모델을','3 OTel                 사용자별 토큰, 비용, 도구','4 invocation logging   프롬프트와 응답 원문'],hl:[1,2,3,4],note:'아래 화살표로 읽는 순서대로 봅니다.'}},
+    {kicker:'1 PC', title:'세션 JSONL: 무엇을 시켰고 무엇을 했나',
+     body:'세션 대화와 도구 호출이 PC의 <b>~/.claude/projects/</b> 아래에 <b>평문</b> JSONL로 남습니다. 기본 30일 뒤 지워지고, <b>cleanupPeriodDays</b>로 바꿉니다.',
+     facts:['대화, 도구 호출, 결과가 평문으로','기본 30일, cleanupPeriodDays로 조정','고객 데이터를 담을 수 있으니 PC 보안도 필요'],
+     zones:Z, nodes:N, hot:['cc','j'], edges:[e('j',0)],
+     snip:{hd:'PC',path:'~/.claude/projects/<프로젝트>/<세션>.jsonl',lines:['// settings.json','{ "cleanupPeriodDays": 30 }   // 기본값'],hl:[2],note:'세션 재개용 기록이지 <b>중앙 감사 로그는 아닙니다</b>.'}},
+    {kicker:'2 AWS', title:'CloudTrail: 누가 언제 어떤 모델을',
+     body:'Bedrock 호출은 CloudTrail에 <b>기본으로</b> 남습니다. 누가(역할, 세션 이름), 언제, 어느 IP에서, 어떤 모델을 불렀는지가 남고 <b>프롬프트 원문은 없습니다</b>.',
+     facts:['InvokeModel 계열은 관리 이벤트, 기본 기록','SSO 사용자가 세션 이름으로 보임','ApplyGuardrail 기록은 데이터 이벤트로 따로 켬'],
+     zones:Z, nodes:N, hot:['cc','br','ct'], edges:[e('br',0),e('ct',1)],
+     snip:{hd:'CloudTrail 이벤트 (예시 값)',path:'',lines:['"eventSource": "bedrock.amazonaws.com",','"eventName": "InvokeModelWithResponseStream",','"userIdentity": { "arn": "...:assumed-role/fsi-dev/dev01" },','"sourceIPAddress": "10.20.3.41"'],hl:[2,3],note:'Part 1의 <b>SSO 임시 자격증명</b>이 여기서 사람 이름으로 이어집니다.'}},
+    {kicker:'3 사내', title:'OTel: 사용자별 토큰, 비용, 도구',
+     body:'Claude Code가 <b>사내 OTel 수집기</b>로 사용자별 토큰, 비용, 도구 사용을 보냅니다. Anthropic이 아니라 <b>우리 수집기</b>로 갑니다.',
+     facts:['CLAUDE_CODE_ENABLE_TELEMETRY=1로 켬','사용자별 토큰, 비용, 도구 이벤트','대시보드와 비용 보고는 Ch6'],
+     zones:Z, nodes:N, hot:['cc','ot'], edges:[e('ot',0)],
+     snip:{hd:'managed-settings.json (env)',path:'예시 주소',lines:['"CLAUDE_CODE_ENABLE_TELEMETRY": "1",','"OTEL_METRICS_EXPORTER": "otlp",','"OTEL_LOGS_EXPORTER": "otlp",','"OTEL_EXPORTER_OTLP_ENDPOINT": "http://otel.corp.example.com:4317"'],hl:[1,4],note:'managed env로 내리면 사용자가 <b>끄지 못합니다</b>.'}},
+    {kicker:'4 AWS', title:'invocation logging: 원문까지, 선택',
+     body:'Bedrock <b>model invocation logging</b>을 켜면 프롬프트와 응답 <b>원문</b>이 S3나 CloudWatch Logs에 남습니다. 그 저장소 자체가 <b>민감 데이터</b>가 됩니다.',
+     facts:['기본 꺼짐, 계정과 리전 단위로 켬','S3, CloudWatch Logs로','저장소 접근 권한, 암호화, 보존 기간 먼저'],
+     zones:Z, nodes:N, hot:['br','il'], edges:[e('br',0),e('il',1)],
+     snip:{hd:'Bedrock 설정 (요약)',path:'aws bedrock put-model-invocation-logging-configuration',lines:['--logging-config \'{','  "s3Config": { "bucketName": "fsi-bedrock-logs" },','  "textDataDeliveryEnabled": true','}\''],hl:[2,3],note:'Anthropic으로 가는 텔레메트리는 Bedrock에서 <b>기본 꺼짐</b>, WebFetch 사전 검사만 호스트명을 보냅니다.'}}
+  ], {legend:[['accent','PC 기록'],['success','사내 수집기'],['info','AWS 기본 기록'],['warning','선택, 원문']]});
+});
+})();
+</script>
+<script>
 
   const presenterNotes = {
     1: "[0.5min] [\uc694\uc57d]\n\u2022 Bedrock \uc5f0\uacb0, \uc815\ucc45 \ubc30\ud3ec, \uac00\ub4dc\ub808\uc77c\uc744 \ud55c \ubc88\uc5d0 \ubcf4\ub294 \uac15\uc758\n\u2022 \ud575\uc2ec \uba54\uc2dc\uc9c0: \ud0a4\ub294 \ub098\ub220 \uc8fc\uc9c0 \uc54a\uace0, \uc815\ucc45\uc740 \ud30c\uc77c\ub85c \uac15\uc81c\ud558\uace0, \ub9c9\uc744 \uac83\uc740 \uc55e\uc5d0\uc11c \ub9c9\ub294\ub2e4\n\u2022 \uae4a\uc740 \ub0b4\uc6a9\uc740 Ch2 Lab 1\uacfc Lab 2\uc5d0\uc11c \uc9c1\uc811 \ub2e4\ub8f8\n\n\uc774\ubc88 \uc2dc\uac04\uc740 Chapter 2, Bedrock \uc704\uc5d0\uc11c \uc548\uc804\ud558\uac8c \uc4f0\uae30\uc785\ub2c8\ub2e4. Bedrock\uc5d0 \uc5b4\ub5bb\uac8c \uc5f0\uacb0\ud558\uace0, \ud68c\uc0ac \uc815\ucc45\uc744 \uc5b4\ub5bb\uac8c \ub0b4\ub824\ubcf4\ub0b4\uace0, \ubb34\uc5c7\uc744 \ubabb \ud558\uac8c \ub9c9\uc744\uc9c0\uae4c\uc9c0 \ubcfc \uac70\uc608\uc694.\n\uc624\ub298\uc740 \ud575\uc2ec \uae30\ub2a5\ub9cc \uc27d\uac8c \ud6d1\uace0\uc694, \uc790\uc138\ud55c \uc124\uc815\uc740 \uc2e4\uc2b5\uc5d0\uc11c \uc9c1\uc811 \ud574 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\n\n\uc21c\uc11c \ubcf4\uae30 \uc804\uc5d0, \uc0ac\uc804 \uc124\ubb38 \uacb0\uacfc\ubd80\ud130 \uc7a0\uae50 \ubcfc\uac8c\uc694.",
     2: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 \ucc38\uac00 \ud655\uc815\uc790 142\uba85 \uc911 51\uba85\uc774 \ub9dd\ubd84\ub9ac\uc640 \ubcf4\uc548(\ud3d0\uc1c4\ub9dd \uc6b4\uc601, DLP, \uac10\uc0ac \ub85c\uadf8)\uc744 \uae30\ub300 \uc8fc\uc81c\ub85c \uc120\ud0dd\n\u2022 \ud300 \ud45c\uc900\ud654 60\uba85, \uaddc\uc81c\uc640 \uac10\uc0ac \ub300\uc751 45\uba85, Admin Setup(IAM, SSO, \uad00\ub9ac\ud615 \uc815\ucc45) 28\uba85 (\ubcf5\uc218 \uc120\ud0dd)\n\u2022 \uc9c0\uae08 Bedrock\uc73c\ub85c \uc4f0\ub294 \ubd84\uc740 17\uba85\uc774\ub77c, Bedrock\uc5d0 \ub2ff\ub294 \uae38\ubd80\ud130 \uadf8\ub9bc\uc73c\ub85c \uc2dc\uc791\n\n\n\uc0ac\uc804 \uc124\ubb38\uc5d0\uc11c 142\ubd84 \uc911 51\ubd84, \uc14b \uc911 \ud55c \ubd84\uaf34\ub85c \ub9dd\ubd84\ub9ac\uc640 \ubcf4\uc548\uc744 \uae30\ub300 \uc8fc\uc81c\ub85c \uace8\ub77c \uc8fc\uc168\uc5b4\uc694. \ud3d0\uc1c4\ub9dd \uc6b4\uc601, DLP, \uac10\uc0ac \ub85c\uadf8\uc694.\n\ud300 \ud45c\uc900\ud654\uac00 60\ubd84, \uaddc\uc81c\uc640 \uac10\uc0ac \ub300\uc751\uc774 45\ubd84, IAM\uacfc SSO \uac19\uc740 Admin Setup\uc774 28\ubd84\uc774\uc5c8\uace0\uc694.\n\uadf8\ub7f0\ub370 \uc9c0\uae08 Bedrock\uc73c\ub85c \uc4f0\uace0 \uacc4\uc2e0 \ubd84\uc740 17\ubd84\uc774\uc5d0\uc694. \uadf8\ub798\uc11c \uc624\ub298\uc740 Bedrock\uc5d0 \uc5b4\ub5bb\uac8c \ub2ff\ub294\uc9c0\ubd80\ud130 \uadf8\ub9bc\uc73c\ub85c \ubcf4\uace0, \uc815\ucc45\uc744 \ud30c\uc77c\ub85c \ub0b4\ub824\ubcf4\ub0b4\ub294 \ubc95, \uadf8\ub9ac\uace0 \ubb34\uc5c7\uc744 \uc55e\uc5d0\uc11c \ub9c9\ub294\uc9c0\uae4c\uc9c0 \uc774\uc5b4 \uac00\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 \uc774\ubc88 \uc6cc\ud06c\uc20d \uc0ac\uc804 \uc124\ubb38, \ucc38\uac00 \ud655\uc815\uc790 142\uba85, \ubcf5\uc218 \uc120\ud0dd (2026-11-14 \uc9d1\uacc4)\n\n\n\uadf8\ub7fc \uc21c\uc11c\ubd80\ud130 \ubcfc\uac8c\uc694.",
-    3: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 Part 1 Bedrock\uc5d0 \uc5f0\uacb0\ud558\uae30, Part 2 \uc815\ucc45\uc740 \ud30c\uc77c\ub85c, Part 3 \ubb34\uc5c7\uc744 \ubabb \ud558\uac8c \ud560 \uac83\uc778\uac00\n\u2022 \uac15\uc758\ub294 \ud575\uc2ec \uae30\ub2a5 \uc704\uc8fc, IAM \uc138\ubd80, auto mode, \uc0cc\ub4dc\ubc15\uc2a4, \uac8c\uc774\ud2b8\uc6e8\uc774 \uac19\uc740 \uae4a\uc740 \ub0b4\uc6a9\uc740 \uc2e4\uc2b5\uc73c\ub85c\n\u2022 \uc2e4\uc2b5\uc740 \uc810\uc2ec \ub4a4 \ud1b5\ud569 \ub7a9\uc5d0\uc11c Preflight, Ch1 Lab\uc5d0 \uc774\uc5b4 Ch2 Lab 1\uacfc Lab 2\n\n\uc624\ub298\uc740 \uc138 Part\ub85c \uac11\ub2c8\ub2e4.\n\uccab \ubc88\uc9f8\ub294 Bedrock\uc5d0 \uc5b4\ub5bb\uac8c \ubd99\ub294\uc9c0\uc608\uc694. \ub450 \ubc88\uc9f8\ub294 \ud68c\uc0ac \uc815\ucc45\uc744 \uc5b4\ub5bb\uac8c \ud30c\uc77c\ub85c \ub0b4\ub824\ubcf4\ub0b4\ub294\uc9c0, \uc138 \ubc88\uc9f8\ub294 \uc704\ud5d8\ud55c \ub3d9\uc791\uc744 \uc5b4\ub5bb\uac8c \ub9c9\uace0 \uae30\ub85d\ud558\ub294\uc9c0\uc785\ub2c8\ub2e4.\n\n\ucc98\uc74c \ubcf4\uc2dc\ub294 \ubd84\uc774 \ub9ce\uc544\uc11c \uac15\uc758\uc5d0\uc11c\ub294 \uaf2d \uc54c\uc544\uc57c \ud560 \uae30\ub2a5\ub9cc \uc9da\uc744\uac8c\uc694. IAM \uc815\ucc45 \uc138\ubd80, auto mode, \uc0cc\ub4dc\ubc15\uc2a4, \uac8c\uc774\ud2b8\uc6e8\uc774 \uac19\uc740 \uae4a\uc740 \ub0b4\uc6a9\uc740 Ch2 Lab 1\uacfc Lab 2\uc5d0\uc11c \uc9c1\uc811 \ud574 \ubcf4\uba74\uc11c \uc775\ud788\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
-    4: "\u23f8\ufe0f [2.5min] [\uc694\uc57d]\n\u2022 \uacc4\uc815 \uacbd\uacc4 \uc548\uc758 \ucd94\ub860, \ucc98\ub9ac \ub9ac\uc804\uc740 \ucd94\ub860 \ud504\ub85c\ud544 \ubc94\uc704\ub97c \ub530\ub984 (global\uc740 \ub9ac\uc804 \ubc16 \ucc98\ub9ac \uac00\ub2a5)\n\u2022 IAM, Identity Center, CloudTrail, Organizations \uac19\uc740 \uae30\uc874 \ud1b5\uc81c \uc7ac\uc0ac\uc6a9\n\u2022 AWS \uccad\uad6c\uc11c, Cost Explorer, Budgets\ub85c \uccad\uad6c \uc77c\uc6d0\ud654\n\u2022 \ub300\uc2e0 \uad00\ub9ac \ucf58\uc194, Analytics, \uc815\ucc45 \uc11c\ubc84\uac00 \uc5c6\uc5b4\uc11c \ud30c\uc77c, MDM, OTel\ub85c \uc9c1\uc811 \ucc44\uc6c0\n\n\uae08\uc735\uad8c \uace0\uac1d\uaed8\uc11c Claude Code\ub97c Bedrock\uc73c\ub85c \uc4f0\uc2dc\ub294 \uc774\uc720\ub294 \ud06c\uac8c \uc138 \uac00\uc9c0\uc608\uc694.\n\uccab \ubc88\uc9f8\ub294 \ucd94\ub860\uc774 \ub0b4 AWS \uacc4\uc815 \uacbd\uacc4 \uc548\uc5d0\uc11c \uc77c\uc5b4\ub09c\ub2e4\ub294 \uac81\ub2c8\ub2e4. \ub2e4\ub9cc \ucc98\ub9ac \ub9ac\uc804\uc740 \ucd94\ub860 \ud504\ub85c\ud544 \ubc94\uc704\ub97c \ub530\ub974\uace0, global \ud504\ub85c\ud544\uc774\uba74 \ub9ac\uc804 \ubc16\uc5d0\uc11c \ucc98\ub9ac\ub420 \uc218\ub3c4 \uc788\uc5b4\uc694.\n\ub450 \ubc88\uc9f8\ub294 \uc774\ubbf8 \uc4f0\uace0 \uacc4\uc2e0 IAM, Identity Center, CloudTrail, Organizations\ub97c \uadf8\ub300\ub85c \uc4f4\ub2e4\ub294 \uac70\uc608\uc694. \uc138 \ubc88\uc9f8\ub294 \uccad\uad6c\uac00 AWS \uccad\uad6c\uc11c \ud558\ub098\ub85c \ubaa8\uc778\ub2e4\ub294 \uac70\uace0\uc694.\n\n\ub300\uc2e0 \ube60\uc9c0\ub294 \uac83\ub3c4 \uc788\uc5b4\uc694. claude.ai\uc758 \uad00\ub9ac \ucf58\uc194, Analytics, \uc815\ucc45 \uc11c\ubc84\ub294 \uc5c6\uc2b5\ub2c8\ub2e4. \uadf8\ub798\uc11c \uc815\ucc45\uc740 \ud30c\uc77c\uacfc MDM\uc73c\ub85c, \uad00\uce21\uc740 OTel\ub85c \uadf8 \ube48\uc790\ub9ac\ub97c \ucc44\uc6cc\uc57c \ud574\uc694. \uc774\ubc88 \ucc55\ud130\uc640 Ch6\uc5d0\uc11c \ubcfc \ub0b4\uc6a9\uc785\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 IAM: Identity and Access Management\n\u2022 MDM: Mobile Device Management\n\u2022 OTel: OpenTelemetry",
-    5: "\ud83c\udfac [3min] [\uc694\uc57d]\n\u2022 \uc0ac\ub0b4\ub9dd \uac1c\ubc1c\uc790 PC \u2192 \uc0ac\ub0b4 DNS\uc640 Route 53 Resolver(\uc0ac\uc124 IP) \u2192 Direct Connect \uc804\uc6a9\uc120 \u2192 Bedrock Runtime VPC \uc5d4\ub4dc\ud3ec\uc778\ud2b8(PrivateLink) \u2192 IAM \ud310\ub2e8 \u2192 Bedrock\n\u2022 \uc778\ud130\ub137 \uae38\uc740 \ub9c9\ud600 \uc788\uace0, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1\ub85c \ubd80\uac00 \ud1b5\uc2e0\ub3c4 \ub054\n\u2022 IAM \ud310\ub2e8\uc740 \uc11c\uba85(SSO \uc784\uc2dc \uc790\uaca9\uc99d\uba85), \uc5ed\ud560 \uc815\ucc45, \uc5d4\ub4dc\ud3ec\uc778\ud2b8 \uc815\ucc45, \uc870\uc9c1 SCP. \ud558\ub098\ub77c\ub3c4 \uac70\ubd80\uba74 \uba48\ucda4\n\u2022 \uc751\ub2f5\ub3c4 \uac19\uc740 \uae38\ub85c, \uacf5\uc6a9 \uc778\ud130\ub137\uc744 \uc9c0\ub098\uc9c0 \uc54a\uc74c\n\n\n\uc774 \uc7a5\uba74\uc740 \uc800\uc808\ub85c \ub3cc\uc544\uac00\uc694. \uc0ac\ub0b4\ub9dd\uc5d0 \uc788\ub294 \uac1c\ubc1c\uc790 PC\uc5d0\uc11c \uc694\uccad \ud558\ub098\uac00 Bedrock\uae4c\uc9c0 \uc5b4\ub5bb\uac8c \uac00\ub294\uc9c0 \ub530\ub77c\uac00 \ubcfc\uac8c\uc694.\n\uba3c\uc800 Claude Code\uac00 Bedrock \ubaa8\ub4dc\ub85c \uc694\uccad\uc744 \ub9cc\ub4e4\uace0, SSO\ub85c \ubc1b\uc740 \uc784\uc2dc \uc790\uaca9\uc99d\uba85\uc73c\ub85c \uc11c\uba85\ud569\ub2c8\ub2e4. PC\uc5d0 \uc624\ub798 \uc4f0\ub294 \ud0a4\ub294 \uc5c6\uc5b4\uc694.\n\uc778\ud130\ub137 \ucabd \uae38\uc740 \ub9c9\ud600 \uc788\uc2b5\ub2c8\ub2e4. \uc5c5\ub370\uc774\ud2b8\ub098 \uc624\ub958 \ub9ac\ud3ec\ud2b8 \uac19\uc740 \ubd80\uac00 \ud1b5\uc2e0\ub3c4 \ud658\uacbd\ubcc0\uc218 \ud558\ub098\ub85c \ub055\ub2c8\ub2e4.\n\uadf8\ub2e4\uc74c \uc774\ub984 \ucc3e\uae30\uc608\uc694. \uc0ac\ub0b4 DNS\uac00 \uc9c8\ubb38\uc744 \uc804\uc6a9\uc120 \ub108\uba38 Route 53 Resolver\ub85c \ub118\uae30\uba74, Bedrock \uc8fc\uc18c\uac00 VPC \uc548\uc758 \uc0ac\uc124 IP\ub85c \ub3cc\uc544\uc635\ub2c8\ub2e4.\n\uc694\uccad\uc740 \ubc29\ud654\ubcbd\uc744 \uc9c0\ub098 Direct Connect \uc804\uc6a9\uc120\uc73c\ub85c \ud68c\uc0ac VPC\uc5d0 \ub4e4\uc5b4\uac00\uace0, \uadf8 \uc0ac\uc124 IP\uc758 \uc8fc\uc778\uc778 VPC \uc5d4\ub4dc\ud3ec\uc778\ud2b8, \uc989 PrivateLink\ub85c \ub4e4\uc5b4\uac11\ub2c8\ub2e4.\n\uc5ec\uae30\uc11c IAM\uc774 \ub124 \ubc88 \ud655\uc778\ud574\uc694. \uc11c\uba85\uc774 \ub9de\ub294\uc9c0, \uc5ed\ud560\uc5d0 \ud638\ucd9c \uad8c\ud55c\uc774 \uc788\ub294\uc9c0, \uc5d4\ub4dc\ud3ec\uc778\ud2b8 \uc815\ucc45\uc774 \ud5c8\uc6a9\ud558\ub294\uc9c0, \uc870\uc9c1 SCP\uac00 \ub9c9\uc9c0 \uc54a\ub294\uc9c0. \ud558\ub098\ub77c\ub3c4 \uac70\ubd80\uba74 \uba48\ucda5\ub2c8\ub2e4.\n\ubaa8\ub450 \ud1b5\uacfc\ud558\uba74 \ubaa8\ub378 \uc774\ub984\ud45c, \ucd94\ub860 \ud504\ub85c\ud544\uc774 \uac00\ub9ac\ud0a4\ub294 Claude\uac00 \ub2f5\ud558\uace0, \ub2f5\uc740 \uac19\uc740 \uae38\ub85c \ub3cc\uc544\uc635\ub2c8\ub2e4. \ucc98\uc74c\ubd80\ud130 \ub05d\uae4c\uc9c0 \uacf5\uc6a9 \uc778\ud130\ub137\uc744 \uc9c0\ub098\uc9c0 \uc54a\uc544\uc694.\n\n\n\uc774\uc81c \uc774 \uae38\uc744 \ud558\ub098\uc529 \uc5f4\uc5b4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \uba3c\uc800 \ud658\uacbd\ubcc0\uc218\ubd80\ud130\uc694.\n\n[\ucd9c\ucc98]\n\u2022 docs.aws.amazon.com/bedrock/latest/userguide/vpc-interface-endpoints.html\n\u2022 docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html\n\u2022 code.claude.com/docs/en/amazon-bedrock\n\u2022 code.claude.com/docs/en/network-config",
+    3: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 Part 1 Bedrock\uc5d0 \uc5f0\uacb0\ud558\uae30, Part 2 \uc815\ucc45\uc740 \ud30c\uc77c\ub85c, Part 3 \ubb34\uc5c7\uc744 \ubabb \ud558\uac8c \ud560 \uac83\uc778\uac00\n\u2022 \uac15\uc758\ub294 \ud575\uc2ec \uae30\ub2a5 \uc704\uc8fc, IAM \uc138\ubd80, auto mode, \uc0cc\ub4dc\ubc15\uc2a4, \uac8c\uc774\ud2b8\uc6e8\uc774 \uac19\uc740 \uae4a\uc740 \ub0b4\uc6a9\uc740 \uc2e4\uc2b5\uc73c\ub85c\n\u2022 \uc2e4\uc2b5\uc740 \uc810\uc2ec \ub4a4 \ud1b5\ud569 \ub7a9\uc5d0\uc11c Preflight, Ch1 Lab\uc5d0 \uc774\uc5b4 Ch2 Lab 1\uacfc Lab 2\n\n\uc624\ub298\uc740 \uc138 Part\ub85c \uac11\ub2c8\ub2e4.\n\uccab \ubc88\uc9f8\ub294 \uc0ac\ub0b4\ub9dd\uc5d0\uc11c Bedrock\uae4c\uc9c0 \uc694\uccad\uc774 \uc5b4\ub5a4 \uae38\ub85c \uac00\ub294\uc9c0, \uadf8\ub9ac\uace0 \ud0a4 \ub300\uc2e0 SSO\ub85c \ubd99\ub294 \ubc95\uc774\uc5d0\uc694. \ub450 \ubc88\uc9f8\ub294 \ud68c\uc0ac \uc815\ucc45\uc744 \uc5b4\ub5bb\uac8c \ud30c\uc77c\ub85c \ub0b4\ub824\ubcf4\ub0b4\ub294\uc9c0, \uc138 \ubc88\uc9f8\ub294 \uc704\ud5d8\ud55c \ub3d9\uc791\uc744 \uc5b4\ub5bb\uac8c \ub9c9\uace0 \uae30\ub85d\ud558\ub294\uc9c0\uc785\ub2c8\ub2e4.\n\n\ucc98\uc74c \ubcf4\uc2dc\ub294 \ubd84\uc774 \ub9ce\uc544\uc11c \uac15\uc758\uc5d0\uc11c\ub294 \uaf2d \uc54c\uc544\uc57c \ud560 \uae30\ub2a5\ub9cc \uc9da\uc744\uac8c\uc694. IAM \uc815\ucc45 \uc138\ubd80, auto mode, \uc0cc\ub4dc\ubc15\uc2a4, \uac8c\uc774\ud2b8\uc6e8\uc774 \uac19\uc740 \uae4a\uc740 \ub0b4\uc6a9\uc740 Ch2 Lab 1\uacfc Lab 2\uc5d0\uc11c \uc9c1\uc811 \ud574 \ubcf4\uba74\uc11c \uc775\ud788\uc2dc\uba74 \ub429\ub2c8\ub2e4.",
+    4: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 \uacc4\uc815 \uacbd\uacc4 \uc548\uc758 \ucd94\ub860, \ucc98\ub9ac \ub9ac\uc804\uc740 \ucd94\ub860 \ud504\ub85c\ud544 \ubc94\uc704\ub97c \ub530\ub984 (global\uc740 \ub9ac\uc804 \ubc16 \ucc98\ub9ac \uac00\ub2a5)\n\u2022 IAM, Identity Center, CloudTrail, Organizations \uac19\uc740 \uae30\uc874 \ud1b5\uc81c \uc7ac\uc0ac\uc6a9\n\u2022 AWS \uccad\uad6c\uc11c, Cost Explorer, Budgets\ub85c \uccad\uad6c \uc77c\uc6d0\ud654\n\u2022 \ub300\uc2e0 \uad00\ub9ac \ucf58\uc194, Analytics, \uc815\ucc45 \uc11c\ubc84\uac00 \uc5c6\uc5b4\uc11c \ud30c\uc77c, MDM, OTel\ub85c \uc9c1\uc811 \ucc44\uc6c0\n\n\uae08\uc735\uad8c \uace0\uac1d\uaed8\uc11c Claude Code\ub97c Bedrock\uc73c\ub85c \uc4f0\uc2dc\ub294 \uc774\uc720\ub294 \ud06c\uac8c \uc138 \uac00\uc9c0\uc608\uc694.\n\uccab \ubc88\uc9f8\ub294 \ucd94\ub860\uc774 \ub0b4 AWS \uacc4\uc815 \uacbd\uacc4 \uc548\uc5d0\uc11c \uc77c\uc5b4\ub09c\ub2e4\ub294 \uac81\ub2c8\ub2e4. \ub2e4\ub9cc \ucc98\ub9ac \ub9ac\uc804\uc740 \ucd94\ub860 \ud504\ub85c\ud544 \ubc94\uc704\ub97c \ub530\ub974\uace0, global \ud504\ub85c\ud544\uc774\uba74 \ub9ac\uc804 \ubc16\uc5d0\uc11c \ucc98\ub9ac\ub420 \uc218\ub3c4 \uc788\uc5b4\uc694.\n\ub450 \ubc88\uc9f8\ub294 \uc774\ubbf8 \uc4f0\uace0 \uacc4\uc2e0 IAM, Identity Center, CloudTrail, Organizations\ub97c \uadf8\ub300\ub85c \uc4f4\ub2e4\ub294 \uac70\uc608\uc694. \uc138 \ubc88\uc9f8\ub294 \uccad\uad6c\uac00 AWS \uccad\uad6c\uc11c \ud558\ub098\ub85c \ubaa8\uc778\ub2e4\ub294 \uac70\uace0\uc694.\n\n\ub300\uc2e0 \ube60\uc9c0\ub294 \uac83\ub3c4 \uc788\uc5b4\uc694. claude.ai\uc758 \uad00\ub9ac \ucf58\uc194, Analytics, \uc815\ucc45 \uc11c\ubc84\ub294 \uc5c6\uc2b5\ub2c8\ub2e4. \uadf8\ub798\uc11c \uc815\ucc45\uc740 \ud30c\uc77c\uacfc MDM\uc73c\ub85c, \uad00\uce21\uc740 OTel\ub85c \uadf8 \ube48\uc790\ub9ac\ub97c \ucc44\uc6cc\uc57c \ud574\uc694. \uc774\ubc88 \ucc55\ud130\uc640 Ch6\uc5d0\uc11c \ubcfc \ub0b4\uc6a9\uc785\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 IAM: Identity and Access Management\n\u2022 MDM: Mobile Device Management\n\u2022 OTel: OpenTelemetry",
+    5: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \uc0ac\ub0b4\ub9dd \uac1c\ubc1c\uc790 PC \u2192 \uc0ac\ub0b4 DNS\uc640 Route 53 Resolver(\uc0ac\uc124 IP) \u2192 Direct Connect \uc804\uc6a9\uc120 \u2192 Bedrock Runtime VPC \uc5d4\ub4dc\ud3ec\uc778\ud2b8(PrivateLink) \u2192 IAM \ud310\ub2e8 \u2192 Bedrock\n\u2022 \uc778\ud130\ub137 \uae38\uc740 \ub9c9\ud600 \uc788\uace0, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1\ub85c \ubd80\uac00 \ud1b5\uc2e0\ub3c4 \ub054\n\u2022 IAM \ud310\ub2e8\uc740 \uc11c\uba85(SSO \uc784\uc2dc \uc790\uaca9\uc99d\uba85), \uc5ed\ud560 \uc815\ucc45, \uc5d4\ub4dc\ud3ec\uc778\ud2b8 \uc815\ucc45, \uc870\uc9c1 SCP. \ud558\ub098\ub77c\ub3c4 \uac70\ubd80\uba74 \uba48\ucda4\n\u2022 \uc751\ub2f5\ub3c4 \uac19\uc740 \uae38\ub85c, \uacf5\uc6a9 \uc778\ud130\ub137\uc744 \uc9c0\ub098\uc9c0 \uc54a\uc74c\n\n\n\uc774 \uc7a5\uba74\uc740 \uc800\uc808\ub85c \ub3cc\uc544\uac00\uc694. \uc0ac\ub0b4\ub9dd\uc5d0 \uc788\ub294 \uac1c\ubc1c\uc790 PC\uc5d0\uc11c \uc694\uccad \ud558\ub098\uac00 Bedrock\uae4c\uc9c0 \uc5b4\ub5bb\uac8c \uac00\ub294\uc9c0 \ub530\ub77c\uac00 \ubcfc\uac8c\uc694.\n\uba3c\uc800 Claude Code\uac00 Bedrock \ubaa8\ub4dc\ub85c \uc694\uccad\uc744 \ub9cc\ub4e4\uace0, SSO\ub85c \ubc1b\uc740 \uc784\uc2dc \uc790\uaca9\uc99d\uba85\uc73c\ub85c \uc11c\uba85\ud569\ub2c8\ub2e4. PC\uc5d0 \uc624\ub798 \uc4f0\ub294 \ud0a4\ub294 \uc5c6\uc5b4\uc694.\n\uc778\ud130\ub137 \ucabd \uae38\uc740 \ub9c9\ud600 \uc788\uc2b5\ub2c8\ub2e4. \uc5c5\ub370\uc774\ud2b8\ub098 \uc624\ub958 \ub9ac\ud3ec\ud2b8 \uac19\uc740 \ubd80\uac00 \ud1b5\uc2e0\ub3c4 \ud658\uacbd\ubcc0\uc218 \ud558\ub098\ub85c \ub055\ub2c8\ub2e4.\n\uadf8\ub2e4\uc74c \uc774\ub984 \ucc3e\uae30\uc608\uc694. \uc0ac\ub0b4 DNS\uac00 \uc9c8\ubb38\uc744 \uc804\uc6a9\uc120 \ub108\uba38 Route 53 Resolver\ub85c \ub118\uae30\uba74, Bedrock \uc8fc\uc18c\uac00 VPC \uc548\uc758 \uc0ac\uc124 IP\ub85c \ub3cc\uc544\uc635\ub2c8\ub2e4.\n\uc694\uccad\uc740 \ubc29\ud654\ubcbd\uc744 \uc9c0\ub098 Direct Connect \uc804\uc6a9\uc120\uc73c\ub85c \ud68c\uc0ac VPC\uc5d0 \ub4e4\uc5b4\uac00\uace0, \uadf8 \uc0ac\uc124 IP\uc758 \uc8fc\uc778\uc778 VPC \uc5d4\ub4dc\ud3ec\uc778\ud2b8, \uc989 PrivateLink\ub85c \ub4e4\uc5b4\uac11\ub2c8\ub2e4.\n\uc5ec\uae30\uc11c IAM\uc774 \ub124 \ubc88 \ud655\uc778\ud574\uc694. \uc11c\uba85\uc774 \ub9de\ub294\uc9c0, \uc5ed\ud560\uc5d0 \ud638\ucd9c \uad8c\ud55c\uc774 \uc788\ub294\uc9c0, \uc5d4\ub4dc\ud3ec\uc778\ud2b8 \uc815\ucc45\uc774 \ud5c8\uc6a9\ud558\ub294\uc9c0, \uc870\uc9c1 SCP\uac00 \ub9c9\uc9c0 \uc54a\ub294\uc9c0. \ud558\ub098\ub77c\ub3c4 \uac70\ubd80\uba74 \uba48\ucda5\ub2c8\ub2e4.\n\ubaa8\ub450 \ud1b5\uacfc\ud558\uba74 \ubaa8\ub378 \uc774\ub984\ud45c, \ucd94\ub860 \ud504\ub85c\ud544\uc774 \uac00\ub9ac\ud0a4\ub294 Claude\uac00 \ub2f5\ud558\uace0, \ub2f5\uc740 \uac19\uc740 \uae38\ub85c \ub3cc\uc544\uc635\ub2c8\ub2e4. \ucc98\uc74c\ubd80\ud130 \ub05d\uae4c\uc9c0 \uacf5\uc6a9 \uc778\ud130\ub137\uc744 \uc9c0\ub098\uc9c0 \uc54a\uc544\uc694.\n\n\n\uc774\uc81c \uc774 \uae38\uc744 \ud558\ub098\uc529 \uc5f4\uc5b4 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \uba3c\uc800 \ud658\uacbd\ubcc0\uc218\ubd80\ud130\uc694.\n\n[\ucd9c\ucc98]\n\u2022 docs.aws.amazon.com/bedrock/latest/userguide/vpc-interface-endpoints.html\n\u2022 docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html\n\u2022 code.claude.com/docs/en/amazon-bedrock\n\u2022 code.claude.com/docs/en/network-config",
     6: "[0.5min] [\uc694\uc57d]\n\u2022 Part 1: Bedrock\uc5d0 \uc5f0\uacb0\ud558\uae30\n\u2022 \ud658\uacbd\ubcc0\uc218\uc640 IAM \uad8c\ud55c, \ud0a4 \ub300\uc2e0 SSO \ub85c\uadf8\uc778, \ubaa8\ub378 \uace0\uc815\uacfc \ud300 \uc774\ub984\ud45c\n\n\uccab \ubc88\uc9f8 Part\ub294 Bedrock\uc5d0 \uc5f0\uacb0\ud558\uae30\uc608\uc694. \ubc29\uae08 \ubcf8 \uae38\uc744 \uc2e4\uc81c\ub85c \uc5ec\ub294 \uc21c\uc11c\ub300\ub85c \uac11\ub2c8\ub2e4.\n\uba3c\uc800 \ud658\uacbd\ubcc0\uc218\uc640 IAM \uad8c\ud55c, \uadf8\ub2e4\uc74c \ud0a4 \ub300\uc2e0 SSO\ub85c \ub85c\uadf8\uc778\ud558\ub294 \ubc29\ubc95, \ub9c8\uc9c0\ub9c9\uc73c\ub85c \uc5ec\ub7ec \uba85\uc774 \uc4f8 \ub54c \uaf2d \uc815\ud574\uc57c \ud558\ub294 \ubaa8\ub378 \uace0\uc815\uacfc \ud300 \uc774\ub984\ud45c\ub97c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
     7: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 CLAUDE_CODE_USE_BEDROCK=1: \ubaa9\uc801\uc9c0\ub97c Anthropic API\uc5d0\uc11c Bedrock\uc73c\ub85c, \uc778\uc99d\uc740 AWS \uc790\uaca9\uc99d\uba85\n\u2022 AWS_REGION: \ud504\ub85c\ud544\uc5d0 \ub9ac\uc804\uc774 \uc5c6\uc744 \ub54c\ub9cc. \uacb0\uc815 \uc21c\uc11c\ub294 AWS_REGION, AWS_DEFAULT_REGION, \ud65c\uc131 \ud504\ub85c\ud544\uc758 region, \uae30\ubcf8 us-east-1\n\u2022 ANTHROPIC_BEDROCK_BASE_URL: \uc0ac\ub0b4 \uac8c\uc774\ud2b8\uc6e8\uc774\ub098 \uc9c0\uc815 \uc5d4\ub4dc\ud3ec\uc778\ud2b8\ub97c \uac70\uce60 \ub54c\ub9cc\n\u2022 /status\ub85c \uacf5\uae09\uc790, \ub9ac\uc804, \ub9ac\uc804\uc758 \ucd9c\ucc98 \ud655\uc778\n\n\n\uc218\ub3d9 \uc124\uc815\uc740 \ud658\uacbd\ubcc0\uc218 \ub450 \uac1c\uba74 \ub3fc\uc694. \uadf8\ub9bc\uc5d0\uc11c \ubcc0\uc218 \ud558\ub098\uac00 \ubb34\uc5c7\uc744 \ubc14\uafb8\ub294\uc9c0 \ubcf4\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\uccab \ubc88\uc9f8 CLAUDE_CODE_USE_BEDROCK=1\uc740 \ubaa9\uc801\uc9c0\ub97c \ubc14\uafd4\uc694. \uc774\uac8c \uc5c6\uc73c\uba74 Anthropic API\ub85c \uac00\uace0, 1\uc774\uba74 Bedrock\uc73c\ub85c \uac11\ub2c8\ub2e4. \uc774\ub54c\ubd80\ud130\ub294 claude.ai \ub85c\uadf8\uc778\uc774 \uc544\ub2c8\ub77c AWS \uc790\uaca9\uc99d\uba85\uc73c\ub85c \uc11c\uba85\ud569\ub2c8\ub2e4.\n\ub450 \ubc88\uc9f8 AWS_REGION\uc740 \uc5b4\ub290 \ub9ac\uc804\uc758 Bedrock\uc778\uc9c0 \uc815\ud574\uc694. \uc704\uc5d0\uc11c\ubd80\ud130 \ucc98\uc74c \ucc3e\uc740 \uac12\uc744 \uc4f0\ub294\ub370\uc694, AWS_REGION, AWS_DEFAULT_REGION, \ud504\ub85c\ud544\uc758 region \uc21c\uc774\uace0, \uc544\ubb34\uac83\ub3c4 \uc5c6\uc73c\uba74 us-east-1\uc785\ub2c8\ub2e4. \ud504\ub85c\ud544\uc5d0 \ub9ac\uc804\uc774 \uc788\uc73c\uba74 \uc0dd\ub7b5\ud558\uc154\ub3c4 \ub3fc\uc694.\n\uc0ac\ub0b4 \uac8c\uc774\ud2b8\uc6e8\uc774\ub97c \uac70\uccd0\uc57c \ud558\uba74 ANTHROPIC_BEDROCK_BASE_URL\ub85c \uc8fc\uc18c\ub9cc \ubc14\uafc9\ub2c8\ub2e4.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c /status\ub97c \uc5f4\uc5b4\uc11c \uacf5\uae09\uc790\uc640 \ub9ac\uc804, \uadf8 \ucd9c\ucc98\uae4c\uc9c0 \uaf2d \ud655\uc778\ud574 \uc8fc\uc138\uc694.\n\n\n\ubaa9\uc801\uc9c0\uac00 Bedrock\uc774 \ub418\uba74, \uc774\uc81c IAM\uc774 \uc774 \ud638\ucd9c\uc744 \ud5c8\uc6a9\ud574 \uc918\uc57c \ud569\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/amazon-bedrock (Set up manually, 3. Configure Claude Code)",
     8: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 \uc2dc\uc791\ud560 \ub54c ListInferenceProfiles(\ubaa9\ub85d, Resource \"*\" \ubcc4\ub3c4 \ubb38\uc7a5), \uc571 \ud504\ub85c\ud544\uc774\uba74 GetInferenceProfile(\ub4a4\uc758 \ubaa8\ub378 \ud655\uc778)\n\u2022 \ub300\ud654\ub9c8\ub2e4 InvokeModel, InvokeModelWithResponseStream. \ud504\ub85c\ud544\uacfc \uadf8 \ub4a4\uc758 \uae30\ubc18 \ubaa8\ub378\uae4c\uc9c0 \ud5c8\uc6a9\n\u2022 GetInferenceProfile\uc774 \uc5c6\uc73c\uba74 \uc0c8 \ubaa8\ub378\ub9c8\ub2e4 \ud55c \ubc88 \ub354 \uc655\ubcf5\n\u2022 Marketplace ViewSubscriptions, Subscribe\ub294 aws:CalledViaLast = bedrock.amazonaws.com \uc870\uac74\uc73c\ub85c\n\u2022 \uc2e4\uc81c \ubc30\ud3ec\ub294 \ud5c8\uc6a9\ud560 \ud504\ub85c\ud544 ARN\uc73c\ub85c \uc881\ud788\uace0, Claude Code \uc804\uc6a9 AWS \uacc4\uc815 \uad8c\uc7a5\n\n\nIAM \uad8c\ud55c\uc740 Claude Code\uac00 \ubd80\ub974\ub294 API\ub97c \ub530\ub77c\uac00\uba74 \uc26c\uc6cc\uc694. \uc704\uc5d0\uc11c\ubd80\ud130 \uc21c\uc11c\ub300\ub85c \ubd05\ub2c8\ub2e4.\n\uccab\uc9f8, \uc2dc\uc791\ud560 \ub54c \uacc4\uc815\uc5d0 \uc5b4\ub5a4 \ucd94\ub860 \ud504\ub85c\ud544\uc774 \uc788\ub294\uc9c0 \ubaa9\ub85d\uc744 \ubd10\uc694. ListInferenceProfiles\uc778\ub370, \ub9ac\uc18c\uc2a4\ub97c \uc9c0\uc815\ud560 \uc218 \uc5c6\ub294 \uad8c\ud55c\uc774\ub77c Resource \ubcc4\ud45c\uc778 \ubcc4\ub3c4 \ubb38\uc7a5\uc5d0 \ub461\ub2c8\ub2e4. \ub2e4\ub978 ARN \ubaa9\ub85d\uacfc \ud569\uce58\uba74 \ubaa9\ub85d \uc870\ud68c\uac00 \uac70\ubd80\ub3fc\uc694.\n\ub458\uc9f8, \ud300 \uc774\ub984\ud45c \uac19\uc740 \uc560\ud50c\ub9ac\ucf00\uc774\uc158 \ucd94\ub860 \ud504\ub85c\ud544\uc740 \uc774\ub984\ub9cc\uc73c\ub85c\ub294 \uc5b4\ub5a4 \ubaa8\ub378\uc778\uc9c0 \ubab0\ub77c\uc11c GetInferenceProfile\ub85c \ub4a4\uc758 \ubaa8\ub378\uc744 \uc77d\uc2b5\ub2c8\ub2e4. \ube60\uc838\ub3c4 \ud638\ucd9c\uc740 \ub418\uc9c0\ub9cc \uc0c8 \ubaa8\ub378\ub9c8\ub2e4 \ud55c \ubc88\uc529 \ub354 \uc655\ubcf5\ud574\uc694.\n\uc14b\uc9f8\uac00 \uc2e4\uc81c \ub300\ud654, InvokeModel\uacfc \uc2a4\ud2b8\ub9ac\ubc0d \ud638\ucd9c\uc785\ub2c8\ub2e4. \ud504\ub85c\ud544\ub85c \ubd80\ub974\ub354\ub77c\ub3c4 \uadf8 \ub4a4\uc758 \uae30\ubc18 \ubaa8\ub378\uae4c\uc9c0 \ud5c8\uc6a9\ud574\uc57c \ud574\uc694. \uc608\uc2dc\ub294 \uc640\uc77c\ub4dc\uce74\ub4dc\uc9c0\ub9cc \uc2e4\uc81c\ub85c\ub294 \ud5c8\uc6a9\ud560 \ud504\ub85c\ud544 ARN\uc73c\ub85c \uc881\ud600 \uc8fc\uc138\uc694.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c Marketplace \uad6c\ub3c5 \ud655\uc778 \uad8c\ud55c\uc744, Bedrock\uc744 \uac70\uce5c \uc694\uccad\uc77c \ub54c\ub9cc \ud5c8\uc6a9\ud558\ub294 \uc870\uac74\uacfc \ud568\uaed8 \ub123\uc2b5\ub2c8\ub2e4.\n\n\n\uadf8\ub7fc \uc774 \uad8c\ud55c\uc744 \uac00\uc9c4 \uc790\uaca9\uc99d\uba85\uc740 \uac1c\ubc1c\uc790 PC\uc5d0 \uc5b4\ub5bb\uac8c \uc904\uae4c\uc694? \ud0a4\ub97c \ub098\ub220 \uc8fc\uba74 \ubb34\uc2a8 \uc77c\uc774 \uc0dd\uae30\ub294\uc9c0\ubd80\ud130 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/amazon-bedrock (IAM configuration)\n\u2022 20261116/ClaudeCode_Ch2_HandsOnLab.html TASK 01 Step 3 (ListInferenceProfiles\ub97c \ubcc4\ub3c4 \ubb38\uc7a5\uc73c\ub85c \ub454 \ucd5c\uc18c \uc815\ucc45, \uc2dc\ubbac\ub808\uc774\ud130 \ud655\uc778)\n\u2022 docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrock.html",
@@ -1451,23 +1794,27 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
     13: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 \uace0\uc815\ud558\uc9c0 \uc54a\uc73c\uba74 \ubcc4\uce6d\uc774 \ub0b4\uc7a5 \uae30\ubcf8\uac12(\uc8fc \ubaa8\ub378 Opus 5.5)\uc73c\ub85c, Claude Code \ubc84\uc804\uc5d0 \ub530\ub77c \ubc14\ub01c\n\u2022 \uc5ec\ub7ec \uc0ac\uc6a9\uc790 \ubc30\ud3ec\ub294 managed settings env\uc758 ANTHROPIC_DEFAULT_OPUS/SONNET/HAIKU_MODEL\ub85c \uace0\uc815, \uc0c8 \ubc84\uc804 \uc81c\uc548\ub3c4 \ub728\uc9c0 \uc54a\uc74c\n\u2022 prefix \uaddc\uce59: us-*\ub294 us., eu-*\ub294 eu., ap-*(\uc11c\uc6b8 \ud3ec\ud568)\ub294 apac., \uadf8 \uc678\ub294 global.\n\u2022 ANTHROPIC_BEDROCK_REGION_PREFIX\ub294 \uae30\ubcf8\uac12\uc744 \ub450\uace0 prefix\ub9cc \ubc14\uafc8 (us, eu, apac, jp, au, global)\n\n\n\ud034\uc988\uc5d0\uc11c \ubd24\ub4ef\uc774, \uc0ac\uc6a9\uc790\ub294 opus, sonnet \uac19\uc740 \ubcc4\uce6d\uc744 \uace0\ub974\uace0 Claude Code\uac00 \uadf8\uac78 \uc2e4\uc81c \ubaa8\ub378 ID\ub85c \ubc14\uafd4\uc694. \uc704\uc5d0\uc11c\ubd80\ud130 \uc138 \uac08\ub798\ub97c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\uccab\uc9f8, \uace0\uc815\ud558\uc9c0 \uc54a\uc73c\uba74 Claude Code\uc5d0 \ub4e4\uc5b4 \uc788\ub294 \uae30\ubcf8\uac12\uc73c\ub85c \uac11\ub2c8\ub2e4. \uc9c0\uae08\uc740 Opus 5.5\ub77c Opus \ub2e8\uac00\ub85c \uccad\uad6c\ub418\uace0, Claude Code\ub97c \uc62c\ub9ac\uba74 \uae30\ubcf8\uac12\ub3c4 \ubc14\ub014 \uc218 \uc788\uc5b4\uc694.\n\ub458\uc9f8, \uadf8\ub798\uc11c \uc5ec\ub7ec \uc0ac\uc6a9\uc790\uc5d0\uac8c \ubc30\ud3ec\ud560 \ub54c\ub294 managed settings\uc758 env\uc5d0 \uc138 \ubaa8\ub378\uc744 \uace0\uc815\ud569\ub2c8\ub2e4. \uc774\ub807\uac8c \uace0\uc815\ud558\uba74 \uc0c8 \ubc84\uc804 \uc81c\uc548\ub3c4 \ub728\uc9c0 \uc54a\uace0, \ubc14\uafb8\ub294 \uc2dc\uc810\uc744 \uc870\uc9c1\uc774 \uc815\ud574\uc694.\n\uc14b\uc9f8, \ubaa8\ub378 ID \uc55e\uc758 prefix\ub294 \ub9ac\uc804 \uadf8\ub8f9\uc744 \ub530\ub985\ub2c8\ub2e4. \uc11c\uc6b8\uc744 \ud3ec\ud568\ud55c ap \ub9ac\uc804\uc740 apac., \uc774 \ub7a9\ucc98\ub7fc global \ud504\ub85c\ud544\uc744 \uc4f0\uba74 global.\uc774\uace0\uc694.\n\ubc84\uc804\uc740 \ub450\uace0 prefix\ub9cc \ubc14\uafb8\uace0 \uc2f6\uc73c\uba74 ANTHROPIC_BEDROCK_REGION_PREFIX\ub97c \uc501\ub2c8\ub2e4. \uc5b4\ub290 \ucabd\uc774\ub4e0 \uc2e4\uc81c \uac12\uc740 \uace0\uac1d\ub2d8 \uacc4\uc815\uc5d0 \uc788\ub294 \ud504\ub85c\ud544 ID\ub85c \ucc44\uc6cc \uc8fc\uc138\uc694.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/amazon-bedrock (4. Pin model versions, Startup model checks, Cross-region inference profile prefixes)",
     14: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 \ud300\ub9c8\ub2e4 \uc560\ud50c\ub9ac\ucf00\uc774\uc158 \ucd94\ub860 \ud504\ub85c\ud544(\uc774\ub984\ud45c)\uc744 \ud558\ub098\uc529, \ubaa8\ub378\uc740 \uac19\uace0 \uc774\ub984\ud45c\ub9cc \ub2e4\ub984\n\u2022 managed settings\uc758 modelOverrides\ub85c \ubaa8\ub378 \uc774\ub984\uc744 \ud300 \uc774\ub984\ud45c\uc5d0 \ubb36\uc5b4 \ubc30\ud3ec, /model \uc120\ud0dd\ub3c4 \uc774 \uc774\ub984\ud45c\ub85c\n\u2022 CloudTrail\uc5d0 \ub204\uac00(SSO \uc0ac\uc6a9\uc790), \uc5b4\ub290 \ud504\ub85c\ud544\ub85c \ubd88\ub800\ub294\uc9c0 \ub0a8\uc74c\n\u2022 IAM Resource\ub97c \uc790\uae30 \ud300 \uc774\ub984\ud45c\ub85c \uc881\ud788\uba74 \ub2e4\ub978 \ud300 \uc774\ub984\ud45c\ub294 \uac70\ubd80\n\u2022 ARN \ubb38\uc790\uc5f4\uc740 \ub9c8\uc9c0\ub9c9\uc5d0. \ud0dc\uadf8\ub85c \ub098\ub208 \ube44\uc6a9 \uacc4\uc0b0\uc740 Ch6\uc5d0\uc11c\n\n\nPart 1 \ub9c8\uc9c0\ub9c9\uc740 \ud300\ub9c8\ub2e4 \ub2e4\ub978 \uc774\ub984\ud45c\uc608\uc694. A\ud300\uacfc B\ud300\uc774 \uac19\uc740 Sonnet\uc744 \uc4f0\ub354\ub77c\ub3c4, \uac01\uc790 \uc790\uae30 \uc774\ub984\ud45c\ub97c \ub2ec\uace0 \ubd80\ub974\uac8c \ud558\ub294 \uac81\ub2c8\ub2e4.\n\uccab\uc9f8, \uc774 \uc774\ub984\ud45c\uc758 \uc815\uc2dd \uc774\ub984\uc774 \uc560\ud50c\ub9ac\ucf00\uc774\uc158 \ucd94\ub860 \ud504\ub85c\ud544\uc774\uc5d0\uc694. \uc6d0\ubcf8 \ud504\ub85c\ud544\uc744 \ubcf5\uc0ac\ud574\uc11c \ud300 \uc774\ub984\uacfc \ud0dc\uadf8\ub9cc \ub2e4\ub974\uac8c \ub9cc\ub4ed\ub2c8\ub2e4.\n\ub458\uc9f8, \ud300\ub9c8\ub2e4 managed settings\uc758 modelOverrides\ub85c \ubaa8\ub378 \uc774\ub984\uc744 \uadf8 \ud300 \uc774\ub984\ud45c\uc5d0 \ubb36\uc5b4\uc694. \uac1c\ubc1c\uc790\uac00 /model\uc5d0\uc11c \ubb34\uc5c7\uc744 \uace8\ub77c\ub3c4 \uc774 \uc774\ub984\ud45c\ub85c \uac11\ub2c8\ub2e4.\n\uc14b\uc9f8, \uadf8\ub7ec\uba74 CloudTrail\uc5d0 \ub204\uac00, \uc5b4\ub290 \uc774\ub984\ud45c\ub85c \ubd88\ub800\ub294\uc9c0 \ud55c \uc904\uc5d0 \ub0a8\uc544\uc694. \uac10\uc0ac \ub54c \uc774 \ud638\ucd9c\uc774 \uc5b4\ub290 \ud300 \uac83\uc774\ub0d0\ub294 \uc9c8\ubb38\uc5d0 \ubc14\ub85c \ub2f5\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\ub137\uc9f8, IAM\uc5d0\uc11c \uc790\uae30 \ud300 \uc774\ub984\ud45c\ub9cc \ud5c8\uc6a9\ud558\uba74 \ub2e4\ub978 \ud300 \uc774\ub984\ud45c\ub85c\ub294 \ubabb \ubd80\ub985\ub2c8\ub2e4.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c \uc2e4\uc81c \ubb38\uc790\uc5f4\uc774\uc5d0\uc694. \ub9cc\ub4dc\ub294 \uba85\ub839\uc758 \uacb0\uacfc\ub85c \ub098\uc624\ub294 ARN\uc774 \uc55e\uc5d0\uc11c \ubcf8 \uc815\ucc45 \uc790\ub9ac\uc5d0 \ub4e4\uc5b4\uac11\ub2c8\ub2e4. \ud0dc\uadf8\ub85c \ube44\uc6a9\uc744 \ub098\ub204\ub294 \uacc4\uc0b0\uc740 Ch6\uc5d0\uc11c \uc790\uc138\ud788 \ub2e4\ub8f0\uac8c\uc694.\n\n\n\uc5ec\uae30\uae4c\uc9c0\uac00 \uc5f0\uacb0\uc774\uc5c8\uace0\uc694, \uc774\uc81c \uc774 \uc124\uc815\ub4e4\uc744 \ud68c\uc0ac \uc804\uccb4\uc5d0 \uc5b4\ub5bb\uac8c \ub0b4\ub824\ubcf4\ub0b4\ub294\uc9c0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/amazon-bedrock (Map each model version to an inference profile, Startup model checks)\n\u2022 docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html\n\u2022 docs.aws.amazon.com/bedrock/latest/userguide/logging-using-cloudtrail.html\n\n[\uc57d\uc5b4]\n\u2022 ARN: Amazon Resource Name",
     15: "[0.5min] [\uc694\uc57d]\n\u2022 Part 2: \uc815\ucc45\uc740 \ud30c\uc77c\ub85c\n\u2022 \ud30c\uc77c \ud55c \uc7a5\uc774 \ubaa8\ub4e0 PC\ub85c, \ud0a4 \ucda9\ub3cc\uacfc \uc7a0\uae08 \uc2a4\uc704\uce58, \ubc30\ud3ec \ud6c4 \ud655\uc778\n\n\ub450 \ubc88\uc9f8 Part\ub294 \uc815\ucc45\uc740 \ud30c\uc77c\ub85c\uc785\ub2c8\ub2e4. Bedrock\uc73c\ub85c \uc4f8 \ub54c\ub294 claude.ai \uac19\uc740 \uad00\ub9ac \ucf58\uc194\uc744 \uc4f8 \uc218 \uc5c6\uc796\uc544\uc694. \uadf8\ub798\uc11c \ud68c\uc0ac \uc815\ucc45\uc744 \ud30c\uc77c \ud55c \uc7a5\uc73c\ub85c \ubaa8\ub4e0 PC\uc5d0 \ub0b4\ub824\ubcf4\ub0c5\ub2c8\ub2e4. \uadf8 \ud30c\uc77c\uc774 \uc5b4\ub5bb\uac8c \uc774\uae30\ub294\uc9c0, \uc5b4\ub5a4 \uc7a0\uae08\uc744 \uac70\ub294\uc9c0, \uadf8\ub9ac\uace0 \uc801\uc6a9\ub410\ub294\uc9c0 \ud655\uc778\ud558\ub294 \ubc29\ubc95\uae4c\uc9c0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.",
-    16: "\ud83c\udfac [3min] [\uc694\uc57d]\n\u2022 \uc778\ud504\ub77c \uc5d4\uc9c0\ub2c8\uc5b4\uac00 managed-settings.json \ud55c \uc7a5\uc744 \uc4f0\uace0, MDM(plist, HKLM \ub808\uc9c0\uc2a4\ud2b8\ub9ac)\uc774\ub098 \ubc30\ud3ec \ub3c4\uad6c\uac00 \ubaa8\ub4e0 \uac1c\ubc1c\uc790 PC\uc5d0 \ub0b4\ub824\ubcf4\ub0c4\n\u2022 \uc11c\ubc84 \uad00\ub9ac \uc124\uc815(claude.ai \ucf58\uc194)\uc740 Team, Enterprise \ud50c\ub79c\uc6a9\uc774\uace0 CLAUDE_CODE_USE_BEDROCK\uc744 \ucf1c\uba74 \uac74\ub108\ub700\n\u2022 \uacbd\ub85c: macOS /Library/Application Support/ClaudeCode/, Linux\uc640 WSL /etc/claude-code/, Windows C:\\Program Files\\ClaudeCode\\\n\u2022 managed-settings.d/ \uc870\uac01\uc740 \ubcf8 \ud30c\uc77c \ub2e4\uc74c\uc5d0 \uc774\ub984\uc21c \ubcd1\ud569. managed \uc18c\uc2a4\uac00 \uc5ec\ub7ff\uc774\uba74 \uae30\ubcf8\uc740 \uc6b0\uc120\uc21c\uc704\uac00 \uac00\uc7a5 \ub192\uc740 \ud558\ub098\ub9cc, managedSourcesBehavior \"merge\"\ub85c \ud569\uce68\n\u2022 Claude Code\ub294 \uc2dc\uc791\ud560 \ub54c \uc77d\uace0 \ud30c\uc77c\uc774 \ubc14\ub00c\uba74 \ub2e4\uc2dc \uc77d\uc74c. \uac1c\uc778 \uc124\uc815\uc758 allow\ub85c\ub294 managed deny\ub97c \ud480 \uc218 \uc5c6\uc74c\n\n\n\uc774 \uc7a5\uba74\ub3c4 \uc800\uc808\ub85c \ub3cc\uc544\uac00\uc694. \uc67c\ucabd\uc774 \uc778\ud504\ub77c \ud300, \uc624\ub978\ucabd\uc774 \uc804 \uc9c1\uc6d0\uc758 \uac1c\ubc1c\uc790 PC\uc785\ub2c8\ub2e4.\n\uba3c\uc800 \uc778\ud504\ub77c \uc5d4\uc9c0\ub2c8\uc5b4\uac00 \uc815\ucc45 \ud30c\uc77c \ud55c \uc7a5\uc744 \uc501\ub2c8\ub2e4. \uc5ec\uae30\uc11c\ub294 \uc6d0\ubcf8 \uace0\uac1d \ub370\uc774\ud130, raw \ud3f4\ub354 \uc77d\uae30 \uae08\uc9c0\ub97c \uc608\ub85c \ub4e4\uc5c8\uc5b4\uc694.\n\uc704\ucabd claude.ai \ucf58\uc194\uc5d0\uc11c \ub0b4\ub824\uc624\ub294 \uc11c\ubc84 \uad00\ub9ac \uc124\uc815\uc740 Team, Enterprise \ud50c\ub79c\uc6a9\uc774\uc5d0\uc694. \uadf8\ub9ac\uace0 CLAUDE_CODE_USE_BEDROCK\uc744 \ucf1c\uba74 Claude Code\uac00 \uc774 \uae38\uc744 \uc544\uc608 \uac74\ub108\ub701\ub2c8\ub2e4. \uadf8\ub798\uc11c Bedrock\uc5d0\uc11c\ub294 \ud30c\uc77c\uacfc MDM\uc744 \uc501\ub2c8\ub2e4.\nJamf, Intune, GPO \uac19\uc740 MDM\uc740 plist\ub098 \ub808\uc9c0\uc2a4\ud2b8\ub9ac\ub85c, Ansible \uac19\uc740 \ubc30\ud3ec \ub3c4\uad6c\ub294 \ud30c\uc77c \ubcf5\uc0ac\ub85c \ubaa8\ub4e0 PC\uc5d0 \uac19\uc740 \uc815\ucc45\uc744 \ub0b4\ub824\ubcf4\ub0b4\uc694.\n\ud30c\uc77c\uc740 OS\ub9c8\ub2e4 \uc815\ud574\uc9c4, \uad00\ub9ac\uc790\ub9cc \uc4f8 \uc218 \uc788\ub294 \ud3f4\ub354\uc5d0 \ub193\uc785\ub2c8\ub2e4. \uc624\ub298 \ub7a9\uc740 Linux\ub77c\uc11c /etc/claude-code\ub97c \uc368\uc694. \uc5ec\ub7ec \ud300\uc774 \ub098\ub220 \uad00\ub9ac\ud55c\ub2e4\uba74 \uc606\uc758 managed-settings.d \ud3f4\ub354\uc5d0 \uc870\uac01\uc744 \ub450\uc2dc\uba74 \uc774\ub984\uc21c\uc73c\ub85c \ud569\uccd0\uc9d1\ub2c8\ub2e4.\nClaude Code\ub294 \uc2dc\uc791\ud560 \ub54c \uc774 \ud30c\uc77c\uc744 \uc77d\uace0, \ud30c\uc77c\uc774 \ubc14\ub00c\uba74 \ub2e4\uc2dc \uc77d\uc5b4\uc694. \uadf8\ub9ac\uace0 \uc0ac\uc6a9\uc790 \uc124\uc815, \ud504\ub85c\uc81d\ud2b8 \uc124\uc815\ubcf4\ub2e4 \uc704\uc5d0\uc11c \uc801\uc6a9\ub429\ub2c8\ub2e4.\n\uc774\uc81c \uac1c\ubc1c\uc790\uac00 \uc790\uae30 settings.json\uc5d0 \uac19\uc740 \uacbd\ub85c\uc758 allow\ub97c \ub123\uc5b4\uc11c \ud480\uc5b4 \ubcf4\ub824\uace0 \ud558\uc8e0. \uadf8\ub798\ub3c4 \ub9c9\ud600\uc694. \uaddc\uce59\uc740 \ubaa8\ub4e0 \uce35\uc5d0\uc11c \ud569\uccd0\uc9c0\uace0 deny\uac00 \uba3c\uc800 \ud3c9\uac00\ub418\uac70\ub4e0\uc694. \uac1c\uc778\uc774 \uc815\ucc45\uc744 \ub418\ub3cc\ub9b4 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.\n\ud558\ub098\ub9cc \ub354\uc694. MDM\uacfc \ud30c\uc77c\uc744 \uac19\uc774 \uc4f0\uba74 \uae30\ubcf8\uc740 \uc6b0\uc120\uc21c\uc704\uac00 \ub192\uc740 \uc18c\uc2a4 \ud558\ub098\ub9cc \uc801\uc6a9\ub3fc\uc694. \ub2e4 \ud569\uce58\ub824\uba74 managedSourcesBehavior\ub97c merge\ub85c \ub450\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n\n\uadf8\ub7fc \uac19\uc740 \ud0a4\uac00 \uc5ec\ub7ec \ud30c\uc77c\uc5d0 \uc788\uc73c\uba74 \uc5b4\ub290 \uac12\uc774 \uc774\uae38\uae4c\uc694?\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/managed-settings (\uacbd\ub85c, \uc804\ub2ec \ubc29\uc2dd, drop-in \uc21c\uc11c, \uc18c\uc2a4 \uc6b0\uc120\uc21c\uc704)\n\u2022 code.claude.com/docs/en/server-managed-settings (\ud50c\ub79c \uc694\uac74, \uc11c\ub4dc\ud30c\ud2f0 \uacf5\uae09\uc790 \uc0ac\uc6a9 \uc2dc \uac74\ub108\ub700)\n\u2022 code.claude.com/docs/en/settings (\uc124\uc815 \uc6b0\uc120\uc21c\uc704)\n\u2022 Ch2 Lab 1 TASK 02, TASK 03",
-    17: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc12f \uce35: Managed, CLI \uc778\uc790(--settings), Local, Project, User. \uac19\uc740 \ud0a4\ub294 \uac00\uc7a5 \uc704 \uce35\uc758 \uac12 \ud558\ub098\n\u2022 \uc608\uc2dc \ud0a4 cleanupPeriodDays: 14(Managed), 3(--settings), 7(Local), 30(Project), 90(User) \u2192 14\uc77c\n\u2022 Managed\ub294 \uc5b4\ub5a4 \uac1c\uc778 \ud30c\uc77c\uc774\ub098 --settings\ub85c\ub3c4 \ubabb \ub36e\uc74c\n\u2022 \ubaa9\ub85d \ud0a4(permissions.allow, deny \ub4f1)\ub294 \ubaa8\ub4e0 \uce35\uc744 \ud569\uce68. \uc608\uc678: managed\uc758 availableModels\ub294 \uadf8\ub300\ub85c \uc801\uc6a9, fallbackModel\uc740 \ud55c \uce35 \uac12\ub9cc\n\n\n\uac19\uc740 \ud0a4\uac00 \uc5ec\ub7ec \ud30c\uc77c\uc5d0 \uc788\uc73c\uba74 \uc5b4\ub290 \uac12\uc774 \uc774\uae38\uae4c\uc694? \uc608\ub85c \uc138\uc158 \uae30\ub85d\uc744 \uba70\uce60 \ub0a8\uae38\uc9c0 \uc815\ud558\ub294 cleanupPeriodDays\ub97c \ub2e4\uc12f \uce35\uc5d0 \ubaa8\ub450 \uc801\uc5b4 \ubd24\uc5b4\uc694.\n\uac12\uc740 \uce35\ub9c8\ub2e4 \ub2e4\ub974\uc9c0\ub9cc \uc801\uc6a9\ub418\ub294 \uac74 \ud558\ub098, \ub9e8 \uc704 Managed\uc758 14\uc77c\uc785\ub2c8\ub2e4. \uad00\ub9ac\uc790\uac00 Managed\uc5d0 \ub450\uba74 \uc544\ub798 \uc5b4\ub5a4 \uce35\ub3c4 \ub36e\uc5b4\uc4f0\uc9c0 \ubabb\ud574\uc694.\n\uc544\ub798 \ud654\uc0b4\ud45c\ub85c \uc704\uc5d0\uc11c\ubd80\ud130 \ud558\ub098\uc529 \ube7c \ubcfc\uac8c\uc694. Managed\ub97c \ube7c\uba74 --settings\ub85c \uc900 CLI \uc778\uc790\uac00 \uc774\uae41\ub2c8\ub2e4. \uc774\uac74 \uc774\ubc88 \uc138\uc158\uc5d0\ub9cc \uc4f0\uc5ec\uc694.\n\uadf8\uac83\ub3c4 \ube7c\uba74 \uac1c\uc778 Local, \uadf8\ub2e4\uc74c\uc774 \ud300\uc774 \ucee4\ubc0b\ud55c Project, \ub9c8\uc9c0\ub9c9\uc774 User\uc608\uc694. \uc5b4\ub514\uc5d0\ub3c4 \uc5c6\uc73c\uba74 \uae30\ubcf8\uac12 30\uc77c\uc774\uace0\uc694.\n\ub9c8\uc9c0\ub9c9 \uc7a5\uc774 \uc911\uc694\ud569\ub2c8\ub2e4. deny \uac19\uc740 \ubaa9\ub85d \ud0a4\ub294 \ud558\ub098\ub97c \uace0\ub974\uc9c0 \uc54a\uace0 \ubaa8\ub4e0 \uce35\uc744 \ud569\uccd0\uc694. \uadf8\ub798\uc11c \uac1c\uc778\uc774 \ube48 \ubaa9\ub85d\uc744 \uc801\uc5b4\ub3c4 \uc870\uc9c1\uc758 deny\ub294 \ub0a8\uc2b5\ub2c8\ub2e4. \ub2e8, managed\uc758 availableModels\ub294 \ud569\uce58\uc9c0 \uc54a\uace0 \uadf8 \ubaa9\ub85d \uadf8\ub300\ub85c \uc501\ub2c8\ub2e4.\n\n\n\uadf8\ub7f0\ub370 \ud569\uce58\ub294 \uaddc\uce59\ub9cc\uc73c\ub85c\ub294 \uac1c\uc778\uc774 allow\ub97c \ub354\ud558\ub294 \uac83\uae4c\uc9c0\ub294 \ubabb \ub9c9\uc544\uc694. \uadf8 \ubb38\uc744 \ub2eb\ub294 \uac8c \uc7a0\uae08 \uc2a4\uc704\uce58\uc785\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/settings (Settings precedence, Lists merge instead of overriding)\n\u2022 code.claude.com/docs/en/settings-reference (cleanupPeriodDays \uae30\ubcf8 30\uc77c)",
+    16: "\ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \uc778\ud504\ub77c \uc5d4\uc9c0\ub2c8\uc5b4\uac00 managed-settings.json \ud55c \uc7a5\uc744 \uc4f0\uace0, MDM(plist, HKLM \ub808\uc9c0\uc2a4\ud2b8\ub9ac)\uc774\ub098 \ubc30\ud3ec \ub3c4\uad6c\uac00 \ubaa8\ub4e0 \uac1c\ubc1c\uc790 PC\uc5d0 \ub0b4\ub824\ubcf4\ub0c4\n\u2022 \uc11c\ubc84 \uad00\ub9ac \uc124\uc815(claude.ai \ucf58\uc194)\uc740 Team, Enterprise \ud50c\ub79c\uc6a9\uc774\uace0 CLAUDE_CODE_USE_BEDROCK\uc744 \ucf1c\uba74 \uac74\ub108\ub700\n\u2022 \uacbd\ub85c: macOS /Library/Application Support/ClaudeCode/, Linux\uc640 WSL /etc/claude-code/, Windows C:\\Program Files\\ClaudeCode\\\n\u2022 managed-settings.d/ \uc870\uac01\uc740 \ubcf8 \ud30c\uc77c \ub2e4\uc74c\uc5d0 \uc774\ub984\uc21c \ubcd1\ud569. managed \uc18c\uc2a4\uac00 \uc5ec\ub7ff\uc774\uba74 \uae30\ubcf8\uc740 \uc6b0\uc120\uc21c\uc704\uac00 \uac00\uc7a5 \ub192\uc740 \ud558\ub098\ub9cc, managedSourcesBehavior \"merge\"\ub85c \ud569\uce68\n\u2022 Claude Code\ub294 \uc2dc\uc791\ud560 \ub54c \uc77d\uace0 \ud30c\uc77c\uc774 \ubc14\ub00c\uba74 \ub2e4\uc2dc \uc77d\uc74c. \uac1c\uc778 \uc124\uc815\uc758 allow\ub85c\ub294 managed deny\ub97c \ud480 \uc218 \uc5c6\uc74c\n\n\n\uc774 \uc7a5\uba74\ub3c4 \uc800\uc808\ub85c \ub3cc\uc544\uac00\uc694. \uc67c\ucabd\uc774 \uc778\ud504\ub77c \ud300, \uc624\ub978\ucabd\uc774 \uc804 \uc9c1\uc6d0\uc758 \uac1c\ubc1c\uc790 PC\uc785\ub2c8\ub2e4.\n\uba3c\uc800 \uc778\ud504\ub77c \uc5d4\uc9c0\ub2c8\uc5b4\uac00 \uc815\ucc45 \ud30c\uc77c \ud55c \uc7a5\uc744 \uc501\ub2c8\ub2e4. \uc5ec\uae30\uc11c\ub294 \uc6d0\ubcf8 \uace0\uac1d \ub370\uc774\ud130, raw \ud3f4\ub354 \uc77d\uae30 \uae08\uc9c0\ub97c \uc608\ub85c \ub4e4\uc5c8\uc5b4\uc694.\n\uc704\ucabd claude.ai \ucf58\uc194\uc5d0\uc11c \ub0b4\ub824\uc624\ub294 \uc11c\ubc84 \uad00\ub9ac \uc124\uc815\uc740 Team, Enterprise \ud50c\ub79c\uc6a9\uc774\uc5d0\uc694. \uadf8\ub9ac\uace0 CLAUDE_CODE_USE_BEDROCK\uc744 \ucf1c\uba74 Claude Code\uac00 \uc774 \uae38\uc744 \uc544\uc608 \uac74\ub108\ub701\ub2c8\ub2e4. \uadf8\ub798\uc11c Bedrock\uc5d0\uc11c\ub294 \ud30c\uc77c\uacfc MDM\uc744 \uc501\ub2c8\ub2e4.\nJamf, Intune, GPO \uac19\uc740 MDM\uc740 plist\ub098 \ub808\uc9c0\uc2a4\ud2b8\ub9ac\ub85c, Ansible \uac19\uc740 \ubc30\ud3ec \ub3c4\uad6c\ub294 \ud30c\uc77c \ubcf5\uc0ac\ub85c \ubaa8\ub4e0 PC\uc5d0 \uac19\uc740 \uc815\ucc45\uc744 \ub0b4\ub824\ubcf4\ub0b4\uc694.\n\ud30c\uc77c\uc740 OS\ub9c8\ub2e4 \uc815\ud574\uc9c4, \uad00\ub9ac\uc790\ub9cc \uc4f8 \uc218 \uc788\ub294 \ud3f4\ub354\uc5d0 \ub193\uc785\ub2c8\ub2e4. \uc624\ub298 \ub7a9\uc740 Linux\ub77c\uc11c /etc/claude-code\ub97c \uc368\uc694. \uc5ec\ub7ec \ud300\uc774 \ub098\ub220 \uad00\ub9ac\ud55c\ub2e4\uba74 \uc606\uc758 managed-settings.d \ud3f4\ub354\uc5d0 \uc870\uac01\uc744 \ub450\uc2dc\uba74 \uc774\ub984\uc21c\uc73c\ub85c \ud569\uccd0\uc9d1\ub2c8\ub2e4.\nClaude Code\ub294 \uc2dc\uc791\ud560 \ub54c \uc774 \ud30c\uc77c\uc744 \uc77d\uace0, \ud30c\uc77c\uc774 \ubc14\ub00c\uba74 \ub2e4\uc2dc \uc77d\uc5b4\uc694. \uadf8\ub9ac\uace0 \uc0ac\uc6a9\uc790 \uc124\uc815, \ud504\ub85c\uc81d\ud2b8 \uc124\uc815\ubcf4\ub2e4 \uc704\uc5d0\uc11c \uc801\uc6a9\ub429\ub2c8\ub2e4.\n\uc774\uc81c \uac1c\ubc1c\uc790\uac00 \uc790\uae30 settings.json\uc5d0 \uac19\uc740 \uacbd\ub85c\uc758 allow\ub97c \ub123\uc5b4\uc11c \ud480\uc5b4 \ubcf4\ub824\uace0 \ud558\uc8e0. \uadf8\ub798\ub3c4 \ub9c9\ud600\uc694. \uaddc\uce59\uc740 \ubaa8\ub4e0 \uce35\uc5d0\uc11c \ud569\uccd0\uc9c0\uace0 deny\uac00 \uba3c\uc800 \ud3c9\uac00\ub418\uac70\ub4e0\uc694. \uac1c\uc778\uc774 \uc815\ucc45\uc744 \ub418\ub3cc\ub9b4 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.\n\ud558\ub098\ub9cc \ub354\uc694. MDM\uacfc \ud30c\uc77c\uc744 \uac19\uc774 \uc4f0\uba74 \uae30\ubcf8\uc740 \uc6b0\uc120\uc21c\uc704\uac00 \ub192\uc740 \uc18c\uc2a4 \ud558\ub098\ub9cc \uc801\uc6a9\ub3fc\uc694. \ub2e4 \ud569\uce58\ub824\uba74 managedSourcesBehavior\ub97c merge\ub85c \ub450\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n\n\uadf8\ub7fc \uac19\uc740 \ud0a4\uac00 \uc5ec\ub7ec \ud30c\uc77c\uc5d0 \uc788\uc73c\uba74 \uc5b4\ub290 \uac12\uc774 \uc774\uae38\uae4c\uc694?\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/managed-settings (\uacbd\ub85c, \uc804\ub2ec \ubc29\uc2dd, drop-in \uc21c\uc11c, \uc18c\uc2a4 \uc6b0\uc120\uc21c\uc704)\n\u2022 code.claude.com/docs/en/server-managed-settings (\ud50c\ub79c \uc694\uac74, \uc11c\ub4dc\ud30c\ud2f0 \uacf5\uae09\uc790 \uc0ac\uc6a9 \uc2dc \uac74\ub108\ub700)\n\u2022 code.claude.com/docs/en/settings (\uc124\uc815 \uc6b0\uc120\uc21c\uc704)\n\u2022 Ch2 Lab 1 TASK 02, TASK 03",
+    17: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 \ub2e4\uc12f \uce35: Managed, CLI \uc778\uc790(--settings), Local, Project, User. \uac19\uc740 \ud0a4\ub294 \uac00\uc7a5 \uc704 \uce35\uc758 \uac12 \ud558\ub098\n\u2022 \uc608\uc2dc \ud0a4 cleanupPeriodDays: 14(Managed), 3(--settings), 7(Local), 30(Project), 90(User) \u2192 14\uc77c\n\u2022 Managed\ub294 \uc5b4\ub5a4 \uac1c\uc778 \ud30c\uc77c\uc774\ub098 --settings\ub85c\ub3c4 \ubabb \ub36e\uc74c\n\u2022 \ubaa9\ub85d \ud0a4(permissions.allow, deny \ub4f1)\ub294 \ubaa8\ub4e0 \uce35\uc744 \ud569\uce68. \uc608\uc678: managed\uc758 availableModels\ub294 \uadf8\ub300\ub85c \uc801\uc6a9, fallbackModel\uc740 \ud55c \uce35 \uac12\ub9cc\n\n\n\uac19\uc740 \ud0a4\uac00 \uc5ec\ub7ec \ud30c\uc77c\uc5d0 \uc788\uc73c\uba74 \uc5b4\ub290 \uac12\uc774 \uc774\uae38\uae4c\uc694? \uc608\ub85c \uc138\uc158 \uae30\ub85d\uc744 \uba70\uce60 \ub0a8\uae38\uc9c0 \uc815\ud558\ub294 cleanupPeriodDays\ub97c \ub2e4\uc12f \uce35\uc5d0 \ubaa8\ub450 \uc801\uc5b4 \ubd24\uc5b4\uc694.\n\uac12\uc740 \uce35\ub9c8\ub2e4 \ub2e4\ub974\uc9c0\ub9cc \uc801\uc6a9\ub418\ub294 \uac74 \ud558\ub098, \ub9e8 \uc704 Managed\uc758 14\uc77c\uc785\ub2c8\ub2e4. \uad00\ub9ac\uc790\uac00 Managed\uc5d0 \ub450\uba74 \uc544\ub798 \uc5b4\ub5a4 \uce35\ub3c4 \ub36e\uc5b4\uc4f0\uc9c0 \ubabb\ud574\uc694.\n\uc544\ub798 \ud654\uc0b4\ud45c\ub85c \uc704\uc5d0\uc11c\ubd80\ud130 \ud558\ub098\uc529 \ube7c \ubcfc\uac8c\uc694. Managed\ub97c \ube7c\uba74 --settings\ub85c \uc900 CLI \uc778\uc790\uac00 \uc774\uae41\ub2c8\ub2e4. \uc774\uac74 \uc774\ubc88 \uc138\uc158\uc5d0\ub9cc \uc4f0\uc5ec\uc694.\n\uadf8\uac83\ub3c4 \ube7c\uba74 \uac1c\uc778 Local, \uadf8\ub2e4\uc74c\uc774 \ud300\uc774 \ucee4\ubc0b\ud55c Project, \ub9c8\uc9c0\ub9c9\uc774 User\uc608\uc694. \uc5b4\ub514\uc5d0\ub3c4 \uc5c6\uc73c\uba74 \uae30\ubcf8\uac12 30\uc77c\uc774\uace0\uc694.\n\ub9c8\uc9c0\ub9c9 \uc7a5\uc774 \uc911\uc694\ud569\ub2c8\ub2e4. deny \uac19\uc740 \ubaa9\ub85d \ud0a4\ub294 \ud558\ub098\ub97c \uace0\ub974\uc9c0 \uc54a\uace0 \ubaa8\ub4e0 \uce35\uc744 \ud569\uccd0\uc694. \uadf8\ub798\uc11c \uac1c\uc778\uc774 \ube48 \ubaa9\ub85d\uc744 \uc801\uc5b4\ub3c4 \uc870\uc9c1\uc758 deny\ub294 \ub0a8\uc2b5\ub2c8\ub2e4. \ub2e8, managed\uc758 availableModels\ub294 \ud569\uce58\uc9c0 \uc54a\uace0 \uadf8 \ubaa9\ub85d \uadf8\ub300\ub85c \uc501\ub2c8\ub2e4.\n\n\n\uadf8\ub7f0\ub370 \ud569\uce58\ub294 \uaddc\uce59\ub9cc\uc73c\ub85c\ub294 \uac1c\uc778\uc774 allow\ub97c \ub354\ud558\ub294 \uac83\uae4c\uc9c0\ub294 \ubabb \ub9c9\uc544\uc694. \uadf8 \ubb38\uc744 \ub2eb\ub294 \uac8c \uc7a0\uae08 \uc2a4\uc704\uce58\uc785\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/settings (Settings precedence, Lists merge instead of overriding)\n\u2022 code.claude.com/docs/en/settings-reference (cleanupPeriodDays \uae30\ubcf8 30\uc77c)",
     18: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 permissions.disableBypassPermissionsMode \"disable\": \uc6b0\ud68c \ubaa8\ub4dc \uae08\uc9c0 (\uc5b4\ub290 \ud30c\uc77c\uc5d0\ub098, managed\uc5d0 \ub450\uba74 \uac15\uc81c)\n\u2022 allowManagedPermissionRulesOnly: \uc0ac\uc6a9\uc790, \ud504\ub85c\uc81d\ud2b8, local, --settings\uc758 \uad8c\ud55c \uaddc\uce59\uacfc --allowedTools \ubb34\uc2dc (managed \uc804\uc6a9)\n\u2022 allowManagedHooksOnly: managed \ud6c5\uacfc \uac15\uc81c \uc124\uce58 \ud50c\ub7ec\uadf8\uc778 \ud6c5\ub9cc \uc2e4\ud589 (managed \uc804\uc6a9)\n\u2022 allowedHttpHookUrls: HTTP \ud6c5 \ubaa9\uc801\uc9c0 \uc81c\ud55c, \ube48 \ubc30\uc5f4\uc740 \uc804\ubd80 \ucc28\ub2e8 (\uc5b4\ub290 \ud30c\uc77c\uc5d0\ub098, \ubc30\uc5f4 \ubcd1\ud569)\n\u2022 requiredMinimumVersion: \ub0ae\uc740 \ubc84\uc804\uc740 \uc2dc\uc791 \uac70\ubd80 (managed \uc804\uc6a9). minimumVersion\uc740 \uc5c5\ub370\uc774\ud2b8 \ud558\ud55c\ub9cc\n\u2022 strictKnownMarketplaces: \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4 \ucd9c\ucc98 \ud5c8\uc6a9 \ubaa9\ub85d (managed \uc804\uc6a9)\n\n\n\ud569\uce58\ub294 \uaddc\uce59\ub9cc\uc73c\ub85c\ub294 \uac1c\uc778\uc774 allow\ub97c \ub354\ud558\ub294 \uac83\uae4c\uc9c0\ub294 \ub9c9\uc9c0 \ubabb\ud574\uc694. \uadf8 \ubb38\uc744 \ub2eb\ub294 \uac8c \uc7a0\uae08 \ud0a4\uc785\ub2c8\ub2e4. \uc704\uc5d0\uc11c\ubd80\ud130 \ud558\ub098\uc529 \ucf1c \ubcfc\uac8c\uc694.\n\uccab\uc9f8, disableBypassPermissionsMode\ub294 \ubaa8\ub4e0 \ud655\uc778\uc744 \uac74\ub108\ub6f0\ub294 \uc6b0\ud68c \ubaa8\ub4dc\ub97c \ub9c9\uc2b5\ub2c8\ub2e4. \uc774\uac74 \ud56d\uc0c1 \ucf1c\uc138\uc694.\n\ub458\uc9f8, allowManagedPermissionRulesOnly\ub97c \ucf1c\uba74 \uac1c\uc778\uacfc \ud504\ub85c\uc81d\ud2b8\uc758 \uad8c\ud55c \uaddc\uce59\uc744 \uc544\uc608 \ubb34\uc2dc\ud574\uc694. \uaddc\uc81c \ud658\uacbd\uc774\ub77c\uba74 \uae30\ubcf8\uc73c\ub85c \uad8c\ud569\ub2c8\ub2e4.\n\uc14b\uc9f8, allowManagedHooksOnly\ub294 \uc870\uc9c1\uc774 \ubc30\ud3ec\ud55c \ud6c5\ub9cc \ub3cc\uac8c \ud569\ub2c8\ub2e4. Part 3\uc758 DLP \ud6c5\uacfc \uc9dd\uc774\uc5d0\uc694. \ub137\uc9f8, allowedHttpHookUrls\ub294 HTTP \ud6c5\uc774 \uac10\uc0ac \uc218\uc9d1\uae30\ub85c\ub9cc \uac00\uac8c \ud558\uace0\uc694.\n\ub2e4\uc12f\uc9f8, requiredMinimumVersion\uc740 \uc815\ud55c \ubc84\uc804\ubcf4\ub2e4 \ub0ae\uc73c\uba74 \uc2dc\uc791\uc744 \uac70\ubd80\ud569\ub2c8\ub2e4. \ube44\uc2b7\ud55c \uc774\ub984\uc758 minimumVersion\uc740 \uc5c5\ub370\uc774\ud2b8 \ud558\ud55c\ub9cc \uc815\ud558\ub2c8\uae4c \ud5f7\uac08\ub9ac\uc9c0 \ub9c8\uc138\uc694.\n\uc5ec\uc12f\uc9f8, strictKnownMarketplaces\ub294 \ud50c\ub7ec\uadf8\uc778 \ub9c8\ucf13\ud50c\ub808\uc774\uc2a4\ub97c \ud5c8\uc6a9 \ubaa9\ub85d\uc73c\ub85c \ubb36\uc5b4\uc694. Ch4\uc5d0\uc11c \ub2e4\uc2dc \ubd05\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/settings-reference (permissions.disableBypassPermissionsMode, allowManagedPermissionRulesOnly, allowManagedHooksOnly, allowedHttpHookUrls, requiredMinimumVersion, minimumVersion, strictKnownMarketplaces)\n\u2022 Ch2 Lab 1 TASK 03",
-    19: "\ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 availableModels [\"sonnet\",\"haiku\"], enforceAvailableModels true, env.ANTHROPIC_MODEL \"sonnet\": \uc120\ud0dd\uc9c0, \uba85\ub839\uc904 \uc9c0\uc815, \uae30\ubcf8 \ubaa8\ub378\uc744 \ud568\uaed8 \ubb36\uc74c\n\u2022 cleanupPeriodDays 14: \ub85c\uceec \uc138\uc158 \uae30\ub85d 14\uc77c \ubcf4\uc874 (\uae30\ubcf8 30\uc77c)\n\u2022 permissions.deny: raw/ \uc77d\uae30 \uae08\uc9c0, \uc2e4\uc81c \uacbd\ub85c\uc640 \ub9c1\ud06c \uacbd\ub85c \ub458 \ub2e4. Read deny\ub294 \ud30c\uc77c \ub3c4\uad6c\ub9cc, \uc178\uc740 Lab 2 Sandbox\n\u2022 disableBypassPermissionsMode \"disable\": \uc6b0\ud68c \ud50c\ub798\uadf8\ub97c \uc918\ub3c4 \uc6b0\ud68c \ubaa8\ub4dc\ub85c \uc548 \ub4e4\uc5b4\uac10 (exit=0)\n\n\uc774\uac8c \uc624\ub298 \ub7a9\uc5d0\uc11c \uadf8\ub300\ub85c \ubc30\ud3ec\ud560 \uc815\ucc45 \ud55c \uc7a5\uc774\uc5d0\uc694. \uc904 \ubb36\uc74c \ud558\ub098\uac00 \uac1c\ubc1c\uc790 PC\uc5d0\uc11c \ubcf4\uc774\ub294 \ubcc0\ud654 \ud558\ub098\uac00 \ub429\ub2c8\ub2e4.\n\n\uba3c\uc800 \ubaa8\ub378\uc740 \uc138 \uc904\ub85c \ubb36\uc5b4\uc694. availableModels\ub85c \uc120\ud0dd\uc9c0\ub97c Sonnet\uacfc Haiku\ub85c \uc904\uc774\uace0, enforceAvailableModels\ub85c --model opus\ucc98\ub7fc \ubaa9\ub85d \ubc16\uc744 \uc9c0\uc815\ud574\ub3c4 \ubaa9\ub85d \uc548\uc73c\ub85c \ubc14\uafb8\uace0, env\uc758 ANTHROPIC_MODEL\ub85c \uae30\ubcf8 \ubaa8\ub378\uc744 \uace0\uc815\ud569\ub2c8\ub2e4. availableModels\ub9cc\uc73c\ub85c\ub294 \uae30\ubcf8 \ubaa8\ub378\uc774 \uc548 \ubc14\ub00c\uc5b4\uc11c \uc138 \uc904\uc774 \uac19\uc774 \uc788\uc5b4\uc57c \ud574\uc694.\ncleanupPeriodDays 14\ub294 PC\uc5d0 \ub0a8\ub294 \uc138\uc158 \uae30\ub85d\uc744 14\uc77c\ub9cc \ub461\ub2c8\ub2e4. \uae30\ubcf8\uc740 30\uc77c\uc774\uace0\uc694.\ndeny\uc5d0\ub294 \uc6d0\ubcf8 \ub370\uc774\ud130 \uacbd\ub85c\ub97c \uc2e4\uc81c \uacbd\ub85c\uc640 \ub9c1\ud06c \uacbd\ub85c \ub458 \ub2e4 \ub123\uc5c8\uc5b4\uc694. \uaddc\uce59\uc740 \ub3c4\uad6c\uac00 \ubc1b\uc740 \uacbd\ub85c \uadf8\ub300\ub85c \ub9de\ucdb0 \ubcf4\uac70\ub4e0\uc694. \uadf8\ub9ac\uace0 Read deny\ub294 Claude\uc758 \ud30c\uc77c \ub3c4\uad6c\ub97c \ub9c9\ub294 \uac70\ub77c, cat \uac19\uc740 \uc178 \uba85\ub839\uc740 Lab 2\uc758 Sandbox\uac00 \ub9e1\uc2b5\ub2c8\ub2e4.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c disableBypassPermissionsMode\ub85c \uc6b0\ud68c \ubaa8\ub4dc\ub97c \uc7a0\uae09\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 Ch2 Lab 1 TASK 02 (\uc815\ucc45 \ub0b4\uc6a9\uacfc \ud6a8\uacfc \ud45c), TASK 03\n\u2022 code.claude.com/docs/en/settings-reference (availableModels, enforceAvailableModels, cleanupPeriodDays, permissions.disableBypassPermissionsMode)",
+    19: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 availableModels [\"sonnet\",\"haiku\"], enforceAvailableModels true, env.ANTHROPIC_MODEL \"sonnet\": \uc120\ud0dd\uc9c0, \uba85\ub839\uc904 \uc9c0\uc815, \uae30\ubcf8 \ubaa8\ub378\uc744 \ud568\uaed8 \ubb36\uc74c\n\u2022 cleanupPeriodDays 14: \ub85c\uceec \uc138\uc158 \uae30\ub85d 14\uc77c \ubcf4\uc874 (\uae30\ubcf8 30\uc77c)\n\u2022 permissions.deny: raw/ \uc77d\uae30 \uae08\uc9c0, \uc2e4\uc81c \uacbd\ub85c\uc640 \ub9c1\ud06c \uacbd\ub85c \ub458 \ub2e4. Read deny\ub294 \ud30c\uc77c \ub3c4\uad6c\ub9cc, \uc178\uc740 Lab 2 Sandbox\n\u2022 disableBypassPermissionsMode \"disable\": \uc6b0\ud68c \ud50c\ub798\uadf8\ub97c \uc918\ub3c4 \uc6b0\ud68c \ubaa8\ub4dc\ub85c \uc548 \ub4e4\uc5b4\uac10 (exit=0)\n\n\uc774\uac8c \uc624\ub298 \ub7a9\uc5d0\uc11c \uadf8\ub300\ub85c \ubc30\ud3ec\ud560 \uc815\ucc45 \ud55c \uc7a5\uc774\uc5d0\uc694. \uc904 \ubb36\uc74c \ud558\ub098\uac00 \uac1c\ubc1c\uc790 PC\uc5d0\uc11c \ubcf4\uc774\ub294 \ubcc0\ud654 \ud558\ub098\uac00 \ub429\ub2c8\ub2e4.\n\n\uba3c\uc800 \ubaa8\ub378\uc740 \uc138 \uc904\ub85c \ubb36\uc5b4\uc694. availableModels\ub85c \uc120\ud0dd\uc9c0\ub97c Sonnet\uacfc Haiku\ub85c \uc904\uc774\uace0, enforceAvailableModels\ub85c --model opus\ucc98\ub7fc \ubaa9\ub85d \ubc16\uc744 \uc9c0\uc815\ud574\ub3c4 \ubaa9\ub85d \uc548\uc73c\ub85c \ubc14\uafb8\uace0, env\uc758 ANTHROPIC_MODEL\ub85c \uae30\ubcf8 \ubaa8\ub378\uc744 \uace0\uc815\ud569\ub2c8\ub2e4. availableModels\ub9cc\uc73c\ub85c\ub294 \uae30\ubcf8 \ubaa8\ub378\uc774 \uc548 \ubc14\ub00c\uc5b4\uc11c \uc138 \uc904\uc774 \uac19\uc774 \uc788\uc5b4\uc57c \ud574\uc694.\ncleanupPeriodDays 14\ub294 PC\uc5d0 \ub0a8\ub294 \uc138\uc158 \uae30\ub85d\uc744 14\uc77c\ub9cc \ub461\ub2c8\ub2e4. \uae30\ubcf8\uc740 30\uc77c\uc774\uace0\uc694.\ndeny\uc5d0\ub294 \uc6d0\ubcf8 \ub370\uc774\ud130 \uacbd\ub85c\ub97c \uc2e4\uc81c \uacbd\ub85c\uc640 \ub9c1\ud06c \uacbd\ub85c \ub458 \ub2e4 \ub123\uc5c8\uc5b4\uc694. \uaddc\uce59\uc740 \ub3c4\uad6c\uac00 \ubc1b\uc740 \uacbd\ub85c \uadf8\ub300\ub85c \ub9de\ucdb0 \ubcf4\uac70\ub4e0\uc694. \uadf8\ub9ac\uace0 Read deny\ub294 Claude\uc758 \ud30c\uc77c \ub3c4\uad6c\ub97c \ub9c9\ub294 \uac70\ub77c, cat \uac19\uc740 \uc178 \uba85\ub839\uc740 Lab 2\uc758 Sandbox\uac00 \ub9e1\uc2b5\ub2c8\ub2e4.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c disableBypassPermissionsMode\ub85c \uc6b0\ud68c \ubaa8\ub4dc\ub97c \uc7a0\uae09\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 Ch2 Lab 1 TASK 02 (\uc815\ucc45 \ub0b4\uc6a9\uacfc \ud6a8\uacfc \ud45c), TASK 03\n\u2022 code.claude.com/docs/en/settings-reference (availableModels, enforceAvailableModels, cleanupPeriodDays, permissions.disableBypassPermissionsMode)",
     20: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 C, \uc2dc\uc791\uc744 \uac70\ubd80 (\"Managed settings document could not be parsed\", claude -p\ub294 exit=1)\n\u2022 \ub2e4\ub978 managed \uc18c\uc2a4\uc5d0 \uc815\uc0c1 \uc815\ucc45\uc774 \uc788\uc5b4\ub3c4 \uac70\ubd80\n\u2022 JSON\uc740 \ub9de\uace0 \uac1c\ubcc4 \ud56d\ubaa9\ub9cc \ud2c0\ub9ac\uba74 \uadf8 \ud56d\ubaa9\ub9cc \ube60\uc9c0\uace0 \ub098\uba38\uc9c0\ub294 \uc801\uc6a9\n\u2022 \ubc30\ud3ec \ud30c\uc774\ud504\ub77c\uc778\uc5d0 jq . \uac80\uc99d\n\n\ud034\uc988 \ud558\ub098 \uac08\uac8c\uc694. managed-settings.json\uc5d0 JSON \ubb38\ubc95 \uc624\ub958\uac00 \uc788\uc73c\uba74 Claude Code\ub294 \uc5b4\ub5bb\uac8c \ud560\uae4c\uc694? \uc190 \ub4e4\uc5b4\uc11c \ub2f5\ud574 \uc8fc\uc138\uc694.\n\n\uc815\ub2f5\uc740 C, \uc2dc\uc791\uc744 \uac70\ubd80\ud569\ub2c8\ub2e4. Managed settings document could not be parsed\ub77c\ub294 \uc624\ub958\ub97c \ub0b4\uace0 \uc2dc\uc791\ud558\uc9c0 \uc54a\uc544\uc694. \uc815\ucc45\uc774 \uc870\uc6a9\ud788 \ube60\uc9c0\ub294 \uac83\ubcf4\ub2e4 \uc548\uc804\ud55c \ucabd\uc774\uc8e0.\n\ubc18\ub300\ub85c JSON\uc740 \ub9de\ub294\ub370 \ud56d\ubaa9 \ud558\ub098\ub9cc \ud2c0\ub838\ub2e4\uba74 \uadf8 \ud56d\ubaa9\ub9cc \ube60\uc9c0\uace0 \ub098\uba38\uc9c0 \uc815\ucc45\uc740 \uadf8\ub300\ub85c \uc801\uc6a9\ub429\ub2c8\ub2e4. \uadf8\ub798\uc11c \ubc30\ud3ec \ud30c\uc774\ud504\ub77c\uc778\uc5d0 jq \uc810 \uac80\uc99d\uc744 \uaf2d \ub123\uc5b4 \ub450\uc138\uc694. \ub7a9 TASK 04\uc5d0\uc11c \uc77c\ubd80\ub7ec \uae68\ub728\ub824 \ubcfc \uac70\uc608\uc694.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/managed-settings (Invalid entries in managed settings, \ud30c\uc2f1 \uc2e4\ud328 \uc2dc \uc2dc\uc791 \uac70\ubd80)\n\u2022 code.claude.com/docs/en/errors (Managed settings document could not be parsed)\n\u2022 Ch2 Lab 1 TASK 04 Step 2",
     21: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 1 /status\uc758 Setting sources\uc5d0 Enterprise managed settings (file)\n\u2022 2 \uc2dc\uc791 \ud654\uba74 Sonnet 5.5, /model\uc5d0 Sonnet\uacfc Haiku\ub9cc\n\u2022 3 Read \ub3c4\uad6c\ub85c raw/ \uc77d\uae30\ub294 \uac70\ubd80, pseudo/\ub294 \uc77d\ud798\n\u2022 4 \uac1c\uc778 settings.json\uc5d0 allow\ub97c \ub123\uc5b4\ub3c4 \uac70\ubd80, \uc6b0\ud68c \ud50c\ub798\uadf8\ub97c \uc918\ub3c4 \uc6b0\ud68c \ubaa8\ub4dc \uc548 \ub428\n\n\uc815\ucc45\uc744 \ubc30\ud3ec\ud588\uc73c\uba74 \uc2e4\uc81c\ub85c \uc801\uc6a9\ub410\ub294\uc9c0 \ubd10\uc57c \ud558\uc796\uc544\uc694. \ub7a9 \uc21c\uc11c \uadf8\ub300\ub85c \ub124 \uac00\uc9c0\ub85c \ud655\uc778\ud569\ub2c8\ub2e4.\n\n\uccab\uc9f8, /status\uc758 Setting sources\uc5d0 Enterprise managed settings\uac00 \ubcf4\uc5ec\uc57c \ud574\uc694. \uad04\ud638 \uc548\uc5d0 file\uc774\ub77c\uace0 \ub098\uc624\uba74 \ud30c\uc77c\ub85c \uc628 \uc815\ucc45\uc785\ub2c8\ub2e4.\n\ub458\uc9f8, \uc2dc\uc791 \ud654\uba74\uc774 Sonnet 5.5\ub85c \ubc14\ub00c\uace0 /model\uc5d0 Sonnet\uacfc Haiku\ub9cc \ubcf4\uc5ec\uc57c \ud558\uace0\uc694.\n\uc14b\uc9f8, Read \ub3c4\uad6c\ub85c raw \ud3f4\ub354\ub97c \uc77d\uac8c \ud558\uba74 \uac70\ubd80\ub418\uace0 pseudo\ub294 \uc77d\ud600\uc57c \ud569\ub2c8\ub2e4. \ub137\uc9f8, \uac1c\uc778 settings.json\uc5d0 allow\ub97c \ub123\uc5b4 \ubd10\ub3c4 \uc5ec\uc804\ud788 \uac70\ubd80\ub3fc\uc57c \ud574\uc694. \uc774 \ub124 \uac00\uc9c0\uac00 \ub9de\uc73c\uba74 \uc815\ucc45\uc774 \uac15\uc81c\ub418\uace0 \uc788\ub2e4\ub294 \uc99d\uac70\uc785\ub2c8\ub2e4.\n\n\n\uc5ec\uae30\uae4c\uc9c0\uac00 \uc815\ucc45\uc744 \ub0b4\ub824\ubcf4\ub0b4\ub294 \ubc95\uc774\uc5c8\uace0, \uc774\uc81c \ubb34\uc5c7\uc744 \ub9c9\uc744\uc9c0\ub85c \ub118\uc5b4\uac00\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/managed-settings (Read the source in /status)\n\u2022 Ch2 Lab 1 TASK 02 Step 2, TASK 03",
-    22: "[0.5min] [\uc694\uc57d]\n\u2022 Part 3: \ubb34\uc5c7\uc744 \ubabb \ud558\uac8c \ud560 \uac83\uc778\uac00\n\u2022 deny\uac00 \ud56d\uc0c1 \uc774\uae34\ub2e4, \ud6c5\uc740 exit 2\ub9cc \ucc28\ub2e8, DLP \ub2e4\uc12f \uacb9\uacfc \ub0a8\ub294 \uae30\ub85d\n\n\uc138 \ubc88\uc9f8 Part\ub294 \ubb34\uc5c7\uc744 \ubabb \ud558\uac8c \ud560 \uac83\uc778\uac00\uc785\ub2c8\ub2e4. \uc0ac\uc804 \uc124\ubb38\uc5d0\uc11c \uac00\uc7a5 \ub9ce\uc774 \uace0\ub974\uc2e0 \uc8fc\uc81c\uc600\uc5b4\uc694. \uad8c\ud55c \uaddc\uce59\ubd80\ud130 \ubcf4\uace0, \uadf8\ub2e4\uc74c \ud6c5, \uadf8\ub9ac\uace0 \uc5ec\ub7ec \uacb9\uc744 \uc313\ub294 DLP \uc21c\uc11c\ub85c \uac08\uac8c\uc694.",
-    23: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 \ucc38\uac00 \ud655\uc815\uc790 142\uba85 \uc911 51\uba85\uc774 \ub9dd\ubd84\ub9ac, \ubcf4\uc548(DLP, \uac10\uc0ac\ub85c\uadf8)\uc744 \uae30\ub300 \uc8fc\uc81c\ub85c \uc120\ud0dd\n\u2022 \uaddc\uc81c, \uac10\uc0ac \ub300\uc751 45\uba85, \ud300 \ud45c\uc900\ud654 60\uba85 (\ubcf5\uc218 \uc120\ud0dd)\n\n\n\uc0ac\uc804 \uc124\ubb38\uc5d0\uc11c 142\uba85 \uc911 51\uba85\uc774 \ub9dd\ubd84\ub9ac\uc640 \ubcf4\uc548, \ud2b9\ud788 DLP\uc640 \uac10\uc0ac\ub85c\uadf8\ub97c \uae30\ub300 \uc8fc\uc81c\ub85c \uace8\ub77c \uc8fc\uc168\uc5b4\uc694. \uaddc\uc81c\uc640 \uac10\uc0ac \ub300\uc751\ub3c4 45\uba85\uc774\uc5c8\uace0\uc694.\n\uc774\ubc88 \ucc55\ud130\uc5d0\uc11c \uadf8 \uc9c8\ubb38\uc5d0 \ub2f5\ud574 \ubcf4\ub824\uace0 \ud569\ub2c8\ub2e4. \ubb34\uc5c7\uc744 \ub9c9\uc744 \uc218 \uc788\ub294\uc9c0, \ub9c9\uc9c0 \ubabb\ud55c \uac83\uc740 \uc5b4\ub5a4 \uae30\ub85d\uc73c\ub85c \ub0a8\ub294\uc9c0\uae4c\uc9c0 \uc815\ub9ac\ud560\uac8c\uc694.\n\n[\ucd9c\ucc98]\n\u2022 \uc774\ubc88 \uc6cc\ud06c\uc20d \uc0ac\uc804 \uc124\ubb38, \ucc38\uac00 \ud655\uc815\uc790 142\uba85, \ubcf5\uc218 \uc120\ud0dd (2026-11-14 \uc9d1\uacc4)",
-    24: "\ud83c\udfac [3min] [\uc694\uc57d]\n\u2022 \uad8c\ud55c \uaddc\uce59\uc740 Managed, Project, User \ub4f1 \ubaa8\ub4e0 \uc2a4\ucf54\ud504\uc5d0\uc11c \ud569\uccd0\uc9c4 \ub4a4 \ud3c9\uac00\n\u2022 \ud3c9\uac00 \uc21c\uc11c: deny, ask, allow, \uc77c\uce58 \uc5c6\uc74c\uc774\uba74 \uad8c\ud55c \ubaa8\ub4dc \uae30\ubcf8 \ub3d9\uc791\n\u2022 \uc5b4\ub514\uc5d0 \uc788\ub4e0 deny\uc5d0 \uac78\ub9ac\uba74 \uac70\ubd80\n\u2022 \ud615\uc2dd\uc740 Tool(specifier), \uacbd\ub85c\ub294 ./ \uc0c1\ub300 \uacbd\ub85c, MCP\ub294 mcp__\uc11c\ubc84\uba85 \ub2e8\uc704\n\u2022 Bash \ud328\ud134\uc740 \uc6b0\ud68c\uac00 \uc26c\uc6b0\ub2c8 \uc0cc\ub4dc\ubc15\uc2a4\uc640 \ud568\uaed8, \ubcf5\uc7a1\ud55c \ud310\ub2e8\uc740 \ud6c5\uc73c\ub85c\n\n\n\uad8c\ud55c \uaddc\uce59\uc744 \uc5b4\ub5a4 \uc21c\uc11c\ub85c \ud3c9\uac00\ud558\ub294\uc9c0 \ud558\ub098\uc529 \ubcfc\uac8c\uc694.\n\uccab \ubc88\uc9f8, \uaddc\uce59\uc740 \uc5ec\ub7ec \uc2a4\ucf54\ud504\uc5d0 \uc801\ud600 \uc788\uc5b4\ub3c4 \ud3c9\uac00 \uc804\uc5d0 \ud55c \ubaa9\ub85d\uc73c\ub85c \ud569\uccd0\uc838\uc694. \uadf8\ub798\uc11c \uc5b4\ub290 \ud30c\uc77c\uc5d0 \uc788\ub290\ub0d0\ubcf4\ub2e4 \uc5b4\ub5a4 \uaddc\uce59\uc774 \uc788\ub290\ub0d0\ub97c \ubcf4\uc154\uc57c \ud569\ub2c8\ub2e4.\n\ub450 \ubc88\uc9f8, deny\uc5d0 \uc77c\uce58\ud558\uba74 \ubc14\ub85c \uac70\ubd80\uc608\uc694. user\uc5d0 allow\uac00 \uc788\uc5b4\ub3c4 managed\uc5d0 deny\uac00 \uc788\uc73c\uba74 \uac70\ubd80\ub429\ub2c8\ub2e4.\n\uc138 \ubc88\uc9f8, ask\uc5d0 \uc77c\uce58\ud558\uba74 \uc0ac\ub78c\uc5d0\uac8c \ubb3c\uc5b4\ubcf4\uace0, \ub124 \ubc88\uc9f8, allow\uc5d0 \uc77c\uce58\ud558\uba74 \ubb3b\uc9c0 \uc54a\uace0 \uc2e4\ud589\ud574\uc694.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c \uc5b4\ub514\uc5d0\ub3c4 \uc77c\uce58\ud558\uc9c0 \uc54a\uc73c\uba74 \ud604\uc7ac \uad8c\ud55c \ubaa8\ub4dc\uc758 \uae30\ubcf8 \ub3d9\uc791\uc744 \ub530\ub985\ub2c8\ub2e4.\n\uc624\ub978\ucabd \ubb38\ubc95\uc740 Tool \uad04\ud638 \uc9c0\uc815\uc790 \ud558\ub098\uc608\uc694. \ud604\uc7a5\uc5d0\uc11c \uc790\uc8fc \uac78\ub9ac\ub294 \uac8c Bash \ud328\ud134\uc778\ub370, \uc6b0\ud68c\ud558\uae30\uac00 \uc27d\uac70\ub4e0\uc694. \uadf8\ub798\uc11c \ub4a4\uc5d0\uc11c \ubcfc \uc0cc\ub4dc\ubc15\uc2a4\uc640 \ud568\uaed8 \uc501\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 MCP: Model Context Protocol, \uc678\ubd80 \uc2dc\uc2a4\ud15c\uc744 \ub3c4\uad6c\ub85c \ubd99\uc774\ub294 \ud45c\uc900",
-    25: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 C, \uac70\ubd80\n\u2022 \uaddc\uce59\uc740 \ud569\uccd0\uc9c4 \ub4a4 deny\uac00 \uba3c\uc800 \ud3c9\uac00\ub418\ubbc0\ub85c user\uc758 allow\ub294 \uc758\ubbf8 \uc5c6\uc74c\n\n\ud034\uc988 \ud558\ub098 \ud574 \ubcfc\uac8c\uc694. user settings\uc5d0\ub294 curl\uc744 \ud5c8\uc6a9\ud558\ub294 allow\uac00 \uc788\uace0, managed\uc5d0\ub294 \uac19\uc740 \ud328\ud134\uc758 deny\uac00 \uc788\uc5b4\uc694. \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 C, \uac70\ubd80\uc608\uc694. \ubc29\uae08 \ubcf8 \uac83\ucc98\ub7fc \uaddc\uce59\uc740 \uba3c\uc800 \ud569\uccd0\uc9c0\uace0, deny\ubd80\ud130 \ud3c9\uac00\ud558\uac70\ub4e0\uc694. \ub098\uc911\uc5d0 \uc801\uc740 \uc124\uc815\uc774 \uc774\uae30\ub294 \ubc29\uc2dd\uc740 \uc544\ub2d9\ub2c8\ub2e4.",
-    26: "\ud83c\udfac [3.5min] [\uc694\uc57d]\n\u2022 \uac01 \uce35\uc740 \uc55e \uce35\uc774 \ub193\uce5c \uac83\uc744 \uc7a1\uc74c, 4\uce35 Guardrails\ub9cc AWS \uacc4\uc815 \ucabd\n\u2022 1 \uad8c\ud55c \uaddc\uce59: \ubbfc\uac10 \ud30c\uc77c, \uc704\ud5d8 \uba85\ub839 \ucc28\ub2e8, Bash \uc6b0\ud68c\uc5d0 \uc57d\ud568\n\u2022 2 \uc0cc\ub4dc\ubc15\uc2a4: Bash\ub97c OS \uc218\uc900\uc5d0\uc11c \uaca9\ub9ac, allowManagedDomainsOnly, failIfUnavailable, \ube44\uaca9\ub9ac \uc7ac\uc2dc\ub3c4 \uae08\uc9c0\n\u2022 3 \ud6c5: \ud504\ub86c\ud504\ud2b8, \ub3c4\uad6c \uc778\uc790 \ud328\ud134 \uac80\uc0ac \uc608\uc81c, exit 2\ub85c \ucc28\ub2e8\n\u2022 4 Guardrails: ANTHROPIC_CUSTOM_HEADERS\ub85c \uc9c0\uc815, bedrock:ApplyGuardrail \uad8c\ud55c, IAM \uc870\uac74\uc73c\ub85c \uc870\uc9c1 \uac15\uc81c\n\u2022 5 \ubc18\ucd9c \ucc44\ub110: \uc6f9, MCP, \ud50c\ub7ec\uadf8\uc778, mod\ub97c \ud5c8\uc6a9 \ubaa9\ub85d\uc73c\ub85c, WebFetch \uc0ac\uc804 \uac80\uc0ac\ub294 skipWebFetchPreflight\n\n\nDLP 5\uce35\uc744 \ud55c \uce35\uc529 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \uc704\uc5d0\uc11c \uc544\ub798\ub85c \ub0b4\ub824\uac00\uba74\uc11c \uc55e \uce35\uc774 \ub193\uce5c \uac83\uc744 \uc7a1\ub294 \uad6c\uc870\uc608\uc694.\n1\uce35 \uad8c\ud55c \uaddc\uce59\uc740 \ubbfc\uac10 \ud30c\uc77c \uc77d\uae30\uc640 \uc704\ud5d8 \uba85\ub839\uc744 \ub9c9\uc2b5\ub2c8\ub2e4. \uadfc\ub370 Bash\ub85c \ubaa8\uc591\uc744 \ubc14\uafb8\uba74 \uc27d\uac8c \uc6b0\ud68c\ub3fc\uc694.\n\uadf8\ub798\uc11c 2\uce35 \uc0cc\ub4dc\ubc15\uc2a4\uac00 \uc788\ub294 \uac70\uc8e0. Claude\uac00 \uc2e4\ud589\ud558\ub294 Bash\ub97c OS \uc218\uc900\uc5d0\uc11c \uaca9\ub9ac\ud569\ub2c8\ub2e4. allowManagedDomainsOnly\ub97c \ucf1c\uba74 \ubaa9\ub85d \ubc16 \ub3c4\uba54\uc778\uc73c\ub85c\ub294 \uc5f0\uacb0 \uc790\uccb4\uac00 \uc548 \ub3fc\uc694. failIfUnavailable\uacfc \ube44\uaca9\ub9ac \uc7ac\uc2dc\ub3c4 \uae08\uc9c0\ub85c \uc0cc\ub4dc\ubc15\uc2a4\ub97c \uc6b0\ud68c\ud558\ub294 \uae38\ub3c4 \ub9c9\uc544\uc694. \ub2e4\ub9cc mod\uac00 \ub744\uc6b4 \ud504\ub85c\uc138\uc2a4\ub294 \uc0cc\ub4dc\ubc15\uc2a4 \ubc16\uc785\ub2c8\ub2e4. \uc774\uac74 Ch4\uc5d0\uc11c \ub2e4\uc2dc \ub2e4\ub8f9\ub2c8\ub2e4.\n3\uce35 \ud6c5\uc740 \ub0b4\uc6a9\uc744 \ubd10\uc694. \ud504\ub86c\ud504\ud2b8\uc640 \ub3c4\uad6c \uc778\uc790\uc5d0\uc11c \uc8fc\ubbfc\ubc88\ud638\ub098 \uce74\ub4dc\ubc88\ud638 \uac19\uc740 \ud328\ud134\uc744 \ucc3e\uc544\uc11c exit 2\ub85c \ub9c9\ub294 \uc608\uc81c\uc785\ub2c8\ub2e4.\n4\uce35 Bedrock Guardrails\ub9cc AWS \uacc4\uc815 \ucabd\uc5d0\uc11c \ub3d9\uc791\ud574\uc694. \uc0ac\uc6a9\uc790 \uc815\uc758 \ud5e4\ub354\ub85c Guardrail\uc744 \uc9c0\uc815\ud558\uba74 \ubaa8\ub378\ub85c \uac00\ub294 \ub0b4\uc6a9\uc758 PII\ub97c \uac70\ub985\ub2c8\ub2e4. \ud638\ucd9c \uc5ed\ud560\uc5d0\ub294 bedrock:ApplyGuardrail \uad8c\ud55c\uc774 \ud544\uc694\ud558\uace0\uc694. \uc870\uc9c1\uc774 \uac15\uc81c\ud558\ub824\uba74 IAM \uc870\uac74 bedrock:GuardrailIdentifier\ub97c \uc501\ub2c8\ub2e4.\n5\uce35\uc740 \uc6f9, MCP, \ud50c\ub7ec\uadf8\uc778, mod\ucc98\ub7fc \ub2e4\ub978 \ud1b5\ub85c\ub97c \ud5c8\uc6a9 \ubaa9\ub85d\uc73c\ub85c \ub2eb\ub294 \uac70\uc608\uc694. \uc5ec\uae30\uc11c \uc54c\uc544 \ub450\uc2e4 \uac8c \ud558\ub098 \uc788\uc5b4\uc694. WebFetch\uc758 \uc0ac\uc804 \uac80\uc0ac\ub294 \ud638\uc2a4\ud2b8\uba85\uc744 Anthropic\uc73c\ub85c \ubcf4\ub0b4\uac70\ub4e0\uc694. skipWebFetchPreflight\ub85c \ub04c \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n\n[\uc57d\uc5b4]\n\u2022 PII: Personally Identifiable Information, \uac1c\uc778 \uc2dd\ubcc4 \uc815\ubcf4\n\u2022 MCP: Model Context Protocol",
-    27: "\u23f8\ufe0f \ud83c\udfac [3min] [\uc694\uc57d]\n\u2022 DLP \ud6c5 \uc608\uc81c\ub294 UserPromptSubmit\uc758 .prompt, PreToolUse\uc758 .tool_input\uc744 \ud328\ud134\uc73c\ub85c \uac80\uc0ac\n\u2022 exit 2\ub9cc \ucc28\ub2e8, \uc0ac\uc720\ub294 UserPromptSubmit\uc774\uba74 \uc0ac\uc6a9\uc790\uc5d0\uac8c, PreToolUse\uba74 stderr\uac00 Claude\uc5d0\uac8c\n\u2022 \uc608\uc81c \uadf8\ub300\ub85c\ub294 jq \uc2e4\ud328 \uc2dc \ud1b5\uacfc, exit 127 \uac19\uc740 \uadf8 \ubc16\uc758 \uc885\ub8cc\ub3c4 \uc9c4\ud589 (fail-open)\n\u2022 \uc218\uc815\ubcf8: jq \ud574\uc11d \uc2e4\ud328\ub294 exit 2, grep 1(\ubd88\uc77c\uce58)\ub9cc \ud1b5\uacfc, 0 \uc77c\uce58\uc640 2+ \uc2e4\ud589 \uc624\ub958\ub294 \ucc28\ub2e8 (fail-closed)\n\u2022 \ud328\ud134\uc740 \ud0d0\uc9c0 \uc608\uc2dc, \uc6b4\uc601 \ub8f0\uc740 \uc0ac\ub0b4 DLP \uae30\uc900\n\n\n\ubc29\uae08 \ubcf8 3\uce35 \ud6c5\uc744 \uc2a4\ud06c\ub9bd\ud2b8\ub85c \ubcfc\uac8c\uc694.\n\uccab \ubc88\uc9f8 \uacbd\uc6b0\ub294 \ubbfc\uac10 \ud328\ud134\uc774 \uc5c6\uc744 \ub54c\uc608\uc694. exit 0\uc73c\ub85c \ud1b5\uacfc\ud569\ub2c8\ub2e4. \ud6c5\uc740 UserPromptSubmit\uc5d0\uc11c\ub294 \ud504\ub86c\ud504\ud2b8\ub97c, PreToolUse\uc5d0\uc11c\ub294 \ub3c4\uad6c \uc778\uc790\ub97c \uac80\uc0ac\ud558\uace0\uc694.\n\ub450 \ubc88\uc9f8, \ud14c\uc2a4\ud2b8\uc6a9 \uac00\uc9dc \uc8fc\ubbfc\ubc88\ud638\uac00 \ub4e4\uc5b4\uc624\uba74 grep\uc774 \uac78\ub9ac\uace0 exit 2\ub85c \ub9c9\uc544\uc694. \uc774\ub54c \ucc28\ub2e8 \uc0ac\uc720\ub294 \ud504\ub86c\ud504\ud2b8 \ub2e8\uacc4\ub77c\uba74 \uc0ac\uc6a9\uc790\uc5d0\uac8c \uac11\ub2c8\ub2e4. \ub3c4\uad6c \uc2e4\ud589 \uc804 \ub2e8\uacc4\ub77c\uba74 stderr \uba54\uc2dc\uc9c0\uac00 Claude\uc5d0\uac8c \uac00\uace0\uc694.\n\n\uadfc\ub370 \uc138 \ubc88\uc9f8\ub97c \ubcf4\uc138\uc694. \uc774 \uc608\uc81c \uadf8\ub300\ub85c\ub294 jq\uac00 \uc2e4\ud328\ud558\uba74 \uac80\uc0ac \uc5c6\uc774 \ud1b5\uacfc\ud574\uc694. \ub610 \ud6c5\uc774 exit 2\uac00 \uc544\ub2cc \ub2e4\ub978 \ucf54\ub4dc\ub85c \ub05d\ub098\uba74 \ube44\ucc28\ub2e8 \uc624\ub958\ub77c \uadf8\ub300\ub85c \uc9c4\ud589\ub429\ub2c8\ub2e4. \uc774\uac8c fail-open\uc774\uc5d0\uc694.\n\uadf8\ub798\uc11c \ub124 \ubc88\uc9f8 \uc218\uc815\ubcf8\uc5d0\uc11c\ub294 jq \ud574\uc11d \uc2e4\ud328\ub97c exit 2\ub85c \ub9c9\uc2b5\ub2c8\ub2e4. grep\uc774 1, \uc989 \ubd88\uc77c\uce58\uc77c \ub54c\ub9cc \ud1b5\uacfc\uc2dc\ud0a4\uace0, \uc77c\uce58\ub4e0 \uc2e4\ud589 \uc624\ub958\ub4e0 \ub098\uba38\uc9c0\ub294 \uc804\ubd80 \ucc28\ub2e8\ud574\uc694. \ub7a9\uc5d0\uc11c \uc774 \ub450 \uc0c1\ud0dc\ub97c \uc9c1\uc811 \ud655\uc778\ud560 \uac81\ub2c8\ub2e4.",
-    28: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, \ud1b5\uacfc\n\u2022 exit 2\ub9cc \ucc28\ub2e8, \uadf8 \uc678 0\uc774 \uc544\ub2cc \uc885\ub8cc\ub294 \ube44\ucc28\ub2e8 \uc624\ub958\ub85c \uc9c4\ud589\n\n\ubc29\uae08 \ubcf8 \ub0b4\uc6a9\uc73c\ub85c \ud034\uc988 \ud558\ub098 \uac08\uac8c\uc694. DLP \ud6c5\uc774 jq \ubbf8\uc124\uce58\ub85c exit 127\ub85c \ub05d\ub098\uba74 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 B, \ud1b5\uacfc\uc608\uc694. \ub9ce\uc740 \ubd84\uc774 A\ub97c \uace0\ub974\uc2dc\ub294\ub370\uc694. \ud6c5\uc740 exit 2\ub9cc \ucc28\ub2e8\uc73c\ub85c \ubcf4\uac70\ub4e0\uc694. \uadf8\ub798\uc11c \uc624\ub958 \uacbd\ub85c\uc5d0\ub3c4 exit 2\ub97c \uaf2d \ub123\uc5b4\uc57c \ud569\ub2c8\ub2e4.",
-    29: "\u23f8\ufe0f [2min] [\uc694\uc57d]\n\u2022 \ub0a8\ub294 \uac83: PC \uc138\uc158 JSONL, CloudTrail Bedrock \ud638\ucd9c \uc774\ub825, \uc120\ud0dd\uc801 model invocation logging, OTel\n\u2022 invocation logging\uc740 \ud504\ub86c\ud504\ud2b8 \uc6d0\ubb38\uc774 \uc800\uc7a5\ub418\ubbc0\ub85c \uc800\uc7a5\uc18c\uc640 \ubcf4\uc874 \uc815\ucc45 \ud544\uc694\n\u2022 Anthropic \ud154\ub808\uba54\ud2b8\ub9ac\ub294 Bedrock\uc5d0\uc11c \uae30\ubcf8 \uaebc\uc9d0, \ub2e8 WebFetch \uc0ac\uc804 \uac80\uc0ac\ub294 \ud638\uc2a4\ud2b8\uba85\uc744 api.anthropic.com\uc73c\ub85c \ubcf4\ub0c4 (skipWebFetchPreflight\ub85c \ub054)\n\u2022 ZDR\uc740 AWS \uacc4\uc57d \uc870\uac74\n\u2022 \uc138\uc158 \ub85c\uadf8\ub3c4 \uace0\uac1d \ub370\uc774\ud130\ub97c \ub2f4\uc744 \uc218 \uc788\uc74c\n\n\uac10\uc0ac\uc5d0\uc11c \uadfc\uac70\ub85c \uc4f8 \uae30\ub85d\uc740 \ub124 \uacf3\uc5d0 \ub0a8\uc544\uc694.\nPC\uc5d0\ub294 \uc138\uc158 JSONL\uc774 \ub0a8\uace0, AWS\uc5d0\ub294 CloudTrail\uc758 Bedrock \ud638\ucd9c \uc774\ub825\uc774 \ub0a8\uc2b5\ub2c8\ub2e4. \uc120\ud0dd\uc73c\ub85c Bedrock model invocation logging\uc744 \ucf1c\uba74 \ud504\ub86c\ud504\ud2b8 \uc6d0\ubb38\uae4c\uc9c0 \ub0a8\uc544\uc694. OTel\ub85c\ub294 \uc0ac\uc6a9\uc790\ubcc4 \ud1a0\ud070\uacfc \ube44\uc6a9, \ub3c4\uad6c \uc0ac\uc6a9\uc744 \ubaa8\uc74d\ub2c8\ub2e4.\n\n\uc5ec\uae30\uc11c \uc8fc\uc758\ud558\uc2e4 \uac8c \uc788\uc5b4\uc694. invocation logging\uc740 \uc6d0\ubb38\uc774 \uc800\uc7a5\ub418\ub2c8\uae4c \uadf8 \uc800\uc7a5\uc18c \uc790\uccb4\uac00 \ubbfc\uac10 \ub370\uc774\ud130\uac00 \ub3fc\uc694. \uc138\uc158 \ub85c\uadf8\ub3c4 \uace0\uac1d \ub370\uc774\ud130\ub97c \ub2f4\uc744 \uc218 \uc788\uace0\uc694. \uadf8\ub9ac\uace0 Anthropic \ud154\ub808\uba54\ud2b8\ub9ac\ub294 Bedrock\uc5d0\uc11c \uae30\ubcf8\uc73c\ub85c \uaebc\uc838 \uc788\uc5b4\uc694. \ub2e4\ub9cc WebFetch\uc758 \uc0ac\uc804 \uac80\uc0ac\ub294 \ud638\uc2a4\ud2b8\uba85\uc744 api.anthropic.com\uc73c\ub85c \ubcf4\ub0c5\ub2c8\ub2e4. \ub044\ub824\uba74 skipWebFetchPreflight\ub97c \uc4f0\uc2dc\uba74 \ub3fc\uc694.",
-    30: "\u23f8\ufe0f [2min] [\uc694\uc57d]\n\u2022 \uac15\uc758\uc5d0\uc11c \uc904\uc778 \ub0b4\uc6a9\uc740 \uc2e4\uc2b5 TASK\ub85c \uc774\uc5b4\uc9d0\n\u2022 Ch2 Lab 1: \ucd5c\uc18c IAM, \uc815\ucc45 \ubc30\ud3ec\uc640 \uc6b0\ud68c \uc2dc\ub3c4, drop-in\uacfc \uae68\uc9c4 JSON, \uac8c\uc774\ud2b8\uc6e8\uc774 \uadf8\ub8f9 \uc815\ucc45\n\u2022 Ch2 Lab 2: DLP \ud6c5 \uac15\uc81c\uc640 fail-open \uc218\uc815, auto mode, \uc120\ud0dd\uc73c\ub85c \uc0cc\ub4dc\ubc15\uc2a4, Guardrails, \ud655\uc7a5 \ud1b5\uc81c\n\u2022 \ub9dd\ubd84\ub9ac \uc900\ube44\ubb3c, OS \ucc28\uc774, \ucffc\ud130\ub294 PDF \ub371\uc758 \ub354 \uc54c\uc544\ubcf4\uae30\n\n\uc624\ub298 \uac15\uc758\uc5d0\uc11c \uc77c\ubd80\ub7ec \uae4a\uc774 \ub4e4\uc5b4\uac00\uc9c0 \uc54a\uc740 \uc8fc\uc81c\ub4e4\uc774 \uc788\uc8e0. \uadf8 \ub0b4\uc6a9\uc740 \uc2e4\uc2b5\uc5d0\uc11c \uc9c1\uc811 \ud574 \ubcf4\uc2dc\uba74 \ud6e8\uc52c \ube68\ub9ac \uc775\uc219\ud574\uc838\uc694.\n\nLab 1\uc5d0\uc11c\ub294 \uc9c0\uae08 \uc5f0\uacb0\uc744 \uc77d\uc73c\uba74\uc11c \ucd5c\uc18c IAM \uc815\ucc45\uacfc \ube44\uad50\ud569\ub2c8\ub2e4. \uc815\ucc45 \ud30c\uc77c\uc744 \ubc30\ud3ec\ud55c \ub4a4\uc5d0\ub294 \uac1c\uc778 \uc124\uc815\uc73c\ub85c \ub6ab\uc5b4 \ubcfc \uac70\uc608\uc694. \uc815\ucc45 \uc870\uac01\uacfc \uae68\uc9c4 JSON, \uac8c\uc774\ud2b8\uc6e8\uc774 \uadf8\ub8f9 \uc815\ucc45\ub3c4 \uc5ec\uae30\uc11c \ubcf4\uace0\uc694.\nLab 2\uc5d0\uc11c\ub294 DLP \ud6c5\uc744 \ub9cc\ub4e4\uc5b4\uc11c \uc815\ucc45\uc73c\ub85c \uac15\uc81c\ud569\ub2c8\ub2e4. \uadf8\ub2e4\uc74c \uc77c\ubd80\ub7ec \uace0\uc7a5 \ub0b4\uc11c fail-open\uc744 \ud655\uc778\ud558\uace0 \uace0\uccd0 \ubcfc \uac70\uc608\uc694. auto mode, \uc0cc\ub4dc\ubc15\uc2a4, Guardrails\ub3c4 \uc2e4\uc2b5\uc73c\ub85c \ub2e4\ub8f9\ub2c8\ub2e4.\n\ub9dd\ubd84\ub9ac \ud658\uacbd \uc900\ube44\ubb3c\uc774\ub098 OS\ubcc4 \ucc28\uc774 \uac19\uc740 \uc6b4\uc601 \uc8fc\uc81c\ub294 PDF \ub371\uc758 \ub354 \uc54c\uc544\ubcf4\uae30\ub97c \ucc38\uace0\ud558\uc2dc\uba74 \ub3fc\uc694.",
-    31: "\u23f8\ufe0f [1.5min] [\uc694\uc57d]\n\u2022 \uc5f0\uacb0\uc740 \ud658\uacbd\ubcc0\uc218 \ub450 \uac1c, \ub85c\uadf8\uc778\uc740 SSO\uc640 awsAuthRefresh\n\u2022 \ubaa8\ub378 \uace0\uc815, \ud300\ubcc4 \ube44\uc6a9\uc740 \ud504\ub85c\ud544 ARN\n\u2022 \uc815\ucc45\uc740 managed-settings.json, managed\uac00 \uc774\uae30\uace0 /status\ub85c \ud655\uc778\n\u2022 deny\uac00 \uba3c\uc800, \ud6c5\uc740 exit 2\ub9cc \ucc28\ub2e8, DLP\ub294 \ub2e4\uc12f \uacb9\uacfc \uae30\ub85d\n\n\uc790, \uc624\ub298 \ub0b4\uc6a9\uc744 \uc5ec\uc12f \uc904\ub85c \uc815\ub9ac\ud574 \ubcfc\uac8c\uc694.\n\n\uc5f0\uacb0\uc740 \ud658\uacbd\ubcc0\uc218 \ub450 \uac1c\uba74 \ub3fc\uc694. \ub85c\uadf8\uc778\uc740 \uc7a5\uae30 \ud0a4 \ub300\uc2e0 SSO \ud504\ub85c\ud544\uacfc awsAuthRefresh\ub97c \uc4f0\uace0, \ubaa8\ub378\uc740 \ubc18\ub4dc\uc2dc \uace0\uc815\ud558\uace0, \ud300\ubcc4 \ube44\uc6a9\uc740 \ud504\ub85c\ud544 ARN\uc73c\ub85c \ub098\ub215\ub2c8\ub2e4.\n\uc815\ucc45\uc740 managed-settings.json \ud30c\uc77c\ub85c \ub0b4\ub824\uc694. \uac19\uc740 \ud0a4\uac00 \ubd80\ub52a\ud788\uba74 managed\uac00 \uc774\uae30\uc8e0. \ubc30\ud3ec\ud55c \ub4a4\uc5d0\ub294 /status\ub85c \uaf2d \ud655\uc778\ud558\uc138\uc694.\n\uad8c\ud55c \uaddc\uce59\uc740 deny\uac00 \uba3c\uc800\uc608\uc694. \ud6c5\uc740 exit 2\uc77c \ub54c\ub9cc \ub9c9\uc73c\ub2c8\uae4c \uc624\ub958 \uacbd\ub85c\ub3c4 exit 2\ub85c \ub2eb\uc544\uc57c \ud569\ub2c8\ub2e4. DLP \uae30\ub2a5\uc774 \ub530\ub85c \uc788\ub294 \uac8c \uc544\ub2c8\ub77c \ub2e4\uc12f \uacb9\uc744 \uc313\ub294 \uac70\uace0, \ubabb \ub9c9\uc740 \uac83\uc740 \uae30\ub85d\uc73c\ub85c \ub2f5\ud569\ub2c8\ub2e4.",
-    32: "[0.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc74c\uc740 \uc810\uc2ec, \uc2dd\uc0ac \ud6c4 \ud1b5\ud569 \ub7a9\uc5d0\uc11c Preflight\uc640 Ch1 Lab, \uc774\uc5b4\uc11c Ch2 Lab 1\uacfc Lab 2\n\u2022 \uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi\n\n\uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774\uc81c \uc810\uc2ec \uc2dc\uac04\uc774\uc5d0\uc694. \uc2dd\uc0ac \ud6c4 \ud1b5\ud569 \ub7a9\uc5d0\uc11c Preflight\uc640 Ch1 Lab\uc744 \ub9c8\uce58\uace0 \ub098\uba74, \uc624\ub298 \ubcf8 \uc815\ucc45\uacfc \ud6c5\uc744 Ch2 Lab 1\uacfc Lab 2\uc5d0\uc11c \uc9c1\uc811 \ubc30\ud3ec\ud558\uace0 \ub6ab\uc5b4 \ubcfc \uac70\uc608\uc694.\n\uc9c8\ubb38 \uc788\uc73c\uc2dc\uba74 Slack \ucc44\ub110\uc5d0 \uc5b8\uc81c\ub4e0 \ud3b8\ud558\uac8c \ub0a8\uaca8 \uc8fc\uc138\uc694."
+    22: "[0.5min] [\uc694\uc57d]\n\u2022 Part 3: \ubb34\uc5c7\uc744 \ubabb \ud558\uac8c \ud560 \uac83\uc778\uac00\n\u2022 \ucc98\uc74c \uc124\ubb38\uc758 \ub9dd\ubd84\ub9ac, \ubcf4\uc548(51\uba85)\uacfc \uaddc\uc81c, \uac10\uc0ac \ub300\uc751(45\uba85)\uc5d0 \ub2f5\ud558\ub294 Part\n\u2022 \uad8c\ud55c \uaddc\uce59\uacfc \ubd84\ub958\uae30, \uce35\ub9c8\ub2e4 \uc7a1\ub294 \uac83\uacfc DLP \ud6c5, \uc815\ucc45 \uac15\uc81c\uc640 \uac10\uc0ac \uae30\ub85d \uc21c\uc11c\n\n\uc138 \ubc88\uc9f8 Part\ub294 \ubb34\uc5c7\uc744 \ubabb \ud558\uac8c \ud560 \uac83\uc778\uac00\uc785\ub2c8\ub2e4. \ucc98\uc74c\uc5d0 \ubcf8 \uc124\ubb38\uc5d0\uc11c 51\uba85\uc774 \ub9dd\ubd84\ub9ac\uc640 \ubcf4\uc548\uc744, 45\uba85\uc774 \uaddc\uc81c\uc640 \uac10\uc0ac \ub300\uc751\uc744 \uace0\ub974\uc168\uc8e0. \uadf8 \uc9c8\ubb38\uc5d0 \ub2f5\ud558\ub294 Part\uc608\uc694.\n\uad8c\ud55c \uaddc\uce59\uacfc \ubd84\ub958\uae30\ubd80\ud130 \ubcf4\uace0, \uc704\ud5d8\ud55c \uba85\ub839 \ud558\ub098\uac00 \uc5b4\ub290 \uce35\uc5d0\uc11c \uba48\ucd94\ub294\uc9c0, \uc8fc\ubbfc\ubc88\ud638\uac00 \ub4e0 \ud504\ub86c\ud504\ud2b8\ub97c \uc5b4\ub5bb\uac8c \ubaa8\ub378 \uc55e\uc5d0\uc11c \ub9c9\ub294\uc9c0 \ubcf8 \ub2e4\uc74c, \uadf8\uac78 \uc815\ucc45\uc73c\ub85c \uac15\uc81c\ud558\uace0 \uae30\ub85d\uc73c\ub85c \ub0a8\uae30\ub294 \ub370\uae4c\uc9c0 \uac08\uac8c\uc694.",
+    23: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 \uad8c\ud55c \uaddc\uce59\uc740 Managed, Project, User \ub4f1 \ubaa8\ub4e0 \uc2a4\ucf54\ud504\uc5d0\uc11c \ud569\uccd0\uc9c4 \ub4a4 \ud3c9\uac00\n\u2022 \ud3c9\uac00 \uc21c\uc11c: deny, ask, allow, \ucc98\uc74c \ub9de\ub294 \uac83\uc774 \uacb0\uacfc. \uc77c\uce58 \uc5c6\uc74c\uc774\uba74 \uad8c\ud55c \ubaa8\ub4dc \uae30\ubcf8 \ub3d9\uc791 (auto mode\uba74 \ubd84\ub958\uae30)\n\u2022 \uc5b4\ub514\uc5d0 \uc788\ub4e0 deny\uc5d0 \uac78\ub9ac\uba74 \uac70\ubd80, \ub354 \uad6c\uccb4\uc801\uc778 allow\ub85c deny\uc5d0 \uc608\uc678\ub97c \ub0bc \uc218 \uc5c6\uc74c\n\u2022 \ud615\uc2dd\uc740 Tool(specifier), \uacbd\ub85c\ub294 ./ \uc0c1\ub300 \uacbd\ub85c, MCP\ub294 mcp__\uc11c\ubc84\uba85 \ub2e8\uc704\n\u2022 Bash \ud328\ud134\uc740 \uc6b0\ud68c\uac00 \uc26c\uc6b0\ub2c8 \uc0cc\ub4dc\ubc15\uc2a4\uc640 \ud568\uaed8, \ubcf5\uc7a1\ud55c \ud310\ub2e8\uc740 \ud6c5\uc73c\ub85c\n\n\n\uccab \ud654\uba74\uc774 \uc804\uccb4 \uadf8\ub9bc\uc774\uc5d0\uc694. \uc67c\ucabd \uc138 \uc2a4\ucf54\ud504\uc758 \uaddc\uce59\uc774 \uac00\uc6b4\ub370\uc5d0\uc11c \ud55c \ubaa9\ub85d\uc73c\ub85c \ud569\uccd0\uc9c0\uace0, \uc624\ub978\ucabd\uc73c\ub85c deny, ask, allow \uc21c\uc11c\ub85c \ub0b4\ub824\uac11\ub2c8\ub2e4. \uc704\uc5d0\uc11c \ucc98\uc74c \ub9de\ub294 \uc904\uc774 \uacb0\uacfc\uc608\uc694.\n\ud55c \ub2e8\uacc4\uc529 \ubcfc\uac8c\uc694. \uba3c\uc800 \ud569\uce58\uae30. \uc5b4\ub290 \ud30c\uc77c\uc5d0 \uc788\ub290\ub0d0\ubcf4\ub2e4 \uc5b4\ub5a4 \uaddc\uce59\uc774 \uc788\ub290\ub0d0\ub97c \ubcf4\uc154\uc57c \ud569\ub2c8\ub2e4.\ndeny\uc5d0 \uc77c\uce58\ud558\uba74 \ubc14\ub85c \uac70\ubd80\uc608\uc694. user\uc5d0 allow\uac00 \uc788\uc5b4\ub3c4 managed\uc5d0 deny\uac00 \uc788\uc73c\uba74 \uac70\ubd80\ub429\ub2c8\ub2e4. \ub354 \uad6c\uccb4\uc801\uc778 allow\ub97c \uc801\uc5b4\ub3c4 deny\uc5d0 \uc608\uc678\ub97c \ub0bc \uc218\ub294 \uc5c6\uc5b4\uc694.\nask\uc5d0 \uc77c\uce58\ud558\uba74 \uc0ac\ub78c\uc5d0\uac8c \ubb3c\uc5b4\ubcf4\uace0, allow\uc5d0 \uc77c\uce58\ud558\uba74 \ubb3b\uc9c0 \uc54a\uace0 \uc2e4\ud589\ud569\ub2c8\ub2e4.\n\uc5b4\ub514\uc5d0\ub3c4 \uc77c\uce58\ud558\uc9c0 \uc54a\uc73c\uba74 \uc9c0\uae08 \uad8c\ud55c \ubaa8\ub4dc\uac00 \uc815\ud574\uc694. auto mode\ub77c\uba74 \uc774 \uc790\ub9ac\uc5d0\uc11c \ubd84\ub958\uae30\uac00 \ud310\uc815\ud569\ub2c8\ub2e4. \ubc14\ub85c \ub4a4\uc5d0\uc11c \ubcfc\uac8c\uc694.\n\uc624\ub978\ucabd \ubb38\ubc95\uc740 Tool \uad04\ud638 \uc9c0\uc815\uc790 \ud558\ub098\uc608\uc694. \ud604\uc7a5\uc5d0\uc11c \uc790\uc8fc \uac78\ub9ac\ub294 \uac8c Bash \ud328\ud134\uc778\ub370, \uc6b0\ud68c\ud558\uae30\uac00 \uc27d\uac70\ub4e0\uc694. \uadf8\ub798\uc11c \uc0cc\ub4dc\ubc15\uc2a4\uc640 \ud568\uaed8 \uc501\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/permissions (Manage permissions, Settings precedence)\n\n[\uc57d\uc5b4]\n\u2022 MCP: Model Context Protocol, \uc678\ubd80 \uc2dc\uc2a4\ud15c\uc744 \ub3c4\uad6c\ub85c \ubd99\uc774\ub294 \ud45c\uc900",
+    24: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 C, \uac70\ubd80\n\u2022 \uaddc\uce59\uc740 \ud569\uccd0\uc9c4 \ub4a4 deny\uac00 \uba3c\uc800 \ud3c9\uac00\ub418\ubbc0\ub85c user\uc758 allow\ub294 \uc758\ubbf8 \uc5c6\uc74c\n\n\ud034\uc988 \ud558\ub098 \ud574 \ubcfc\uac8c\uc694. user settings\uc5d0\ub294 curl\uc744 \ud5c8\uc6a9\ud558\ub294 allow\uac00 \uc788\uace0, managed\uc5d0\ub294 \uac19\uc740 \ud328\ud134\uc758 deny\uac00 \uc788\uc5b4\uc694. \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 C, \uac70\ubd80\uc608\uc694. \ubc29\uae08 \ubcf8 \uac83\ucc98\ub7fc \uaddc\uce59\uc740 \uba3c\uc800 \ud569\uccd0\uc9c0\uace0, deny\ubd80\ud130 \ud3c9\uac00\ud558\uac70\ub4e0\uc694. \ub098\uc911\uc5d0 \uc801\uc740 \uc124\uc815\uc774 \uc774\uae30\ub294 \ubc29\uc2dd\uc740 \uc544\ub2d9\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/permissions (Settings precedence)",
+    25: "\ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 auto mode\uc5d0\uc11c\ub3c4 deny\uc640 ask\uac00 \ubd84\ub958\uae30\ubcf4\ub2e4 \uba3c\uc800 \ud3c9\uac00\n\u2022 deny\ub294 \uc989\uc2dc \uac70\ubd80, \ubd84\ub958\uae30\ub098 \uc0ac\uc6a9\uc790 \uc758\ub3c4\ub85c \ubabb \ud482\n\u2022 ask\ub294 \ud56d\uc0c1 \uc0ac\ub78c \ud655\uc778, \ubd84\ub958\uae30\uac00 \ub300\uc2e0 \uc2b9\uc778 \ubabb \ud568\n\u2022 \uc881\uc740 allow\uc640 \uc77d\uae30, \uc791\uc5c5 \ud3f4\ub354 \ud3b8\uc9d1\uc740 \ubd84\ub958\uae30 \uc0dd\ub7b5, Bash(*) \uac19\uc740 \ub113\uc740 allow\ub294 auto \ub3d9\uc548 \uaebc\uc9d0\n\u2022 \ubd84\ub958\uae30 \ud310\uc815: hard_deny, soft_deny, allow \uc608\uc678, \uc0ac\uc6a9\uc790 \uba85\uc2dc \uc758\ub3c4 \uc21c. \uc77c\ubc18\uc801\uc778 \uc694\uccad\uc740 \uba85\uc2dc \uc758\ub3c4\uac00 \uc544\ub2d8\n\n\nLab 2\uc5d0\uc11c \uc4f0\ub294 auto mode\uac00 \uc5b4\ub5bb\uac8c \ud310\uc815\ud558\ub294\uc9c0 \ubcf4\uaca0\uc2b5\ub2c8\ub2e4. \ubb38\uc774 \ub450 \uac1c\ub77c\uace0 \uae30\uc5b5\ud558\uc2dc\uba74 \ub3fc\uc694.\n\uccab \ubc88\uc9f8 \ubb38\uc740 \ubc29\uae08 \ubcf8 \uad8c\ud55c \uaddc\uce59\uc785\ub2c8\ub2e4. deny\uc5d0 \uac78\ub9ac\uba74 \uc989\uc2dc \uac70\ubd80\uc774\uace0, \ubd84\ub958\uae30\ub098 \uc0ac\uc6a9\uc790\uc758 \uc758\ub3c4\ub85c\ub3c4 \ud480\uc9c0 \ubabb\ud574\uc694. ask\uc5d0 \uac78\ub9ac\uba74 \ubd84\ub958\uae30\uac00 \uc548\uc804\ud558\ub2e4\uace0 \ubd10\ub3c4 \ubc18\ub4dc\uc2dc \uc0ac\ub78c\uc5d0\uac8c \ubb3b\uc2b5\ub2c8\ub2e4.\nBash npm test\ucc98\ub7fc \uc881\uac8c \ud5c8\uc6a9\ud55c \uba85\ub839\uacfc \uc77d\uae30, \uc791\uc5c5 \ud3f4\ub354 \uc548 \ud3b8\uc9d1\uc740 \ubd84\ub958\uae30\ub97c \uac70\uce58\uc9c0 \uc54a\uace0 \ubc14\ub85c \uc2e4\ud589\ud574\uc694. \ub300\uc2e0 Bash \ubcc4\ud45c\ucc98\ub7fc \ub113\uc740 allow\ub294 auto\uc5d0 \ub4e4\uc5b4\uac00\ub294 \uc21c\uac04 \uaebc\uc9d1\ub2c8\ub2e4.\n\ub450 \ubc88\uc9f8 \ubb38\uc774 \ubd84\ub958\uae30\uc608\uc694. hard_deny, soft_deny, allow \uc608\uc678, \uc0ac\uc6a9\uc790 \uba85\uc2dc \uc758\ub3c4 \uc21c\uc11c\ub85c \ud310\uc815\ud569\ub2c8\ub2e4. \uc5ec\uae30\uc11c \uba85\uc2dc \uc758\ub3c4\ub294 \uc815\ud655\ud788 \uadf8 \ub3d9\uc791\uc744 \uc2dc\ud0a8 \uacbd\uc6b0\ub9cc\uc774\uc5d0\uc694. \"\uc815\ub9ac\ud574 \uc918\"\ub294 force push\ub97c \ud5c8\ub77d\ud55c \uac8c \uc544\ub2d9\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/permission-modes (How the classifier evaluates actions)\n\u2022 code.claude.com/docs/en/auto-mode-config (Override the block and allow rules)\n\u2022 Ch2 Lab 2 TASK 03",
+    26: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 \ubd84\ub958\uae30\ub294 \uc124\uc815\ud558\uc9c0 \uc54a\uc544\ub3c4 \uae30\ubcf8 \uaddc\uce59\uc73c\ub85c \ub124 \ubc94\uc8fc\ub97c \ub9c9\uc74c: \uc678\ubd80 \ucf54\ub4dc \uc2e4\ud589, \ub370\uc774\ud130 \ubc18\ucd9c, \ub418\ub3cc\ub9b4 \uc218 \uc5c6\ub294 \uc77c, \uc6b4\uc601\n\u2022 \ubc18\ucd9c\uc740 \uae30\ubcf8 hard_deny(\uc9c0\uc2dc\ud574\ub3c4 \uc548 \ud480\ub9bc), \ub098\uba38\uc9c0\ub294 soft_deny(\uc815\ud655\ud788 \uadf8 \ub3d9\uc791\uc744 \uc9c0\uc2dc\ud558\uba74 \ud480\ub9bc)\n\u2022 \uc791\uc5c5 \ud3f4\ub354 \ud30c\uc77c, lock \ud30c\uc77c \uc758\uc874\uc131 \uc124\uce58, \uc77d\uae30 \uc804\uc6a9 HTTP, \ud604\uc7ac \uc800\uc7a5\uc18c push\ub294 \ud1b5\uacfc\n\u2022 \ub8e8\ud2b8, \ud648, \uc791\uc5c5 \ud3f4\ub354 rm\uc740 allow \uaddc\uce59\uc774\ub098 \ud6c5\uc73c\ub85c\ub3c4 \uc2b9\uc778 \ubd88\uac00, \uc0ac\ub78c \ud655\uc778\n\u2022 \uaddc\uce59\uc744 \ub354\ud560 \ub54c\ub294 \"$defaults\"\ub97c \ub0a8\uae40\n\n\ubd84\ub958\uae30\ub294 \uc544\ubb34\uac83\ub3c4 \uc124\uc815\ud558\uc9c0 \uc54a\uc544\ub3c4 \uae30\ubcf8 \uaddc\uce59\uc744 \uac16\uace0 \uc788\uc5b4\uc694.\n\n\ub124 \ubc94\uc8fc\ub97c \ucc28\ub840\ub85c \ubcfc\uac8c\uc694. \uc678\ubd80 \ucf54\ub4dc \uc2e4\ud589, \uc608\ub97c \ub4e4\uc5b4 curl\ub85c \ubc1b\uc544 bash\ub85c \ubc14\ub85c \uc2e4\ud589\ud558\ub294 \uac83. \ub370\uc774\ud130 \ubc18\ucd9c, \ubbfc\uac10 \ub370\uc774\ud130\ub97c \ubc16\uc73c\ub85c \ubcf4\ub0b4\ub294 \uac83. \uc774\uac74 \uae30\ubcf8\uc774 hard_deny\ub77c \uc0ac\uc6a9\uc790\uac00 \uc2dc\ucf1c\ub3c4 \uc548 \ud480\ub824\uc694. \ub418\ub3cc\ub9b4 \uc218 \uc5c6\ub294 \uc77c, force push\ub098 \uc138\uc158 \uc804\ubd80\ud130 \uc788\ub358 \ud30c\uc77c\uc744 \uc9c0\uc6b0\ub294 \uac83. \uadf8\ub9ac\uace0 \uc6b4\uc601 \ubc30\ud3ec\uc640 \ub9c8\uc774\uadf8\ub808\uc774\uc158\uc785\ub2c8\ub2e4.\n\ubc18\ub300\ub85c \uc791\uc5c5 \ud3f4\ub354 \ud30c\uc77c \uc791\uc5c5, lock \ud30c\uc77c\uc5d0 \uc788\ub294 \uc758\uc874\uc131 \uc124\uce58, \uc77d\uae30 \uc804\uc6a9 HTTP\ub294 \uadf8\ub0e5 \ud1b5\uacfc\ud574\uc694. \ud604\uc7ac \uc800\uc7a5\uc18c\ub85c push\ud558\ub294 \uac83\ub3c4 \uae30\ubcf8 \ud1b5\uacfc\ub77c\uc11c, \uaf2d \ubb3b\uac8c \ud558\ub824\uba74 \uc55e \uc7a5\uc758 ask\ub97c \uac70\uc2dc\uba74 \ub429\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/permission-modes (What the classifier blocks by default, Critical paths)\n\u2022 code.claude.com/docs/en/auto-mode-config (Common boundaries, Override the block and allow rules)",
+    27: "\u23f8\ufe0f \ud83c\udfac [2min] [\uc694\uc57d]\n\u2022 \ub3c4\uad6c \ud638\ucd9c \ud558\ub098\uc758 \uac80\uc0ac \uc21c\uc11c: PreToolUse \ud6c5, \uad8c\ud55c \uaddc\uce59(deny, ask, allow), auto \ubd84\ub958\uae30(Manual\uc774\uba74 \uc0ac\ub78c \ud655\uc778), \uc2e4\ud589 \uc911 \uc0cc\ub4dc\ubc15\uc2a4(OS)\n\u2022 \uc608: \"\uc815\ub9ac\ud574 \uc918\"\uc5d0 Claude\uac00 rm -rf ../shared-ledger. \ud6c5\uc740 \ud328\ud134\uc774 \uc5c6\uc5b4 \ud1b5\uacfc, managed deny Bash(rm -rf *)\uc5d0\uc11c \uac70\ubd80\n\u2022 \ubaa8\uc591\uc744 \ubc14\uafbc find -delete\ub294 deny \ud328\ud134\uc744 \ube60\uc838\ub098\uac00\uc9c0\ub9cc \ubd84\ub958\uae30\uac00 \uae30\uc874 \ud30c\uc77c \uc601\uad6c \uc0ad\uc81c\ub85c \ucc28\ub2e8, \uc2b9\uc778\ub3fc\ub3c4 \uc0cc\ub4dc\ubc15\uc2a4\uac00 \uc791\uc5c5 \ud3f4\ub354 \ubc16 \uc4f0\uae30\ub97c \ub9c9\uc74c\n\u2022 \ub124 \uce35\uc758 \uc124\uc815\uc740 managed-settings.json\uc73c\ub85c \uc7a0\uae08\n\u2022 \ub7a9\uc758 \uce35 \ubc88\ud638(1 \uad8c\ud55c \uaddc\uce59, 2 \uc0cc\ub4dc\ubc15\uc2a4, 3 \ud6c5, 4 Guardrails, 5 \ubc18\ucd9c \ucc44\ub110)\ub294 \uc885\ub958 \ubc88\ud638, \uc2e4\uc81c \uac80\uc0ac\ub294 \ud6c5\uc774 \uba3c\uc800\n\n\n\uc774 \uc7a5\uba74\ub3c4 \uc800\uc808\ub85c \ub3cc\uc544\uac00\uc694. \uac1c\ubc1c\uc790\uac00 \uacf5\uac04 \uc880 \uc815\ub9ac\ud574 \ub2ec\ub77c\uace0\ub9cc \ud588\ub294\ub370, Claude\uac00 \uc791\uc5c5 \ud3f4\ub354 \ubc16\uc758 shared-ledger\ub97c rm -rf\ub85c \uc9c0\uc6b0\ub824\ub294 \uc0c1\ud669\uc785\ub2c8\ub2e4.\n\ub3c4\uad6c\uac00 \uc2e4\ud589\ub418\uae30 \uc9c1\uc804\uc5d0 \uac00\uc7a5 \uba3c\uc800 \ub3c4\ub294 \uac74 PreToolUse \ud6c5\uc774\uc5d0\uc694. \uc6b0\ub9ac DLP \ud6c5\uc740 \uc8fc\ubbfc\ubc88\ud638 \uac19\uc740 \ud328\ud134\ub9cc \ubcf4\ub2c8\uae4c \uc774 \uba85\ub839\uc740 \ud1b5\uacfc\uc2dc\ud0b5\ub2c8\ub2e4. \ud6c5\uc740 \uc801\uc5b4 \ub454 \uac83\ub9cc \uc7a1\uc544\uc694.\n\uadf8\ub2e4\uc74c\uc774 \uad8c\ud55c \uaddc\uce59\uc774\uc5d0\uc694. managed\uc5d0 deny Bash rm -rf \ubcc4\ud45c\uac00 \uc788\uc73c\ub2c8 \uc5ec\uae30\uc11c \uc989\uc2dc \uac70\ubd80\ub429\ub2c8\ub2e4.\n\n\uadf8\ub7fc \ubaa8\uc591\uc744 \ubc14\uafb8\uba74 \uc5b4\ub5a8\uae4c\uc694. find\uc5d0 -delete\ub97c \ubd99\uc774\uba74 deny \ud328\ud134\uc5d0\ub294 \uc548 \uac78\ub824\uc694. \uc774\uac78 auto \ubd84\ub958\uae30\uac00 \uc138\uc158 \uc804\ubd80\ud130 \uc788\ub358 \ud30c\uc77c\uc744 \uc601\uad6c \uc0ad\uc81c\ud558\ub294 \ub3d9\uc791\uc73c\ub85c \ubcf4\uace0 \ub9c9\uc2b5\ub2c8\ub2e4. Manual \ubaa8\ub4dc\ub77c\uba74 \uc774 \uc790\ub9ac\uc5d0\uc11c \uc0ac\ub78c\uc5d0\uac8c \ubb3b\uace0\uc694.\n\uc0ac\ub78c\uc774 \uc2e4\uc218\ub85c \uc2b9\uc778\ud574\ub3c4 \ub05d\uc774 \uc544\ub2c8\uc5d0\uc694. \uba85\ub839\uc740 \uc0cc\ub4dc\ubc15\uc2a4 \uc548\uc5d0\uc11c \ub3cc\uace0, \uc791\uc5c5 \ud3f4\ub354 \ubc16 \uc4f0\uae30\ub294 OS\uac00 \ub9c9\uc2b5\ub2c8\ub2e4.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c \uc774 \ub124 \uce35\uc758 \uc124\uc815\uc744 managed \uc815\ucc45 \ud30c\uc77c\uc5d0 \ub450\uba74 \uc0ac\uc6a9\uc790\uac00 \ub044\uc9c0 \ubabb\ud574\uc694. \ub7a9\uc5d0\uc11c 1\uce35, 2\uce35, 3\uce35\uc774\ub77c\uace0 \ubd80\ub974\ub294 \uac74 \uc885\ub958 \ubc88\ud638\uc774\uace0, \uc2e4\uc81c\ub85c \uba3c\uc800 \ub3c4\ub294 \uac74 \ud6c5\uc774\ub77c\ub294 \uc810\ub9cc \uae30\uc5b5\ud574 \uc8fc\uc138\uc694.\n\n\n\uc774\ubc88\uc5d4 \uba85\ub839\uc774 \uc544\ub2c8\ub77c \ud504\ub86c\ud504\ud2b8 \uc790\uccb4\uc5d0 \ubbfc\uac10\uc815\ubcf4\uac00 \ub4e4\uc5b4 \uc788\ub294 \uacbd\uc6b0\ub97c \ubcf4\uaca0\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/permissions (Extend permissions with hooks: exit 2\ub294 \uad8c\ud55c \uaddc\uce59 \ud3c9\uac00 \uc804\uc5d0 \uba48\ucda4)\n\u2022 code.claude.com/docs/en/permission-modes (How the classifier evaluates actions, What the classifier blocks by default)\n\u2022 code.claude.com/docs/en/sandboxing (\uae30\ubcf8 \uc4f0\uae30 \ubc94\uc704: \uc791\uc5c5 \ud3f4\ub354\uc640 \uc784\uc2dc \ud3f4\ub354)\n\u2022 Ch2 Lab 2 TASK 01, \uc120\ud0dd TASK 04",
+    28: "\u23f8\ufe0f \ud83c\udfac [2.5min] [\uc694\uc57d]\n\u2022 \ud504\ub86c\ud504\ud2b8\ub294 Enter\ub97c \ub204\ub974\uba74 UserPromptSubmit \ud6c5(dlp-guard.sh)\uc744 \uba3c\uc800 \uc9c0\ub098\uc57c Bedrock\uc5d0 \ub2ff\uc74c\n\u2022 \uac00\uba85 \ub370\uc774\ud130 \uc694\uccad: \ud328\ud134 \uc5c6\uc74c, exit 0 \ud1b5\uacfc\n\u2022 \uc8fc\ubbfc\ubc88\ud638 \ud615\uc2dd(\uac00\uc9dc \uac12): exit 2\ub85c \ucc28\ub2e8, \ud504\ub86c\ud504\ud2b8\ub294 Claude\uc5d0 \ub2ff\uc9c0 \uc54a\uace0 \uc785\ub825\ucc3d\uc73c\ub85c \ub3cc\uc544\uc634, \uc0ac\uc720(stderr)\ub294 \uc0ac\uc6a9\uc790\uc5d0\uac8c\n\u2022 jq\uac00 \uc5c6\uc73c\uba74 \uc6d0\ub798 \uc2a4\ud06c\ub9bd\ud2b8\ub294 \uac80\uc0ac \uc5c6\uc774 exit 0, 127 \uac19\uc740 \ub2e4\ub978 \ucf54\ub4dc\ub3c4 \ube44\ucc28\ub2e8 \uc624\ub958\ub77c \ud1b5\uacfc(fail-open). Guardrails\uac00 \uc788\uc73c\uba74 AWS \ucabd\uc5d0\uc11c \ud55c \ubc88 \ub354\n\u2022 \uc218\uc815\ubcf8: command -v jq || exit 2, \uc2a4\ud06c\ub9bd\ud2b8 \uc5c6\uc74c, \uc2dc\uc791 \uc2e4\ud328, \uc2dc\uac04 \ucd08\uacfc\ub294 onFailure: block (v2.1.295+)\n\n\n\ubd84\uc11d\uac00\uac00 Enter\ub97c \ub204\ub974\uba74 \ud504\ub86c\ud504\ud2b8\ub294 \ubc14\ub85c \ubaa8\ub378\ub85c \uac00\uc9c0 \uc54a\uc544\uc694. UserPromptSubmit \ud6c5\uc774 \uba3c\uc800 \ubd05\ub2c8\ub2e4. \ub7a9\uc5d0\uc11c \ub9cc\ub4dc\ub294 dlp-guard.sh\uac00 \uc5ec\uae30 \ubd99\uc5b4\uc694.\n\uccab \ubc88\uc9f8, \uac00\uba85 \ud1a0\ud070\ub9cc \ub4e0 \uc694\uccad\uc740 \ud328\ud134\uc774 \uc5c6\uc73c\ub2c8 exit 0\uc73c\ub85c \uadf8\ub300\ub85c Bedrock\uc5d0 \uac11\ub2c8\ub2e4. \ud3c9\uc18c \uc77c\uc740 \ub9c9\uc9c0 \uc54a\uc544\uc694.\n\ub450 \ubc88\uc9f8, \ud615\uc2dd\ub9cc \ub9de\ucd98 \uac00\uc9dc \uc8fc\ubbfc\ubc88\ud638\ub97c \ub123\uc73c\uba74 exit 2\ub85c \ub9c9\ud600\uc694. \ud504\ub86c\ud504\ud2b8\ub294 Claude\uc5d0 \ub2ff\uc9c0 \uc54a\uace0, \ubcf4\ub0b8 \ubb38\uc7a5\uc740 \uc785\ub825\ucc3d\uc5d0 \uadf8\ub300\ub85c \ub3cc\uc544\uc635\ub2c8\ub2e4.\n\n\uc138 \ubc88\uc9f8\uac00 \ud568\uc815\uc774\uc5d0\uc694. jq\uac00 \uc5c6\ub294 PC\uc5d0\uc11c\ub294 \uc2a4\ud06c\ub9bd\ud2b8\uac00 \uac80\uc0ac \uc5c6\uc774 \ub05d\ub098\uc11c \ud1b5\uacfc\ud569\ub2c8\ub2e4. 127 \uac19\uc740 \ub2e4\ub978 \ucf54\ub4dc\ub85c \ub05d\ub098\ub3c4 \ub9c8\ucc2c\uac00\uc9c0\uc608\uc694. exit 2\uac00 \uc544\ub2c8\uba74 \ube44\ucc28\ub2e8 \uc624\ub958\uac70\ub4e0\uc694. \uc774\ub7f4 \ub54c Bedrock Guardrails\ub97c \uac78\uc5b4 \ub480\ub2e4\uba74 AWS \ucabd\uc5d0\uc11c \ud55c \ubc88 \ub354 \uc7a1\uc2b5\ub2c8\ub2e4.\n\ub124 \ubc88\uc9f8, \uadf8\ub798\uc11c \uc218\uc815\ubcf8\uc740 jq\uac00 \uc5c6\uc73c\uba74 exit 2\ub85c \ub9c9\uace0, \uc2a4\ud06c\ub9bd\ud2b8\uac00 \uc544\uc608 \uc5c6\uac70\ub098 \uc2dc\uac04\uc774 \ucd08\uacfc\ub418\ub294 \uacbd\uc6b0\ub294 onFailure block\uc73c\ub85c \ub9c9\uc544\uc694.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/hooks (Exit code output, onFailure)\n\u2022 Ch2 Lab 2 TASK 01, TASK 02, \uc120\ud0dd TASK 05",
+    29: "\u23f8\ufe0f \ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 DLP \ud6c5 \uc608\uc81c\ub294 UserPromptSubmit\uc758 .prompt, PreToolUse\uc758 .tool_input\uc744 \ud328\ud134\uc73c\ub85c \uac80\uc0ac\n\u2022 exit 2\ub9cc \ucc28\ub2e8. \uc0ac\uc720(stderr)\ub294 UserPromptSubmit\uc774\uba74 \uc0ac\uc6a9\uc790\uc5d0\uac8c, PreToolUse\uba74 Claude\uc5d0\uac8c\n\u2022 \uc6d0\ubcf8\uc740 jq\uac00 \uc5c6\uc73c\uba74 \uac80\uc0ac \uc5c6\uc774 exit 0, exit 127 \uac19\uc740 \uadf8 \ubc16\uc758 \uc885\ub8cc\ub3c4 \uc9c4\ud589 (fail-open)\n\u2022 \uc218\uc815\ubcf8: command -v jq\uc640 \ud574\uc11d \uc2e4\ud328\uc5d0 exit 2, grep 1(\ubd88\uc77c\uce58)\ub9cc \ud1b5\uacfc, 0 \uc77c\uce58\uc640 2+ \uc624\ub958\ub294 \ucc28\ub2e8 (fail-closed)\n\u2022 \ud328\ud134\uc740 \ud0d0\uc9c0 \uc608\uc2dc, \uc6b4\uc601 \ub8f0\uc740 \uc0ac\ub0b4 DLP \uae30\uc900\n\n\n\ubc29\uae08 \uc7a5\uba74\uc758 \uc2a4\ud06c\ub9bd\ud2b8\ub97c \uc5f4\uc5b4 \ubcfc\uac8c\uc694.\n\ud328\ud134\uc774 \uc5c6\uc73c\uba74 exit 0\uc73c\ub85c \ud1b5\uacfc\ud569\ub2c8\ub2e4. \ud504\ub86c\ud504\ud2b8 \ub2e8\uacc4\uc5d0\uc11c\ub294 .prompt\ub97c, \ub3c4\uad6c \uc2e4\ud589 \uc804 \ub2e8\uacc4\uc5d0\uc11c\ub294 .tool_input\uc744 \uac80\uc0ac\ud574\uc694.\n\ud328\ud134\uc774 \ubcf4\uc774\uba74 exit 2\ub85c \ub9c9\uc2b5\ub2c8\ub2e4. \ud504\ub86c\ud504\ud2b8 \ub2e8\uacc4\ub77c\uba74 \uc0ac\uc720\uac00 \uc0ac\uc6a9\uc790\uc5d0\uac8c \uac00\uace0, \ub3c4\uad6c \ub2e8\uacc4\ub77c\uba74 Claude\uc5d0\uac8c \uac00\uc694.\n\n\uc138 \ubc88\uc9f8\ub97c \ubcf4\uc138\uc694. \uc6d0\ubcf8\uc740 jq\uac00 \uc5c6\uc73c\uba74 \uac80\uc0ac\ud560 \uae00\uc790\uac00 \ube44\uc5b4\uc11c exit 0\uc73c\ub85c \ub05d\ub098\uc694. \ub2e4\ub978 \ucf54\ub4dc\ub85c \ub05d\ub098\ub3c4 2\uac00 \uc544\ub2c8\uba74 \uc9c4\ud589\ub429\ub2c8\ub2e4. \uc774\uac8c fail-open\uc774\uc5d0\uc694.\n\uadf8\ub798\uc11c \uc218\uc815\ubcf8\uc740 jq\ubd80\ud130 \ud655\uc778\ud574\uc11c \uc5c6\uc73c\uba74 exit 2\ub85c \ub9c9\uace0, grep\uc774 1, \uc989 \ubd88\uc77c\uce58\uc77c \ub54c\ub9cc \ud1b5\uacfc\uc2dc\ud0b5\ub2c8\ub2e4. \uc77c\uce58\ub4e0 \uac80\uc0ac\uae30 \uc624\ub958\ub4e0 \ub098\uba38\uc9c0\ub294 \uc804\ubd80 \ucc28\ub2e8\ud574\uc694.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/hooks (Exit code output)\n\u2022 Ch2 Lab 2 TASK 01, TASK 02",
+    30: "\u23f8\ufe0f [0.75min] [\uc694\uc57d]\n\u2022 \uc815\ub2f5 B, \ud1b5\uacfc\n\u2022 exit 2\ub9cc \ucc28\ub2e8, \uadf8 \uc678 0\uc774 \uc544\ub2cc \uc885\ub8cc\ub294 \ube44\ucc28\ub2e8 \uc624\ub958\ub85c \uc9c4\ud589\n\u2022 \ud6c5 \uc124\uc815\uc5d0 onFailure: \"block\"(v2.1.295+)\uc744 \ub123\uc73c\uba74 0, 2\uac00 \uc544\ub2cc \uc885\ub8cc\ub3c4 \ucc28\ub2e8\uc73c\ub85c \ucc98\ub9ac\n\n\ubc29\uae08 \ubcf8 \ub0b4\uc6a9\uc73c\ub85c \ud034\uc988 \ud558\ub098 \uac08\uac8c\uc694. \uc704\uc5d0 \uc885\ub8cc \ucf54\ub4dc\ubcc4 \uacb0\uacfc\uac00 \uc788\uc5b4\uc694. 0\uc740 \uc9c4\ud589, 2\ub294 \ucc28\ub2e8. \uadf8\ub7fc jq\uac00 \uc5c6\uc5b4\uc11c 127\ub85c \ub05d\ub098\uba74 \uc5b4\ub5bb\uac8c \ub420\uae4c\uc694?\n\n\uc815\ub2f5\uc740 B, \ud1b5\uacfc\uc608\uc694. \ub9ce\uc740 \ubd84\uc774 A\ub97c \uace0\ub974\uc2dc\ub294\ub370\uc694. \ud6c5\uc740 exit 2\ub9cc \ucc28\ub2e8\uc73c\ub85c \ubcf4\uac70\ub4e0\uc694. \uadf8\ub798\uc11c \uc624\ub958 \uacbd\ub85c\uc5d0\ub3c4 exit 2\ub97c \uaf2d \ub123\uace0, \ud6c5 \uc124\uc815\uc5d0\ub294 onFailure block\uc744 \ud568\uaed8 \uac81\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/hooks (Exit code output, onFailure)",
+    31: "\ud83c\udfac [1.25min] [\uc694\uc57d]\n\u2022 allowManagedHooksOnly: true\ub85c managed \ud6c5\ub9cc \uc2e4\ud589, user, project, local, \ud50c\ub7ec\uadf8\uc778 \ud6c5 \ubb34\uc2dc\n\u2022 UserPromptSubmit\uacfc PreToolUse(matcher Bash|Write|Edit|WebFetch)\uc5d0 \uac19\uc740 dlp-guard.sh \ub4f1\ub85d\n\u2022 \uc2a4\ud06c\ub9bd\ud2b8\ub294 root\ub9cc \uc4f0\ub294 /opt/dlp\uc5d0, chmod 755\n\u2022 onFailure: \"block\"(v2.1.295+): \uc2dc\uc791 \uc2e4\ud328, 0\uacfc 2\uac00 \uc544\ub2cc \uc885\ub8cc, \uc2dc\uac04 \ucd08\uacfc, \uc798\ubabb\ub41c \ucd9c\ub825\ub3c4 \ucc28\ub2e8\n\u2022 /hooks\uc5d0 managed hooks only \ud45c\uc2dc, managed \ud6c5 \uc790\uccb4\ub294 \ubaa9\ub85d\uc5d0 \uc548 \ubcf4\uc784\n\n\ud6c5\uc740 \ub9cc\ub4e4\uae30\ub9cc \ud574\uc11c\ub294 \uc548 \ub418\uace0, \uc0ac\uc6a9\uc790\uac00 \ub044\uc9c0 \ubabb\ud558\uac8c, \uadf8\ub9ac\uace0 \uace0\uc7a5 \ub098\ub3c4 \ub9c9\ud788\uac8c \uc815\ucc45\uc73c\ub85c \uac15\uc81c\ud574\uc57c \ud574\uc694.\n\n\uccab\uc9f8, allowManagedHooksOnly\ub97c \ucf1c\uba74 user\ub098 project, \ud50c\ub7ec\uadf8\uc778 \ud6c5\uc740 \ub3cc\uc9c0 \uc54a\uc544\uc694. \uc0ac\uc6a9\uc790\uac00 DLP \ud6c5\uc744 \ub04c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.\n\ub458\uc9f8, \uac19\uc740 \uc2a4\ud06c\ub9bd\ud2b8\ub97c \ud504\ub86c\ud504\ud2b8 \uc81c\ucd9c\uacfc Bash, Write, Edit, WebFetch \uc2e4\ud589 \uc9c1\uc804\uc5d0 \uac81\ub2c8\ub2e4. \ub2e4\ub9cc \ud6c5\uc740 \uc785\ub825\ub9cc \ubd10\uc694. Read\ub85c \uc77d\uc740 \ub0b4\uc6a9\uc774\ub098 \ub9ac\ub2e4\uc774\ub809\uc158 \ucd9c\ub825\uc740 \ubabb \ubd05\ub2c8\ub2e4.\n\uc14b\uc9f8, \uc2a4\ud06c\ub9bd\ud2b8 \ud30c\uc77c\ub3c4 \uad00\ub9ac\uc790\ub9cc \uace0\uce60 \uc218 \uc788\ub294 \uacbd\ub85c\uc5d0 \ub46c\uc57c \ud574\uc694. \ud30c\uc77c\uc744 \uace0\uce60 \uc218 \uc788\uc73c\uba74 \uc815\ucc45\uc774 \uc758\ubbf8\uac00 \uc5c6\uc73c\ub2c8\uae4c\uc694.\n\ub137\uc9f8, onFailure\ub97c block\uc73c\ub85c \ub450\uba74 \uc2a4\ud06c\ub9bd\ud2b8\uac00 \uc5c6\uac70\ub098, \uc2dc\uc791\uc5d0 \uc2e4\ud328\ud558\uac70\ub098, \uc2dc\uac04\uc774 \ucd08\uacfc\ub3fc\ub3c4 \ucc28\ub2e8\ud569\ub2c8\ub2e4. v2.1.295 \uc774\uc0c1\uc774\uc5d0\uc694.\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c /hooks\ub97c \uc5f4\uba74 managed hooks only\ub77c\uace0 \ub098\uc624\ub294\uc9c0 \ud655\uc778\ud569\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/hooks (allowManagedHooksOnly, onFailure)\n\u2022 code.claude.com/docs/en/permissions (Precedence among rules, hooks, and mods)\n\u2022 Ch2 Lab 2 TASK 01, TASK 02",
+    32: "\ud83c\udfac [1min] [\uc694\uc57d]\n\u2022 MCP \uc11c\ubc84 \ud558\ub098\ub294 \uc678\ubd80\ub85c \ub098\uac00\ub294 \ud1b5\ub85c \ud558\ub098\n\u2022 allowManagedMcpServersOnly\ub85c managed \ud5c8\uc6a9 \ubaa9\ub85d\ub9cc \uc778\uc815\n\u2022 \ubaa9\uc801\uc9c0\ub294 serverUrl, serverCommand\ub85c \uace0\uc815, serverName\uc740 \uc774\ub984\ud45c\uc77c \ubfd0\n\u2022 deniedMcpServers\uac00 \ud5c8\uc6a9\ubcf4\ub2e4 \uc6b0\uc120, \ud50c\ub7ec\uadf8\uc778\uacfc claude.ai \ucee4\ub125\ud130\uc758 MCP\ub3c4 \uac19\uc740 \uac80\uc0ac\n\u2022 \ubaa9\ub85d\uc744 \ud1b5\uc9f8\ub85c \uace0\uc815\ud558\ub824\uba74 managed-mcp.json\n\nMCP \uc11c\ubc84\ub294 \ud558\ub098\ud558\ub098\uac00 \uc678\ubd80\ub85c \ub098\uac00\ub294 \uc0c8 \ud1b5\ub85c\uc608\uc694.\n\nallowManagedMcpServersOnly\ub97c \ucf1c\uba74 managed\uc5d0 \uc801\uc740 \ud5c8\uc6a9 \ubaa9\ub85d\ub9cc \uc778\uc815\ud574\uc694. \uc0ac\uc6a9\uc790\uac00 \uc11c\ubc84\ub97c \ucd94\uac00\ud574\ub3c4 \ucf1c\uc9c0\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\ud5c8\uc6a9 \ubaa9\ub85d\uc740 \uc774\ub984\uc774 \uc544\ub2c8\ub77c URL\uc774\ub098 \uc2e4\ud589 \uba85\ub839\uc73c\ub85c \uc801\uc5b4\uc57c \ud574\uc694. \uc774\ub984\uc740 \uc0ac\uc6a9\uc790\uac00 \uc544\ubb34\ub807\uac8c\ub098 \ubd99\uc77c \uc218 \uc788\uac70\ub4e0\uc694.\n\uac70\ubd80 \ubaa9\ub85d\uc5d0 \ub9de\uc73c\uba74 \ud5c8\uc6a9 \ubaa9\ub85d\uc5d0 \uc788\uc5b4\ub3c4 \ucc28\ub2e8\uc774\uace0, \ud50c\ub7ec\uadf8\uc778\uc5d0 \ub4e4\uc5b4 \uc788\ub294 MCP \uc11c\ubc84\ub3c4 \uac19\uc740 \uac80\uc0ac\ub97c \ubc1b\uc544\uc11c \ud50c\ub7ec\uadf8\uc778\uc73c\ub85c \uc6b0\ud68c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/managed-mcp (Policy-based control with allowlists and denylists, How a server is evaluated)",
+    33: "\u23f8\ufe0f \ud83c\udfac [1.5min] [\uc694\uc57d]\n\u2022 PC: \uc138\uc158 JSONL, ~/.claude/projects \uc544\ub798 \ud3c9\ubb38, \uae30\ubcf8 30\uc77c (cleanupPeriodDays)\n\u2022 AWS: CloudTrail\uc5d0 Bedrock \ud638\ucd9c\uc774 \uae30\ubcf8 \uae30\ub85d (\ub204\uac00, \uc5b8\uc81c, \uc5b4\ub5a4 \ubaa8\ub378, \uc6d0\ubb38 \uc5c6\uc74c)\n\u2022 \uc0ac\ub0b4: OTel \uc218\uc9d1\uae30\ub85c \uc0ac\uc6a9\uc790\ubcc4 \ud1a0\ud070, \ube44\uc6a9, \ub3c4\uad6c (Ch6)\n\u2022 AWS: model invocation logging\uc740 \uc120\ud0dd, \ud504\ub86c\ud504\ud2b8 \uc6d0\ubb38\uc774 S3\ub098 CloudWatch Logs\uc5d0 \ub0a8\uc73c\ubbc0\ub85c \uc800\uc7a5\uc18c\uac00 \ubbfc\uac10 \ub370\uc774\ud130\n\u2022 Anthropic \ud154\ub808\uba54\ud2b8\ub9ac\ub294 Bedrock\uc5d0\uc11c \uae30\ubcf8 \uaebc\uc9d0, \ub2e8 WebFetch \uc0ac\uc804 \uac80\uc0ac\ub294 \ud638\uc2a4\ud2b8\uba85\uc744 api.anthropic.com\uc73c\ub85c \ubcf4\ub0c4 (skipWebFetchPreflight\ub85c \ub054)\n\n\uac10\uc0ac\uc5d0\uc11c \uadfc\uac70\ub85c \uc4f8 \uae30\ub85d\uc740 \ub124 \uacf3\uc5d0 \ub0a8\uc544\uc694. PC \ucabd\uc5d0 \ub458, AWS \ucabd\uc5d0 \ub458\uc785\ub2c8\ub2e4.\n\n\uba3c\uc800 PC\uc5d0\ub294 \uc138\uc158 JSONL\uc774 \ub0a8\uc544\uc694. \ubb34\uc5c7\uc744 \uc2dc\ucf30\uace0 Claude\uac00 \ubb34\uc5c7\uc744 \ud588\ub294\uc9c0\uac00 \ud3c9\ubb38\uc73c\ub85c \uae30\ubcf8 30\uc77c \ub0a8\uc2b5\ub2c8\ub2e4. \uace0\uac1d \ub370\uc774\ud130\uac00 \ub4e4\uc5b4 \uc788\uc744 \uc218 \uc788\ub2e4\ub294 \uc810\ub3c4 \uae30\uc5b5\ud574 \uc8fc\uc138\uc694.\nAWS \ucabd\uc5d0\ub294 CloudTrail\uc774 \uae30\ubcf8\uc73c\ub85c Bedrock \ud638\ucd9c\uc744 \ub0a8\uaca8\uc694. \ub204\uac00, \uc5b8\uc81c, \uc5b4\ub5a4 \ubaa8\ub378\uc744 \ubd88\ub800\ub294\uc9c0\uc694. Part 1\uc5d0\uc11c \ubcf8 SSO \uc784\uc2dc \uc790\uaca9\uc99d\uba85 \ub355\ubd84\uc5d0 \uc5ed\ud560 \ub4a4\uc758 \uc0ac\ub78c \uc774\ub984\uae4c\uc9c0 \uc774\uc5b4\uc9d1\ub2c8\ub2e4. \uc6d0\ubb38\uc740 \uc5c6\uc5b4\uc694.\nOTel\uc744 \ucf1c\uba74 \uc0ac\uc6a9\uc790\ubcc4 \ud1a0\ud070, \ube44\uc6a9, \ub3c4\uad6c \uc0ac\uc6a9\uc774 \uc6b0\ub9ac \uc0ac\ub0b4 \uc218\uc9d1\uae30\ub85c \uac11\ub2c8\ub2e4. \uc774\uac74 Ch6\uc5d0\uc11c \ub300\uc2dc\ubcf4\ub4dc\ub85c \ub9cc\ub4e4\uc5b4\uc694.\n\n\ub9c8\uc9c0\ub9c9\uc73c\ub85c Bedrock invocation logging\uc744 \ucf1c\uba74 \ud504\ub86c\ud504\ud2b8 \uc6d0\ubb38\uae4c\uc9c0 \ub0a8\uc544\uc694. \ub300\uc2e0 \uadf8 \uc800\uc7a5\uc18c \uc790\uccb4\uac00 \ubbfc\uac10 \ub370\uc774\ud130\uac00 \ub418\ub2c8 \uad8c\ud55c\uacfc \ubcf4\uc874 \uc815\ucc45\ubd80\ud130 \uc815\ud558\uc154\uc57c \ud569\ub2c8\ub2e4. \uadf8\ub9ac\uace0 Anthropic \ud154\ub808\uba54\ud2b8\ub9ac\ub294 Bedrock\uc5d0\uc11c \uae30\ubcf8 \uaebc\uc838 \uc788\uc9c0\ub9cc, WebFetch \uc0ac\uc804 \uac80\uc0ac\ub294 \ud638\uc2a4\ud2b8\uba85\uc744 \ubcf4\ub0b8\ub2e4\ub294 \uc810, skipWebFetchPreflight\ub85c \ub048\ub2e4\ub294 \uc810\ub9cc \uae30\uc5b5\ud574 \uc8fc\uc138\uc694.\n\n[\ucd9c\ucc98]\n\u2022 code.claude.com/docs/en/data-usage (Local caching, Default behaviors by API provider, WebFetch domain safety check)\n\u2022 code.claude.com/docs/en/monitoring-usage\n\u2022 docs.aws.amazon.com/bedrock/latest/userguide/logging-using-cloudtrail.html\n\u2022 docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html",
+    34: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \uac15\uc758\uc5d0\uc11c \uc904\uc778 \ub0b4\uc6a9\uc740 \uc2e4\uc2b5 TASK\ub85c \uc774\uc5b4\uc9d0\n\u2022 Ch2 Lab 1: \ucd5c\uc18c IAM, \uc815\ucc45 \ubc30\ud3ec\uc640 \uc6b0\ud68c \uc2dc\ub3c4, drop-in\uacfc \uae68\uc9c4 JSON, \uac8c\uc774\ud2b8\uc6e8\uc774 \uadf8\ub8f9 \uc815\ucc45\n\u2022 Ch2 Lab 2: DLP \ud6c5 \uac15\uc81c\uc640 fail-open \uc218\uc815, auto mode, \uc120\ud0dd\uc73c\ub85c \uc0cc\ub4dc\ubc15\uc2a4, Guardrails, \ud655\uc7a5 \ud1b5\uc81c\n\u2022 \ub9dd\ubd84\ub9ac \uc900\ube44\ubb3c, OS \ucc28\uc774, \ucffc\ud130\ub294 PDF \ub371\uc758 \ub354 \uc54c\uc544\ubcf4\uae30\n\n\uc624\ub298 \uac15\uc758\uc5d0\uc11c \uc77c\ubd80\ub7ec \uae4a\uc774 \ub4e4\uc5b4\uac00\uc9c0 \uc54a\uc740 \uc8fc\uc81c\ub4e4\uc774 \uc788\uc8e0. \uadf8 \ub0b4\uc6a9\uc740 \uc2e4\uc2b5\uc5d0\uc11c \uc9c1\uc811 \ud574 \ubcf4\uc2dc\uba74 \ud6e8\uc52c \ube68\ub9ac \uc775\uc219\ud574\uc838\uc694.\n\nLab 1\uc5d0\uc11c\ub294 \uc9c0\uae08 \uc5f0\uacb0\uc744 \uc77d\uc73c\uba74\uc11c \ucd5c\uc18c IAM \uc815\ucc45\uacfc \ube44\uad50\ud569\ub2c8\ub2e4. \uc815\ucc45 \ud30c\uc77c\uc744 \ubc30\ud3ec\ud55c \ub4a4\uc5d0\ub294 \uac1c\uc778 \uc124\uc815\uc73c\ub85c \ub6ab\uc5b4 \ubcfc \uac70\uc608\uc694. \uc815\ucc45 \uc870\uac01\uacfc \uae68\uc9c4 JSON, \uac8c\uc774\ud2b8\uc6e8\uc774 \uadf8\ub8f9 \uc815\ucc45\ub3c4 \uc5ec\uae30\uc11c \ubcf4\uace0\uc694.\nLab 2\uc5d0\uc11c\ub294 DLP \ud6c5\uc744 \ub9cc\ub4e4\uc5b4\uc11c \uc815\ucc45\uc73c\ub85c \uac15\uc81c\ud569\ub2c8\ub2e4. \uadf8\ub2e4\uc74c \uc77c\ubd80\ub7ec \uace0\uc7a5 \ub0b4\uc11c fail-open\uc744 \ud655\uc778\ud558\uace0 \uace0\uccd0 \ubcfc \uac70\uc608\uc694. auto mode, \uc0cc\ub4dc\ubc15\uc2a4, Guardrails\ub3c4 \uc2e4\uc2b5\uc73c\ub85c \ub2e4\ub8f9\ub2c8\ub2e4.\n\ub9dd\ubd84\ub9ac \ud658\uacbd \uc900\ube44\ubb3c\uc774\ub098 OS\ubcc4 \ucc28\uc774 \uac19\uc740 \uc6b4\uc601 \uc8fc\uc81c\ub294 PDF \ub371\uc758 \ub354 \uc54c\uc544\ubcf4\uae30\ub97c \ucc38\uace0\ud558\uc2dc\uba74 \ub3fc\uc694.",
+    35: "\u23f8\ufe0f [1min] [\uc694\uc57d]\n\u2022 \uc5f0\uacb0\uc740 \ud658\uacbd\ubcc0\uc218 \ub450 \uac1c, \ub85c\uadf8\uc778\uc740 SSO\uc640 awsAuthRefresh\n\u2022 \ubaa8\ub378 \uace0\uc815, \ud300\ubcc4 \ube44\uc6a9\uc740 \ud504\ub85c\ud544 ARN\n\u2022 \uc815\ucc45\uc740 managed-settings.json, managed\uac00 \uc774\uae30\uace0 /status\ub85c \ud655\uc778\n\u2022 deny\uac00 \uba3c\uc800, \ud6c5\uc740 exit 2\ub9cc \ucc28\ub2e8, DLP\ub294 \ub2e4\uc12f \uacb9\uacfc \uae30\ub85d\n\n\uc790, \uc624\ub298 \ub0b4\uc6a9\uc744 \uc5ec\uc12f \uc904\ub85c \uc815\ub9ac\ud574 \ubcfc\uac8c\uc694.\n\n\uc5f0\uacb0\uc740 \ud658\uacbd\ubcc0\uc218 \ub450 \uac1c\uba74 \ub3fc\uc694. \ub85c\uadf8\uc778\uc740 \uc7a5\uae30 \ud0a4 \ub300\uc2e0 SSO \ud504\ub85c\ud544\uacfc awsAuthRefresh\ub97c \uc4f0\uace0, \ubaa8\ub378\uc740 \ubc18\ub4dc\uc2dc \uace0\uc815\ud558\uace0, \ud300\ubcc4 \ube44\uc6a9\uc740 \ud504\ub85c\ud544 ARN\uc73c\ub85c \ub098\ub215\ub2c8\ub2e4.\n\uc815\ucc45\uc740 managed-settings.json \ud30c\uc77c\ub85c \ub0b4\ub824\uc694. \uac19\uc740 \ud0a4\uac00 \ubd80\ub52a\ud788\uba74 managed\uac00 \uc774\uae30\uc8e0. \ubc30\ud3ec\ud55c \ub4a4\uc5d0\ub294 /status\ub85c \uaf2d \ud655\uc778\ud558\uc138\uc694.\n\uad8c\ud55c \uaddc\uce59\uc740 deny\uac00 \uba3c\uc800\uc608\uc694. \ud6c5\uc740 exit 2\uc77c \ub54c\ub9cc \ub9c9\uc73c\ub2c8\uae4c \uc624\ub958 \uacbd\ub85c\ub3c4 exit 2\ub85c \ub2eb\uc544\uc57c \ud569\ub2c8\ub2e4. DLP \uae30\ub2a5\uc774 \ub530\ub85c \uc788\ub294 \uac8c \uc544\ub2c8\ub77c \ub2e4\uc12f \uacb9\uc744 \uc313\ub294 \uac70\uace0, \ubabb \ub9c9\uc740 \uac83\uc740 \uae30\ub85d\uc73c\ub85c \ub2f5\ud569\ub2c8\ub2e4.",
+    36: "[0.5min] [\uc694\uc57d]\n\u2022 \ub2e4\uc74c\uc740 \uc810\uc2ec, \uc2dd\uc0ac \ud6c4 \ud1b5\ud569 \ub7a9\uc5d0\uc11c Preflight\uc640 Ch1 Lab, \uc774\uc5b4\uc11c Ch2 Lab 1\uacfc Lab 2\n\u2022 \uc9c8\ubb38\uc740 Slack #20261116-claude-code-workshop-for-fsi\n\n\uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774\uc81c \uc810\uc2ec \uc2dc\uac04\uc774\uc5d0\uc694. \uc2dd\uc0ac \ud6c4 \ud1b5\ud569 \ub7a9\uc5d0\uc11c Preflight\uc640 Ch1 Lab\uc744 \ub9c8\uce58\uace0 \ub098\uba74, \uc624\ub298 \ubcf8 \uc815\ucc45\uacfc \ud6c5\uc744 Ch2 Lab 1\uacfc Lab 2\uc5d0\uc11c \uc9c1\uc811 \ubc30\ud3ec\ud558\uace0 \ub6ab\uc5b4 \ubcfc \uac70\uc608\uc694.\n\uc9c8\ubb38 \uc788\uc73c\uc2dc\uba74 Slack \ucc44\ub110\uc5d0 \uc5b8\uc81c\ub4e0 \ud3b8\ud558\uac8c \ub0a8\uaca8 \uc8fc\uc138\uc694."
   };
   const deck = new SlideFramework({
     logoSrc: "./image/aws-logo-white.png",
