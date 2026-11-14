@@ -9,6 +9,8 @@
  * - Saved in localStorage (fsi-hidden-slides) by chapter and slide number within
  *   the chapter, so a chapter deck and the merged index.html share the choice;
  *   other open tabs follow. PDF/PPTX exports ignore it and keep every slide.
+ * Compiler 3.0.10+ has native hiding: this file then drives the framework's list and only adds
+ * the right-click menu and the badge (old fsi-hidden-slides entries are moved over once).
  * Loaded once by assets/stepviz.js.
  */
 (function () {
@@ -20,6 +22,10 @@
   var hidden = {};          // slide key -> true
   var keys = [];            // index -> key
   var menu = null, badge = null, f = null;
+  // Compiler 3.0.10 and later hide slides natively (sidebar eye, H, presenter "Hide slide") and
+  // skip them in navigation. Then this file only keeps its extras (right-click menu, badge) and
+  // reads and writes the framework's own list, so every control agrees.
+  var NATIVE = false;
 
   function fw() { return (typeof deck !== 'undefined') ? deck : null; } // the SlideFramework global
   function load() {
@@ -29,11 +35,12 @@
   function store() {
     try { localStorage.setItem(KEY, JSON.stringify(Object.keys(hidden))); } catch (e) { /* private mode: this page only */ }
   }
-  function isHidden(i) { return !!hidden[keys[i]]; }
-  function count() { return keys.filter(function (k) { return hidden[k]; }).length; }
+  function isHidden(i) { return NATIVE ? !!f.isHidden(i) : !!hidden[keys[i]]; }
+  function count() { var n = 0; for (var i = 0; i < keys.length; i++) if (isHidden(i)) n++; return n; }
 
   function setHidden(i, on) {
     if (i < 0 || i >= keys.length) return;
+    if (NATIVE) { f.setHidden(i, !!on); paint(); return; }
     if (on) hidden[keys[i]] = true; else delete hidden[keys[i]];
     store();
     paint();
@@ -95,7 +102,10 @@
     var h = isHidden(i);
     var items = [[h ? '슬라이드 다시 보이기' : '슬라이드 숨기기', function () { setHidden(i, !h); }]];
     if (count() > 0) {
-      items.push(['숨긴 슬라이드 모두 보이기 (' + count() + '장)', function () { keys.forEach(function (k) { delete hidden[k]; }); store(); paint(); }]);
+      items.push(['숨긴 슬라이드 모두 보이기 (' + count() + '장)', function () {
+        if (NATIVE) { for (var j = 0; j < keys.length; j++) if (f.isHidden(j)) f.setHidden(j, false); paint(); return; }
+        keys.forEach(function (k) { delete hidden[k]; }); store(); paint();
+      }]);
     }
     menu.innerHTML = '';
     var head = document.createElement('div');
@@ -131,6 +141,19 @@
     });
     load();
 
+    NATIVE = typeof f.toggleHidden === 'function' && typeof f.setHidden === 'function' && typeof f.isHidden === 'function';
+    if (NATIVE) {
+      // One-time move of slides hidden with the old key into the framework's list.
+      var moved = false;
+      for (var m = 0; m < keys.length; m++) if (hidden[keys[m]]) { if (!f.isHidden(m)) f.setHidden(m, true); moved = true; }
+      if (moved) { try { localStorage.removeItem(KEY); } catch (e) { /* private mode */ } }
+      hidden = {};
+      initExtras();
+      document.addEventListener('rp:hiddenchange', paint);
+      paint();
+      return;
+    }
+
     // Skip hidden slides on next/prev (keys, Space, swipe, presenter view, step-through ends).
     var show = f.showSlide.bind(f);
     f.next = function () { var i = step(f.currentSlide, 1); if (i !== null) show(i); };
@@ -159,6 +182,23 @@
     if (origOpen) f.openPresenterView = function () { var r = origOpen(); patchPresenter(); try { f.presenterView && f.presenterView.updatePresenterView(); } catch (e) {} return r; };
     patchPresenter();
 
+    initExtras();
+    document.addEventListener('keydown', function (e) {
+      // e.code also matches with a Korean input method active (e.key is then 'ㅗ').
+      if (e.key !== 'h' && e.key !== 'H' && e.code !== 'KeyH') return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+      var t = e.target;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (document.body.classList.contains('rp-search-open')) return;
+      setHidden(f.currentSlide, !isHidden(f.currentSlide));
+    });
+
+    window.addEventListener('storage', function (e) { if (e.key === KEY) { load(); paint(); } });
+    paint();
+  }
+
+  // Right-click menu on sidebar thumbnails and the "hidden" badge (both modes).
+  function initExtras() {
     badge = document.createElement('div');
     badge.className = 'fsi-hidden-badge';
     badge.hidden = true;
@@ -175,18 +215,6 @@
       });
     }
 
-    document.addEventListener('keydown', function (e) {
-      // e.code also matches with a Korean input method active (e.key is then 'ㅗ').
-      if (e.key !== 'h' && e.key !== 'H' && e.code !== 'KeyH') return;
-      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
-      var t = e.target;
-      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-      if (document.body.classList.contains('rp-search-open')) return;
-      setHidden(f.currentSlide, !isHidden(f.currentSlide));
-    });
-
-    window.addEventListener('storage', function (e) { if (e.key === KEY) { load(); paint(); } });
-    paint();
   }
 
   // SlideFramework builds the deck and sidebar on DOMContentLoaded; run after it.

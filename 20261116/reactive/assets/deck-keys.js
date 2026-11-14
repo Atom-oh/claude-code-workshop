@@ -8,6 +8,9 @@
  *   C and 1-9 act only while the pen is on, so digits stay free for slides otherwise.
  *   F S H T, arrows, Space, Esc, /   unchanged
  *
+ * Compiler 3.0.10 made these keys native; on such a build this file only adds the Korean jamo
+ * (ㅜ, ㅎ) for N and G and patches nothing else.
+ *
  * common/ is overwritten by every compiler build, so this file patches the framework at run
  * time instead of editing it: SlideFramework.prototype.getKeyAction (used by the deck and the
  * presenter window) and the shared DeckPen controller's handleKey (the pen keys of both
@@ -98,6 +101,28 @@
         ? '← → Space  |  F: Fullscreen  |  N: Notes  |  G: Overview  |  P O I U Y: Pen  |  C: Clear'
         : '← → Space  |  F: Fullscreen  |  N: Notes  |  G: Overview';
     }
+  }
+
+  // Compiler 3.0.10 and later have these keys natively (plain P O I U Y C 1-9 for the pen, N and G).
+  // Patching on top of that would run each pen key twice (on, then off), so keep only the Korean
+  // jamo for N and G and leave the rest to the framework.
+  function nativeKeys() {
+    var FW = window.SlideFramework || (typeof SlideFramework !== 'undefined' ? SlideFramework : null); // eslint-disable-line no-undef
+    if (!FW || !FW.prototype || typeof FW.prototype.getKeyAction !== 'function') return null;
+    try { return FW.prototype.getKeyAction.call({ keyMappings: {} }, 'n') === 'presenter'; } catch (e) { return null; }
+  }
+  var nat = nativeKeys();
+  if (nat) {
+    var FWn = window.SlideFramework || SlideFramework; // eslint-disable-line no-undef
+    if (!FWn.prototype.__fsiKeys) {
+      var origN = FWn.prototype.getKeyAction;
+      FWn.prototype.getKeyAction = function (key) {
+        if (key === 'ㅜ' || key === 'ㅎ') return ACTIONS[key];
+        return origN.call(this, key);
+      };
+      FWn.prototype.__fsiKeys = true;
+    }
+    return;
   }
 
   patchFramework();

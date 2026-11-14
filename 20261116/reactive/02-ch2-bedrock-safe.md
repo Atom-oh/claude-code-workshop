@@ -319,7 +319,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 <div class="fsi c2-air8">
   <div class="fsi-grid-4">
     <div class="pick"><span class="k">모델 호출</span><span class="t">Bedrock Runtime VPC 엔드포인트</span><span class="d">PrivateLink로 계정 안에서 추론 (앞 장의 길)</span></div>
-    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인 (STS: 임시 자격증명 발급)</span></div>
+    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인 (OIDC: 로그인(인증) 표준, STS: 임시 자격증명 발급)</span></div>
     <div class="pick"><span class="k">사내 프록시</span><span class="t">HTTPS_PROXY, NO_PROXY</span><span class="d">프록시를 거쳐야 하는 경우</span></div>
     <div class="pick"><span class="k">사내 인증서</span><span class="t">NODE_EXTRA_CA_CERTS</span><span class="d">프록시가 TLS(HTTPS 암호화)를 다시 서명할 때</span></div>
     <div class="pick"><span class="k">외부 통신 끄기</span><span class="t">CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</span><span class="d">자동 업데이트, 오류 리포트 등을 한 번에</span></div>
@@ -1992,7 +1992,8 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-layers', {
 • 랩의 층 번호(1 권한 규칙, 2 샌드박스, 3 훅, 4 Guardrails, 5 반출 채널)는 종류 번호, 실제 검사는 훅이 먼저
 
 {cue: demo}
-↓ 개발자가 공간 좀 정리해 달라고만 했는데, Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황입니다.↓
+명령 하나가 실행되기까지 훅, 권한 규칙, 분류기, 샌드박스를 차례로 지나요. 이걸 장면 하나로 따라가 볼게요.↓
+개발자가 공간 좀 정리해 달라고만 했는데, Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황입니다.↓
 도구가 실행되기 직전에 가장 먼저 도는 건 PreToolUse 훅이에요. 우리 DLP 훅은 주민번호 같은 패턴만 보니까 이 명령은 통과시킵니다. 훅은 적어 둔 것만 잡아요.↓
 그다음이 권한 규칙이에요. managed에 deny Bash rm -rf 별표가 있으니 여기서 즉시 거부됩니다.↓
 {cue: pause}

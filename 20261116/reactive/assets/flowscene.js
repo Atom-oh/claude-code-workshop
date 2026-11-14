@@ -244,7 +244,8 @@ export function mount(sel, S) {
     // the slide may have been hidden when the scene mounted (getBBox is 0 then): measure now
     if (!framesReady && svg.getBBox().width > 0) { computeFrames(); framesReady = true; cam = OVER.slice(); }
     let i, s;
-    if (STEP) { i = still ? 0 : idx; s = still ? 0 : Math.min((now - phaseStart) / 1000, PH[i].d); }
+    // reduced motion still follows the steps, but shows each step's end state at once
+    if (STEP) { i = idx; s = still ? PH[i].d : Math.min((now - phaseStart) / 1000, PH[i].d); }
     else {
       if (!paused && !still) clock += dt;
       s = still ? 0 : clock % CYCLE; i = 0;
@@ -253,7 +254,7 @@ export function mount(sel, S) {
     enter(i);
     const ph = PH[i], lead = (STEP && !ph.all) ? (ph.lead != null ? ph.lead : 0.9) : 0;
     const u = clamp((s - lead) / Math.max(0.1, ph.d - lead), 0, 1), t = now / 1000;
-    if (prog) prog.style.width = (still ? 100 : STEP ? (i / (PH.length - 1)) * 100 : ((clock % CYCLE) / CYCLE) * 100).toFixed(1) + '%';
+    if (prog) prog.style.width = (still && !STEP ? 100 : STEP ? (i / (PH.length - 1)) * 100 : ((clock % CYCLE) / CYCLE) * 100).toFixed(1) + '%';
 
     // packet
     let q = null, colour = 'var(--accent)';
@@ -279,7 +280,7 @@ export function mount(sel, S) {
 
     figs.forEach(fg => fg.draw(t, Math.min(dt, 0.05), ph, (fg.f.act || {})[ph.key] || null));
 
-    if (still) svg.setAttribute('viewBox', OVER.map(v => v.toFixed(1)).join(' '));
+    if (still) svg.setAttribute('viewBox', ((STEP && ph.frame) || OVER).map(v => v.toFixed(1)).join(' '));
     else {
       // fixed per phase: the camera moves only when the phase changes, never while the packet travels
       const tg = ph.frame, rate = 4.2;

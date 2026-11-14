@@ -166,7 +166,7 @@ Bedrock에서 비용을 어떻게 보는지, OTel 대시보드, 계약 단가와
 셋업마다 비용을 보는 방법이 달라요. 이번 워크숍은 첫 줄에 있는 Bedrock 셋업입니다.
 Bedrock에서는 지출은 AWS 청구 콘솔로 보고, 지출 한도는 AWS 예산 도구로 봅니다. 사용자별로는 IAM principal과 CUR 2.0 태그가 있는데요. 사람 단위로 보려면 OTel과 게이트웨이처럼 계측을 직접 설치해야 해요.
 {cue: demo}
-아래 화살표로 비교해 볼게요. Claude Team이나 Enterprise는 조직 Analytics와 관리 콘솔 지출 한도가 있고, Console은 Workspace limit과 Analytics API가 있습니다. 근데 Bedrock에는 이런 화면이 없거든요. 다음 장에서 그 얘기를 할게요.
+다른 셋업과 비교해 볼게요.↓ Claude Team이나 Enterprise는 조직 Analytics와 관리 콘솔 지출 한도가 있어요.↓ Console은 Workspace limit과 Analytics API가 있습니다. 근데 Bedrock에는 이런 화면이 없거든요. 다음 장에서 그 얘기를 할게요.
 :::
 ---
 <!-- Slide 6: Bedrock reality -->
@@ -259,7 +259,7 @@ managed settings env 한 블록이면 모두에게
 
 {cue: demo}
 그럼 OTel은 어떻게 켤까요? managed settings의 env 한 블록으로 켭니다.
-첫 번째는 정책으로 켜는 거예요. 그러면 사용자가 끌 수 없고 빠지는 사람도 없죠. 두 번째는 OTLP로 회사가 정한 수집기 엔드포인트에 보내는 겁니다. 세 번째로 대표 지표는 토큰 사용량, 추정 비용, 세션 수, 코드 줄 수와 커밋, PR이고요. 네 번째는 resource 속성에 부서와 팀을 넣어서 팀별로 집계합니다.
+첫 번째는 정책으로 켜는 거예요. 그러면 사용자가 끌 수 없고 빠지는 사람도 없죠.↓ 두 번째는 OTLP로 회사가 정한 수집기 엔드포인트에 보내는 겁니다.↓ 세 번째로 대표 지표는 토큰 사용량, 추정 비용, 세션 수, 코드 줄 수와 커밋, PR이고요.↓ 네 번째는 resource 속성에 부서와 팀을 넣어서 팀별로 집계합니다.↓
 마지막은 이번 랩 환경인데요. otelcol이 받아서 내보내기 전에 프롬프트 본문을 지우고, CloudWatch와 중앙 대시보드 두 곳으로 보냅니다. 이건 TASK 01에서 직접 확인하실 거예요.
 
 [약어]
@@ -486,9 +486,9 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 • ccb-endpoint는 참가자 실습 PC, use_gateway는 모드 전환 스크립트
 
 {cue: demo}
-이제 막는 쪽으로 갈게요. Claude Apps Gateway는 Bedrock 앞단에 직접 운영하는 게이트웨이예요. claude 바이너리에 들어 있습니다.
-공식 AWS 예제 구성을 하나씩 보면요. 개발자는 /login으로 디바이스 인증을 하고 그룹 정책을 받습니다. 중간에는 internal ALB와 Route 53 사설 존이 있고, 게이트웨이는 ECS Fargate와 RDS PostgreSQL, OIDC IdP로 돌고, Bedrock은 IAM 역할 하나로 호출합니다.
-여기서 꼭 기억하실 제약이 사설망 전용이라는 거예요. /login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만 통과합니다. 로그인 브라우저도 사설망 안에 있어야 해요.
+이제 막는 쪽으로 갈게요. Claude Apps Gateway는 Bedrock 앞단에 직접 운영하는 게이트웨이예요. claude 바이너리에 들어 있습니다.↓
+공식 AWS 예제 구성을 하나씩 보면요. 개발자는 /login으로 디바이스 인증을 하고 그룹 정책을 받습니다.↓ 중간에는 internal ALB와 Route 53 사설 존이 있어요.↓ 게이트웨이는 ECS Fargate와 RDS PostgreSQL, OIDC IdP 위에서 돌아가요.↓ Bedrock은 IAM 역할 하나로 호출합니다.
+여기서 꼭 기억하실 제약이 사설망 전용이라는 거예요. /login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만 통과합니다. 로그인 브라우저도 사설망 안에 있어야 해요.↓
 마지막은 이번 랩 구성입니다. 여러분 계정마다 VPC 안에 게이트웨이가 한 대씩 있고, alice와 bob, 두 사용자로 실습할 거예요.
 
 [약어]
@@ -544,7 +544,8 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
   function idx() { var v = +inp.value, k = 0; stops.forEach(function (s, i) { if (v >= s) k = i; }); return k; }
   F.bindKeys(inp, {
     down: function () { var i = idx(); if (+inp.value < stops[stops.length - 1]) { inp.value = stops[+inp.value < stops[i] ? i : Math.min(i + 1, stops.length - 1)]; draw(); return true; } return false; },
-    up: function () { var i = idx(); if (+inp.value > stops[0]) { inp.value = stops[+inp.value > stops[i] ? i : Math.max(i - 1, 0)]; draw(); return true; } return false; }
+    up: function () { var i = idx(); if (+inp.value > stops[0]) { inp.value = stops[+inp.value > stops[i] ? i : Math.max(i - 1, 0)]; draw(); return true; } return false; },
+    state: function () { return { cur: +inp.value >= stops[stops.length - 1] ? stops.length - 1 : idx(), total: stops.length - 1 }; }
   });
   inp.addEventListener('change', function () { inp.blur(); });
   draw();
@@ -561,8 +562,8 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 • 설정은 Admin API POST /v1/organizations/spend_limits, gateway.yaml이 아님
 
 {cue: demo}
-게이트웨이의 핵심 기능은 사용자별 지출 한도예요. 왼쪽 막대를 아래 화살표로 40%, 75%, 95%, 100% 순서로 올려 볼게요.
-75%와 95%에서 사전 경고가 나오고, 100%에 닿으면 다음 요청은 429 billing_error와 리셋 시각을 받습니다.
+게이트웨이의 핵심 기능은 사용자별 지출 한도예요. 왼쪽 막대에서 사용액이 한도에 다가가면 어떻게 되는지 볼게요. 지금은 한도 대비 40%, 정상 사용 중이에요.↓
+75%에서 사전 경고가 나오고요.↓ 95%에서 한 번 더 경고합니다.↓ 100%에 닿으면 다음 요청은 429 billing_error와 리셋 시각을 받습니다.
 오른쪽 규칙을 보시면 범위는 사용자, 그룹, 조직이에요. 그룹과 조직 한도는 공유 풀이 아니라 1인당 기본값입니다. 기간은 일, 주, 월이고 UTC 기준으로 리셋돼요.
 이 설정은 Admin API로 합니다. gateway.yaml에 하는 게 아니에요. 이 부분을 많이 헷갈려 하세요.
 :::
@@ -609,7 +610,7 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 
 {cue: question}
 운영 전에 꼭 정해 두셔야 할 게 두 가지예요. 기본값이 금융권에서 기대하시는 것과 다를 수 있거든요.
-첫 번째는 저장소에 장애가 났을 때예요. 버튼으로 바꿔 보겠습니다. 기본은 fail-open이라 요청을 통과시키고 경고만 남깁니다. fail_closed_on_error를 켜면 차단해요. 그러니까 추론이 멈추는 것과 계측되지 않는 지출, 둘 중 무엇을 감수할지 고르는 겁니다.
+첫 번째는 저장소에 장애가 났을 때예요. 기본은 fail-open이라 요청을 통과시키고 경고만 남깁니다.↓ fail_closed_on_error를 켜면 차단해요. 그러니까 추론이 멈추는 것과 계측되지 않는 지출, 둘 중 무엇을 감수할지 고르는 겁니다.
 두 번째는 개인정보입니다. 게이트웨이는 이메일과 이름, 그룹을 저장하고 기본 90일 보존해요. 퇴사나 열람 요청 때 해당 행을 지우는 절차를 미리 정해 두세요.
 :::
 ---
@@ -643,7 +644,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 정답 B, 사용자 한도가 그룹 기본값보다 우선해 다음 요청부터 429
 • 진행 중인 응답은 끝까지 감
 
-퀴즈 하나 볼게요. standard-users 그룹 한도가 하루 50달러인데, bob에게만 1센트 사용자 한도를 걸면 어떻게 될까요?
+퀴즈 하나 볼게요. standard-users 그룹 한도가 하루 50달러인데, bob에게만 1센트 사용자 한도를 걸면 어떻게 될까요?↓
 {cue: pause}
 정답은 B예요. 사용자 한도가 그룹 기본값보다 우선하니까 다음 요청부터 429로 막힙니다. 이미 진행 중인 응답은 끝까지 가고요. 잠시 뒤 랩에서 직접 해 보실 거예요.
 :::
@@ -793,8 +794,8 @@ alice로 로그인하면 /model에 Opus가 보이고, bob으로 다시 로그인
 
 여기는 자주 받는 질문을 모아뒀어요. 시간이 남거나 질문이 나오면 펼쳐 볼게요.
 {cue: demo}
-첫 번째로 대시보드 숫자는 이 지표들에서 와요. token.usage의 type 속성으로 캐시 효율을 봐요. cost.usage는 추정 비용입니다.
-두 번째는 이상 징후예요. 예를 들어 cacheRead 비율이 낮으면 긴 휴식 후 재개나 자주 바뀌는 접두부를 의심하고, 세션 위생으로 처방합니다. Opus 비중이 높으면 기본 모델이 고정되지 않은 거고요. 분류기 호출 비중이 크면 Ch2 Lab 2에서 본 auto mode 분류기 모델을 명시합니다.
+첫 번째로 대시보드 숫자는 이 지표들에서 와요. token.usage의 type 속성으로 캐시 효율을 봐요. cost.usage는 추정 비용입니다.↓
+두 번째는 이상 징후예요. 예를 들어 cacheRead 비율이 낮으면 긴 휴식 후 재개나 자주 바뀌는 접두부를 의심하고, 세션 위생으로 처방합니다. Opus 비중이 높으면 기본 모델이 고정되지 않은 거고요. 분류기 호출 비중이 크면 Ch2 Lab 2에서 본 auto mode 분류기 모델을 명시합니다.↓
 세 번째는 Admin API로 그룹 기본값을 걸고 예외 사용자를 두는 겁니다. amount는 US 센트 문자열이라 하루 50달러는 5000이에요.
 :::
 ---

@@ -1,6 +1,6 @@
 /**
  * Presenter View - Dual window slide presentation with notes, timer, and sync
- * Press 'P' to open presenter view (handled by SlideFramework)
+ * Press 'N' to open presenter view (handled by SlideFramework)
  * Draggable splitters between slides/notes and current/next slide
  * Copies main document stylesheets for faithful slide preview rendering
  */
@@ -15,6 +15,7 @@ class PresenterView {
     this.fragmentObserver = null;
     this.fragmentRenderTimer = null;
     this._pen = null;
+    this._noteEdit = null;
     this.setupSync();
   }
 
@@ -342,6 +343,45 @@ ${styleSheets}
     font-size: 0.9em;
   }
 
+  /* === Notes editing === */
+  .presenter-notes .notes-header .notes-spacer { flex: 1; }
+  .presenter-notes .notes-edited {
+    padding: 2px 8px;
+    border: 1px solid #6b7194;
+    border-radius: 10px;
+    font-size: 11.5px;
+    color: #9aa0c0;
+  }
+  .presenter-notes .notes-header button {
+    padding: 3px 12px;
+    border: 1px solid #2d3250;
+    border-radius: 6px;
+    background: #232740;
+    color: #e8eaf0;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .presenter-notes .notes-header button:hover {
+    background: var(--accent-subtle, rgba(236, 114, 17, 0.15));
+    border-color: var(--accent, #ec7211);
+  }
+  .presenter-notes .notes-header [hidden] { display: none; }
+  .presenter-notes .notes-content { cursor: text; }
+  .presenter-notes .notes-editor {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 12em;
+    padding: 10px 12px;
+    border: 1px solid var(--accent, #ec7211);
+    border-radius: 6px;
+    background: #14142a;
+    color: #dde0e8;
+    font: inherit;
+    font-size: 18px;
+    line-height: 1.6;
+    resize: vertical;
+  }
+
   /* === Cue Markers === */
   .cue-markers {
     display: flex;
@@ -448,6 +488,10 @@ ${styleSheets}
         <span>Target:</span>
         <span id="p-timing-value">0 min</span>
       </span>
+      <span class="notes-spacer"></span>
+      <span class="notes-edited" id="p-note-edited" hidden>Edited</span>
+      <button id="p-note-reset" hidden>Reset to original</button>
+      <button id="p-note-edit" aria-pressed="false" title="Edit notes (double-click the notes). Ctrl+Enter saves, Esc cancels.">Edit notes</button>
     </div>
     <div class="cue-markers" id="p-cues"></div>
     <div class="notes-content" id="p-notes">No notes for this slide.</div>
@@ -456,6 +500,7 @@ ${styleSheets}
 
 <div class="presenter-nav">
   <button id="p-prev">&larr; Previous</button>
+  <button id="p-hide-btn" aria-pressed="false">Hide slide</button>
   <button id="p-next-btn">Next &rarr;</button>
 </div>
 
@@ -559,6 +604,23 @@ ${styleSheets}
       this.updatePresenterView();
     };
 
+    doc.getElementById('p-hide-btn').onclick = () => {
+      this.framework.toggleHidden();
+      this.updatePresenterView();
+    };
+
+    // Notes editing. mousedown must not blur the textarea, or the click would
+    // find it already committed.
+    const noteEditBtn = doc.getElementById('p-note-edit');
+    const noteResetBtn = doc.getElementById('p-note-reset');
+    [noteEditBtn, noteResetBtn].forEach(btn => btn.addEventListener('mousedown', (e) => e.preventDefault()));
+    noteEditBtn.onclick = () => {
+      if (this._noteEdit) this._commitNoteEdit();
+      else this._beginNoteEdit();
+    };
+    noteResetBtn.onclick = () => this._resetNote();
+    doc.getElementById('p-notes').addEventListener('dblclick', () => this._beginNoteEdit());
+
     doc.getElementById('p-next-btn').onclick = () => {
       this.framework.next();
       this.broadcastSlideChange(this.framework.currentSlide);
@@ -589,6 +651,18 @@ ${styleSheets}
           // Steps may change the current slide without triggering showSlide().
           this.updatePresenterView();
           break;
+        case 'theme':
+          if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) break;
+          e.preventDefault();
+          this.framework.toggleTheme();
+          this.updatePresenterView();
+          break;
+        case 'hide':
+          if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) break;
+          e.preventDefault();
+          this.framework.toggleHidden();
+          this.updatePresenterView();
+          break;
       }
     });
 
@@ -610,7 +684,10 @@ ${styleSheets}
     win.addEventListener('resize', () => this._updateAllScales());
     // Closing the presenter window drops its pen surface; the ink stays in the deck.
     win.addEventListener('pagehide', () => {
-      if (this.presenterWindow === win) this._destroyPen();
+      if (this.presenterWindow === win) {
+        this._commitNoteEdit();
+        this._destroyPen();
+      }
     });
   }
 
@@ -786,10 +863,18 @@ ${styleSheets}
     this._renderSlidePreview(doc, currentEl, slides[idx], false);
     this._observeCurrentSlide(slides[idx]);
 
-    // Next slide
+    const hideBtn = doc.getElementById('p-hide-btn');
+    if (hideBtn) {
+      const hidden = this.framework.isHidden(idx);
+      hideBtn.textContent = hidden ? 'Show slide' : 'Hide slide';
+      hideBtn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+    }
+
+    // Next slide: the one Next will actually land on (hidden slides are skipped).
     const nextEl = doc.getElementById('p-next');
-    if (idx + 1 < slides.length) {
-      this._renderSlidePreview(doc, nextEl, slides[idx + 1], true);
+    const nextIdx = this.framework.nextVisibleIndex(idx, 1);
+    if (nextIdx !== -1) {
+      this._renderSlidePreview(doc, nextEl, slides[nextIdx], true);
     } else {
       nextEl.innerHTML = '<div class="end-message">End of presentation</div>';
     }
@@ -805,6 +890,9 @@ ${styleSheets}
     const cuesEl = doc.getElementById('p-cues');
     const timingEl = doc.getElementById('p-timing');
     const timingValueEl = doc.getElementById('p-timing-value');
+
+    // An edit started on another slide is saved to that slide before this one renders.
+    if (this._noteEdit && this._noteEdit.index !== slideIndex) this._commitNoteEdit(false);
 
     // Handle notes - can be string or object { text, cues, timing }
     let notesText = 'No notes for this slide.';
@@ -834,8 +922,13 @@ ${styleSheets}
       }
     }
 
-    // Render rich notes as HTML
-    notesEl.innerHTML = this.renderRichNotes(notesText);
+    // Presenter edits replace the authored text (cues and timing stay authored).
+    const override = this.framework.getNoteOverride(slideIndex);
+    if (override !== undefined) notesText = override;
+
+    // Render rich notes as HTML. An open editor on this slide is never replaced.
+    if (!this._noteEdit) notesEl.innerHTML = this.renderRichNotes(notesText);
+    this._syncNoteControls(doc, slideIndex);
 
     // Render cue markers
     this.renderCueMarkers(cuesEl, cues);
@@ -847,6 +940,83 @@ ${styleSheets}
     } else {
       timingEl.style.display = 'none';
     }
+  }
+
+  _syncNoteControls(doc, slideIndex) {
+    const overridden = this.framework.getNoteOverride(slideIndex) !== undefined;
+    const editing = Boolean(this._noteEdit);
+    const edited = doc.getElementById('p-note-edited');
+    const reset = doc.getElementById('p-note-reset');
+    const editBtn = doc.getElementById('p-note-edit');
+    if (edited) edited.hidden = !overridden;
+    if (reset) reset.hidden = !overridden;
+    if (editBtn) {
+      editBtn.textContent = editing ? 'Save notes' : 'Edit notes';
+      editBtn.setAttribute('aria-pressed', editing ? 'true' : 'false');
+    }
+  }
+
+  _beginNoteEdit() {
+    if (this._noteEdit || !this.presenterWindow || this.presenterWindow.closed) return;
+    const doc = this.presenterWindow.document;
+    const index = this.framework.currentSlide;
+    const notesEl = doc.getElementById('p-notes');
+
+    const textarea = doc.createElement('textarea');
+    textarea.className = 'notes-editor';
+    textarea.value = this.framework.effectiveNoteText(index);
+    textarea.setAttribute('aria-label', 'Speaker notes');
+    textarea.spellcheck = false;
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        e.stopPropagation();
+        this._commitNoteEdit();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        this._cancelNoteEdit();
+      }
+    });
+    // A commit/cancel clears _noteEdit first, so the blur fired while the
+    // textarea is removed finds nothing to do.
+    textarea.addEventListener('blur', () => {
+      if (this._noteEdit && this._noteEdit.textarea === textarea) this._commitNoteEdit();
+    });
+
+    this._noteEdit = { index: index, textarea: textarea };
+    notesEl.innerHTML = '';
+    notesEl.appendChild(textarea);
+    this._syncNoteControls(doc, index);
+    textarea.focus();
+  }
+
+  // rerender=false lets updateNotes (which is mid-render) do the drawing itself.
+  _commitNoteEdit(rerender = true) {
+    const edit = this._noteEdit;
+    if (!edit) return;
+    this._noteEdit = null;
+    this.framework.setNoteOverride(edit.index, edit.textarea.value);
+    if (rerender) this._rerenderNotes(edit.index);
+  }
+
+  _cancelNoteEdit() {
+    const edit = this._noteEdit;
+    if (!edit) return;
+    this._noteEdit = null;
+    this._rerenderNotes(edit.index);
+  }
+
+  _resetNote() {
+    const index = this._noteEdit ? this._noteEdit.index : this.framework.currentSlide;
+    this._noteEdit = null;
+    this.framework.setNoteOverride(index, null);
+    this._rerenderNotes(index);
+  }
+
+  _rerenderNotes(index) {
+    if (!this.presenterWindow || this.presenterWindow.closed) return;
+    this.updateNotes(this.presenterWindow.document, index);
   }
 
   renderRichNotes(text) {
