@@ -222,9 +222,9 @@ claude.ai의 관리 콘솔과 Analytics, 정책 서버는 그대로
 import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
   aria: '사내망 개발자 PC의 요청이 Direct Connect 전용선, VPC 엔드포인트, IAM 판단을 거쳐 Amazon Bedrock에 닿고 같은 길로 돌아오는 흐름',
   zones: [
-    { box: [-0.4, 0, 0, 9.2, 4.2, 0.4], label: '사내망 (망분리)', labelAt: [-0.2, 0, -0.75] },
-    { box: [11.6, 0, 0, 15.4, 4.2, 0.4], label: 'AWS 리전 us-east-1', labelAt: [11.8, 0, -0.75] },
-    { box: [12.2, 0.4, 0.4, 9.6, 3.4, 0.25], label: '고객 VPC (회사 AWS 계정) 10.20.0.0/16, private subnet', labelAt: [12.4, 0.4, -0.5], sub: true }
+    { box: [-0.4, 0, 0, 9.2, 4.2, 0.4], label: '사내망 (망분리)', labelAt: [-0.2, 0, -1.05], icon: 'Group-Corporate-data-center' },
+    { box: [11.6, 0, 0, 15.4, 4.2, 0.4], label: 'AWS 리전 us-east-1', labelAt: [11.8, 0, -1.05], icon: 'Group-Region' },
+    { box: [12.2, 0.4, 0.4, 9.6, 3.4, 0.25], label: '고객 VPC (회사 AWS 계정) 10.20.0.0/16, private subnet', labelAt: [12.4, 0.4, -0.5], sub: true, icon: 'Group-VPC' }
   ],
   parts: {
     pc: { boxes: [[1.4, 1.2, 0.4, 1.8, 1.4, 0.8], [1.7, 2.4, 1.2, 1.2, 0.15, 1.0]] },
@@ -239,6 +239,13 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
     iam: { boxes: [[20.0, 0.9, 0.65, 0.22, 2.4, 2.2], [20.42, 0.9, 0.65, 0.22, 2.4, 2.2], [20.84, 0.9, 0.65, 0.22, 2.4, 2.2], [21.26, 0.9, 0.65, 0.22, 2.4, 2.2]] },
     bedrock: { boxes: [[23.2, 1.0, 0.4, 2.4, 2.4, 2.8]] }
   },
+  icons: [
+    { part: 'dx', at: [10.1, 2.0, 1.5], name: 'Direct-Connect' },
+    { part: 'r53', at: [15.05, 3.1, 2.0], name: 'Route-53' },
+    { part: 'vpce', at: [17.1, 2.0, 2.1], name: 'PrivateLink' },
+    { part: 'iam', at: [20.7, 2.1, 3.0], name: 'IAM' },
+    { part: 'bedrock', at: [24.4, 2.2, 3.4], name: 'Bedrock', size: 36 }
+  ],
   marks: [{ id: 'x', at: [6.8, 2.4, 3.6] }],
   tags: [
     { id: 'ip', at: [10.4, 3.4, 3.0], text: 'bedrock-runtime.us-east-1.amazonaws.com → 10.20.1.15', show: ['dns', 'dx', 'vpce'] },
@@ -453,12 +460,12 @@ skipWebFetchPreflight를 true로 둡니다.
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var Z = [{x:20,y:30,w:330,h:420,l:'개발자 PC'},{x:390,y:30,w:770,h:130,l:'ANTHROPIC API'},{x:770,y:185,w:390,h:265,l:'AWS',tone:'info'}];
-  var CC = {id:'cc',x:50,y:90,w:270,h:92,t:'Claude Code',s:'요청을 만드는 곳',c:'accent'};
-  var ST = {id:'st',x:50,y:330,w:270,h:92,t:'/status',s:'리전과 출처 확인',c:'success'};
-  var AN = {id:'an',x:770,y:52,w:360,h:88,t:'Anthropic API',s:'변수가 없을 때의 목적지',c:'muted'};
-  var GW = {id:'gw',x:400,y:345,w:280,h:92,t:'사내 게이트웨이',s:'BASE_URL, 쓸 때만',c:'warning'};
-  var BU = {id:'bu',x:800,y:232,w:330,h:92,t:'Bedrock us-east-1',s:'리전 값이 없을 때 기본',c:'info'};
-  var BS = {id:'bs',x:800,y:340,w:330,h:92,t:'Bedrock ap-northeast-2',s:'AWS_REGION 예시 (서울)',c:'info'};
+  var CC = {id:'cc',x:50,y:90,w:270,h:92,t:'Claude Code',s:'요청을 만드는 곳',c:'accent',icon:'terminal'};
+  var ST = {id:'st',x:50,y:330,w:270,h:92,t:'/status',s:'리전과 출처 확인',c:'success',icon:'check'};
+  var AN = {id:'an',x:770,y:52,w:360,h:88,t:'Anthropic API',s:'변수가 없을 때의 목적지',c:'muted',icon:'globe'};
+  var GW = {id:'gw',x:400,y:345,w:280,h:92,t:'사내 게이트웨이',s:'BASE_URL, 쓸 때만',c:'warning',icon:'gateway'};
+  var BU = {id:'bu',x:800,y:232,w:330,h:92,t:'Bedrock us-east-1',s:'리전 값이 없을 때 기본',c:'info',icon:'aws:Bedrock'};
+  var BS = {id:'bs',x:800,y:340,w:330,h:92,t:'Bedrock ap-northeast-2',s:'AWS_REGION 예시 (서울)',c:'info',icon:'aws:Bedrock'};
   var ALL = [CC,ST,AN,GW,BU,BS];
   var env = ['# 1. 목적지: Bedrock 사용','export CLAUDE_CODE_USE_BEDROCK=1','# 2. 리전: 프로필에 없을 때만','export AWS_REGION=ap-northeast-2','# 3. 경유지: 사내 게이트웨이를 쓸 때만','# export ANTHROPIC_BEDROCK_BASE_URL=https://...'];
   var P = '~/.zshrc 또는 settings.json의 env';
@@ -547,13 +554,13 @@ Claude Code가 부르는 API마다 필요한 권한
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var Z = [{x:20,y:30,w:300,h:420,l:'개발자 PC'},{x:350,y:30,w:810,h:420,l:'AWS 계정, 역할 정책',tone:'info'}];
-  var CC = {id:'cc',x:45,y:189,w:250,h:92,t:'Claude Code',s:'SSO 역할로 서명',c:'accent'};
-  var LS = {id:'ls',x:380,y:80,w:350,h:92,t:'1 프로필 목록 보기',s:'ListInferenceProfiles',c:'info'};
-  var GT = {id:'gt',x:380,y:199,w:350,h:92,t:'2 프로필 뒤 모델 확인',s:'GetInferenceProfile',c:'info'};
-  var IV = {id:'iv',x:380,y:318,w:350,h:92,t:'3 모델 호출',s:'InvokeModel, 스트리밍',c:'accent'};
-  var PR = {id:'pr',x:800,y:80,w:330,h:92,t:'추론 프로필',s:'시스템 프로필, 앱 프로필',c:'info'};
-  var FM = {id:'fm',x:800,y:199,w:330,h:92,t:'기반 모델',s:'foundation-model',c:'info'};
-  var MK = {id:'mk',x:800,y:318,w:330,h:92,t:'Marketplace 구독',s:'Bedrock이 대신 확인',c:'warning'};
+  var CC = {id:'cc',x:45,y:189,w:250,h:92,t:'Claude Code',s:'SSO 역할로 서명',c:'accent',icon:'terminal'};
+  var LS = {id:'ls',x:380,y:80,w:350,h:92,t:'1 프로필 목록 보기',s:'ListInferenceProfiles',c:'info',icon:'list'};
+  var GT = {id:'gt',x:380,y:199,w:350,h:92,t:'2 프로필 뒤 모델 확인',s:'GetInferenceProfile',c:'info',icon:'search'};
+  var IV = {id:'iv',x:380,y:318,w:350,h:92,t:'3 모델 호출',s:'InvokeModel, 스트리밍',c:'accent',icon:'plug'};
+  var PR = {id:'pr',x:800,y:80,w:330,h:92,t:'추론 프로필',s:'시스템 프로필, 앱 프로필',c:'info',icon:'tag'};
+  var FM = {id:'fm',x:800,y:199,w:330,h:92,t:'기반 모델',s:'foundation-model',c:'info',icon:'aws:Bedrock'};
+  var MK = {id:'mk',x:800,y:318,w:330,h:92,t:'Marketplace 구독',s:'Bedrock이 대신 확인',c:'warning',icon:'receipt'};
   var ALL = [CC,LS,GT,IV,PR,FM,MK];
   var s1 = ['"Action": [','  "bedrock:InvokeModel",','  "bedrock:InvokeModelWithResponseStream",','  "bedrock:GetInferenceProfile" ],','"Resource": [   # ... = arn:aws:bedrock:*:*','  "...:inference-profile/*",','  "...:application-inference-profile/*",','  "...:foundation-model/*" ]'];
   F.stepviz('#c2-sv-iam', [
@@ -775,13 +782,13 @@ Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var Z = [{x:20,y:30,w:450,h:420,l:'방식 다섯 가지'},{x:500,y:30,w:330,h:420,l:'CLAUDE CODE'},{x:860,y:30,w:300,h:420,l:'AWS',tone:'info'}];
-  var CF = {id:'cf',x:40,y:72,w:410,h:66,t:'aws configure',s:'장기 키를 ~/.aws에 저장',c:'danger'};
-  var AK = {id:'ak',x:40,y:146,w:410,h:66,t:'액세스 키 환경변수',s:'IAM 사용자 키면 장기 키',c:'danger'};
-  var SS = {id:'ss',x:40,y:220,w:410,h:66,t:'SSO 프로필 (권장)',s:'aws sso login, 임시 자격증명',c:'success'};
-  var CO = {id:'co',x:40,y:294,w:410,h:66,t:'콘솔 자격증명',s:'aws login, 최대 12시간',c:'info'};
-  var AP = {id:'ap',x:40,y:368,w:410,h:66,t:'Bedrock API 키',s:'AWS_BEARER_TOKEN_BEDROCK',c:'warning'};
-  var CH = {id:'ch',x:520,y:190,w:290,h:100,t:'AWS SDK 기본 체인',s:'찾아서 캐시하고 서명',c:'accent'};
-  var BR = {id:'br',x:880,y:190,w:260,h:100,t:'Amazon Bedrock',s:'요청을 받는 곳',c:'info'};
+  var CF = {id:'cf',x:40,y:72,w:410,h:66,t:'aws configure',s:'장기 키를 ~/.aws에 저장',c:'danger',icon:'doc'};
+  var AK = {id:'ak',x:40,y:146,w:410,h:66,t:'액세스 키 환경변수',s:'IAM 사용자 키면 장기 키',c:'danger',icon:'key'};
+  var SS = {id:'ss',x:40,y:220,w:410,h:66,t:'SSO 프로필 (권장)',s:'aws sso login, 임시 자격증명',c:'success',icon:'aws:IAM-Identity-Center'};
+  var CO = {id:'co',x:40,y:294,w:410,h:66,t:'콘솔 자격증명',s:'aws login, 최대 12시간',c:'info',icon:'user'};
+  var AP = {id:'ap',x:40,y:368,w:410,h:66,t:'Bedrock API 키',s:'AWS_BEARER_TOKEN_BEDROCK',c:'warning',icon:'key'};
+  var CH = {id:'ch',x:520,y:190,w:290,h:100,t:'AWS SDK 기본 체인',s:'찾아서 캐시하고 서명',c:'accent',icon:'gear'};
+  var BR = {id:'br',x:880,y:190,w:260,h:100,t:'Amazon Bedrock',s:'요청을 받는 곳',c:'info',icon:'aws:Bedrock'};
   var ALL = [CF,AK,SS,CO,AP,CH,BR];
   var chain = [{f:'cf',t:'ch',c:'danger',o:0},{f:'ak',t:'ch',c:'danger',o:0},{f:'ss',t:'ch',c:'success',o:0},{f:'co',t:'ch',c:'info',o:0}];
   F.stepviz('#c2-sv-cred', [
@@ -866,13 +873,13 @@ SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var Z = [{x:20,y:30,w:760,h:430,l:'개발자 PC'},{x:810,y:30,w:350,h:430,l:'AWS',tone:'info'}];
-  var CC = {id:'cc',x:50,y:80,w:300,h:92,t:'Claude Code',s:'Bedrock 호출 전 확인',c:'accent'};
-  var CA = {id:'ca',x:50,y:330,w:300,h:92,t:'메모리 캐시',s:'만료 5분 전까지',c:'info'};
-  var RF = {id:'rf',x:440,y:80,w:310,h:92,t:'awsAuthRefresh',s:'만료됐을 때만 실행',c:'warning'};
-  var AW = {id:'aw',x:440,y:330,w:310,h:92,t:'~/.aws 자격증명',s:'SSO 프로필',c:'info'};
-  var ST = {id:'st',x:840,y:80,w:290,h:92,t:'GetCallerIdentity',s:'정말 만료됐는지 확인',c:'info'};
-  var IC = {id:'ic',x:840,y:330,w:290,h:92,t:'IAM Identity Center',s:'브라우저 SSO 로그인',c:'info'};
-  var EX = {id:'ex',x:440,y:80,w:310,h:92,t:'awsCredentialExport',s:'세션 시작마다 실행',c:'warning'};
+  var CC = {id:'cc',x:50,y:80,w:300,h:92,t:'Claude Code',s:'Bedrock 호출 전 확인',c:'accent',icon:'terminal'};
+  var CA = {id:'ca',x:50,y:330,w:300,h:92,t:'메모리 캐시',s:'만료 5분 전까지',c:'info',icon:'server'};
+  var RF = {id:'rf',x:440,y:80,w:310,h:92,t:'awsAuthRefresh',s:'만료됐을 때만 실행',c:'warning',icon:'gear'};
+  var AW = {id:'aw',x:440,y:330,w:310,h:92,t:'~/.aws 자격증명',s:'SSO 프로필',c:'info',icon:'doc'};
+  var ST = {id:'st',x:840,y:80,w:290,h:92,t:'GetCallerIdentity',s:'정말 만료됐는지 확인',c:'info',icon:'search'};
+  var IC = {id:'ic',x:840,y:330,w:290,h:92,t:'IAM Identity Center',s:'브라우저 SSO 로그인',c:'info',icon:'aws:IAM-Identity-Center'};
+  var EX = {id:'ex',x:440,y:80,w:310,h:92,t:'awsCredentialExport',s:'세션 시작마다 실행',c:'warning',icon:'gear'};
   var cfg = ['{','  "awsAuthRefresh": "aws sso login --profile fsi-dev",','  "env": {','    "AWS_PROFILE": "fsi-dev"','  }','}'];
   F.stepviz('#c2-sv-sso', [
     {kicker:'OVERVIEW', title:'캐시, 확인, 재로그인, 다시 호출',
@@ -906,7 +913,7 @@ SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport
     {kicker:'STEP 4', title:'막힐 때 보는 곳',
      body:'VPN이나 TLS 검사 프록시가 브라우저 로그인을 끊으면 로그인 탭이 <b>계속 열립니다</b>. 이때는 <b>awsAuthRefresh를 빼고</b> 시작 전에 aws sso login을 직접 실행합니다.',
      facts:['확인 호출도 HTTPS_PROXY를 따름','사내 루트 인증서: OS 저장소나 NODE_EXTRA_CA_CERTS','무한 로그인 탭: awsAuthRefresh 제거'],
-     zones:Z, nodes:[CC,CA,{id:'rf',x:440,y:80,w:310,h:92,t:'awsAuthRefresh',s:'무한 로그인 탭이면 제거',c:'danger'},AW,ST,IC], hot:['rf','cc'],
+     zones:Z, nodes:[CC,CA,{id:'rf',x:440,y:80,w:310,h:92,t:'awsAuthRefresh',s:'무한 로그인 탭이면 제거',c:'danger',icon:'gear'},AW,ST,IC], hot:['rf','cc'],
      edges:[{f:'cc',t:'rf',c:'danger',l:'반복 실행',o:0},{f:'rf',t:'cc',c:'danger',curve:60,o:1}],
      loop:true, stagger:0.6,
      snip:{hd:'Identity Center와 함께',path:'managed-settings.json (예시)',lines:['{','  "awsAuthRefresh": "aws sso login --profile fsi-dev",','  "env": {','    "CLAUDE_CODE_USE_BEDROCK": "1",','    "AWS_PROFILE": "fsi-dev",','    "AWS_REGION": "us-east-1"','  }','}'],hl:[2,5],note:'Identity Center <b>권한 세트로 Bedrock 최소 권한</b>을 줍니다.'}}
@@ -1003,13 +1010,13 @@ QUICK CHECK, 손을 들어 답해 주세요
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var Z = [{x:20,y:30,w:290,h:420,l:'사용자가 고름'},{x:340,y:30,w:400,h:420,l:'CLAUDE CODE가 바꿈'},{x:770,y:30,w:390,h:420,l:'BEDROCK 모델 ID',tone:'info'}];
-  var AL = {id:'al',x:40,y:189,w:250,h:92,t:'opus, sonnet',s:'/model의 별칭',c:'accent'};
-  var DF = {id:'df',x:370,y:80,w:340,h:92,t:'1 내장 기본값',s:'Claude Code 버전마다 바뀜',c:'warning'};
-  var PN = {id:'pn',x:370,y:199,w:340,h:92,t:'2 managed env 고정',s:'ANTHROPIC_DEFAULT_*_MODEL',c:'success'};
-  var PX = {id:'px',x:370,y:318,w:340,h:92,t:'3 리전 → prefix',s:'us. eu. apac. global.',c:'info'};
-  var I1 = {id:'i1',x:800,y:80,w:330,h:92,t:'Opus 5.5',s:'고정 안 하면 주 모델',c:'warning'};
-  var I2 = {id:'i2',x:800,y:199,w:330,h:92,t:'고정한 그 ID',s:'global.anthropic.claude-opus-5-5',c:'success'};
-  var I3 = {id:'i3',x:800,y:318,w:330,h:92,t:'prefix + 모델',s:'계정에 있는 프로필 ID',c:'info'};
+  var AL = {id:'al',x:40,y:189,w:250,h:92,t:'opus, sonnet',s:'/model의 별칭',c:'accent',icon:'tag'};
+  var DF = {id:'df',x:370,y:80,w:340,h:92,t:'1 내장 기본값',s:'Claude Code 버전마다 바뀜',c:'warning',icon:'gear'};
+  var PN = {id:'pn',x:370,y:199,w:340,h:92,t:'2 managed env 고정',s:'ANTHROPIC_DEFAULT_*_MODEL',c:'success',icon:'lock'};
+  var PX = {id:'px',x:370,y:318,w:340,h:92,t:'3 리전 → prefix',s:'us. eu. apac. global.',c:'info',icon:'globe'};
+  var I1 = {id:'i1',x:800,y:80,w:330,h:92,t:'Opus 5.5',s:'고정 안 하면 주 모델',c:'warning',icon:'aws:Bedrock'};
+  var I2 = {id:'i2',x:800,y:199,w:330,h:92,t:'고정한 그 ID',s:'global.anthropic.claude-opus-5-5',c:'success',icon:'aws:Bedrock'};
+  var I3 = {id:'i3',x:800,y:318,w:330,h:92,t:'prefix + 모델',s:'계정에 있는 프로필 ID',c:'info',icon:'aws:Bedrock'};
   var ALL = [AL,DF,PN,PX,I1,I2,I3];
   var pin = ['# 이 랩: us-east-1, global 프로필','ANTHROPIC_DEFAULT_OPUS_MODEL=','  global.anthropic.claude-opus-5-5','ANTHROPIC_DEFAULT_SONNET_MODEL=','  global.anthropic.claude-sonnet-5-5','ANTHROPIC_DEFAULT_HAIKU_MODEL=','  global.anthropic.claude-haiku-5-5'];
   F.stepviz('#c2-sv-pin', [
@@ -1098,14 +1105,14 @@ ANTHROPIC_BEDROCK_REGION_PREFIX를 사용합니다.
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var Z = [{x:20,y:30,w:290,h:420,l:'팀'},{x:340,y:30,w:420,h:420,l:'팀별 이름표',tone:'info'},{x:790,y:30,w:370,h:420,l:'기록과 통제'}];
-  var TA = {id:'ta',x:40,y:80,w:250,h:92,t:'A팀 개발자',s:'A팀 정책을 받음',c:'accent'};
-  var TB = {id:'tb',x:40,y:318,w:250,h:92,t:'B팀 개발자',s:'B팀 정책을 받음',c:'accent'};
-  var PA = {id:'pa',x:370,y:80,w:360,h:92,t:'A팀 이름표',s:'sonnet-team-a',c:'info'};
-  var MD = {id:'md',x:370,y:199,w:360,h:92,t:'같은 Sonnet 5.5',s:'원본 global 프로필',c:'muted'};
-  var PB = {id:'pb',x:370,y:318,w:360,h:92,t:'B팀 이름표',s:'sonnet-team-b',c:'info'};
-  var LG = {id:'lg',x:815,y:80,w:320,h:92,t:'CloudTrail 기록',s:'누가, 어느 프로필로',c:'success'};
-  var CO = {id:'co',x:815,y:199,w:320,h:92,t:'비용 태그',s:'계산은 Ch6에서',c:'muted'};
-  var IA = {id:'ia',x:815,y:318,w:320,h:92,t:'IAM 정책',s:'자기 팀 이름표만 허용',c:'warning'};
+  var TA = {id:'ta',x:40,y:80,w:250,h:92,t:'A팀 개발자',s:'A팀 정책을 받음',c:'accent',icon:'user'};
+  var TB = {id:'tb',x:40,y:318,w:250,h:92,t:'B팀 개발자',s:'B팀 정책을 받음',c:'accent',icon:'user'};
+  var PA = {id:'pa',x:370,y:80,w:360,h:92,t:'A팀 이름표',s:'sonnet-team-a',c:'info',icon:'tag'};
+  var MD = {id:'md',x:370,y:199,w:360,h:92,t:'같은 Sonnet 5.5',s:'원본 global 프로필',c:'muted',icon:'aws:Bedrock'};
+  var PB = {id:'pb',x:370,y:318,w:360,h:92,t:'B팀 이름표',s:'sonnet-team-b',c:'info',icon:'tag'};
+  var LG = {id:'lg',x:815,y:80,w:320,h:92,t:'CloudTrail 기록',s:'누가, 어느 프로필로',c:'success',icon:'aws:CloudTrail'};
+  var CO = {id:'co',x:815,y:199,w:320,h:92,t:'비용 태그',s:'계산은 Ch6에서',c:'muted',icon:'receipt'};
+  var IA = {id:'ia',x:815,y:318,w:320,h:92,t:'IAM 정책',s:'자기 팀 이름표만 허용',c:'warning',icon:'aws:IAM'};
   var ALL = [TA,TB,PA,MD,PB,LG,CO,IA];
   F.stepviz('#c2-sv-tag', [
     {kicker:'OVERVIEW', title:'팀마다 이름표 하나, 기록에 남는 이름',
@@ -1505,7 +1512,7 @@ managed-settings.json에 넣는 잠금 키와 그 효과
     {kicker:'OVERVIEW', title:'개인 설정으로 못 여는 문 여섯 개',
      body:'합치는 규칙만으로는 개인이 allow를 <b>더하는 것</b>까지 막지 못합니다. 그 문을 닫는 것이 잠금 키입니다. 위에서부터 하나씩 켜 봅니다.',
      facts:['넷은 managed 전용 키','disableBypassPermissionsMode, allowedHttpHookUrls는 어느 파일에나','조직에 강제하려면 모두 managed에'],
-     zones:Z, nodes:K.concat([{id:'ef',x:740,y:165,w:410,h:140,t:'잠금 키 여섯 개',s:'개인 설정으로는 못 끔',c:'accent'}]),
+     zones:Z, nodes:K.concat([{id:'ef',x:740,y:165,w:410,h:140,t:'잠금 키 여섯 개',s:'개인 설정으로는 못 끔',c:'accent',icon:'lock'}]),
      hot:['k1','k2','k3','k4','k5','k6','ef'], edges:['k1','k2','k3','k4','k5','k6'].map(function (k, i) { return ed(k, i); }), loop:true, stagger:0.4,
      snip:{hd:'잠금 키 묶음 (예시 값)', path:'/etc/claude-code/managed-settings.json', lines:J, hl:[3,4,5,6,7,8,9,10], note:'파일이 깨지면 <b>시작을 거부</b>하니 배포 전에 <b>jq .</b>로 검증합니다.'}},
     st('k1','KEY 1','우회 모드는 항상 잠급니다','모든 권한 확인을 건너뛰는 <b>bypassPermissions</b> 모드를 막습니다. 플래그를 줘도 우회 모드로 들어가지 않습니다.',
@@ -1822,15 +1829,15 @@ Read 도구로 raw는 거부되고 pseudo는 읽히는지 확인합니다.↓
   var S1 = {id:'s1',x:30,y:70,w:230,h:76,t:'Managed',s:'관리자 배포',c:'danger'};
   var S2 = {id:'s2',x:30,y:197,w:230,h:76,t:'Project',s:'.claude/settings.json',c:'success'};
   var S3 = {id:'s3',x:30,y:324,w:230,h:76,t:'User',s:'~/.claude/settings.json',c:'accent'};
-  var M = {id:'m',x:330,y:192,w:220,h:86,t:'합쳐진 규칙',s:'모든 스코프',c:'ink'};
+  var M = {id:'m',x:330,y:192,w:220,h:86,t:'합쳐진 규칙',s:'모든 스코프',c:'ink',icon:'list'};
   var D1 = {id:'d1',x:620,y:40,w:240,h:74,t:'1 deny 일치',c:'danger'};
   var D2 = {id:'d2',x:620,y:150,w:240,h:74,t:'2 ask 일치',c:'warning'};
   var D3 = {id:'d3',x:620,y:260,w:240,h:74,t:'3 allow 일치',c:'success'};
   var D4 = {id:'d4',x:620,y:370,w:240,h:74,t:'4 일치 없음',c:'muted'};
-  var R1 = {id:'r1',x:920,y:40,w:240,h:74,t:'즉시 거부',s:'어느 스코프에 있든',c:'danger'};
-  var R2 = {id:'r2',x:920,y:150,w:240,h:74,t:'사용자에게 확인',c:'warning'};
-  var R3 = {id:'r3',x:920,y:260,w:240,h:74,t:'확인 없이 실행',c:'success'};
-  var R4 = {id:'r4',x:920,y:370,w:240,h:74,t:'권한 모드 기본 동작',c:'muted'};
+  var R1 = {id:'r1',x:920,y:40,w:240,h:74,t:'즉시 거부',s:'어느 스코프에 있든',c:'danger',icon:'stop'};
+  var R2 = {id:'r2',x:920,y:150,w:240,h:74,t:'사용자에게 확인',c:'warning',icon:'user'};
+  var R3 = {id:'r3',x:920,y:260,w:240,h:74,t:'확인 없이 실행',c:'success',icon:'check'};
+  var R4 = {id:'r4',x:920,y:370,w:240,h:74,t:'권한 모드 기본 동작',c:'muted',icon:'gear'};
   var ALL = [S1,S2,S3,M,D1,D2,D3,D4,R1,R2,R3,R4];
   var merge = [{f:'s1',t:'m',c:'danger',side:'h',o:0},{f:'s2',t:'m',c:'success',side:'h',o:0},{f:'s3',t:'m',c:'accent',side:'h',o:0}];
   var rule = ['"deny": [','  "Read(./.env)",            // 정확한 파일','  "Read(./secrets/**)",      // gitignore 스타일 글롭','  "Bash(curl *)",            // 명령 패턴','  "WebFetch(domain:pastebin.com)",','  "mcp__untrusted-server"    // MCP 서버 전체','],','"ask":   ["Bash(git push *)"],','"allow": ["Bash(npm run test *)"]'];
@@ -1964,15 +1971,15 @@ auto mode의 판정 순서
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var RQ = {id:'rq',x:10,y:200,w:190,h:84,t:'도구 호출',s:'Bash, Edit 등',c:'accent'};
+  var RQ = {id:'rq',x:10,y:200,w:190,h:84,t:'도구 호출',s:'Bash, Edit 등',c:'accent',icon:'terminal'};
   var G1 = {id:'g1',x:230,y:200,w:210,h:84,t:'permissions.deny',c:'danger'};
   var G2 = {id:'g2',x:460,y:200,w:210,h:84,t:'permissions.ask',c:'warning'};
   var G3 = {id:'g3',x:690,y:200,w:210,h:84,t:'좁은 allow',s:'읽기, 작업 폴더 편집',c:'success'};
-  var G4 = {id:'g4',x:950,y:200,w:210,h:84,t:'분류기',s:'별도 모델 호출',c:'info'};
-  var O1 = {id:'o1',x:230,y:360,w:210,h:76,t:'즉시 거부',s:'분류기도 못 풂',c:'danger'};
-  var O2 = {id:'o2',x:460,y:360,w:210,h:76,t:'항상 사람 확인',s:'분류기가 대신 못 함',c:'warning'};
-  var O3 = {id:'o3',x:690,y:360,w:210,h:76,t:'바로 실행',s:'분류기 생략',c:'success'};
-  var O4 = {id:'o4',x:950,y:360,w:210,h:76,t:'차단 또는 허용',c:'info'};
+  var G4 = {id:'g4',x:950,y:200,w:210,h:84,t:'분류기',s:'별도 모델 호출',c:'info',icon:'robot'};
+  var O1 = {id:'o1',x:230,y:360,w:210,h:76,t:'즉시 거부',s:'분류기도 못 풂',c:'danger',icon:'stop'};
+  var O2 = {id:'o2',x:460,y:360,w:210,h:76,t:'항상 사람 확인',s:'분류기가 대신 못 함',c:'warning',icon:'user'};
+  var O3 = {id:'o3',x:690,y:360,w:210,h:76,t:'바로 실행',s:'분류기 생략',c:'success',icon:'check'};
+  var O4 = {id:'o4',x:950,y:360,w:210,h:76,t:'차단 또는 허용',c:'info',icon:'robot'};
   var N = [RQ,G1,G2,G3,G4,O1,O2,O3,O4];
   var Z = [{x:220,y:150,w:690,h:300,l:'GATE 1 권한 규칙'},{x:930,y:150,w:240,h:300,l:'GATE 2',tone:'info'}];
   var chain = function (k) { var e = [{f:'rq',t:'g1',c:'accent',o:0}]; var ids = ['g1','g2','g3','g4']; for (var i = 0; i < k; i++) e.push({f:ids[i],t:ids[i+1],c:'muted',o:i+1}); return e; };
@@ -2050,14 +2057,14 @@ npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집은 �
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var E1 = {id:'e1',x:20,y:30,w:330,h:82,t:'외부 코드 실행',s:'curl | bash',c:'warning'};
-  var E2 = {id:'e2',x:20,y:140,w:330,h:82,t:'데이터 반출',s:'민감 데이터 외부 전송',c:'danger'};
-  var E3 = {id:'e3',x:20,y:250,w:330,h:82,t:'되돌릴 수 없는 일',s:'force push, 기존 파일 영구 삭제',c:'warning'};
-  var E4 = {id:'e4',x:20,y:360,w:330,h:82,t:'운영',s:'운영 배포, 마이그레이션',c:'warning'};
-  var CL = {id:'cl',x:430,y:190,w:250,h:92,t:'분류기',s:'기본 규칙 ($defaults)',c:'info'};
-  var SD = {id:'sd',x:770,y:40,w:390,h:92,t:'soft_deny: 차단',s:'정확히 그 동작을 지시하면 풀림',c:'warning'};
-  var HD = {id:'hd',x:770,y:190,w:390,h:92,t:'hard_deny: 무조건 차단',s:'지시해도 안 풀림',c:'danger'};
-  var PS = {id:'ps',x:770,y:340,w:390,h:92,t:'allow: 묻지 않고 통과',s:'작업 폴더, lock 의존성, 읽기 HTTP',c:'success'};
+  var E1 = {id:'e1',x:20,y:30,w:330,h:82,t:'외부 코드 실행',s:'curl | bash',c:'warning',icon:'terminal'};
+  var E2 = {id:'e2',x:20,y:140,w:330,h:82,t:'데이터 반출',s:'민감 데이터 외부 전송',c:'danger',icon:'globe'};
+  var E3 = {id:'e3',x:20,y:250,w:330,h:82,t:'되돌릴 수 없는 일',s:'force push, 기존 파일 영구 삭제',c:'warning',icon:'stop'};
+  var E4 = {id:'e4',x:20,y:360,w:330,h:82,t:'운영',s:'운영 배포, 마이그레이션',c:'warning',icon:'server'};
+  var CL = {id:'cl',x:430,y:190,w:250,h:92,t:'분류기',s:'기본 규칙 ($defaults)',c:'info',icon:'robot'};
+  var SD = {id:'sd',x:770,y:40,w:390,h:92,t:'soft_deny: 차단',s:'정확히 그 동작을 지시하면 풀림',c:'warning',icon:'shield'};
+  var HD = {id:'hd',x:770,y:190,w:390,h:92,t:'hard_deny: 무조건 차단',s:'지시해도 안 풀림',c:'danger',icon:'lock'};
+  var PS = {id:'ps',x:770,y:340,w:390,h:92,t:'allow: 묻지 않고 통과',s:'작업 폴더, lock 의존성, 읽기 HTTP',c:'success',icon:'check'};
   var N = [E1,E2,E3,E4,CL,SD,HD,PS];
   var into = function (id, c) { return {f:id,t:'cl',c:c,side:'h',o:0}; };
   var codes = ['$ claude auto-mode defaults','soft_deny:','  Code from External     # curl | bash','  Git Destructive        # force push','  Production Deploy      # 운영 배포','hard_deny:','  Data Exfiltration      # 민감 데이터 반출','allow:','  작업 폴더 파일, lock 의존성, 읽기 HTTP','# "$defaults"를 빼고 쓰면 그 목록이 통째로 사라짐'];
@@ -2385,9 +2392,9 @@ DLP 훅 예제와 fail-open, 그리고 수정본
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   var IN = {id:'in',x:20,y:190,w:230,h:90,t:'입력',s:'프롬프트 또는 도구 인자',c:'accent'};
   var HK = {id:'hk',x:310,y:190,w:250,h:90,t:'dlp-guard.sh',s:'UserPromptSubmit, PreToolUse',c:'warning'};
-  var O0 = {id:'o0',x:640,y:50,w:250,h:84,t:'exit 0',s:'통과',c:'success'};
-  var O2 = {id:'o2',x:640,y:193,w:250,h:84,t:'exit 2',s:'차단',c:'danger'};
-  var OX = {id:'ox',x:640,y:336,w:250,h:84,t:'검사 실패',s:'jq 없음: exit 0, 127 등',c:'muted'};
+  var O0 = {id:'o0',x:640,y:50,w:250,h:84,t:'exit 0',s:'통과',c:'success',icon:'check'};
+  var O2 = {id:'o2',x:640,y:193,w:250,h:84,t:'exit 2',s:'차단',c:'danger',icon:'stop'};
+  var OX = {id:'ox',x:640,y:336,w:250,h:84,t:'검사 실패',s:'jq 없음: exit 0, 127 등',c:'muted',icon:'search'};
   var CC = {id:'cc',x:950,y:190,w:210,h:90,t:'다음 동작',s:'사유는 사용자 또는 Claude',c:'ink'};
   var N = [IN,HK,O0,O2,OX,CC];
   var PAT = 'PAT=\'(^|[^0-9])([0-9]{6}-[1-4][0-9]{6}|[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|01[016789]-[0-9]{3,4}-[0-9]{4}|[0-9]{3}-[0-9]{2,6}-[0-9]{5,7})([^0-9]|$)|AKIA[0-9A-Z]{16}\'';
@@ -2519,13 +2526,13 @@ jq가 없어 127로 끝나면 어떻게 될까요?↓
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var MS = {id:'ms',x:20,y:170,w:290,h:100,t:'managed-settings.json',s:'/etc/claude-code',c:'danger'};
-  var UH = {id:'uh',x:20,y:340,w:290,h:84,t:'user, project 훅',s:'무시됨',c:'muted'};
-  var E1 = {id:'e1',x:390,y:50,w:320,h:84,t:'UserPromptSubmit',s:'모든 프롬프트',c:'accent'};
-  var E2 = {id:'e2',x:390,y:190,w:320,h:84,t:'PreToolUse',s:'Bash|Write|Edit|WebFetch',c:'accent'};
-  var HC = {id:'hc',x:390,y:340,w:320,h:84,t:'/hooks',s:'managed hooks only 표시',c:'info'};
-  var SH = {id:'sh',x:800,y:110,w:360,h:92,t:'/opt/dlp/dlp-guard.sh',s:'root만 쓰기 (755)',c:'warning'};
-  var OF = {id:'of',x:800,y:290,w:360,h:92,t:'onFailure: block',s:'없음, 시작 실패, 시간 초과도 차단',c:'danger'};
+  var MS = {id:'ms',x:20,y:170,w:290,h:100,t:'managed-settings.json',s:'/etc/claude-code',c:'danger',icon:'lock'};
+  var UH = {id:'uh',x:20,y:340,w:290,h:84,t:'user, project 훅',s:'무시됨',c:'muted',icon:'user'};
+  var E1 = {id:'e1',x:390,y:50,w:320,h:84,t:'UserPromptSubmit',s:'모든 프롬프트',c:'accent',icon:'hook'};
+  var E2 = {id:'e2',x:390,y:190,w:320,h:84,t:'PreToolUse',s:'Bash|Write|Edit|WebFetch',c:'accent',icon:'hook'};
+  var HC = {id:'hc',x:390,y:340,w:320,h:84,t:'/hooks',s:'managed hooks only 표시',c:'info',icon:'list'};
+  var SH = {id:'sh',x:800,y:110,w:360,h:92,t:'/opt/dlp/dlp-guard.sh',s:'root만 쓰기 (755)',c:'warning',icon:'doc'};
+  var OF = {id:'of',x:800,y:290,w:360,h:92,t:'onFailure: block',s:'없음, 시작 실패, 시간 초과도 차단',c:'danger',icon:'stop'};
   var N = [MS,UH,E1,E2,HC,SH,OF];
   var code = ['"allowManagedHooksOnly": true,','"hooks": {','  "UserPromptSubmit": [{ "hooks": [{','    "type": "command",','    "command": "/opt/dlp/dlp-guard.sh",','    "onFailure": "block" }] }],','  "PreToolUse": [{','    "matcher": "Bash|Write|Edit|WebFetch",','    "hooks": [ 위와 같은 훅 ] }]','}'];
   var all = [{f:'ms',t:'e1',c:'danger',o:0},{f:'ms',t:'e2',c:'danger',o:0},{f:'uh',t:'ms',c:'muted',dash:true},{f:'e1',t:'sh',c:'accent',o:1},{f:'e2',t:'sh',c:'accent',o:1},{f:'sh',t:'of',c:'danger',side:'v',o:2}];
@@ -2609,13 +2616,13 @@ v2.1.295 이상에서 onFailure block을 적용하면
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var CC = {id:'cc',x:20,y:190,w:220,h:92,t:'Claude Code',s:'MCP 서버를 켤 때',c:'accent'};
-  var PO = {id:'po',x:320,y:190,w:280,h:92,t:'managed 목록',s:'거부 먼저, 허용은 그다음',c:'danger'};
-  var A1 = {id:'a1',x:690,y:14,w:470,h:76,t:'https://mcp.corp.example.com',s:'serverUrl 일치, 연결',c:'success'};
-  var A2 = {id:'a2',x:690,y:106,w:470,h:76,t:'python /opt/mcp/jira.py',s:'serverCommand 일치, 연결',c:'success'};
-  var B1 = {id:'b1',x:690,y:198,w:470,h:76,t:'사용자가 추가한 서버',s:'허용 목록에 없음, 차단',c:'muted'};
-  var B2 = {id:'b2',x:690,y:290,w:470,h:76,t:'https://x.paste.example.com',s:'deniedMcpServers, 무조건 차단',c:'danger'};
-  var P1 = {id:'p1',x:690,y:382,w:470,h:76,t:'플러그인에 든 MCP 서버',s:'같은 검사를 받음',c:'warning'};
+  var CC = {id:'cc',x:20,y:190,w:220,h:92,t:'Claude Code',s:'MCP 서버를 켤 때',c:'accent',icon:'terminal'};
+  var PO = {id:'po',x:320,y:190,w:280,h:92,t:'managed 목록',s:'거부 먼저, 허용은 그다음',c:'danger',icon:'list'};
+  var A1 = {id:'a1',x:690,y:14,w:470,h:76,t:'https://mcp.corp.example.com',s:'serverUrl 일치, 연결',c:'success',icon:'plug'};
+  var A2 = {id:'a2',x:690,y:106,w:470,h:76,t:'python /opt/mcp/jira.py',s:'serverCommand 일치, 연결',c:'success',icon:'plug'};
+  var B1 = {id:'b1',x:690,y:198,w:470,h:76,t:'사용자가 추가한 서버',s:'허용 목록에 없음, 차단',c:'muted',icon:'user'};
+  var B2 = {id:'b2',x:690,y:290,w:470,h:76,t:'https://x.paste.example.com',s:'deniedMcpServers, 무조건 차단',c:'danger',icon:'stop'};
+  var P1 = {id:'p1',x:690,y:382,w:470,h:76,t:'플러그인에 든 MCP 서버',s:'같은 검사를 받음',c:'warning',icon:'plug'};
   var N = [CC,PO,A1,A2,B1,B2,P1];
   var code = ['"allowManagedMcpServersOnly": true,','"allowedMcpServers": [','  { "serverUrl":','      "https://mcp.corp.example.com/*" },','  { "serverCommand":','      ["python", "/opt/mcp/jira.py"] }','],','"deniedMcpServers": [','  { "serverUrl":','      "https://*.paste.example.com/*" }',']'];
   var base = {f:'cc',t:'po',c:'accent',o:0};
@@ -2685,12 +2692,12 @@ allowManagedMcpServersOnly를 켜면 조직의 허용
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var CC = {id:'cc',x:40,y:190,w:220,h:92,t:'Claude Code',s:'개발자 PC',c:'accent'};
-  var J = {id:'j',x:320,y:56,w:370,h:88,t:'세션 JSONL',s:'~/.claude/projects, 기본 30일',c:'accent'};
-  var OT = {id:'ot',x:320,y:330,w:370,h:88,t:'OTel 수집기 (사내)',s:'사용자별 토큰, 비용, 도구',c:'success'};
-  var BR = {id:'br',x:790,y:193,w:370,h:86,t:'Amazon Bedrock',s:'추론 프로필로 호출',c:'ink'};
-  var CT = {id:'ct',x:790,y:56,w:370,h:88,t:'CloudTrail',s:'누가, 언제, 어떤 모델 (기본 기록)',c:'info'};
-  var IL = {id:'il',x:790,y:330,w:370,h:88,t:'invocation logging',s:'선택, 프롬프트 원문까지',c:'warning'};
+  var CC = {id:'cc',x:40,y:190,w:220,h:92,t:'Claude Code',s:'개발자 PC',c:'accent',icon:'terminal'};
+  var J = {id:'j',x:320,y:56,w:370,h:88,t:'세션 JSONL',s:'~/.claude/projects, 기본 30일',c:'accent',icon:'doc'};
+  var OT = {id:'ot',x:320,y:330,w:370,h:88,t:'OTel 수집기 (사내)',s:'사용자별 토큰, 비용, 도구',c:'success',icon:'pipe'};
+  var BR = {id:'br',x:790,y:193,w:370,h:86,t:'Amazon Bedrock',s:'추론 프로필로 호출',c:'ink',icon:'aws:Bedrock'};
+  var CT = {id:'ct',x:790,y:56,w:370,h:88,t:'CloudTrail',s:'누가, 언제, 어떤 모델 (기본 기록)',c:'info',icon:'aws:CloudTrail'};
+  var IL = {id:'il',x:790,y:330,w:370,h:88,t:'invocation logging',s:'선택, 프롬프트 원문까지',c:'warning',icon:'search'};
   var N = [CC,J,OT,BR,CT,IL];
   var Z = [{x:10,y:14,w:700,h:440,l:'PC와 사내망'},{x:760,y:14,w:420,h:440,l:'AWS 계정',tone:'info'}];
   var E = {j:{f:'cc',t:'j',c:'accent'},ot:{f:'cc',t:'ot',c:'success'},br:{f:'cc',t:'br',c:'ink',side:'h'},ct:{f:'br',t:'ct',c:'info',side:'v'},il:{f:'br',t:'il',c:'warning',side:'v'}};
