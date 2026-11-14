@@ -26,7 +26,7 @@ are generated output, so never edit them by hand.
 | F, S, T, / | Fullscreen, sidebar, theme, search |
 
 These are the compiler's native keys (3.0.10 and later). The pen keys work in the presenter
-window too. N and G also accept the Korean jamo (ㅜ, ㅎ), added by `assets/deck-keys.js`.
+window too. N, G, H and T also accept the Korean jamo (ㅜ, ㅎ, ㅗ, ㅅ), added by `assets/deck-keys.js`.
 Hidden slides are skipped by the arrows and Space but stay reachable from the sidebar,
 overview, search and `#N`; they are stored per deck in localStorage (`rp-hidden:<page path>`),
 and `assets/hide-slides.js` adds the right-click menu and the on-slide badge.

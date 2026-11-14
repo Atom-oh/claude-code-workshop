@@ -1,4 +1,5 @@
 /* FSI decks: hide slides before presenting (like PowerPoint's "Hide Slide").
+ * The list below describes builds before compiler 3.0.10; see the note after it for 3.0.10+.
  * - Right-click a thumbnail in the left sidebar: "슬라이드 숨기기" / "다시 보이기",
  *   plus "숨긴 슬라이드 모두 보이기". The H key toggles the current slide.
  * - A hidden slide is skipped by next/prev everywhere: arrows, Space, swipe, the
@@ -144,9 +145,16 @@
     NATIVE = typeof f.toggleHidden === 'function' && typeof f.setHidden === 'function' && typeof f.isHidden === 'function';
     if (NATIVE) {
       // One-time move of slides hidden with the old key into the framework's list.
+      // The old list is shared by every chapter deck and index.html: take only this page's
+      // entries and leave the others for their own decks.
       var moved = false;
-      for (var m = 0; m < keys.length; m++) if (hidden[keys[m]]) { if (!f.isHidden(m)) f.setHidden(m, true); moved = true; }
-      if (moved) { try { localStorage.removeItem(KEY); } catch (e) { /* private mode */ } }
+      for (var m = 0; m < keys.length; m++) if (hidden[keys[m]]) { if (!f.isHidden(m)) f.setHidden(m, true); delete hidden[keys[m]]; moved = true; }
+      if (moved) {
+        try {
+          var rest = Object.keys(hidden);
+          if (rest.length) localStorage.setItem(KEY, JSON.stringify(rest)); else localStorage.removeItem(KEY);
+        } catch (e) { /* private mode */ }
+      }
       hidden = {};
       initExtras();
       document.addEventListener('rp:hiddenchange', paint);
