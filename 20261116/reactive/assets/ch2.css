@@ -175,3 +175,29 @@
 .fs-prog { height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; margin-top: auto; }
 .fs-prog i { display: block; height: 100%; width: 0; background: var(--accent); }
 .fs-hint { font-size: var(--fs-caption); color: var(--text-muted); }
+
+/* Part 3 (guardrails and DLP): exit-code lanes on the "jq 없이 exit 127이면?" quick check */
+.c2p3-qc { gap: var(--space-4); }
+.c2p3-qc .opt { min-height: 6.5rem; padding: var(--space-4) var(--space-6); }
+.c2p3-lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.c2p3-lanes .ln {
+  display: grid; grid-template-columns: auto minmax(2rem, 1fr) auto; align-items: center; gap: var(--space-3);
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5); font-size: var(--fs-card); color: var(--text-primary);
+}
+.c2p3-lanes .ln code { font-size: var(--fs-card); }
+.c2p3-lanes .ln i { height: 3px; border-radius: 2px; background: var(--text-muted); position: relative; }
+.c2p3-lanes .ln i::after { content: ''; position: absolute; right: -2px; top: -5px; border: 6.5px solid transparent; border-left-color: var(--text-muted); border-right: 0; }
+.c2p3-lanes .ln.ok i, .c2p3-lanes .ln.ok i::after { background-color: var(--success); border-left-color: var(--success); }
+.c2p3-lanes .ln.ok i::after { background: none; }
+.c2p3-lanes .ln.no { border-color: var(--danger); }
+.c2p3-lanes .ln.no i { background: var(--danger); } .c2p3-lanes .ln.no i::after { border-left-color: var(--danger); }
+.c2p3-lanes .ln.no span { color: var(--danger); font-weight: var(--weight-bold); }
+.c2p3-lanes .ln.q127 { border-style: dashed; }
+.c2p3-lanes .ln .show { display: none; }
+.c2p3-lanes .ln .hide { font-weight: var(--weight-bold); color: var(--accent); }
+.qc.revealed .c2p3-lanes .ln.q127 { border-style: solid; border-color: var(--warning); }
+.qc.revealed .c2p3-lanes .ln.q127 .hide { display: none; }
+.qc.revealed .c2p3-lanes .ln.q127 .show { display: inline; color: var(--text-primary); }
+.qc.revealed .c2p3-lanes .ln.q127 i { background: var(--warning); } .qc.revealed .c2p3-lanes .ln.q127 i::after { border-left-color: var(--warning); }
+/* End Part 3 */
