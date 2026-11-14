@@ -304,9 +304,9 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
   <div class="name">Bedrock에 연결하기</div>
   <p class="what">첫 세션까지 가장 짧은 길</p>
   <ol>
-    <li><b>01</b>환경변수 두 개</li>
-    <li><b>02</b>SSO로 로그인</li>
-    <li><b>03</b>모델 고정과 팀별 비용</li>
+    <li><b>01</b>환경변수와 IAM 권한</li>
+    <li><b>02</b>키 대신 SSO 로그인</li>
+    <li><b>03</b>모델 고정과 팀 이름표</li>
   </ol>
 </div>
 :::
@@ -315,9 +315,10 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 {timing: 0.5min}
 [요약]
 • Part 1: Bedrock에 연결하기
-• 환경변수 두 개, SSO로 로그인, 모델 고정과 팀별 비용
+• 환경변수와 IAM 권한, 키 대신 SSO 로그인, 모델 고정과 팀 이름표
 
-첫 번째 Part는 Bedrock에 연결하기예요. Claude Code가 Bedrock을 처음 부르려면 뭐가 필요한지부터 볼게요. 그다음 여러 명이 쓸 때 꼭 정해야 할 두 가지, 로그인 방식과 모델을 보겠습니다.
+첫 번째 Part는 Bedrock에 연결하기예요. 방금 본 길을 실제로 여는 순서대로 갑니다.
+먼저 환경변수와 IAM 권한, 그다음 키 대신 SSO로 로그인하는 방법, 마지막으로 여러 명이 쓸 때 꼭 정해야 하는 모델 고정과 팀 이름표를 보겠습니다.
 :::
 ---
 <!-- Slide 6: Manual setup and region order -->
@@ -325,67 +326,288 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 @fit: off
 
 ## 환경변수 두 개로 연결
-수동 설정과 리전 결정 순서
+변수마다 바뀌는 것 하나: 목적지, 리전, 경유지
 
 :::html
-<div class="fsi fsi-split c2-region" id="c2-region">
-  <div class="fsi-stack">
-    <pre class="c2-code"><span class="c"># Bedrock 사용</span>
-<span class="on">export CLAUDE_CODE_USE_BEDROCK=1</span>
-<span class="c"># 프로필에 리전이 없을 때만 (서울 리전 예시)</span>
-<span class="on">export AWS_REGION=ap-northeast-2</span>
-<span class="c"># 사내 엔드포인트, 게이트웨이를 쓸 때</span>
-<span class="c"># export ANTHROPIC_BEDROCK_BASE_URL=https://...</span></pre>
-    <p class="c2-cap">~/.zshrc 또는 settings.json의 env에 둡니다.</p>
-    <div class="c2-res"><span class="k">이번 세션의 리전</span><span class="v" id="c2-region-v">ap-northeast-2</span><span class="s" id="c2-region-s">1. AWS_REGION</span></div>
-    <button class="btn btn-primary c2-cyc" data-cycle>다음 경우 보기</button>
-  </div>
-  <div class="fsi-stack c2-order" id="c2-region-rows">
-    <p class="c2-cap">리전 결정 순서 (위가 먼저). 줄을 눌러 값을 넣고 빼 보세요. 값은 예시입니다.</p>
-    <button class="c2-row" data-k="r1"><b>1</b><span class="n">AWS_REGION</span><span class="x">ap-northeast-2</span></button>
-    <button class="c2-row" data-k="r2"><b>2</b><span class="n">AWS_DEFAULT_REGION</span><span class="x">us-west-2</span></button>
-    <button class="c2-row" data-k="r3"><b>3</b><span class="n">활성 프로필의 region</span><span class="x">us-east-1</span></button>
-    <div class="c2-row fixed" data-k="r4"><b>4</b><span class="n">기본값</span><span class="x">us-east-1</span></div>
-    <p class="c2-cap">/status에서 리전이 어디서 왔는지 출처까지 확인합니다.</p>
+<div id="c2-sv-env"></div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:30,w:330,h:420,l:'개발자 PC'},{x:390,y:30,w:770,h:130,l:'ANTHROPIC API'},{x:770,y:185,w:390,h:265,l:'AWS',tone:'info'}];
+  var CC = {id:'cc',x:50,y:90,w:270,h:92,t:'Claude Code',s:'요청을 만드는 곳',c:'accent'};
+  var ST = {id:'st',x:50,y:330,w:270,h:92,t:'/status',s:'리전과 출처 확인',c:'success'};
+  var AN = {id:'an',x:770,y:52,w:360,h:88,t:'Anthropic API',s:'변수가 없을 때의 목적지',c:'muted'};
+  var GW = {id:'gw',x:400,y:345,w:280,h:92,t:'사내 게이트웨이',s:'BASE_URL, 쓸 때만',c:'warning'};
+  var BU = {id:'bu',x:800,y:232,w:330,h:92,t:'Bedrock us-east-1',s:'리전 값이 없을 때 기본',c:'info'};
+  var BS = {id:'bs',x:800,y:340,w:330,h:92,t:'Bedrock ap-northeast-2',s:'AWS_REGION 예시 (서울)',c:'info'};
+  var ALL = [CC,ST,AN,GW,BU,BS];
+  var env = ['# 1. 목적지: Bedrock 사용','export CLAUDE_CODE_USE_BEDROCK=1','# 2. 리전: 프로필에 없을 때만','export AWS_REGION=ap-northeast-2','# 3. 경유지: 사내 게이트웨이를 쓸 때만','# export ANTHROPIC_BEDROCK_BASE_URL=https://...'];
+  var P = '~/.zshrc 또는 settings.json의 env';
+  F.stepviz('#c2-sv-env', [
+    {kicker:'OVERVIEW', title:'변수 하나는 목적지, 하나는 리전',
+     body:'<b>CLAUDE_CODE_USE_BEDROCK</b>은 요청이 가는 곳을 Bedrock으로 바꾸고, <b>AWS_REGION</b>은 어느 리전의 Bedrock인지 정합니다.',
+     facts:['1 목적지: CLAUDE_CODE_USE_BEDROCK=1','2 리전: AWS_REGION (필요할 때만)','3 경유지: ANTHROPIC_BEDROCK_BASE_URL (선택)'],
+     zones:Z, nodes:ALL,
+     edges:[{f:'cc',t:'an',c:'muted',dash:true,l:'변수 없음'},{f:'cc',t:'bs',c:'accent',l:'두 변수',o:0},{f:'cc',t:'st',c:'success',o:1}],
+     loop:true, stagger:0.8,
+     snip:{hd:'변수 세 줄',path:P,lines:env,hl:[2,4],note:'필수는 두 줄, 세 번째 줄은 <b>사내 게이트웨이</b>를 쓸 때만 넣습니다.'}},
+    {kicker:'STEP 1', title:'CLAUDE_CODE_USE_BEDROCK: 목적지',
+     body:'이 값이 없으면 Claude Code는 Anthropic API로 갑니다. <b>1</b>이면 Bedrock으로 가고, 로그인 대신 <b>AWS 자격증명</b>으로 서명합니다.',
+     facts:['claude.ai 로그인 대신 AWS 자격증명','Bedrock에서는 /logout을 쓰지 않음'],
+     zones:Z, nodes:ALL, hot:['cc','an','bu','bs'],
+     edges:[{f:'cc',t:'an',c:'muted',dash:true,l:'끔'},{f:'cc',t:'bu',c:'accent',l:'Bedrock으로',o:0}],
+     loop:true,
+     snip:{hd:'목적지',path:P,lines:env,hl:[1,2],note:'이 한 줄이 <b>공급자</b>를 Amazon Bedrock으로 바꿉니다.'}},
+    {kicker:'STEP 2', title:'AWS_REGION: 어느 리전인지',
+     body:'위에서부터 처음 찾은 값을 씁니다. <b>AWS_REGION</b>, AWS_DEFAULT_REGION, 활성 프로필의 region, 아무것도 없으면 <b>us-east-1</b>입니다.',
+     facts:['1 AWS_REGION','2 AWS_DEFAULT_REGION','3 활성 프로필의 region','4 기본값 us-east-1'],
+     zones:Z, nodes:ALL, hot:['cc','bu','bs'],
+     edges:[{f:'cc',t:'bs',c:'accent',l:'AWS_REGION',o:0},{f:'cc',t:'bu',c:'muted',dash:true,l:'값이 없으면'}],
+     loop:true,
+     snip:{hd:'리전',path:P,lines:env,hl:[3,4],note:'프로필에 region이 있으면 <b>AWS_REGION은 생략</b>해도 됩니다.'}},
+    {kicker:'STEP 3', title:'사내 게이트웨이를 거칠 때',
+     body:'<b>ANTHROPIC_BEDROCK_BASE_URL</b>은 요청을 보낼 주소를 바꿉니다. 사내 게이트웨이나 지정한 엔드포인트를 지나야 할 때만 씁니다.',
+     facts:['기본은 리전의 Bedrock 주소로 바로 감','쓰지 않으면 이 줄은 비워 둠'],
+     zones:Z, nodes:ALL, hot:['cc','gw','bs'],
+     edges:[{f:'cc',t:'gw',c:'warning',o:0},{f:'gw',t:'bs',c:'warning',o:1}],
+     loop:true, stagger:0.7,
+     snip:{hd:'경유지',path:P,lines:['export CLAUDE_CODE_USE_BEDROCK=1','export AWS_REGION=ap-northeast-2','export ANTHROPIC_BEDROCK_BASE_URL=\\','  https://bedrock.corp.example'],hl:[3,4],note:'주소는 예시입니다. 게이트웨이가 <b>스트리밍 응답을 그대로</b> 넘겨야 합니다.'}},
+    {kicker:'STEP 4', title:'/status로 확인',
+     body:'설정이 실제로 먹었는지는 Claude Code 안에서 <b>/status</b>로 봅니다. 리전이 설정 파일이나 기본값에서 왔다면 <b>그 출처</b>도 함께 나옵니다.',
+     facts:['공급자가 Amazon Bedrock인지','리전과 그 출처'],
+     zones:Z, nodes:ALL, hot:['cc','st'],
+     edges:[{f:'cc',t:'st',c:'success',o:0}],
+     loop:true,
+     snip:{hd:'확인',path:'Claude Code 프롬프트',lines:['/status'],hl:[1],note:'Lab에서도 연결 직후 <b>/status</b>부터 봅니다.'}}
+  ], {legend:[['accent','Bedrock 연결'],['info','Bedrock 리전'],['warning','경유지 (선택)'],['success','확인']]});
+});
+:::
+
+:::notes
+{timing: 1.5min}
+[요약]
+• CLAUDE_CODE_USE_BEDROCK=1: 목적지를 Anthropic API에서 Bedrock으로, 인증은 AWS 자격증명
+• AWS_REGION: 프로필에 리전이 없을 때만. 결정 순서는 AWS_REGION, AWS_DEFAULT_REGION, 활성 프로필의 region, 기본 us-east-1
+• ANTHROPIC_BEDROCK_BASE_URL: 사내 게이트웨이나 지정 엔드포인트를 거칠 때만
+• /status로 공급자, 리전, 리전의 출처 확인
+
+{cue: demo}
+수동 설정은 환경변수 두 개면 돼요. 그림에서 변수 하나가 무엇을 바꾸는지 보시면 됩니다.
+첫 번째 CLAUDE_CODE_USE_BEDROCK=1은 목적지를 바꿔요. 이게 없으면 Anthropic API로 가고, 1이면 Bedrock으로 갑니다. 이때부터는 claude.ai 로그인이 아니라 AWS 자격증명으로 서명합니다.
+두 번째 AWS_REGION은 어느 리전의 Bedrock인지 정해요. 위에서부터 처음 찾은 값을 쓰는데요, AWS_REGION, AWS_DEFAULT_REGION, 프로필의 region 순이고, 아무것도 없으면 us-east-1입니다. 프로필에 리전이 있으면 생략하셔도 돼요.
+사내 게이트웨이를 거쳐야 하면 ANTHROPIC_BEDROCK_BASE_URL로 주소만 바꿉니다.
+마지막으로 /status를 열어서 공급자와 리전, 그 출처까지 꼭 확인해 주세요.
+
+{cue: transition}
+목적지가 Bedrock이 되면, 이제 IAM이 이 호출을 허용해 줘야 합니다.
+
+[출처]
+• code.claude.com/docs/en/amazon-bedrock (Set up manually, 3. Configure Claude Code)
+:::
+---
+<!-- Slide 99: IAM permissions -->
+@type: content
+@fit: off
+
+## IAM 권한은 호출, 조회, Marketplace
+Claude Code가 부르는 API마다 필요한 권한
+
+:::html
+<div id="c2-sv-iam"></div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:30,w:300,h:420,l:'개발자 PC'},{x:350,y:30,w:810,h:420,l:'AWS 계정, 역할 정책',tone:'info'}];
+  var CC = {id:'cc',x:45,y:189,w:250,h:92,t:'Claude Code',s:'SSO 역할로 서명',c:'accent'};
+  var LS = {id:'ls',x:380,y:80,w:350,h:92,t:'1 프로필 목록 보기',s:'ListInferenceProfiles',c:'info'};
+  var GT = {id:'gt',x:380,y:199,w:350,h:92,t:'2 프로필 뒤 모델 확인',s:'GetInferenceProfile',c:'info'};
+  var IV = {id:'iv',x:380,y:318,w:350,h:92,t:'3 모델 호출',s:'InvokeModel, 스트리밍',c:'accent'};
+  var PR = {id:'pr',x:800,y:80,w:330,h:92,t:'추론 프로필',s:'시스템 프로필, 앱 프로필',c:'info'};
+  var FM = {id:'fm',x:800,y:199,w:330,h:92,t:'기반 모델',s:'foundation-model',c:'info'};
+  var MK = {id:'mk',x:800,y:318,w:330,h:92,t:'Marketplace 구독',s:'Bedrock이 대신 확인',c:'warning'};
+  var ALL = [CC,LS,GT,IV,PR,FM,MK];
+  var s1 = ['"Action": [','  "bedrock:InvokeModel",','  "bedrock:InvokeModelWithResponseStream",','  "bedrock:GetInferenceProfile" ],','"Resource": [   # ... = arn:aws:bedrock:*:*','  "...:inference-profile/*",','  "...:application-inference-profile/*",','  "...:foundation-model/*" ]'];
+  F.stepviz('#c2-sv-iam', [
+    {kicker:'OVERVIEW', title:'부르는 API마다 권한 하나',
+     body:'Claude Code는 시작할 때 <b>프로필을 조회</b>하고, 대화마다 <b>모델을 호출</b>하며, 처음 부를 때 Bedrock이 <b>Marketplace 구독</b>을 확인합니다.',
+     facts:['문장 1: 호출 2개 + 프로필 읽기','문장 2: 목록 조회, Resource "*"','문장 3: Marketplace, Bedrock 경유일 때만'],
+     zones:Z, nodes:ALL,
+     edges:[{f:'cc',t:'ls',c:'info',o:0},{f:'cc',t:'gt',c:'info',o:1},{f:'cc',t:'iv',c:'accent',o:2},{f:'ls',t:'pr',c:'info',o:1},{f:'gt',t:'pr',c:'info',o:2},{f:'iv',t:'fm',c:'accent',o:3},{f:'iv',t:'mk',c:'warning',o:4}],
+     loop:true, stagger:0.5,
+     snip:{hd:'정책의 세 문장',path:'claude-code-bedrock-policy.json',lines:['# 문장 1: 호출과 프로필 읽기','bedrock:InvokeModel','bedrock:InvokeModelWithResponseStream','bedrock:GetInferenceProfile','# 문장 2: 목록 조회만 따로','bedrock:ListInferenceProfiles','# 문장 3: Bedrock 경유일 때만','aws-marketplace:ViewSubscriptions','aws-marketplace:Subscribe'],hl:[2,3,4,6,8,9],note:'Lab 1 TASK 01의 최소 정책과 같은 구성입니다.'}},
+    {kicker:'STEP 1', title:'시작할 때: 어떤 프로필이 있나',
+     body:'Claude Code는 계정의 <b>추론 프로필 목록</b>을 보고 쓸 수 있는 프로필을 고릅니다. 이 권한은 리소스를 지정할 수 없어서 <b>Resource "*"인 별도 문장</b>에 둡니다.',
+     facts:['ListInferenceProfiles: 리소스 지정 불가','ARN 목록 문장에 합치면 목록 조회가 거부됨','없으면 prefix를 확인 없이 적용'],
+     zones:Z, nodes:ALL, hot:['cc','ls','pr'],
+     edges:[{f:'cc',t:'ls',c:'info',o:0},{f:'ls',t:'pr',c:'info',l:'목록',o:1}],
+     loop:true, stagger:0.7,
+     snip:{hd:'문장 2',path:'claude-code-bedrock-policy.json',lines:['{ "Effect": "Allow",','  "Action": "bedrock:ListInferenceProfiles",','  "Resource": "*" }'],hl:[2,3],note:'Lab 환경의 정책 시뮬레이터에서 합친 문장은 <b>implicitDeny</b>로 나왔습니다.'}},
+    {kicker:'STEP 2', title:'앱 프로필이면: 뒤의 모델 확인',
+     body:'팀 이름표 같은 <b>애플리케이션 추론 프로필</b>은 이름만 봐서는 어떤 모델인지 모릅니다. <b>GetInferenceProfile</b>로 뒤의 모델을 읽어 요청 모양을 고릅니다.',
+     facts:['없어도 호출은 되지만 새 모델마다 한 번 더 왕복','앱 프로필은 이 장 끝에서 다시 봄'],
+     zones:Z, nodes:ALL, hot:['cc','gt','pr','fm'],
+     edges:[{f:'cc',t:'gt',c:'info',o:0},{f:'gt',t:'pr',c:'info',l:'읽기',o:1},{f:'pr',t:'fm',c:'info',o:2}],
+     loop:true, stagger:0.7,
+     snip:{hd:'문장 1',path:'claude-code-bedrock-policy.json',lines:s1,hl:[4],note:'호출 권한과 <b>같은 Resource</b>에 둡니다.'}},
+    {kicker:'STEP 3', title:'호출: 프로필과 모델 둘 다',
+     body:'<b>InvokeModel</b>과 스트리밍 호출이 실제 대화입니다. 프로필로 불러도 그 뒤의 <b>기반 모델까지 허용</b>해야 호출됩니다.',
+     facts:['Resource: 프로필, 앱 프로필, 기반 모델','실제로는 허용할 프로필 ARN으로 좁힘','Claude Code 전용 AWS 계정을 권장'],
+     zones:Z, nodes:ALL, hot:['cc','iv','pr','fm'],
+     edges:[{f:'cc',t:'iv',c:'accent',o:0},{f:'iv',t:'pr',c:'accent',o:1},{f:'pr',t:'fm',c:'accent',o:2}],
+     loop:true, stagger:0.7,
+     snip:{hd:'문장 1',path:'claude-code-bedrock-policy.json',lines:s1,hl:[2,3,6,7,8],note:'예시는 와일드카드입니다. 배포할 때는 <b>허용할 프로필 ARN</b>으로 좁힙니다.'}},
+    {kicker:'STEP 4', title:'Marketplace: Bedrock을 거칠 때만',
+     body:'Anthropic 모델은 Marketplace 구독으로 제공되어, 호출할 때 Bedrock이 <b>구독을 확인</b>합니다. 조건 <b>aws:CalledViaLast</b>로 Bedrock을 거친 요청에만 허용합니다.',
+     facts:['ViewSubscriptions, Subscribe','개발자가 직접 구독하는 권한이 아님'],
+     zones:Z, nodes:ALL, hot:['iv','mk'],
+     edges:[{f:'iv',t:'mk',c:'warning',l:'구독 확인',o:0}],
+     loop:true,
+     snip:{hd:'문장 3',path:'claude-code-bedrock-policy.json',lines:['{ "Effect": "Allow",','  "Action": [ "aws-marketplace:ViewSubscriptions",','              "aws-marketplace:Subscribe" ],','  "Resource": "*",','  "Condition": { "StringEquals": {','    "aws:CalledViaLast": "bedrock.amazonaws.com" } } }'],hl:[2,3,6],note:'모델 사용 신청(use case 양식)은 계정마다 한 번, 콘솔에서 합니다.'}}
+  ], {legend:[['accent','모델 호출'],['info','프로필 조회'],['warning','Marketplace']]});
+});
+:::
+
+:::notes
+{timing: 1.5min}
+[요약]
+• 시작할 때 ListInferenceProfiles(목록, Resource "*" 별도 문장), 앱 프로필이면 GetInferenceProfile(뒤의 모델 확인)
+• 대화마다 InvokeModel, InvokeModelWithResponseStream. 프로필과 그 뒤의 기반 모델까지 허용
+• GetInferenceProfile이 없으면 새 모델마다 한 번 더 왕복
+• Marketplace ViewSubscriptions, Subscribe는 aws:CalledViaLast = bedrock.amazonaws.com 조건으로
+• 실제 배포는 허용할 프로필 ARN으로 좁히고, Claude Code 전용 AWS 계정 권장
+
+{cue: demo}
+IAM 권한은 Claude Code가 부르는 API를 따라가면 쉬워요. 위에서부터 순서대로 봅니다.
+첫째, 시작할 때 계정에 어떤 추론 프로필이 있는지 목록을 봐요. ListInferenceProfiles인데, 리소스를 지정할 수 없는 권한이라 Resource 별표인 별도 문장에 둡니다. 다른 ARN 목록과 합치면 목록 조회가 거부돼요.
+둘째, 팀 이름표 같은 애플리케이션 추론 프로필은 이름만으로는 어떤 모델인지 몰라서 GetInferenceProfile로 뒤의 모델을 읽습니다. 빠져도 호출은 되지만 새 모델마다 한 번씩 더 왕복해요.
+셋째가 실제 대화, InvokeModel과 스트리밍 호출입니다. 프로필로 부르더라도 그 뒤의 기반 모델까지 허용해야 해요. 예시는 와일드카드지만 실제로는 허용할 프로필 ARN으로 좁혀 주세요.
+마지막으로 Marketplace 구독 확인 권한을, Bedrock을 거친 요청일 때만 허용하는 조건과 함께 넣습니다.
+
+{cue: transition}
+그럼 이 권한을 가진 자격증명은 개발자 PC에 어떻게 줄까요? 키를 나눠 주면 무슨 일이 생기는지부터 보겠습니다.
+
+[출처]
+• code.claude.com/docs/en/amazon-bedrock (IAM configuration)
+• 20261116/ClaudeCode_Ch2_HandsOnLab.html TASK 01 Step 3 (ListInferenceProfiles를 별도 문장으로 둔 최소 정책, 시뮬레이터 확인)
+• docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrock.html
+:::
+---
+<!-- Slide 99: Key leak versus SSO -->
+@type: content
+@fit: off
+
+## 복사되는 키, 만료되는 SSO
+키는 나눠 주지 않고, 로그인해서 짧게 빌려 쓰기
+
+:::html
+<div class="fsi fs" id="c2-key">
+  <div class="fs-stage"></div>
+  <div class="fs-side">
+    <div class="fs-step"></div>
+    <div class="fs-title"></div>
+    <pre class="fs-code"></pre>
+    <div class="fs-say"></div>
+    <div class="fs-prog"><i></i></div>
+    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 키와 이름은 예시 값</div>
   </div>
 </div>
 :::
 
 :::script
-(window.__fsiq = window.__fsiq || []).push(function (F) {
-  var rows = Array.prototype.slice.call(document.querySelectorAll('#c2-region-rows .c2-row'));
-  var on = { r1: false, r2: false, r3: false };
-  var names = { r1: '1. AWS_REGION', r2: '2. AWS_DEFAULT_REGION', r3: '3. 활성 프로필의 region', r4: '4. 기본값' };
-  function render() {
-    var win = ['r1','r2','r3'].filter(function (k) { return on[k]; })[0] || 'r4';
-    rows.forEach(function (r) {
-      var k = r.dataset.k;
-      r.classList.toggle('set', k === 'r4' || !!on[k]);
-      r.classList.toggle('win', k === win);
-    });
-    var w = rows.filter(function (r) { return r.dataset.k === win; })[0];
-    document.getElementById('c2-region-v').textContent = w.querySelector('.x').textContent;
-    document.getElementById('c2-region-s').textContent = names[win];
+import('./assets/flowscene.js').then(function (m) { m.mount('#c2-key', {
+  aria: '개발자 PC의 장기 액세스 키가 메신저와 저장소로 복사되어 다른 PC에서 Bedrock 호출에 다시 쓰이는 흐름과, aws sso login으로 IAM Identity Center에서 STS 임시 자격증명을 받고 만료되면 awsAuthRefresh로 다시 로그인하는 흐름의 비교',
+  zones: [
+    { box: [-0.4, 0, 0, 7.4, 4.2, 0.4], label: '개발자 PC (회사)', labelAt: [-0.2, 0, -0.75] },
+    { box: [12.0, 2.2, 3.4, 3.6, 2.0, 0.25], label: '회사 밖의 PC', labelAt: [12.1, 2.2, 2.75], sub: true },
+    { box: [16.4, 0, 0, 10.6, 4.2, 0.4], label: 'AWS 계정', labelAt: [16.6, 0, -0.75] }
+  ],
+  parts: {
+    pc: { boxes: [[1.4, 1.2, 0.4, 1.8, 1.4, 0.8], [1.7, 2.4, 1.2, 1.2, 0.15, 1.0]] },
+    chat: { clouds: [[[6.6, 2.5, 5.0], 50, 19, '메신저']] },
+    repo: { clouds: [[[10.2, 2.5, 5.6], 50, 19, '저장소']] },
+    ext: { boxes: [[12.9, 2.6, 3.65, 1.6, 1.2, 0.5], [13.1, 3.6, 4.15, 1.1, 0.15, 0.8]] },
+    idc: { boxes: [[17.2, 0.8, 0.4, 1.8, 1.4, 1.8]] },
+    sts: { boxes: [[20.0, 0.8, 0.4, 1.6, 1.4, 1.4]] },
+    bedrock: { boxes: [[23.2, 1.0, 0.4, 2.4, 2.4, 2.8]] }
+  },
+  marks: [{ id: 'x', at: [22.7, 2.4, 3.7] }],
+  tags: [
+    { id: 'akia', at: [5.2, 0, 2.3], text: 'AKIA…EXAMPLE (만료 없음)', anchor: 'start', show: ['key', 'leak', 'reuse'] },
+    { id: 'tmp', at: [10.6, 0.6, 1.7], text: 'SessionToken + Expiration', show: ['sts', 'expire'] }
+  ],
+  wires: {
+    leak: { pts: [[2.3, 2.4, 2.2], [6.6, 2.5, 4.4], [10.2, 2.5, 5.0]] },
+    reuse: { pts: [[10.2, 2.5, 5.0], [13.7, 3.1, 4.3], [19.0, 3.0, 5.0], [23.4, 2.4, 3.5]] },
+    sso: { pts: [[3.2, 1.6, 1.0], [17.2, 1.4, 1.2]] },
+    sts: { pts: [[20.2, 0.9, 0.9], [3.2, 1.1, 0.7]], cls: 'fs-alt' },
+    call: { pts: [[3.2, 0.9, 0.5], [21.6, 0.3, 0.5], [23.4, 1.0, 1.0]], cls: 'fs-alt' }
+  },
+  callouts: [
+    { id: 'key', n: 1, anchor: [2.3, 1.2, 1.2], at: [20, 200], title: '장기 액세스 키', sub: 'aws configure, 지우기 전까지 유효' },
+    { id: 'chat', n: 2, anchor: [6.6, 2.5, 5.6], at: [190, 70], title: '메신저, 저장소로 유출', sub: '붙여 넣은 키, 커밋한 .env' },
+    { id: 'ext', n: 3, anchor: [13.7, 3.1, 4.9], at: [500, 110], title: '다른 PC에서 재사용', sub: '키만 있으면 같은 권한' },
+    { id: 'idc', n: 4, anchor: [18.1, 0.8, 0.4], at: [400, 452], title: 'IAM Identity Center', sub: 'aws sso login, 회사 계정 로그인' },
+    { id: 'sts', n: 5, anchor: [20.8, 0.8, 0.4], at: [700, 452], title: 'STS 임시 자격증명', sub: '만료 시각이 붙어 나옴' },
+    { id: 'exp', n: 6, anchor: [22.7, 2.4, 3.9], at: [730, 150], title: '만료 시각이 지나면', sub: '복사본도 거부' },
+    { id: 'ref', n: 7, anchor: [2.3, 1.2, 0.4], at: [130, 470], title: 'awsAuthRefresh', sub: '만료되면 다시 로그인' }
+  ],
+  figures: [
+    { at: [0.6, 1.9, 0.4], scale: 0.9, pose: 'type', act: { key: 'type', sso: 'type', refresh: 'type', retry: 'type' } },
+    { at: [12.4, 3.4, 3.65], scale: 0.75, colour: 'var(--text-muted)', pose: 'type', act: { reuse: 'type', expire: 'type' } }
+  ],
+  code: [
+    '# 나눠 주는 키 (비권장)',
+    'aws_access_key_id = AKIA…EXAMPLE',
+    '# SSO 프로필 (권장)',
+    'aws sso login --profile fsi-dev',
+    'export AWS_PROFILE=fsi-dev',
+    '"awsAuthRefresh":',
+    '  "aws sso login --profile fsi-dev"'
+  ],
+  overview: { label: '전체 그림', title: '퍼지는 키와 만료되는 자격증명', say: '위쪽은 나눠 준 키가 퍼지는 길, 아래쪽은 SSO로 <b>짧게 빌린 자격증명</b>이 도는 길입니다.' },
+  phases: [
+    { key: 'key', d: 2.8, focus: ['pc'], badge: 'key', lines: [1, 2], label: '1  장기 키', title: '액세스 키가 PC에 저장된다', say: 'aws configure로 넣은 <b>IAM 사용자 액세스 키</b>는 누가 지우거나 바꿀 때까지 계속 유효합니다.' },
+    { key: 'leak', d: 3.2, focus: ['pc', 'chat', 'repo'], badge: 'chat', lines: [2], packet: { wire: 'leak', colour: 'var(--danger)' }, label: '2  유출', title: '메신저와 저장소로 복사된다', say: '설정을 도와주려고 키를 <b>메신저에 붙이거나</b>, 실수로 <b>.env를 커밋</b>하면 키가 회사 밖으로 나갑니다.' },
+    { key: 'reuse', d: 3.4, focus: ['repo', 'ext', 'bedrock'], cam: ['repo', 'ext', 'bedrock', 'exp'], badge: 'ext', lines: [2], packet: { wire: 'reuse', colour: 'var(--danger)' }, label: '3  재사용', title: '다른 곳에서 그대로 호출된다', say: '키를 가진 누구든 <b>다른 PC에서 같은 권한으로</b> Bedrock을 부릅니다. 키에는 만료가 없습니다.' },
+    { key: 'sso', d: 3.4, focus: ['pc', 'idc'], badge: 'idc', lines: [3, 4, 5], packet: { wire: 'sso', mode: 'pingpong', colour: 'var(--info)' }, label: '4  SSO 로그인', title: '키 대신 회사 계정으로 로그인', say: 'PC에는 오래 가는 키가 없습니다. <b>aws sso login</b>이 브라우저를 열고 <b>IAM Identity Center</b>에 회사 계정으로 로그인합니다.' },
+    { key: 'sts', d: 3.0, focus: ['sts', 'pc'], cam: ['sts', 'idc', 'pc'], badge: 'sts', lines: [5], packet: { wire: 'sts', colour: 'var(--success)' }, label: '5  임시 자격증명', title: '짧게 사는 STS 자격증명', say: 'PC가 받는 것은 <b>STS 임시 자격증명</b>입니다. 만료 시각이 붙어 있어, 시간이 지나면 저절로 못 씁니다.' },
+    { key: 'expire', d: 3.4, focus: ['ext', 'bedrock'], cam: ['ext', 'bedrock', 'exp'], badge: 'exp', lines: [], packet: { wire: 'reuse', span: [1, 3], mode: 'block', stopAt: 0.7, mark: 'x' }, label: '6  만료', title: '새어 나가도 곧 쓸모없다', say: '이 자격증명이 어딘가에 복사되더라도, <b>만료 시각이 지나면</b> 호출은 거부됩니다.' },
+    { key: 'refresh', d: 3.6, focus: ['pc', 'idc'], badge: 'ref', lines: [6, 7], packet: { wire: 'sso', mode: 'pingpong', colour: 'var(--warning)' }, label: '7  awsAuthRefresh', title: '만료되면 Claude Code가 다시 로그인', say: '만료를 감지하면 <b>GetCallerIdentity</b>로 한 번 더 확인하고, <b>awsAuthRefresh</b>에 넣은 aws sso login을 실행합니다.' },
+    { key: 'retry', d: 3.0, focus: ['pc', 'bedrock'], cam: ['pc', 'idc', 'sts', 'bedrock'], lines: [5], packet: { wire: 'call' }, label: '8  이어서 호출', title: '새 자격증명으로 같은 요청을 다시', say: '로그인이 끝나면 새 자격증명으로 <b>요청을 다시 보내고</b>, 세션은 그대로 이어집니다.' }
+  ],
+  frame: function (c) {
+    ['leak', 'reuse'].forEach(function (id) { var n = c.wires[id].node; n.style.stroke = n.classList.contains('on') && (c.all || c.ph.key !== 'expire') ? 'var(--danger)' : ''; });
+    c.parts.bedrock.querySelector('.fs-top').style.fill = c.ph.key === 'reuse' && c.u > 0.8 ? 'var(--danger)' : (c.ph.key === 'retry' && c.u > 0.8 ? 'var(--accent)' : '');
   }
-  rows.forEach(function (r) { if (r.dataset.k !== 'r4') r.addEventListener('click', function () { on[r.dataset.k] = !on[r.dataset.k]; render(); }); });
-  var scen = [{ r1: true, r2: true, r3: true }, { r2: true, r3: true }, { r3: true }, {}];
-  F.cycle('#c2-region', scen.length, function (i) { on = { r1: !!scen[i].r1, r2: !!scen[i].r2, r3: !!scen[i].r3 }; render(); });
-});
+}); });
 :::
 
 :::notes
-{timing: 3min}
+{timing: 2min}
 [요약]
-• 수동 설정은 CLAUDE_CODE_USE_BEDROCK=1과 AWS_REGION 두 개
-• AWS_REGION은 프로필에 리전이 없을 때만, 사내 엔드포인트는 ANTHROPIC_BEDROCK_BASE_URL
-• 리전 결정 순서: AWS_REGION, AWS_DEFAULT_REGION, 활성 프로필의 region, 기본 us-east-1
-• /status에서 출처까지 확인
+• 장기 액세스 키는 지우거나 바꿀 때까지 유효, 메신저나 저장소로 복사되면 다른 PC에서 같은 권한으로 호출
+• SSO: aws sso login으로 IAM Identity Center에 회사 계정 로그인, PC는 STS 임시 자격증명만 받음
+• 임시 자격증명은 만료 시각이 지나면 거부, 복사돼도 피해가 짧음
+• 만료되면 Claude Code가 GetCallerIdentity로 확인한 뒤 awsAuthRefresh(aws sso login)를 실행하고 요청을 다시 보냄
 
-수동 설정은 환경변수 두 개면 돼요. CLAUDE_CODE_USE_BEDROCK=1, 그리고 프로필에 리전이 없을 때는 AWS_REGION입니다. 사내 엔드포인트나 게이트웨이를 쓰시면 ANTHROPIC_BEDROCK_BASE_URL을 추가하고요.
 {cue: demo}
-여기서 헷갈리는 게 리전을 어디서 정하느냐인데요. 오른쪽에서 위에 있는 게 먼저예요. AWS_REGION, AWS_DEFAULT_REGION, 활성 프로필의 region, 마지막이 기본값 us-east-1입니다.
-버튼이나 아래 화살표로 위에서부터 하나씩 빼 보겠습니다. 세 값이 다 있으면 1번 AWS_REGION이 이기죠. AWS_REGION을 빼면 2번 AWS_DEFAULT_REGION, 그것도 빼면 3번 프로필의 region을 씁니다. 아무것도 없으면 4번 기본값 us-east-1이고요.
-실제 환경에서는 /status를 열어서 리전과 그 출처를 꼭 확인해 주세요.
+이 장면도 저절로 돌아가요. 위쪽은 키를 나눠 줬을 때, 아래쪽은 SSO로 로그인했을 때입니다.
+먼저 위쪽이요. aws configure로 넣은 IAM 사용자 액세스 키는 누가 지우기 전까지 계속 유효합니다. 그런데 설정을 도와주다가 이 키를 메신저에 붙여 넣거나, .env 파일을 실수로 커밋하면 키가 회사 밖으로 나가요.
+그러면 키를 가진 누구든 다른 PC에서 같은 권한으로 Bedrock을 부를 수 있습니다. 키에는 만료가 없거든요.
+{cue: pause}
+아래쪽은 SSO예요. PC에는 오래 가는 키가 없고, aws sso login으로 회사 계정에 로그인합니다. 그러면 IAM Identity Center를 통해 만료 시각이 붙은 STS 임시 자격증명을 받아요.
+이 자격증명이 어딘가에 복사되더라도 시간이 지나면 거부됩니다.
+만료되면 어떻게 하냐고요? Claude Code가 GetCallerIdentity로 진짜 만료됐는지 확인하고, awsAuthRefresh에 넣어 둔 aws sso login을 대신 실행합니다. 로그인하시면 같은 요청을 다시 보내고 세션은 그대로 이어져요.
+
+{cue: transition}
+그래서 다섯 가지 자격증명 방식 중에 권장은 하나입니다.
+
+[출처]
+• code.claude.com/docs/en/amazon-bedrock (2. Configure AWS credentials, Advanced credential configuration)
+• docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html (IAM 사용자 액세스 키 경고)
+• docs.aws.amazon.com/singlesignon/latest/userguide/howtogetcredentials.html
 :::
 ---
 <!-- Slide 7: Five credential methods -->
@@ -396,42 +618,78 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
 
 :::html
-<div class="fsi c2-cred">
-  <div class="c2-cred-rows" data-pick="c2-cred">
-    <button class="pick" data-key="cli"><span class="t">AWS CLI 설정</span><code>aws configure</code><span class="tag no">비권장 (장기 키 디스크 저장)</span></button>
-    <button class="pick" data-key="key"><span class="t">액세스 키 환경변수</span><code>AWS_ACCESS_KEY_ID 등</code><span class="tag no">비권장 (장기 키)</span></button>
-    <button class="pick rec" data-key="sso"><span class="t">SSO 프로필</span><code>aws sso login + AWS_PROFILE</code><span class="tag ok">권장</span></button>
-    <button class="pick" data-key="con"><span class="t">콘솔 자격증명</span><code>aws login</code><span class="tag cond">보조 수단</span></button>
-    <button class="pick" data-key="api"><span class="t">Bedrock API 키</span><code>AWS_BEARER_TOKEN_BEDROCK</code><span class="tag no">비권장 (장기 키)</span></button>
-  </div>
-  <div class="panel" data-pick-panel="c2-cred">
-    <p class="hint">방식을 누르면 금융권 권고의 이유가 나옵니다.</p>
-    <div data-for="cli"><p><b>비권장</b>입니다. 장기 액세스 키를 디스크에 저장합니다.</p></div>
-    <div data-for="key"><p>장기 키를 단말에 두는 방식이라 <b>비권장</b>입니다.</p></div>
-    <div data-for="sso"><p><b>권장</b>입니다. <span class="rp-detail" tabindex="0" data-tip="Single Sign-On. 회사 계정 한 번 로그인으로 여러 서비스에 접근하는 방식">SSO</span> 로그인으로 짧은 수명의 자격증명을 받습니다.</p><p>만료되면 다음 장의 자동 갱신으로 이어 갑니다.</p></div>
-    <div data-for="con"><p><b>보조 수단</b>입니다.</p></div>
-    <div data-for="api"><p>Bedrock API 키도 장기 키라 <b>비권장</b>입니다. 다섯 가지 중 <b>이 방식만 <span class="rp-detail" tabindex="0" data-tip="AWS SDK 기본 자격증명 체인. 환경 변수, 프로필(SSO 포함), 인스턴스 역할 순으로 자격증명을 찾는 규칙">AWS SDK 기본 자격증명 체인</span>을 거치지 않습니다</b>. SSO 프로필의 갱신 흐름 대신 키 하나로 인증합니다.</p></div>
-  </div>
-</div>
+<div id="c2-sv-cred"></div>
 :::
 
 :::script
-(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c2-cred', { start: 2 }); });
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var Z = [{x:20,y:30,w:450,h:420,l:'방식 다섯 가지'},{x:500,y:30,w:330,h:420,l:'CLAUDE CODE'},{x:860,y:30,w:300,h:420,l:'AWS',tone:'info'}];
+  var CF = {id:'cf',x:40,y:72,w:410,h:66,t:'aws configure',s:'장기 키를 ~/.aws에 저장',c:'danger'};
+  var AK = {id:'ak',x:40,y:146,w:410,h:66,t:'액세스 키 환경변수',s:'IAM 사용자 키면 장기 키',c:'danger'};
+  var SS = {id:'ss',x:40,y:220,w:410,h:66,t:'SSO 프로필 (권장)',s:'aws sso login, 임시 자격증명',c:'success'};
+  var CO = {id:'co',x:40,y:294,w:410,h:66,t:'콘솔 자격증명',s:'aws login, 최대 12시간',c:'info'};
+  var AP = {id:'ap',x:40,y:368,w:410,h:66,t:'Bedrock API 키',s:'AWS_BEARER_TOKEN_BEDROCK',c:'warning'};
+  var CH = {id:'ch',x:520,y:190,w:290,h:100,t:'AWS SDK 기본 체인',s:'찾아서 캐시하고 서명',c:'accent'};
+  var BR = {id:'br',x:880,y:190,w:260,h:100,t:'Amazon Bedrock',s:'요청을 받는 곳',c:'info'};
+  var ALL = [CF,AK,SS,CO,AP,CH,BR];
+  var chain = [{f:'cf',t:'ch',c:'danger',o:0},{f:'ak',t:'ch',c:'danger',o:0},{f:'ss',t:'ch',c:'success',o:0},{f:'co',t:'ch',c:'info',o:0}];
+  F.stepviz('#c2-sv-cred', [
+    {kicker:'OVERVIEW', title:'네 가지는 체인으로, 하나는 체인 밖',
+     body:'위의 네 방식은 <b>AWS SDK 기본 체인</b>이 찾아 쓰고, Bedrock API 키만 체인을 건너뜁니다. 금융권 권장은 가운데 <b>SSO 프로필</b> 하나입니다.',
+     facts:['권장: SSO 프로필','보조: 콘솔 자격증명','비권장: 장기 키, Bedrock API 키'],
+     zones:Z, nodes:ALL,
+     edges:chain.concat([{f:'ch',t:'br',c:'accent',o:1},{f:'ap',t:'br',c:'warning',curve:70,o:0}]),
+     loop:true, stagger:0.8,
+     snip:{hd:'권장 설정',path:'~/.claude/settings.json',lines:['{','  "env": {','    "CLAUDE_CODE_USE_BEDROCK": "1",','    "AWS_PROFILE": "fsi-dev"','  }','}'],hl:[4],note:'AWS_PROFILE이 <b>SSO 프로필</b>을 가리키게 합니다.'}},
+    {kicker:'STEP 1', title:'장기 키 두 가지: 비권장',
+     body:'aws configure는 IAM 사용자 키를 <b>~/.aws/credentials</b>에 저장합니다. 환경변수 방식도 IAM 사용자 키라면 <b>지우기 전까지 유효</b>합니다. 앞 장의 유출 장면이 이 경우입니다.',
+     facts:['AWS도 IAM 사용자 키 사용을 경고','세션 토큰이 있으면 임시 자격증명'],
+     zones:Z, nodes:ALL, hot:['cf','ak','ch'],
+     edges:[{f:'cf',t:'ch',c:'danger',o:0},{f:'ak',t:'ch',c:'danger',o:1}],
+     loop:true, stagger:0.6,
+     snip:{hd:'나눠 주게 되는 것',path:'Terminal',lines:['aws configure   # ~/.aws/credentials에 저장','export AWS_ACCESS_KEY_ID=...','export AWS_SECRET_ACCESS_KEY=...'],hl:[1,2,3],note:'키를 <b>나눠 주는 순간</b> 회수와 교체가 운영 업무가 됩니다.'}},
+    {kicker:'STEP 2', title:'SSO 프로필: 권장',
+     body:'<b>IAM Identity Center</b>에 브라우저로 로그인해 <b>임시 자격증명</b>을 받습니다. 나눠 줄 키가 없고, 만료되면 다음 장의 자동 재로그인으로 이어 갑니다.',
+     facts:['회사 계정 로그인 한 번','만료가 있는 임시 자격증명','sso_region은 Bedrock 리전과 달라도 됨'],
+     zones:Z, nodes:ALL, hot:['ss','ch','br'],
+     edges:[{f:'ss',t:'ch',c:'success',o:0},{f:'ch',t:'br',c:'accent',o:1}],
+     loop:true, stagger:0.7,
+     snip:{hd:'SSO 프로필',path:'Terminal',lines:['aws configure sso   # 처음 한 번','aws sso login --profile fsi-dev','export AWS_PROFILE=fsi-dev'],hl:[2,3],note:'Lab 환경은 인스턴스 역할을 쓰므로 <b>키 배포 경로가 아예 없습니다</b>.'}},
+    {kicker:'STEP 3', title:'콘솔 자격증명: 보조 수단',
+     body:'<b>aws login</b>은 AWS 콘솔 계정으로 브라우저 로그인해 임시 자격증명을 받습니다. 세션은 <b>최대 12시간</b>입니다.',
+     facts:['AWS CLI 2.32.0 이상','Identity Center를 쓰지 않는 계정용'],
+     zones:Z, nodes:ALL, hot:['co','ch'],
+     edges:[{f:'co',t:'ch',c:'info',o:0}],
+     loop:true,
+     snip:{hd:'콘솔 자격증명',path:'Terminal',lines:['aws login   # 12시간이 지나면 다시'],hl:[1],note:'회사에 Identity Center가 있으면 <b>SSO 프로필</b>을 씁니다.'}},
+    {kicker:'STEP 4', title:'Bedrock API 키: 체인 밖',
+     body:'<b>AWS_BEARER_TOKEN_BEDROCK</b>이 있으면 Claude Code는 다른 자격증명이 있어도 <b>체인을 보지 않고</b> 이 키로만 인증합니다.',
+     facts:['단기 키: 최대 12시간','장기 키: AWS도 탐색용으로만 권장','배포용으로는 비권장'],
+     zones:Z, nodes:ALL, hot:['ap','br'],
+     edges:[{f:'ap',t:'br',c:'warning',curve:70,o:0}],
+     loop:true,
+     snip:{hd:'Bedrock API 키',path:'Terminal',lines:['export AWS_BEARER_TOKEN_BEDROCK=...','# 체인과 자격증명 캐시를 거치지 않음'],hl:[1],note:'키 하나가 곧 권한이라, <b>나눠 주는 키</b>와 같은 문제가 생깁니다.'}}
+  ], {legend:[['success','권장'],['info','보조'],['danger','장기 키'],['warning','체인 밖']]});
+});
 :::
 
 :::notes
-{timing: 2min}
+{timing: 1.5min}
 [요약]
-• Claude Code는 AWS SDK 기본 자격증명 체인을 그대로 따름
+• Claude Code는 AWS SDK 기본 체인을 따름. Bedrock API 키(AWS_BEARER_TOKEN_BEDROCK)만 체인을 거치지 않음
 • 권장: SSO 프로필(aws sso login + AWS_PROFILE)
-• 비권장: 액세스 키 환경변수, Bedrock API 키 (장기 키)
-• AWS CLI 설정은 장기 액세스 키를 디스크에 저장해 비권장, 콘솔 자격증명은 보조 수단
-• Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
+• 비권장: aws configure와 액세스 키 환경변수(IAM 사용자 장기 키), Bedrock API 키
+• 보조: aws login 콘솔 자격증명, 최대 12시간
 
-자격증명 방식은 다섯 가지예요. 이 중에서 Bedrock API 키만 AWS SDK 기본 체인을 거치지 않습니다.
 {cue: demo}
-하나씩 보시면, aws configure는 장기 액세스 키를 디스크에 저장해서 권하지 않고, 액세스 키 환경변수와 Bedrock API 키도 장기 키라 권하지 않아요. aws login 콘솔 자격증명은 보조 수단입니다.
-금융권에서 권하는 건 SSO 프로필 하나예요. aws sso login으로 받은 짧은 수명의 자격증명을 AWS_PROFILE로 쓰시면 됩니다.
+자격증명 방식은 다섯 가지예요. 왼쪽 위 네 개는 AWS SDK 기본 체인이 찾아 쓰고, 맨 아래 Bedrock API 키만 체인을 건너뜁니다.
+위의 두 개, aws configure와 액세스 키 환경변수는 IAM 사용자의 장기 키라서 방금 장면처럼 퍼질 수 있어요. 권하지 않습니다.
+권장은 가운데 SSO 프로필 하나예요. 회사 계정으로 로그인해서 임시 자격증명을 받습니다.
+aws login 콘솔 자격증명은 최대 12시간짜리 보조 수단이고요, Bedrock API 키는 키 하나가 곧 권한이라 배포용으로는 권하지 않습니다.
+
+[출처]
+• code.claude.com/docs/en/amazon-bedrock (2. Configure AWS credentials)
+• docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html
 
 [약어]
 • SSO: Single Sign-On
@@ -455,57 +713,68 @@ SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport
   var CA = {id:'ca',x:50,y:330,w:300,h:92,t:'메모리 캐시',s:'만료 5분 전까지',c:'info'};
   var RF = {id:'rf',x:440,y:80,w:310,h:92,t:'awsAuthRefresh',s:'만료됐을 때만 실행',c:'warning'};
   var AW = {id:'aw',x:440,y:330,w:310,h:92,t:'~/.aws 자격증명',s:'SSO 프로필',c:'info'};
-  var ST = {id:'st',x:840,y:80,w:290,h:92,t:'GetCallerIdentity',s:'실제 만료 여부 확인',c:'info'};
+  var ST = {id:'st',x:840,y:80,w:290,h:92,t:'GetCallerIdentity',s:'정말 만료됐는지 확인',c:'info'};
   var IC = {id:'ic',x:840,y:330,w:290,h:92,t:'IAM Identity Center',s:'브라우저 SSO 로그인',c:'info'};
   var EX = {id:'ex',x:440,y:80,w:310,h:92,t:'awsCredentialExport',s:'세션 시작마다 실행',c:'warning'};
-  var cfg = ['{','  "awsAuthRefresh": "aws sso login --profile myprofile",','  "env": {','    "AWS_PROFILE": "myprofile"','  }','}'];
+  var cfg = ['{','  "awsAuthRefresh": "aws sso login --profile fsi-dev",','  "env": {','    "AWS_PROFILE": "fsi-dev"','  }','}'];
   F.stepviz('#c2-sv-sso', [
-    {kicker:'STEP 1', title:'세션 시작: SDK 체인으로 찾습니다',
-     body:'Claude Code는 <b>AWS SDK 기본 체인</b>으로 자격증명을 찾고, <b>만료 5분 전까지 메모리에 캐시</b>합니다. 체인 해석에는 <b>60초 타임아웃</b>이 있습니다.',
-     facts:['AWS SDK 기본 체인','만료 5분 전까지 메모리 캐시','체인 해석 60초 타임아웃'],
+    {kicker:'OVERVIEW', title:'캐시, 확인, 재로그인, 다시 호출',
+     body:'평소에는 <b>캐시</b>한 자격증명을 쓰고, 만료되면 <b>정말 만료됐는지 확인</b>한 뒤 <b>로그인 명령</b>을 대신 실행합니다.',
+     facts:['평소: 메모리 캐시','만료: GetCallerIdentity로 확인','갱신: awsAuthRefresh 실행 후 재시도'],
+     zones:Z, nodes:[CC,CA,RF,AW,ST,IC],
+     edges:[{f:'cc',t:'st',c:'info',side:'h',curve:-70,o:0},{f:'cc',t:'rf',c:'warning',o:1},{f:'rf',t:'ic',c:'warning',o:2},{f:'ic',t:'aw',c:'info',o:3},{f:'aw',t:'ca',c:'info',o:4},{f:'ca',t:'cc',c:'info',o:5}],
+     loop:true, stagger:0.6,
+     snip:{hd:'설정 한 장',path:'~/.claude/settings.json',lines:cfg,hl:[2,4],note:'두 줄이면 됩니다. <b>AWS_PROFILE</b>은 SSO 프로필, <b>awsAuthRefresh</b>는 그 로그인 명령입니다.'}},
+    {kicker:'STEP 1', title:'세션 시작: 찾고, 캐시',
+     body:'Claude Code는 <b>AWS SDK 기본 체인</b>으로 자격증명을 한 번 찾고 메모리에 둡니다. <b>만료 5분 전까지</b>, 만료 정보가 없으면 1시간 동안 다시 씁니다.',
+     facts:['만료 5분 전까지 메모리 캐시','만료 정보가 없으면 1시간','체인 해석 60초 타임아웃'],
      zones:Z, nodes:[CC,CA,RF,AW,ST,IC], hot:['cc','aw','ca'],
      edges:[{f:'cc',t:'aw',c:'info',l:'체인 해석',o:0},{f:'aw',t:'ca',c:'info',l:'캐시',o:1},{f:'ca',t:'cc',c:'info',o:2}],
      loop:true, stagger:0.8,
      snip:{hd:'설정 한 장',path:'~/.claude/settings.json',lines:cfg,hl:[4],note:'AWS_PROFILE로 <b>SSO 프로필</b>을 가리킵니다.'}},
     {kicker:'STEP 2', title:'만료되면 로그인 명령을 대신 실행',
-     body:'만료를 <b>GetCallerIdentity</b>로 확인하면 <b>awsAuthRefresh</b> 명령을 실행합니다. 브라우저 SSO 로그인이 끝나면 <b>세션이 그대로 이어집니다</b>.',
-     facts:['awsAuthRefresh: 만료됐을 때만 실행','.aws를 갱신하는 명령을 넣음','키를 나눠 줄 필요가 없음'],
+     body:'시각으로 만료를 알거나 API가 자격증명 오류를 내면, 먼저 <b>GetCallerIdentity</b>로 확인합니다. 정말 만료됐을 때만 <b>awsAuthRefresh</b>를 실행하고 요청을 다시 보냅니다.',
+     facts:['아직 유효하면 명령을 건너뜀','.aws를 갱신하는 명령을 넣음','출력은 보이지만 입력은 받지 않음'],
      zones:Z, nodes:[CC,CA,RF,AW,ST,IC], hot:['cc','rf','st','ic','aw'],
      edges:[{f:'cc',t:'st',c:'info',side:'h',curve:-70,l:'만료 확인',o:0},{f:'cc',t:'rf',c:'warning',l:'만료 시',o:1},{f:'rf',t:'ic',c:'warning',l:'브라우저 SSO',o:2},{f:'ic',t:'aw',c:'info',l:'갱신',o:3},{f:'aw',t:'cc',c:'info',o:4}],
      loop:true, stagger:0.6,
      snip:{hd:'설정 한 장',path:'~/.claude/settings.json',lines:cfg,hl:[2],note:'<b>aws sso login</b>을 Claude Code가 대신 실행합니다.'}},
     {kicker:'STEP 3', title:'교차 계정이면 awsCredentialExport',
-     body:'<b>awsCredentialExport</b>는 세션 시작마다 실행되고, 자격증명을 <b>JSON으로 출력</b>하는 명령을 넣습니다. 교차 계정용입니다.',
-     facts:['awsCredentialExport: 세션 시작마다 실행','JSON으로 자격증명 출력','awsAuthRefresh와 쓰임이 다름'],
+     body:'<b>awsCredentialExport</b>는 세션 시작과 자격증명을 다시 읽을 때마다 실행되고, 자격증명을 <b>JSON으로 출력</b>하는 명령을 넣습니다. .aws를 바꿀 수 없을 때만 씁니다.',
+     facts:['세션 시작마다 실행, 출력은 숨김','Expiration이 있으면 5분 전까지 캐시','awsAuthRefresh와 쓰임이 다름'],
      zones:Z, nodes:[CC,CA,EX,AW,ST,IC], hot:['cc','ex'],
      edges:[{f:'ex',t:'cc',c:'warning',l:'JSON 자격증명',o:0}],
      loop:true,
      snip:{hd:'두 설정의 차이',path:'settings.json 키',lines:['awsAuthRefresh       # 만료됐을 때만, .aws 갱신','awsCredentialExport  # 세션 시작마다, JSON 출력'],hl:[1,2],note:'같은 계정은 awsAuthRefresh, <b>교차 계정</b>은 awsCredentialExport입니다.'}},
     {kicker:'STEP 4', title:'막힐 때 보는 곳',
-     body:'프록시와 TLS 검사 환경도 지원합니다. 로그인 탭이 <b>끝없이 열린다면 awsAuthRefresh를 제거</b>하고 원인을 봅니다.',
-     facts:['HTTPS_PROXY: 프록시 경유 지원','TLS 검사 프록시: OS 인증서 저장소 사용','무한 로그인 탭: awsAuthRefresh 제거'],
+     body:'VPN이나 TLS 검사 프록시가 브라우저 로그인을 끊으면 로그인 탭이 <b>계속 열립니다</b>. 이때는 <b>awsAuthRefresh를 빼고</b> 시작 전에 aws sso login을 직접 실행합니다.',
+     facts:['확인 호출도 HTTPS_PROXY를 따름','사내 루트 인증서: OS 저장소나 NODE_EXTRA_CA_CERTS','무한 로그인 탭: awsAuthRefresh 제거'],
      zones:Z, nodes:[CC,CA,{id:'rf',x:440,y:80,w:310,h:92,t:'awsAuthRefresh',s:'무한 로그인 탭이면 제거',c:'danger'},AW,ST,IC], hot:['rf','cc'],
      edges:[{f:'cc',t:'rf',c:'danger',l:'반복 실행',o:0},{f:'rf',t:'cc',c:'danger',curve:60,o:1}],
      loop:true, stagger:0.6,
-     snip:{hd:'Identity Center와 함께',path:'~/.claude/settings.json 또는 managed (예시)',lines:['{','  "awsAuthRefresh": "aws sso login --profile corp-dev",','  "env": {','    "CLAUDE_CODE_USE_BEDROCK": "1",','    "AWS_PROFILE": "corp-dev",','    "AWS_REGION": "us-east-1"','  }','}'],hl:[2,5],note:'Identity Center <b>권한 세트로 Bedrock 최소 권한</b>을 줍니다.'}}
+     snip:{hd:'Identity Center와 함께',path:'managed-settings.json (예시)',lines:['{','  "awsAuthRefresh": "aws sso login --profile fsi-dev",','  "env": {','    "CLAUDE_CODE_USE_BEDROCK": "1",','    "AWS_PROFILE": "fsi-dev",','    "AWS_REGION": "us-east-1"','  }','}'],hl:[2,5],note:'Identity Center <b>권한 세트로 Bedrock 최소 권한</b>을 줍니다.'}}
   ], {legend:[['accent','Claude Code'],['info','자격증명 흐름'],['warning','갱신 명령'],['danger','문제 상황']]});
 });
 :::
 
 :::notes
-{timing: 3min}
+{timing: 2min}
 [요약]
-• 자격증명은 만료 5분 전까지 메모리 캐시, 체인 해석 60초 타임아웃
-• awsAuthRefresh: 만료됐을 때만 실행, aws sso login 같은 .aws 갱신 명령
-• awsCredentialExport: 세션 시작마다 실행, JSON 출력, 교차 계정용
-• 프록시 경유, TLS 검사 프록시 지원, 무한 로그인 탭이면 awsAuthRefresh 제거
+• 자격증명은 만료 5분 전까지(만료 정보가 없으면 1시간) 메모리 캐시, 체인 해석 60초 타임아웃
+• awsAuthRefresh: 시각이나 API 오류로 만료를 알면 GetCallerIdentity로 확인하고, 정말 만료됐을 때만 실행 후 재시도
+• awsCredentialExport: 세션 시작과 재로드마다 실행, JSON 출력, .aws를 바꿀 수 없는 교차 계정용
+• 무한 로그인 탭이면 awsAuthRefresh를 빼고 aws sso login을 직접 실행
 
 {cue: demo}
-SSO를 쓰면 자격증명이 만료되잖아요. 이때 Claude Code가 대신 로그인해 줍니다. 어떻게 이어지는지 하나씩 볼게요.
-첫 번째는 세션 시작이에요. SDK 체인으로 자격증명을 찾고 만료 5분 전까지 캐시합니다.
-두 번째, 만료되면 GetCallerIdentity로 확인하고 awsAuthRefresh에 넣은 aws sso login을 실행해요. 브라우저에서 로그인하시면 세션은 그대로 이어집니다.
-세 번째는 교차 계정인데요. 이때는 awsCredentialExport를 씁니다. 세션 시작마다 실행되고, 자격증명을 JSON으로 내놓아요.
-네 번째, 로그인 탭이 계속 열리면 awsAuthRefresh를 빼고 원인을 보시면 돼요.
+방금 장면의 마지막 부분, 자동 재로그인을 조금 더 자세히 보겠습니다. 설정은 두 줄이에요. AWS_PROFILE은 SSO 프로필, awsAuthRefresh는 그 로그인 명령입니다.
+첫 번째, 세션을 시작하면 SDK 체인으로 자격증명을 한 번 찾고 메모리에 둡니다. 만료 5분 전까지 다시 쓰고요.
+두 번째, 만료됐다 싶으면 먼저 GetCallerIdentity로 정말 만료됐는지 확인해요. 정말 만료됐을 때만 awsAuthRefresh의 aws sso login을 실행하고, 로그인하시면 요청을 다시 보냅니다.
+세 번째, .aws를 바꿀 수 없는 교차 계정이면 awsCredentialExport를 씁니다. 세션 시작마다 실행되고 자격증명을 JSON으로 내놓아요.
+네 번째, VPN이나 TLS 검사 프록시 때문에 로그인 탭이 계속 열리면 awsAuthRefresh를 빼고, 시작 전에 aws sso login을 직접 실행하시면 됩니다.
+
+[출처]
+• code.claude.com/docs/en/amazon-bedrock (Credential caching and resolution timeout, Advanced credential configuration, Troubleshooting)
+• code.claude.com/docs/en/settings-reference (awsAuthRefresh, awsCredentialExport)
 
 [약어]
 • TLS: Transport Layer Security
@@ -536,7 +805,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 1min}
 {cue: poll}
 [요약]
 • 정답 B, Opus 5.5
@@ -548,7 +817,7 @@ QUICK CHECK, 손을 들어 답해 주세요
 정답은 B, Opus 5.5예요. 고정하지 않으면 모든 사용자가 Opus 단가로 청구되거든요. 그래서 다음 슬라이드처럼 반드시 고정해야 합니다.
 
 [출처]
-• code.claude.com/docs amazon-bedrock 문서
+• code.claude.com/docs/en/amazon-bedrock (4. Pin model versions)
 :::
 ---
 <!-- Slide 10: Model version pinning -->
@@ -556,66 +825,89 @@ QUICK CHECK, 손을 들어 답해 주세요
 @fit: off
 
 ## 여러 사용자에게 배포하면 반드시 고정
-ANTHROPIC_DEFAULT_*와 리전에 따른 prefix 규칙
+별칭이 어느 모델 ID로 가는지 정하기
 
 :::html
-<div class="fsi fsi-split wide-left c2-pin">
-  <div class="fsi-stack">
-    <pre class="c2-code"><span class="c"># managed settings env, 이 랩: us-east-1, global 프로필</span>
-<span class="on">ANTHROPIC_DEFAULT_OPUS_MODEL=<i class="c2-pfx">global.</i>anthropic.claude-opus-5-5</span>
-<span class="on">ANTHROPIC_DEFAULT_SONNET_MODEL=<i class="c2-pfx">global.</i>anthropic.claude-sonnet-5-5</span>
-<span class="on">ANTHROPIC_DEFAULT_HAIKU_MODEL=<i class="c2-pfx">global.</i>anthropic.claude-haiku-5-5</span>
-
-<span class="c"># 고정 대신 prefix만 바꾸기</span>
-<span>ANTHROPIC_BEDROCK_REGION_PREFIX=global</span></pre>
-    <p class="c2-cap">허용값: us, eu, apac, jp, au, global. 계정에 있는 profile ID로 채웁니다.</p>
-  </div>
-  <div class="fsi-stack">
-    <p class="c2-cap">리전을 고르면 prefix가 바뀝니다.</p>
-    <div class="fsi-grid-2" data-pick="c2-pfx">
-      <button class="pick" data-key="us"><span class="k">us-*</span><span class="t">us.</span></button>
-      <button class="pick" data-key="eu"><span class="k">eu-*</span><span class="t">eu.</span></button>
-      <button class="pick" data-key="apac"><span class="k">ap-* (서울 포함)</span><span class="t">apac.</span></button>
-      <button class="pick" data-key="global"><span class="k">그 외</span><span class="t">global.</span></button>
-    </div>
-    <div class="panel" data-pick-panel="c2-pfx">
-      <p class="hint">이 랩은 us-east-1에서 global 프로필을 씁니다.<br>리전 그룹을 고르면 왼쪽 prefix가 바뀝니다.<br>바뀐 ID는 예시이며, 실제 값은 계정에 있는 profile ID로 확인합니다.</p>
-      <div data-for="us"><p>us-로 시작하는 리전은 <b>us.</b> 프로필을 씁니다.</p></div>
-      <div data-for="eu"><p>eu-로 시작하는 리전은 <b>eu.</b> 프로필을 씁니다.</p></div>
-      <div data-for="apac"><p>서울(ap-northeast-2)을 포함한 ap- 리전은 <b>apac.</b> 프로필을 씁니다.</p></div>
-      <div data-for="global"><p>그 밖의 리전은 <b>global.</b> 프로필을 씁니다.</p></div>
-    </div>
-  </div>
-</div>
+<div id="c2-sv-pin"></div>
 :::
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var p = Array.prototype.slice.call(document.querySelectorAll('.slide-deck .c2-pin .c2-pfx'));
-  F.pick('c2-pfx', { onShow: function (key) { p.forEach(function (x) { x.textContent = (key || 'global') + '.'; x.classList.toggle('flash', !!key); }); } });
+  var Z = [{x:20,y:30,w:290,h:420,l:'사용자가 고름'},{x:340,y:30,w:400,h:420,l:'CLAUDE CODE가 바꿈'},{x:770,y:30,w:390,h:420,l:'BEDROCK 모델 ID',tone:'info'}];
+  var AL = {id:'al',x:40,y:189,w:250,h:92,t:'opus, sonnet',s:'/model의 별칭',c:'accent'};
+  var DF = {id:'df',x:370,y:80,w:340,h:92,t:'1 내장 기본값',s:'Claude Code 버전마다 바뀜',c:'warning'};
+  var PN = {id:'pn',x:370,y:199,w:340,h:92,t:'2 managed env 고정',s:'ANTHROPIC_DEFAULT_*_MODEL',c:'success'};
+  var PX = {id:'px',x:370,y:318,w:340,h:92,t:'3 리전 → prefix',s:'us. eu. apac. global.',c:'info'};
+  var I1 = {id:'i1',x:800,y:80,w:330,h:92,t:'Opus 5.5',s:'고정 안 하면 주 모델',c:'warning'};
+  var I2 = {id:'i2',x:800,y:199,w:330,h:92,t:'고정한 그 ID',s:'global.anthropic.claude-opus-5-5',c:'success'};
+  var I3 = {id:'i3',x:800,y:318,w:330,h:92,t:'prefix + 모델',s:'계정에 있는 프로필 ID',c:'info'};
+  var ALL = [AL,DF,PN,PX,I1,I2,I3];
+  var pin = ['# 이 랩: us-east-1, global 프로필','ANTHROPIC_DEFAULT_OPUS_MODEL=','  global.anthropic.claude-opus-5-5','ANTHROPIC_DEFAULT_SONNET_MODEL=','  global.anthropic.claude-sonnet-5-5','ANTHROPIC_DEFAULT_HAIKU_MODEL=','  global.anthropic.claude-haiku-5-5'];
+  F.stepviz('#c2-sv-pin', [
+    {kicker:'OVERVIEW', title:'별칭은 그대로, 가는 곳은 정해 둠',
+     body:'사용자는 <b>opus, sonnet</b> 같은 별칭을 고릅니다. 고정하지 않으면 <b>내장 기본값</b>으로, 고정하면 <b>정한 ID</b>로 갑니다.',
+     facts:['고정 안 함: Opus 5.5, Opus 단가','고정: managed settings env','prefix: 리전 그룹을 따름'],
+     zones:Z, nodes:ALL,
+     edges:[{f:'al',t:'df',c:'warning',dash:true},{f:'df',t:'i1',c:'warning',dash:true},{f:'al',t:'pn',c:'success',o:0},{f:'pn',t:'i2',c:'success',o:1},{f:'px',t:'i3',c:'info',o:1}],
+     loop:true, stagger:0.8,
+     snip:{hd:'세 줄 고정',path:'managed-settings.json의 env',lines:pin,hl:[2,3,4,5,6,7],note:'여러 사용자에게 배포한다면 <b>이 세 줄이 기본</b>입니다.'}},
+    {kicker:'STEP 1', title:'고정하지 않으면 내장 기본값',
+     body:'<b>opus</b> 별칭은 Claude Code에 들어 있는 기본값으로 갑니다. 지금 주 모델은 <b>Opus 5.5</b>라 Opus 단가로 청구되고, Claude Code를 올리면 기본값도 바뀔 수 있습니다.',
+     facts:['주 모델: Opus 5.5','계정에 없으면 이번 세션만 낮은 모델로 대체','언제 바뀔지 조직이 정하지 못함'],
+     zones:Z, nodes:ALL, hot:['al','df','i1'],
+     edges:[{f:'al',t:'df',c:'warning',o:0},{f:'df',t:'i1',c:'warning',o:1}],
+     loop:true, stagger:0.7,
+     snip:{hd:'고정 없음',path:'Bedrock 기본값',lines:['# 주 모델: Opus 5.5','#   예: us.anthropic.claude-opus-5-5 (us-* 리전)','# 보조 작업: 기본 Sonnet'],hl:[1],note:'퀴즈의 정답이 이 경우입니다.'}},
+    {kicker:'STEP 2', title:'managed settings env로 고정',
+     body:'여러 사용자에게 배포할 때는 <b>managed settings의 env</b>에 세 모델을 고정합니다. managed env의 고정은 시작할 때 <b>새 버전 제안도 띄우지 않습니다</b>.',
+     facts:['OPUS, SONNET, HAIKU 세 줄','바꾸는 시점을 조직이 정함','값은 계정에 있는 프로필 ID'],
+     zones:Z, nodes:ALL, hot:['al','pn','i2'],
+     edges:[{f:'al',t:'pn',c:'success',o:0},{f:'pn',t:'i2',c:'success',o:1}],
+     loop:true, stagger:0.7,
+     snip:{hd:'세 줄 고정',path:'managed-settings.json의 env',lines:pin,hl:[2,3,4,5,6,7],note:'Lab 1에서 이 세 줄을 managed settings로 배포합니다.'}},
+    {kicker:'STEP 3', title:'prefix는 리전 그룹을 따름',
+     body:'모델 ID 앞의 prefix는 리전에서 나옵니다. us-*는 <b>us.</b>, eu-*는 <b>eu.</b>, 서울을 포함한 ap-*는 <b>apac.</b>, 그 밖은 <b>global.</b>입니다.',
+     facts:['이 랩: us-east-1에서 global 프로필','계정에서 켜진 프로필인지 확인'],
+     zones:Z, nodes:ALL, hot:['px','i3'],
+     edges:[{f:'px',t:'i3',c:'info',o:0}],
+     loop:true,
+     snip:{hd:'리전과 prefix',path:'amazon-bedrock 문서',lines:['us-*    → us.','eu-*    → eu.','ap-*    → apac.    # 서울 포함','그 밖   → global.'],hl:[3],note:'고정할 때는 이 prefix가 붙은 <b>계정의 프로필 ID</b>를 적습니다.'}},
+    {kicker:'STEP 4', title:'prefix만 바꾸는 방법',
+     body:'<b>ANTHROPIC_BEDROCK_REGION_PREFIX</b>는 내장 기본값은 그대로 두고 prefix만 바꿉니다. 버전까지 정하려면 STEP 2의 고정을 씁니다.',
+     facts:['허용값: us, eu, apac, jp, au, global','기본값의 버전은 여전히 바뀔 수 있음'],
+     zones:Z, nodes:ALL, hot:['al','df','px','i3'],
+     edges:[{f:'al',t:'df',c:'warning',o:0},{f:'df',t:'px',c:'info',o:1},{f:'px',t:'i3',c:'info',o:2}],
+     loop:true, stagger:0.7,
+     snip:{hd:'prefix만',path:'환경변수',lines:['export ANTHROPIC_BEDROCK_REGION_PREFIX=global','# opus → global.anthropic.','#        claude-opus-5-5'],hl:[1],note:'예를 들어 us-* 리전에서도 <b>global.</b> 프로필을 쓰게 합니다.'}}
+  ], {legend:[['accent','별칭'],['warning','내장 기본값'],['success','고정'],['info','prefix']]});
 });
 :::
 
 :::notes
-{timing: 3min}
+{timing: 2min}
 [요약]
-• 여러 사용자 배포는 ANTHROPIC_DEFAULT_OPUS/SONNET/HAIKU_MODEL로 반드시 고정
-• 고정 대신 ANTHROPIC_BEDROCK_REGION_PREFIX로 prefix만 바꾸는 방법도 있음
+• 고정하지 않으면 별칭이 내장 기본값(주 모델 Opus 5.5)으로, Claude Code 버전에 따라 바뀜
+• 여러 사용자 배포는 managed settings env의 ANTHROPIC_DEFAULT_OPUS/SONNET/HAIKU_MODEL로 고정, 새 버전 제안도 뜨지 않음
 • prefix 규칙: us-*는 us., eu-*는 eu., ap-*(서울 포함)는 apac., 그 외는 global.
-• 허용값 us, eu, apac, jp, au, global, 계정에 있는 profile ID로 채움
+• ANTHROPIC_BEDROCK_REGION_PREFIX는 기본값을 두고 prefix만 바꿈 (us, eu, apac, jp, au, global)
 
-방금 퀴즈에서 봤죠. 여러 사용자에게 배포할 때는 managed settings의 env에서 세 가지 모델을 반드시 고정해야 해요. ANTHROPIC_DEFAULT_OPUS, SONNET, HAIKU_MODEL입니다.
 {cue: demo}
-모델 ID 앞의 prefix는 리전에 따라 달라져요. 오른쪽에서 골라 볼게요. us 리전은 us., eu 리전은 eu., 서울을 포함한 ap 리전은 apac., 그 밖은 global.입니다.
-모델을 하나하나 고정하는 대신 ANTHROPIC_BEDROCK_REGION_PREFIX로 prefix만 바꿀 수도 있어요. 어느 쪽이든 실제 값은 고객님 계정에 있는 profile ID로 채워 주세요.
+퀴즈에서 봤듯이, 사용자는 opus, sonnet 같은 별칭을 고르고 Claude Code가 그걸 실제 모델 ID로 바꿔요. 위에서부터 세 갈래를 보겠습니다.
+첫째, 고정하지 않으면 Claude Code에 들어 있는 기본값으로 갑니다. 지금은 Opus 5.5라 Opus 단가로 청구되고, Claude Code를 올리면 기본값도 바뀔 수 있어요.
+둘째, 그래서 여러 사용자에게 배포할 때는 managed settings의 env에 세 모델을 고정합니다. 이렇게 고정하면 새 버전 제안도 뜨지 않고, 바꾸는 시점을 조직이 정해요.
+셋째, 모델 ID 앞의 prefix는 리전 그룹을 따릅니다. 서울을 포함한 ap 리전은 apac., 이 랩처럼 global 프로필을 쓰면 global.이고요.
+버전은 두고 prefix만 바꾸고 싶으면 ANTHROPIC_BEDROCK_REGION_PREFIX를 씁니다. 어느 쪽이든 실제 값은 고객님 계정에 있는 프로필 ID로 채워 주세요.
+
+[출처]
+• code.claude.com/docs/en/amazon-bedrock (4. Pin model versions, Startup model checks, Cross-region inference profile prefixes)
 :::
 ---
 <!-- Slide 11: Team cost tagging -->
 @type: content
 @fit: off
 
-## 팀별 비용의 기준, 프로필 ARN
-Application inference profile로 경로와 비용 경계를 고정
+## 팀마다 다른 이름표, 추론 프로필
+누구의 호출이 어느 프로필을 지났는지 남기기
 
 :::html
 <div id="c2-sv-tag"></div>
@@ -623,54 +915,87 @@ Application inference profile로 경로와 비용 경계를 고정
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var Z = [{x:20,y:30,w:1140,h:200,l:'AWS 계정'},{x:20,y:260,w:1140,h:200,l:'정책과 사용'}];
-  var CLI = {id:'cli',x:50,y:90,w:330,h:96,t:'create-inference-profile',s:'--tags team, costcenter',c:'warning'};
-  var AP = {id:'ap',x:440,y:90,w:320,h:96,t:'Application profile',s:'sonnet-team-a, 태그 포함',c:'info'};
-  var BS = {id:'bs',x:820,y:90,w:310,h:96,t:'원본 프로필',s:'global...claude-sonnet-5-5',c:'muted'};
-  var MS = {id:'ms',x:50,y:320,w:330,h:96,t:'managed-settings.json',s:'modelOverrides',c:'accent'};
-  var MD = {id:'md',x:440,y:320,w:320,h:96,t:'/model 선택',s:'이 ARN으로 라우팅',c:'accent'};
-  var CE = {id:'ce',x:820,y:320,w:310,h:96,t:'Cost Explorer',s:'팀별 비용',c:'success'};
-  var ALL = [CLI,AP,BS,MS,MD,CE];
+  var Z = [{x:20,y:30,w:290,h:420,l:'팀'},{x:340,y:30,w:420,h:420,l:'팀별 이름표',tone:'info'},{x:790,y:30,w:370,h:420,l:'기록과 통제'}];
+  var TA = {id:'ta',x:40,y:80,w:250,h:92,t:'A팀 개발자',s:'A팀 정책을 받음',c:'accent'};
+  var TB = {id:'tb',x:40,y:318,w:250,h:92,t:'B팀 개발자',s:'B팀 정책을 받음',c:'accent'};
+  var PA = {id:'pa',x:370,y:80,w:360,h:92,t:'A팀 이름표',s:'sonnet-team-a',c:'info'};
+  var MD = {id:'md',x:370,y:199,w:360,h:92,t:'같은 Sonnet 5.5',s:'원본 global 프로필',c:'muted'};
+  var PB = {id:'pb',x:370,y:318,w:360,h:92,t:'B팀 이름표',s:'sonnet-team-b',c:'info'};
+  var LG = {id:'lg',x:815,y:80,w:320,h:92,t:'CloudTrail 기록',s:'누가, 어느 프로필로',c:'success'};
+  var CO = {id:'co',x:815,y:199,w:320,h:92,t:'비용 태그',s:'계산은 Ch6에서',c:'muted'};
+  var IA = {id:'ia',x:815,y:318,w:320,h:92,t:'IAM 정책',s:'자기 팀 이름표만 허용',c:'warning'};
+  var ALL = [TA,TB,PA,MD,PB,LG,CO,IA];
   F.stepviz('#c2-sv-tag', [
-    {kicker:'STEP 1', title:'팀마다 프로필을 하나 만듭니다',
-     body:'원본 프로필을 <b>copyFrom</b>으로 복사해 팀 이름과 <b>태그</b>를 단 Application inference profile을 만듭니다.',
-     facts:['원본 프로필을 그대로 따름','태그: team, costcenter','팀마다 프로필 하나'],
-     zones:Z, nodes:ALL, hot:['cli','ap','bs'],
-     edges:[{f:'cli',t:'ap',c:'warning',o:0},{f:'bs',t:'ap',c:'muted',o:1}],
-     snip:{hd:'프로필 만들기',path:'Terminal',lines:['aws bedrock \\','  create-inference-profile \\','  --inference-profile-name \\','    sonnet-team-a \\','  --model-source copyFrom=\\','arn:aws:bedrock:us-east-1:','<ACCOUNT>:inference-profile/','global.anthropic.claude-sonnet-5-5 \\','  --tags key=team,value=team-a \\','    key=costcenter,value=1234'],hl:[3,4,5,6,7,8,9,10],note:'ARN은 화면 폭 때문에 나눠 적었습니다. 실제로는 한 줄입니다. 만든 ARN을 다음 단계에서 managed settings에 연결합니다.'}},
-    {kicker:'STEP 2', title:'ARN을 modelOverrides에 연결합니다',
-     body:'<b>modelOverrides</b>로 모델 이름을 팀 프로필 ARN에 묶습니다. <b>/model 선택도 이 ARN으로 라우팅</b>되고, availableModels로 선택지를 제한합니다.',
-     facts:['/model 선택도 ARN으로 라우팅','ARN으로 고정하면 새 버전 제안이 뜨지 않음'],
-     zones:Z, nodes:ALL, hot:['ap','ms','md'],
-     edges:[{f:'ap',t:'ms',c:'info',l:'ARN',o:0},{f:'ms',t:'md',c:'accent',o:1},{f:'md',t:'ap',c:'accent',l:'호출',o:2}],
+    {kicker:'OVERVIEW', title:'팀마다 이름표 하나, 기록에 남는 이름',
+     body:'같은 모델을 써도 팀마다 <b>자기 이름표</b>를 달고 부릅니다. 그러면 기록만 보고도 <b>누구의 호출인지</b> 알고, 다른 팀 이름표는 막을 수 있습니다.',
+     facts:['1 팀마다 이름표 (앱 추론 프로필)','2 정책으로 배포 (modelOverrides)','3 기록과 통제 (CloudTrail, IAM)','비용 계산은 Ch6에서'],
+     zones:Z, nodes:ALL,
+     edges:[{f:'ta',t:'pa',c:'accent',o:0},{f:'tb',t:'pb',c:'accent',o:0},{f:'pa',t:'md',c:'info',o:1},{f:'pb',t:'md',c:'info',o:1},{f:'pa',t:'lg',c:'success',o:2},{f:'pb',t:'ia',c:'warning',o:2}],
      loop:true, stagger:0.8,
-     snip:{hd:'팀 A의 정책',path:'managed-settings.json',lines:['"modelOverrides": {','  "claude-opus-5-5":','    "arn:aws:bedrock:us-east-1:','     <ACCOUNT>:','     application-inference-profile/','     <opus-id>",','  "claude-sonnet-5-5":','    "arn:aws:bedrock:us-east-1:','     <ACCOUNT>:','     application-inference-profile/','     <sonnet-id>"','},','"availableModels": ["opus", "sonnet"]'],hl:[1,13],note:'ARN은 실제로는 한 줄입니다. <b>managed settings로 배포</b>합니다.'}},
-    {kicker:'STEP 3', title:'태그가 Cost Explorer에서 팀을 가릅니다',
-     body:'프로필의 태그로 <b>Cost Explorer에서 팀별 비용</b>을 봅니다. 단, 태그는 <b>Billing에서 비용 할당 태그로 활성화</b>해야 보입니다.',
-     facts:['Billing에서 비용 할당 태그 활성화','팀마다 프로필 하나 = 비용, 쿼터, 로그 경계','IAM에서 프로필 ARN 단위로 허용 가능'],
-     zones:Z, nodes:ALL, hot:['ap','ce','md'],
-     edges:[{f:'md',t:'ap',c:'accent',o:0},{f:'ap',t:'ce',c:'success',l:'태그별 집계',o:1}],
+     snip:{hd:'개념',path:'팀 → 이름표 → 모델',lines:['A팀 → sonnet-team-a → Sonnet 5.5','B팀 → sonnet-team-b → Sonnet 5.5'],hl:[1,2],note:'이름표의 정식 이름은 <b>애플리케이션 추론 프로필</b>입니다.'}},
+    {kicker:'STEP 1', title:'팀마다 자기 이름표',
+     body:'원본 프로필을 복사해 팀 이름과 태그를 단 <b>애플리케이션 추론 프로필</b>을 만듭니다. 모델은 같고, <b>이름표만</b> 팀마다 다릅니다.',
+     facts:['원본 프로필의 모델과 리전을 그대로 따름','태그: team, costcenter'],
+     zones:Z, nodes:ALL, hot:['ta','tb','pa','pb','md'],
+     edges:[{f:'ta',t:'pa',c:'accent',o:0},{f:'tb',t:'pb',c:'accent',o:0},{f:'pa',t:'md',c:'info',o:1},{f:'pb',t:'md',c:'info',o:1}],
      loop:true, stagger:0.8,
-     snip:{hd:'놓치기 쉬운 것',path:'Billing',lines:['# 태그는 만든다고 바로 보이지 않음','비용 할당 태그로 활성화','  team','  costcenter'],hl:[2,3,4],note:'활성화하지 않으면 Cost Explorer에서 <b>팀별로 나뉘지 않습니다</b>.'}}
-  ], {legend:[['warning','만들기'],['info','프로필'],['accent','정책과 선택'],['success','비용 보기']]});
+     snip:{hd:'개념',path:'팀 → 이름표 → 모델',lines:['A팀 → sonnet-team-a → Sonnet 5.5','B팀 → sonnet-team-b → Sonnet 5.5'],hl:[1,2],note:'만드는 명령과 실제 문자열은 <b>마지막 단계</b>에서 봅니다.'}},
+    {kicker:'STEP 2', title:'이름표는 정책으로 배포',
+     body:'팀마다 <b>managed settings</b>의 <b>modelOverrides</b>로 모델 이름을 그 팀 이름표에 묶습니다. /model에서 무엇을 골라도 <b>이 이름표로</b> 갑니다.',
+     facts:['/model 선택도 이름표로 라우팅','이름표로 고정하면 새 버전 제안이 뜨지 않음'],
+     zones:Z, nodes:ALL, hot:['ta','pa'],
+     edges:[{f:'ta',t:'pa',c:'accent',o:0}],
+     loop:true,
+     snip:{hd:'A팀의 정책',path:'managed-settings.json',lines:['"modelOverrides": {','  "claude-sonnet-5-5": "<A팀 이름표의 ARN>"','}'],hl:[2],note:'개발자가 이름표를 고르지 않습니다. <b>정책이 정해 줍니다</b>.'}},
+    {kicker:'STEP 3', title:'기록이 누구의 호출인지 말함',
+     body:'Bedrock 호출은 CloudTrail에 <b>누가</b>(SSO 사용자), <b>어느 프로필로</b> 불렀는지 남습니다. 모델 호출 로그와 사용량 지표도 이름표별로 봅니다.',
+     facts:['CloudTrail: InvokeModel이 관리 이벤트로 기록','감사 질문: 이 호출은 어느 팀인가','태그로 나눈 비용 계산은 Ch6'],
+     zones:Z, nodes:ALL, hot:['pa','pb','lg','co'],
+     edges:[{f:'pa',t:'lg',c:'success',o:0},{f:'pb',t:'lg',c:'success',o:1},{f:'pb',t:'co',c:'muted',dash:true}],
+     loop:true, stagger:0.7,
+     snip:{hd:'기록에 남는 것',path:'CloudTrail 이벤트 (요약)',lines:['eventName: InvokeModel','userIdentity: fsi-dev 사용자 (SSO 역할)','modelId: <A팀 이름표의 ARN>'],hl:[2,3],note:'사람과 팀이 <b>한 줄에 같이</b> 남습니다.'}},
+    {kicker:'STEP 4', title:'통제: 자기 팀 이름표만',
+     body:'IAM 정책의 Resource를 <b>자기 팀 이름표</b>로 좁히면, 다른 팀 이름표로 부르는 요청은 <b>거부</b>됩니다.',
+     facts:['앞의 IAM 정책 Resource를 좁힌 모양','뒤의 기반 모델 권한은 그대로 필요'],
+     zones:Z, nodes:ALL, hot:['tb','pa','pb','ia'],
+     edges:[{f:'tb',t:'pb',c:'accent',o:0},{f:'pb',t:'ia',c:'warning',l:'허용',o:1},{f:'tb',t:'pa',c:'danger',dash:true,l:'거부'}],
+     loop:true, stagger:0.7,
+     snip:{hd:'B팀 역할 정책 (일부)',path:'IAM',lines:['"Resource": [','  "<B팀 이름표의 ARN>",','  "arn:aws:bedrock:*:*:inference-profile/*",','  "arn:aws:bedrock:*:*:foundation-model/*" ]'],hl:[2],note:'Lab 1 최소 정책의 <b>application-inference-profile/*</b> 자리를 팀 이름표로 바꾼 것입니다.'}},
+    {kicker:'STEP 5', title:'실제 문자열, 프로필 ARN',
+     body:'이름표를 만드는 명령과 그 결과입니다. 결과로 나온 <b>ARN</b>이 앞 단계의 정책 자리에 들어갑니다.',
+     facts:['arn:aws:bedrock: 서비스','us-east-1: 리전','111122223333: 계정 (예시)','application-inference-profile/: 이름표'],
+     zones:Z, nodes:ALL, hot:['pa','md'],
+     edges:[{f:'pa',t:'md',c:'info',o:0}],
+     loop:true,
+     snip:{hd:'이름표 만들기',path:'Terminal',lines:['aws bedrock create-inference-profile \\','  --inference-profile-name sonnet-team-a \\','  --model-source copyFrom=arn:aws:bedrock:\\','us-east-1:111122223333:inference-profile/\\','global.anthropic.claude-sonnet-5-5 \\','  --tags key=team,value=team-a','# 결과','arn:aws:bedrock:us-east-1:111122223333:','application-inference-profile/a1b2c3d4e5f6'],hl:[2,6,8,9],note:'ARN은 화면 폭 때문에 나눠 적었습니다. 실제로는 한 줄입니다.'}}
+  ], {legend:[['accent','팀'],['info','이름표'],['success','기록'],['warning','통제'],['danger','거부']]});
 });
 :::
 
 :::notes
-{timing: 3min}
+{timing: 2min}
 [요약]
-• 팀마다 Application inference profile을 하나 만들고 태그(team, costcenter)를 닮
-• modelOverrides로 모델 이름을 팀 프로필 ARN에 묶어 managed settings로 배포
-• /model 선택도 ARN으로 라우팅, ARN 고정은 업데이트 제안에서 제외, availableModels로 선택지 제한
-• 태그는 Billing에서 비용 할당 태그로 활성화해야 Cost Explorer에 보임
-• 팀마다 프로필 하나가 비용, 쿼터, 로그의 경계
+• 팀마다 애플리케이션 추론 프로필(이름표)을 하나씩, 모델은 같고 이름표만 다름
+• managed settings의 modelOverrides로 모델 이름을 팀 이름표에 묶어 배포, /model 선택도 이 이름표로
+• CloudTrail에 누가(SSO 사용자), 어느 프로필로 불렀는지 남음
+• IAM Resource를 자기 팀 이름표로 좁히면 다른 팀 이름표는 거부
+• ARN 문자열은 마지막에. 태그로 나눈 비용 계산은 Ch6에서
 
 {cue: demo}
-그럼 팀별로 비용은 어떻게 나눌까요? 세 단계로 살펴보죠.
-첫 번째는 원본 프로필을 copyFrom으로 복사하는 거예요. 팀 A용 Application inference profile을 만들고 team, costcenter 태그를 답니다.
-두 번째는 그 ARN을 managed settings의 modelOverrides에 연결하는 겁니다. 사용자가 /model에서 고르는 모델도 이 ARN으로 라우팅돼요. availableModels로 고를 수 있는 모델 자체를 제한하고요.
-세 번째, 태그로 Cost Explorer에서 팀별 비용을 봅니다. 여기서 자주 놓치시는데요. Billing에서 비용 할당 태그로 활성화해야 보여요.
-이렇게 팀마다 프로필 하나가 비용, 쿼터, 로그의 경계가 되고, IAM에서도 이 ARN 단위로 허용할 수 있어요.
+Part 1 마지막은 팀마다 다른 이름표예요. A팀과 B팀이 같은 Sonnet을 쓰더라도, 각자 자기 이름표를 달고 부르게 하는 겁니다.
+첫째, 이 이름표의 정식 이름이 애플리케이션 추론 프로필이에요. 원본 프로필을 복사해서 팀 이름과 태그만 다르게 만듭니다.
+둘째, 팀마다 managed settings의 modelOverrides로 모델 이름을 그 팀 이름표에 묶어요. 개발자가 /model에서 무엇을 골라도 이 이름표로 갑니다.
+셋째, 그러면 CloudTrail에 누가, 어느 이름표로 불렀는지 한 줄에 남아요. 감사 때 이 호출이 어느 팀 것이냐는 질문에 바로 답할 수 있습니다.
+넷째, IAM에서 자기 팀 이름표만 허용하면 다른 팀 이름표로는 못 부릅니다.
+마지막으로 실제 문자열이에요. 만드는 명령의 결과로 나오는 ARN이 앞에서 본 정책 자리에 들어갑니다. 태그로 비용을 나누는 계산은 Ch6에서 자세히 다룰게요.
+
+{cue: transition}
+여기까지가 연결이었고요, 이제 이 설정들을 회사 전체에 어떻게 내려보내는지 보겠습니다.
+
+[출처]
+• code.claude.com/docs/en/amazon-bedrock (Map each model version to an inference profile, Startup model checks)
+• docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html
+• docs.aws.amazon.com/bedrock/latest/userguide/logging-using-cloudtrail.html
 
 [약어]
 • ARN: Amazon Resource Name

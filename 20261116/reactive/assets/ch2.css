@@ -179,3 +179,5 @@
 /* Ch2 opening survey (five bars) */
 .c2-survey .bars { display: flex; flex-direction: column; gap: var(--space-3); }
 .c2-survey .bar { grid-template-columns: 17rem minmax(0, 1fr) 4.5rem; }
+/* Part 1 visual rebuild (slides 5-11): long ARNs and IDs never split mid-word */
+.slide-deck #c2-sv-iam .sv-pre, .slide-deck #c2-sv-pin .sv-pre, .slide-deck #c2-sv-env .sv-pre, .slide-deck #c2-sv-sso .sv-pre, .slide-deck #c2-sv-cred .sv-pre { white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; }
