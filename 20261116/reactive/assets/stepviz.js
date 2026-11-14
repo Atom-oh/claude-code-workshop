@@ -91,7 +91,7 @@
     }
     const d = GLYPH[name]; if (!d) return;
     const s = size / 24;
-    g.appendChild(svgEl('path', { class: 'sv-icon glyph', d, transform: 'translate(' + x + ' ' + y + ') scale(' + s + ')', 'stroke-width': 1.8 / s * (size / 30) }));
+    g.appendChild(svgEl('path', { class: 'sv-icon glyph', d, transform: 'translate(' + x + ' ' + y + ') scale(' + s + ')', 'stroke-width': 1.44 }));
   }
 
   function fitText(t, maxW, start, min) {

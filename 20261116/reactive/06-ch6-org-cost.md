@@ -238,7 +238,7 @@ AWS의 관측 도구와는 구분하시면 됩니다.
 
 :::script
 import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
-  aria: '개발자 PC의 Claude Code가 지표와 이벤트를 PC 안의 수집기로 보내고, 수집기가 프롬프트 본문을 지운 뒤 조직이 고른 OTel 저장소(CloudWatch, ClickHouse, DuckDB 등)로 내보내며, 대시보드가 이를 읽어 관리자 화면과 Ask Claude 답변을 만드는 흐름',
+  aria: '개발자 PC의 Claude Code가 지표와 이벤트를 PC 안의 수집기로 보내고, 수집기가 프롬프트 본문을 지운 뒤 조직이 고른 곳(CloudWatch, ClickHouse, 또는 파일로 내보낸 뒤 DuckDB로 조회)으로 내보내며, 대시보드가 이를 읽어 관리자 화면과 Ask Claude 답변을 만드는 흐름',
   zones: [
     { box: [-0.4, 0, 0, 9.2, 4.2, 0.4], label: '개발자 PC', labelAt: [-0.2, 0, -1.05] },
     { box: [11.0, 0, 0, 7.6, 4.2, 0.4], label: 'OTel 저장소 (조직이 선택)', labelAt: [11.2, 0, -1.05] },
@@ -260,6 +260,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
   tags: [
     { id: 'evt', at: [6.6, 3.2, 3.4], text: 'api_request: model, 토큰, cost_usd', show: ['emit'], overview: false },
     { id: 'scrub', at: [6.6, 3.2, 3.4], text: 'prompt 본문 ✕  prompt_length만', show: ['scrub'], overview: false },
+    { id: 'file', at: [15.4, 4.2, 2.6], text: 'file exporter → JSON 파일', show: ['cw'], overview: false },
     { id: 'sql', at: [22.6, 4.0, 3.6], text: 'SELECT … (읽기 전용)', show: ['ask'], overview: false }
   ],
   wires: {
@@ -275,8 +276,8 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
     { id: 'pc', n: 1, anchor: [2.3, 1.2, 1.2], at: [40, 440], title: '개발자 PC, Claude Code', sub: 'OTel은 managed settings로 켜짐' },
     { id: 'col', n: 2, anchor: [6.1, 1.3, 1.7], at: [110, 70], title: '수집기 (PC 안)', sub: 'loopback 4317, 디스크 큐' },
     { id: 'cw', n: 3, anchor: [12.4, 1.4, 0.9], at: [320, 470], title: 'Amazon CloudWatch', sub: 'AWS 관리형 로그와 지표' },
-    { id: 'ch', n: 4, anchor: [14.7, 1.4, 1.9], at: [300, 40], title: 'ClickHouse', sub: '대량 이벤트 분석, ccdash가 사용' },
-    { id: 'duck', n: 5, anchor: [17.0, 1.4, 1.3], at: [490, 40], title: 'DuckDB', sub: '파일로 받아 가볍게 분석' },
+    { id: 'ch', n: 4, anchor: [14.7, 1.4, 1.9], at: [300, 40], title: 'ClickHouse', sub: '대량 분석, ccdash' },
+    { id: 'duck', n: 5, anchor: [17.0, 1.4, 1.3], at: [490, 40], title: 'DuckDB', sub: 'JSON 파일을 조회' },
     { id: 'api', n: 6, anchor: [21.3, 1.2, 1.8], at: [600, 470], title: '대시보드 (ccdash 등)', sub: '저장소를 읽어 화면으로' },
     { id: 'bedrock', n: 7, anchor: [25.6, 2.4, 2.4], at: [680, 180], title: 'Amazon Bedrock', sub: 'Ask Claude: 질문을 SQL로' }
   ],
@@ -293,16 +294,17 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
     '  http://localhost:4317',
     '# 이벤트 claude_code.api_request',
     '#   model, input_tokens, output_tokens,',
-    '#   cache_read_tokens, cost_usd, duration_ms',
+    '#   cache_read_tokens,',
+    '#   cost_usd, duration_ms',
     '# 프롬프트 본문: 기본 미전송 (길이만)'
   ],
   overview: { label: '전체 그림', title: '내 PC에서 관리자 화면까지', say: '프롬프트를 보내면 Claude Code는 답과 별도로 <b>무엇을 얼마나 썼는지</b>를 기록합니다. 그 기록이 PC 안의 수집기를 거쳐 <b>조직이 고른 저장소</b>에 쌓이고, 대시보드의 숫자가 됩니다.' },
   phases: [
     { key: 'start', d: 2.6, focus: ['pc'], cam: ['pc', 'col'], zoom: 0.3, badge: 'pc', lines: [1], label: '1  입력', title: '개발자가 프롬프트를 보낸다', say: '정책으로 OTel이 켜진 PC에서는 개발자가 따로 할 일이 없습니다. 평소처럼 Claude Code를 쓰면 <b>사용 기록이 자동으로</b> 남습니다.' },
-    { key: 'emit', d: 2.8, focus: ['pc', 'col'], cam: ['pc', 'col'], zoom: 0.3, badge: 'col', lines: [2, 3, 7, 8, 9], packet: { wire: 'emit' }, label: '2  기록', title: '요청마다 이벤트, 1분마다 지표', say: '모델 호출 한 번마다 <b>api_request</b> 이벤트가 생기고 모델, 토큰, 추정 비용이 담깁니다. token.usage 같은 지표는 기본 1분마다 모아서 보냅니다.' },
-    { key: 'scrub', d: 2.6, focus: ['col'], cam: ['col'], zoom: 0.28, badge: 'col', lines: [10], label: '3  지우기', title: '본문은 보내지 않는다', say: '프롬프트 본문은 <b>기본으로 보내지 않고 길이만</b> 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막습니다.' },
-    { key: 'store', d: 3.2, focus: ['col', 'cw', 'ch', 'duck'], badge: 'ch', lines: [4, 5, 6], packet: { wire: 'toch' }, label: '4  저장', title: '수집기가 고른 저장소로 보낸다', say: '수집기는 OTLP로 받아 <b>조직이 고른 저장소</b>로 내보냅니다. 이번 랩 대시보드(ccdash)는 <b>ClickHouse</b>에 쌓고, 끊겨도 디스크 큐에 모아 두었다가 다시 보냅니다.' },
-    { key: 'cw', d: 3.2, focus: ['col', 'cw', 'duck'], badge: 'cw', lines: [], packet: { wire: 'tocw', colour: 'var(--info)' }, label: '5  다른 선택', title: 'CloudWatch, DuckDB도 된다', say: 'AWS 안에서 끝내려면 <b>CloudWatch</b>, 가볍게 시작하려면 파일로 받아 <b>DuckDB</b>로 분석해도 됩니다. 이번 랩은 CloudWatch에도 함께 보냅니다.' },
+    { key: 'emit', d: 2.8, focus: ['pc', 'col'], cam: ['pc', 'col'], zoom: 0.3, badge: 'col', lines: [2, 3, 7, 8, 9, 10], packet: { wire: 'emit' }, label: '2  기록', title: '요청마다 이벤트, 1분마다 지표', say: '모델 호출 한 번마다 <b>api_request</b> 이벤트가 생기고 모델, 토큰, 추정 비용이 담깁니다. token.usage 같은 지표는 기본 1분마다 모아서 보냅니다.' },
+    { key: 'scrub', d: 2.6, focus: ['col'], cam: ['col'], zoom: 0.28, badge: 'col', lines: [11], label: '3  지우기', title: '본문은 보내지 않는다', say: '프롬프트 본문은 <b>기본으로 보내지 않고 길이만</b> 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막습니다.' },
+    { key: 'store', d: 3.2, focus: ['col', 'cw', 'ch', 'duck'], badge: 'ch', lines: [4, 5, 6], packet: { wire: 'toch' }, label: '4  저장', title: '수집기, 조직이 고른 저장소로', say: '수집기는 OTLP로 받아 <b>조직이 고른 저장소</b>로 내보냅니다. 이번 랩 대시보드(ccdash)는 <b>ClickHouse</b>에 쌓고, 끊겨도 디스크 큐에 모아 두었다가 다시 보냅니다.' },
+    { key: 'cw', d: 3.2, focus: ['col', 'cw', 'duck'], badge: 'cw', lines: [], packet: { wire: 'tocw', colour: 'var(--info)' }, label: '5  다른 선택', title: 'CloudWatch, DuckDB도 된다', say: 'AWS 안에서 끝내려면 <b>CloudWatch</b>입니다. 수집기의 <b>file exporter</b>로 JSON 파일을 남기고 <b>DuckDB</b>로 조회하는 방법도 있습니다. 이번 랩은 CloudWatch에도 함께 보냅니다.' },
     { key: 'view', d: 3.0, focus: ['ch', 'api'], badge: 'api', lines: [], packet: { wire: 'read' }, label: '6  화면', title: '대시보드가 읽어서 화면으로', say: 'ccdash 같은 대시보드가 저장소를 <b>읽기 쿼리</b>로 조회해 Overview, Users, Cost 화면을 만듭니다. 브라우저는 데이터베이스에 직접 붙지 않습니다.' },
     { key: 'ask', d: 3.4, focus: ['api', 'bedrock'], badge: 'bedrock', lines: [], packet: { wire: 'ask', mode: 'pingpong', colour: 'var(--success)' }, label: '7  질문', title: 'Ask Claude, 말로 묻고 표로 받기', say: '“오류가 많은 도구는?”처럼 물으면 Bedrock의 Claude가 <b>읽기 전용 SQL</b>로 조회하고, 표와 해석으로 답합니다.' }
   ]
@@ -310,12 +312,12 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
 :::
 
 :::notes
-{timing: 2.5min}
+{timing: 2min}
 [요약]
 • 요청 하나가 남기는 기록의 길: Claude Code, PC 안 수집기, OTel 저장소, 대시보드, Ask Claude
 • 모델 호출마다 api_request 이벤트(모델, 토큰, cost_usd), 지표는 기본 1분마다 전송
 • 프롬프트 본문은 기본 미전송(길이만), 랩 수집기는 내보내기 전에 로그 본문을 한 번 더 지움
-• 저장소는 조직이 선택: CloudWatch(AWS 관리형), ClickHouse(대량 분석, ccdash), DuckDB(파일로 받아 가볍게)
+• 저장소는 조직이 선택: CloudWatch(AWS 관리형), ClickHouse(대량 분석, ccdash), 수집기 file exporter의 JSON 파일을 DuckDB로 조회
 • 수집기는 디스크 큐로 끊겨도 다시 보냄, 대시보드는 읽기 쿼리로 화면 구성
 
 {cue: demo}
@@ -324,7 +326,7 @@ OTel을 켜면 실제로 무슨 일이 일어나는지, 요청 하나를 따라�
 모델을 한 번 부를 때마다 api_request라는 이벤트가 생기는데요, 여기에 모델, 토큰, 추정 비용이 담겨요. 토큰 사용량 같은 지표는 기본 1분마다 모아서 보냅니다.↓
 금융권에서 제일 많이 물어보시는 게 이거예요. 프롬프트 본문은 기본으로 보내지 않고 길이만 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막아요.↓
 PC 안의 수집기가 이걸 받아서 조직이 고른 저장소로 보내요. 이번 랩 대시보드인 ccdash는 ClickHouse에 쌓고요, 연결이 잠깐 끊겨도 디스크에 모아 뒀다가 다시 보냅니다.↓
-저장소는 정하시기 나름이에요. AWS 안에서 끝내려면 CloudWatch, 가볍게 시작하려면 파일로 받아서 DuckDB로 분석하셔도 됩니다. 이번 랩은 CloudWatch에도 같이 보내요.↓
+저장소는 정하시기 나름이에요. AWS 안에서 끝내려면 CloudWatch고요, 수집기가 JSON 파일로 남기게 한 뒤 DuckDB로 조회하는 방법도 있습니다. 이번 랩은 CloudWatch에도 같이 보내요.↓
 ccdash 같은 대시보드가 저장소를 읽어서 관리자가 보는 화면을 만듭니다.↓
 그리고 Ask Claude에 말로 물어보면, Bedrock의 Claude가 읽기 전용 SQL로 조회해서 표로 답해 줘요.
 
@@ -334,6 +336,7 @@ ccdash 같은 대시보드가 저장소를 읽어서 관리자가 보는 화면�
 [출처]
 • code.claude.com/docs/en/monitoring-usage (metrics, events, 기본 미전송 항목, export interval)
 • github.com/Atom-oh/claude-code-usage-dashboard (docs/architecture.md: loopback 4317 수집기, 디스크 큐, ClickHouse, Express)
+• OpenTelemetry Collector Contrib, file exporter (OTLP JSON 파일로 내보내기), DuckDB read_json
 :::
 ---
 <!-- Slide 8: OTel by policy -->
@@ -423,7 +426,7 @@ CloudWatch와 중앙 대시보드로 보냅니다.
 @fit: off
 
 ## OTel이 보내는 것, 보내지 않는 것
-지표와 이벤트는 가고, 본문은 기본으로 남는다
+지표와 이벤트는 전송, 본문은 기본 미전송
 
 :::html
 <div class="fsi c6-sig">
@@ -460,12 +463,12 @@ CloudWatch와 중앙 대시보드로 보냅니다.
     </ul>
     <p>금융권 운영은 이 스위치를 <b>끈 채로</b> 두고, 수집기에서 한 번 더 지웁니다.</p>
   </div>
+  <p class="c6-sig-note">모든 지표 이름 앞에는 <code>claude_code.</code>가 붙습니다. 비용 지표는 추정치이고, 정산은 AWS 청구서가 기준입니다.</p>
 </div>
-<p class="c6-sig-note">모든 지표 이름 앞에는 <code>claude_code.</code>가 붙습니다. 비용 지표는 추정치이고, 정산은 AWS 청구서가 기준입니다.</p>
 :::
 
 :::notes
-{timing: 1.5min}
+{timing: 1min}
 [요약]
 • 지표 8가지(기본 1분 간격): token.usage, cost.usage, session.count, active_time, lines_of_code, commit, PR, code_edit_tool.decision
 • 이벤트(기본 5초 간격): api_request, tool_result, tool_decision, user_prompt(길이), api_error
@@ -500,15 +503,15 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
   var COL = {id:'col',x:40,y:320,w:260,h:90,t:'수집기',s:'loopback 4317, 디스크 큐',c:'warning',icon:'pipe'};
   var CH = {id:'ch',x:410,y:320,w:280,h:90,t:'ClickHouse',s:'지표, 로그, 시간별 롤업',c:'info',icon:'server'};
   var API = {id:'api',x:410,y:60,w:280,h:90,t:'ccdash',s:'Express API + React 화면',c:'info',icon:'chart'};
-  var CF = {id:'cf',x:820,y:60,w:320,h:90,t:'Amazon CloudFront',s:'브라우저 접속, OIDC 로그인',c:'success',icon:'aws:CloudFront'};
+  var CF = {id:'cf',x:820,y:60,w:320,h:90,t:'Amazon CloudFront',s:'브라우저 HTTPS 접속',c:'success',icon:'aws:CloudFront'};
   var BD = {id:'bd',x:820,y:320,w:320,h:90,t:'Amazon Bedrock',s:'Ask Claude가 SQL을 작성',c:'accent',icon:'aws:Bedrock'};
   var Z = [{x:20,y:20,w:300,h:420,l:'참가자 PC'},{x:390,y:20,w:320,h:420,l:'EKS',tone:'info'}];
   var N = [PC, COL, CH, API, CF, BD];
   var col = ['# collector-config.yaml (요약)','receivers:','  otlp: grpc 127.0.0.1:4317, http 4318','processors:','  Claude Code 지표 8개만 허용','  로그 본문은 지우고 내보냄','exporters:','  clickhouse: 디스크 큐, 재시도'];
   F.stepviz('#c6-sv-dash', [
     {kicker:'OVERVIEW', title:'받고, 쌓고, 보여 주고, 답한다',
-     body:'ccdash는 이 워크숍을 위해 만들어 <b>GitHub에 공개한 사용량 대시보드</b>입니다. 참가자 PC의 수집기가 보낸 OTel을 ClickHouse에 쌓고, 화면과 Ask Claude로 보여 줍니다.',
-     facts:['github.com/Atom-oh/claude-code-usage-dashboard','Claude Code와 Codex 사용량','숫자는 관측값과 추정치, 청구서가 아님'],
+     body:'ccdash는 이 워크숍을 위해 만든 <b>사용량 대시보드</b>입니다. GitHub에서 소스를 볼 수 있지만 라이선스는 proprietary라 사용과 복제는 별도 허락이 필요합니다. 참가자 PC의 수집기가 보낸 OTel을 ClickHouse에 쌓고, 화면과 Ask Claude로 보여 줍니다.',
+     facts:['github.com/Atom-oh/claude-code-usage-dashboard (proprietary)','Claude Code와 Codex 사용량','숫자는 관측값과 추정치, 청구서가 아님'],
      zones:Z, nodes:N,
      edges:[{f:'pc',t:'col',c:'accent',o:0},{f:'col',t:'ch',c:'warning',o:1},{f:'ch',t:'api',c:'info',o:2},{f:'api',t:'cf',c:'success',o:3},{f:'api',t:'bd',c:'accent',o:3}],
      loop:true, stagger:0.6,
@@ -524,10 +527,10 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
      facts:['원본: 지표, 로그, 선택 시 트레이스','롤업: 시간별 지표','기본 2일, 최대 90일 범위'],
      zones:Z, nodes:N, hot:['ch','api'],
      edges:[{f:'ch',t:'api',c:'info',l:'읽기 쿼리',o:0}], loop:true,
-     snip:{hd:'화면 범위',path:'환경 변수',lines:['DEFAULT_RANGE_DAYS=2','RANGE_CAP_DAYS=90','PII_MASK_ENABLED  # 화면, CSV, 채팅 가림'],hl:[1,2],note:'이 워크숍 화면도 <b>최근 2일</b>이 기본입니다.'}},
+     snip:{hd:'화면 범위',path:'환경 변수',lines:['DEFAULT_RANGE_DAYS=2','RANGE_CAP_DAYS=90','PII_MASK_ENABLED  # 화면, CSV, 채팅 가림', '                  # 표시용, 권한 경계 아님'],hl:[1,2],note:'이 워크숍 화면도 <b>최근 2일</b>이 기본입니다.'}},
     {kicker:'STEP 3', title:'화면: 로그인한 사람만, 역할대로',
-     body:'관리자는 브라우저로 <b>CloudFront</b>를 거쳐 접속합니다. 조직 OIDC 로그인을 켜면 viewer, analyst, admin 그룹대로 볼 수 있는 범위가 나뉩니다.',
-     facts:['Overview, Users, Usage, Cost 등 메뉴','조직 OIDC, viewer / analyst / admin','사용자 식별자 가림 옵션'],
+     body:'관리자는 브라우저로 <b>CloudFront</b>를 거쳐 접속합니다. ccdash의 조직 OIDC 로그인(선택)을 켜면 viewer, analyst, admin 그룹대로 볼 수 있는 범위가 나뉩니다.',
+     facts:['Overview, Users, Usage, Cost 등 메뉴','조직 OIDC(선택), viewer / analyst / admin','식별자 가림은 표시용, 권한 경계 아님'],
      zones:Z, nodes:N, hot:['api','cf'],
      edges:[{f:'api',t:'cf',c:'success',l:'HTTPS',o:0}], loop:true,
      snip:{hd:'메뉴',path:'ccdash 왼쪽 메뉴',lines:['Overview    핵심 지표 요약','Users       사용자별 활동','Usage       토큰, 도구 사용','Cost        비용, 모델별 비교','Reliability 오류, 응답 시간','Analytics   모델, 진단 분석'],hl:[1,2,3,4]}},
@@ -542,16 +545,16 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
 :::
 
 :::notes
-{timing: 2min}
+{timing: 1.5min}
 [요약]
-• ccdash: 이 워크숍용으로 GitHub에 공개한 사용량 대시보드 (github.com/Atom-oh/claude-code-usage-dashboard)
+• ccdash: 이 워크숍용 사용량 대시보드, GitHub에서 소스 열람 가능 (라이선스 proprietary, 사용과 복제는 별도 허락)
 • 수집: PC 안 수집기(loopback 4317)가 Claude Code 지표 8개만 통과, 로그 본문 삭제, 디스크 큐
 • 저장: ClickHouse 원본과 시간별 롤업, 기본 2일, 최대 90일
 • 화면: CloudFront로 접속, 조직 OIDC와 viewer, analyst, admin 그룹
 • Ask Claude: Bedrock의 Claude가 읽기 전용 SQL로 조회, 숫자는 관측값이고 평가 근거가 아님
 
 {cue: demo}
-이번 워크숍에서 쓰는 대시보드가 ccdash예요. GitHub에 공개돼 있어서 구조를 그대로 참고하실 수 있어요. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓
+이번 워크숍에서 쓰는 대시보드가 ccdash예요. GitHub에서 소스를 보실 수는 있는데, 라이선스가 proprietary라서 가져다 쓰시려면 별도 허락이 필요합니다. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓
 먼저 수집이에요. Claude Code는 같은 PC 안의 수집기로 보내고, 수집기는 Claude Code 지표 여덟 개만 통과시키고 로그 본문은 지운 뒤 내보냅니다.↓
 저장은 ClickHouse예요. 원본과 시간별 롤업이 따로 있어서 긴 기간도 빠르게 그립니다. 화면은 기본 최근 2일이에요.↓
 화면은 CloudFront를 거쳐 접속하고, 조직 OIDC 로그인을 켜면 역할대로 볼 수 있는 범위가 나뉩니다.↓
@@ -592,7 +595,7 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
 :::
 
 :::notes
-{timing: 2.5min}
+{timing: 2min}
 [요약]
 • Overview: 시간별 토큰과 비용 추이, 모델별 사용량 표 (리허설 데이터)
 • Usage: 도구별 호출, 오류, 오류율 (Bash 최다, WebFetch 오류율 높음)
@@ -609,6 +612,9 @@ Cost에서는 입력 토큰 구성을 꼭 보세요. 대부분이 캐시 읽기�
 
 {cue: transition}
 이제 실제 대시보드를 같이 열어 보겠습니다.
+
+[출처]
+• ccdash 화면 캡처, 리허설 데이터 (github.com/Atom-oh/claude-code-usage-dashboard), 로그인 이름은 가림
 :::
 ---
 <!-- Slide 12: Demo dashboard -->
