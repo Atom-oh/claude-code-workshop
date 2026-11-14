@@ -69,20 +69,24 @@ config or command on the right with the relevant lines lit.
 
 ## Structure (decided)
 
-Target 36 to 40 slides, notes timing summing to 50 minutes.
+Target 36 to 40 slides, notes `{timing}` summing to 50 minutes (presenter
+metadata only; no time is shown on any slide or said in the script).
 
 1. **Cover** (with the 1분 미리보기 video button, as now).
 2. **Survey results** (new position; replaces the Part 3 survey slide
-   "138명 중 51명이 고른 주제", which is removed). Shows, of 153 respondents:
-   - "망분리·보안: 폐쇄망 운영, 소스코드 유출 방지(DLP), 감사 로그" 56 (37%);
-   - "팀 표준화: 설정 스코프, 권한 규칙, Hooks, MCP" 67 (44%);
-   - "규제·감사 대응: 코드 리뷰 가드레일" 46 (30%);
-   - context: "Amazon Bedrock으로 사용 중" 17 (11%).
-   Count-up bars; the last step says the 50 minutes answer these questions,
-   leading into the agenda. Source: OneDrive workbook
-   `ClaudeCodeWorkshop Nomination.xlsx`, sheet `설문응답` (only aggregates go
-   in the deck; no names, emails or company names).
-3. **Agenda** with the three parts and their minutes.
+   "138명 중 51명이 고른 주제", which is removed). Base: confirmed attendees who
+   answered, 139 (survey responses matched to the confirmed list of 142):
+   - "망분리·보안: 폐쇄망 환경 운영, 소스코드 유출 방지(DLP), 감사 로그" 51;
+   - "팀 표준화: 설정 스코프, 권한 규칙, Hooks, MCP" 60;
+   - "규제·감사 대응: 코드 리뷰 가드레일, 변경관리 증적 자동화" 45;
+   - "Admin Setup: 플릿 배포, Bedrock IAM/SSO, 관리형 정책" 28;
+   - context: "Amazon Bedrock을 통해 사용 중" 17.
+   Count-up bars; the slide shows no times. The last step says this chapter
+   answers these questions, leading into the agenda. Source: OneDrive workbook
+   `ClaudeCodeWorkshop Nomination.xlsx`, sheets `설문응답` and `최종고객명단`
+   (only aggregates go in the deck; no names, emails or company names).
+3. **Agenda** with the three parts (no minutes or clock times: since
+   2026-11-14 session times appear only in the eDM).
 4. **Part 1. Bedrock에 안전하게 연결 (about 17 min)**
    - Bedrock 101 (new): a line-art scene. A developer at a laptop runs
      Claude Code; the request leaves the laptop and goes to the company's own
