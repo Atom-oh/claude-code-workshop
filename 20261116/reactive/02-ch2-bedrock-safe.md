@@ -65,7 +65,7 @@ window.__c3codepick = function (F, name, preId, lines, map) {
     <div class="bar lo" data-v="87"><span class="lb">셋 중 하나 이상</span><span class="tr"><i></i></span><span class="v">87명</span></div>
     <div class="bar" data-v="51"><span class="lb">망분리, 보안 (<span class="rp-detail" tabindex="0" data-tip="Data Loss Prevention. 민감 정보가 밖으로 나가지 않게 막는 통제">DLP</span>, 감사 로그)</span><span class="tr"><i></i></span><span class="v">51명</span></div>
     <div class="bar" data-v="45"><span class="lb">규제, 감사 대응</span><span class="tr"><i></i></span><span class="v">45명</span></div>
-    <div class="bar" data-v="28"><span class="lb">Admin Setup (IAM, SSO, 관리형 정책)</span><span class="tr"><i></i></span><span class="v">28명</span></div>
+    <div class="bar" data-v="28"><span class="lb">Admin Setup (IAM, <span class="rp-detail" tabindex="0" data-tip="Single Sign-On. 회사 계정 한 번 로그인으로 AWS 임시 자격증명을 받는 방식">SSO</span>, 관리형 정책)</span><span class="tr"><i></i></span><span class="v">28명</span></div>
     <div class="bar" data-v="17"><span class="lb">지금 Bedrock으로 사용 중</span><span class="tr"><i></i></span><span class="v">17명</span></div>
     <p class="cap">기대 주제는 복수 선택, 막대 길이는 응답 인원</p>
   </div>
@@ -229,13 +229,14 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
   },
   callouts: [
     { id: 'pc', n: 1, anchor: [2.3, 1.2, 1.2], at: [40, 430], title: '개발자 PC, Claude Code', sub: 'SSO 임시 자격증명으로 서명' },
-    { id: 'net', n: 2, anchor: [6.4, 3.0, 4.6], at: [150, 40], title: 'PrivateLink가 없으면 인터넷', sub: '망분리에서는 막힘, 부가 통신도 끔' },
+    { id: 'net', n: 4, anchor: [6.4, 3.0, 4.6], at: [150, 40], title: '인터넷, 망분리에서는 막힘', sub: '부가 통신도 환경변수로 끔' },
     { id: 'onep', n: 2, anchor: [10.1, 3.5, 5.4], at: [380, 40], title: 'Anthropic API (1P)', sub: 'api.anthropic.com, 회사 밖 인터넷' },
-    { id: 'dns', n: 3, anchor: [4.5, 2.4, 2.3], at: [150, 150], title: '사내 DNS, Route 53 Resolver', sub: '이름을 사설 IP로' },
-    { id: 'dx', n: 4, anchor: [10.1, 2.0, 1.2], at: [290, 462], title: 'Direct Connect 전용선', sub: 'private VIF, 공용 인터넷 아님' },
-    { id: 'vpce', n: 5, anchor: [17.1, 1.3, 1.2], at: [520, 470], title: 'VPC 엔드포인트 (PrivateLink)', sub: 'ENI 10.20.1.15, SG는 443만' },
-    { id: 'iam', n: 6, anchor: [20.6, 3.3, 2.9], at: [560, 120], title: 'IAM 판단 4단계', sub: '하나라도 거부면 멈춤' },
-    { id: 'bedrock', n: 7, anchor: [24.4, 3.4, 3.2], at: [720, 190], title: 'Amazon Bedrock (AWS 서비스)', sub: '공용 엔드포인트와 PrivateLink 입구' }
+    { id: 'dns', n: 5, anchor: [4.5, 2.4, 2.3], at: [150, 150], title: '사내 DNS, Route 53 Resolver', sub: '이름을 사설 IP로' },
+    { id: 'dx', n: 6, anchor: [10.1, 2.0, 1.2], at: [290, 462], title: 'Direct Connect 전용선', sub: 'private VIF(사설 연결), 공용 인터넷 아님' },
+    { id: 'vpce', n: 7, anchor: [17.1, 1.3, 1.2], at: [520, 470], title: 'VPC 엔드포인트 (PrivateLink)', sub: '사설 IP 10.20.1.15, 보안 그룹은 443만' },
+    { id: 'iam', n: 8, anchor: [20.6, 3.3, 2.9], at: [560, 120], title: 'IAM 판단 4단계', sub: '하나라도 거부면 멈춤' },
+    { id: 'pub', n: 3, anchor: [22.0, 3.4, 4.6], at: [610, 40], title: 'Bedrock 공용 엔드포인트', sub: 'VPC 엔드포인트가 없을 때, 인터넷' },
+    { id: 'bedrock', n: 9, anchor: [24.4, 3.4, 3.2], at: [720, 190], title: 'Amazon Bedrock (AWS 서비스)', sub: '추론 프로필이 가리키는 모델이 답함' }
   ],
   figures: [{ at: [0.6, 1.9, 0.4], scale: 0.9, pose: 'type', act: { start: 'type' } }],
   code: [
@@ -247,14 +248,14 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
     '# DNS: bedrock-runtime... → 10.20.1.15',
     '# IAM: bedrock:InvokeModel*'
   ],
-  checks: ['서명 확인 (SigV4, SSO 임시 자격증명)', '역할 정책에 bedrock:InvokeModel*', '엔드포인트 정책이 허용', '조직 SCP가 막지 않음'],
+  checks: ['서명 확인 (SigV4: AWS 요청 서명)', '역할 정책에 bedrock:InvokeModel*', '엔드포인트 정책이 허용', '조직 SCP(계정 전체 권한 상한)가 막지 않음'],
   checksDoneAfter: 'iam',
   overview: { label: '전체 그림', title: '인터넷으로 가는 길과 사설로 가는 길', say: '빨간 점선은 PrivateLink 없이 인터넷으로 가는 길(1P API, Bedrock 공용 엔드포인트), 주황 선은 전용선과 PrivateLink로 가는 사설 길입니다. Part 1은 사설 길을 하나씩 엽니다.' },
   phases: [
     { key: 'start', d: 2.8, focus: ['pc'], cam: ['pc', 'dns'], zoom: 0.3, badge: 'pc', lines: [1, 3], label: '1  출발', title: '요청은 사내망의 개발자 PC에서', say: 'Claude Code가 Bedrock 모드로 요청을 만들고, <b>SSO로 받은 임시 자격증명</b>으로 서명합니다. PC에 오래 쓰는 키는 없습니다.' },
     { key: 'onep', d: 3.6, focus: ['pc', 'net', 'onep'], badge: 'onep', lines: [], packet: { wire: 'inet1p', colour: 'var(--danger)' }, label: '2  PrivateLink가 없으면 (1)', title: 'Claude API를 바로 쓰면, 인터넷으로', say: 'Bedrock이 아니라 <b>Anthropic API(1P)</b>를 바로 쓰면, 요청은 회사 밖 인터넷을 지나 api.anthropic.com으로 갑니다.' },
-    { key: 'pub', d: 4.4, focus: ['pc', 'net', 'bedrock'], badge: 'bedrock', lines: [1], packet: { wire: 'inetpub', colour: 'var(--danger)' }, label: '3  PrivateLink가 없으면 (2)', title: 'Bedrock도 공용 엔드포인트로, 인터넷으로', say: 'Bedrock을 쓰더라도 <b>VPC 엔드포인트가 없으면</b> Bedrock 주소는 공용 IP로 풀리고, 요청은 인터넷 구간을 지나 <b>Bedrock 공용 엔드포인트</b>로 갑니다.' },
-    { key: 'inet', d: 2.8, focus: ['pc', 'net'], cam: ['pc', 'fw', 'net'], badge: 'net', lines: [4], packet: { wire: 'inet', mode: 'block', mark: 'x' }, label: '4  망분리에서는 막힘', title: '두 길 모두 인터넷, 망분리에서는 막힌다', say: '망분리 환경에서는 이 두 길이 모두 방화벽에서 막힙니다. 업데이트나 오류 리포트 같은 부가 통신도 <b>환경변수 하나로</b> 끕니다. 그래서 인터넷 없이 닿는 길이 필요합니다.' },
+    { key: 'pub', d: 4.4, focus: ['pc', 'net', 'bedrock'], badge: 'pub', lines: [1], packet: { wire: 'inetpub', colour: 'var(--danger)' }, label: '3  PrivateLink가 없으면 (2)', title: 'Bedrock도 공용 엔드포인트로, 인터넷으로', say: '<b>VPC 엔드포인트가 없으면</b> Bedrock 주소가 공용 IP로 풀려, 요청은 인터넷으로 <b>공용 엔드포인트</b>에 갑니다.' },
+    { key: 'inet', d: 2.8, focus: ['pc', 'net'], cam: ['pc', 'fw', 'net'], badge: 'net', lines: [4], packet: { wire: 'inet', mode: 'block', mark: 'x' }, label: '4  망분리에서는 막힘', title: '두 길 모두 인터넷, 망분리에서는 막힌다', say: '망분리에서는 두 길 모두 방화벽에서 막힙니다. 업데이트, 오류 리포트 같은 부가 통신도 <b>환경변수 하나로</b> 끕니다.' },
     { key: 'dns', d: 5.2, focus: ['pc', 'dns', 'dx', 'vgw', 'r53'], badge: 'dns', lines: [6], packet: { wire: 'dns', mode: 'pingpong', colour: 'var(--info)' }, label: '5  이름 찾기', title: 'Bedrock 주소를 사설 IP로 바꾼다', say: '사내 DNS가 질문을 전용선 너머 <b>Route 53 Resolver</b>로 넘기면, Bedrock 주소가 <b>VPC 안의 사설 IP</b>로 돌아옵니다.' },
     { key: 'dx', d: 4.2, focus: ['pc', 'fw', 'dx', 'vgw'], cam: ['dx'], zoom: 0.3, segment: false, badge: 'dx', lines: [2], packet: { wire: 'req', span: [0, 4] }, label: '6  전용선', title: '요청은 전용선으로 고객 VPC에', say: '요청은 방화벽을 지나 <b>Direct Connect 전용선</b>으로 고객 VPC(회사 AWS 계정)에 들어갑니다. 공용 인터넷을 거치지 않습니다.' },
     { key: 'vpce', d: 2.8, focus: ['vpce'], badge: 'vpce', lines: [6], packet: { wire: 'req', span: [4, 5] }, label: '7  PrivateLink', title: 'VPC 엔드포인트가 Bedrock의 사설 입구', say: '사설 IP의 주인은 고객 VPC 안의 <b>Bedrock Runtime VPC 엔드포인트</b>입니다. 요청은 여기서 AWS 사설망으로 Bedrock에 닿습니다. 보안 그룹은 443 포트만 엽니다.' },
@@ -318,13 +319,13 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 <div class="fsi c2-air8">
   <div class="fsi-grid-4">
     <div class="pick"><span class="k">모델 호출</span><span class="t">Bedrock Runtime VPC 엔드포인트</span><span class="d">PrivateLink로 계정 안에서 추론 (앞 장의 길)</span></div>
-    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인</span></div>
+    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인 (STS: 임시 자격증명 발급)</span></div>
     <div class="pick"><span class="k">사내 프록시</span><span class="t">HTTPS_PROXY, NO_PROXY</span><span class="d">프록시를 거쳐야 하는 경우</span></div>
-    <div class="pick"><span class="k">사내 인증서</span><span class="t">NODE_EXTRA_CA_CERTS</span><span class="d">프록시가 TLS를 다시 서명할 때</span></div>
+    <div class="pick"><span class="k">사내 인증서</span><span class="t">NODE_EXTRA_CA_CERTS</span><span class="d">프록시가 TLS(HTTPS 암호화)를 다시 서명할 때</span></div>
     <div class="pick"><span class="k">외부 통신 끄기</span><span class="t">CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</span><span class="d">자동 업데이트, 오류 리포트 등을 한 번에</span></div>
     <div class="pick"><span class="k">설치와 업데이트</span><span class="t">사내 배포, DISABLE_AUTOUPDATER=1</span><span class="d">버전을 정해 단말에 배포</span></div>
     <div class="pick"><span class="k">플러그인</span><span class="t">사내 git 마켓플레이스</span><span class="d">Ch4에서 실습</span></div>
-    <div class="pick"><span class="k">웹 접근</span><span class="t">WebFetch deny 또는 허용 도메인</span><span class="d">Bedrock에는 WebSearch가 없음</span></div>
+    <div class="pick"><span class="k">웹 접근</span><span class="t">WebFetch deny 또는 허용 도메인</span><span class="d">허용 도메인은 skipWebFetchPreflight: true와 함께, WebSearch는 Bedrock에 없음</span></div>
   </div>
 </div>
 :::
@@ -335,12 +336,12 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 • 모델 호출은 Bedrock Runtime VPC 엔드포인트(PrivateLink), SSO 로그인은 Identity Center, OIDC, STS 엔드포인트에 닿아야 함
 • 사내 프록시 HTTPS_PROXY와 NO_PROXY, 사내 인증서 NODE_EXTRA_CA_CERTS
 • 외부 통신은 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1, 업데이트는 사내 배포와 DISABLE_AUTOUPDATER=1
-• 플러그인은 사내 git 마켓플레이스(Ch4), WebFetch는 deny 또는 허용 도메인만
+• 플러그인은 사내 git 마켓플레이스(Ch4), WebFetch는 deny 또는 허용 도메인만. 허용 도메인을 쓰면 skipWebFetchPreflight: true
 
 망분리 환경, 그러니까 인터넷 없이 Bedrock만 열린 환경이라면 이 여덟 가지를 먼저 확인하세요.
 모델 호출은 방금 본 VPC 엔드포인트로 끝나요. SSO 로그인은 Identity Center 포털과 OIDC, STS 엔드포인트에 닿아야 하니, aws sso login이 되는지부터 봅니다.
 사내 프록시를 거친다면 HTTPS_PROXY와 NO_PROXY, 프록시가 TLS를 다시 서명한다면 NODE_EXTRA_CA_CERTS로 사내 인증서를 지정합니다.
-자동 업데이트와 오류 리포트 같은 외부 통신은 환경변수 하나로 한 번에 끄고, 설치와 업데이트는 버전을 정해 사내에서 배포합니다. 플러그인은 사내 git 마켓플레이스로 받고, 웹 접근은 WebFetch를 막거나 허용 도메인만 엽니다.
+자동 업데이트와 오류 리포트 같은 외부 통신은 환경변수 하나로 한 번에 끄고, 설치와 업데이트는 버전을 정해 사내에서 배포합니다. 플러그인은 사내 git 마켓플레이스로 받고, 웹 접근은 WebFetch를 막거나 허용 도메인만 엽니다. WebFetch는 원래 주소를 먼저 api.anthropic.com에 확인받는데, 망분리에서는 거기 닿지 못하니 허용 도메인을 쓸 때는 skipWebFetchPreflight를 true로 둡니다.
 
 [약어]
 • OIDC: OpenID Connect. 로그인 결과를 토큰으로 넘겨주는 표준
@@ -439,7 +440,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
      edges:[{f:'cc',t:'st',c:'success',o:0}],
      loop:true,
      snip:{hd:'확인',path:'Claude Code 프롬프트',lines:['/status'],hl:[1],note:'Lab에서도 연결 직후 <b>/status</b>부터 봅니다.'}}
-  ], { static: true,legend:[['accent','Bedrock 연결'],['info','Bedrock 리전'],['warning','경유지 (선택)'],['success','확인']]});
+  ], { legend:[['accent','Bedrock 연결'],['info','Bedrock 리전'],['warning','경유지 (선택)'],['success','확인']]});
 });
 :::
 
@@ -498,7 +499,7 @@ Claude Code가 부르는 API마다 필요한 권한
      snip:{hd:'정책의 세 문장',path:'claude-code-bedrock-policy.json',lines:['# 문장 1: 호출과 프로필 읽기','bedrock:InvokeModel','bedrock:InvokeModelWithResponseStream','bedrock:GetInferenceProfile','# 문장 2: 목록 조회만 따로','bedrock:ListInferenceProfiles','# 문장 3: Bedrock 경유일 때만','aws-marketplace:ViewSubscriptions','aws-marketplace:Subscribe'],hl:[2,3,4,6,8,9],note:'Lab 1 TASK 01의 최소 정책과 같은 구성입니다.'}},
     {kicker:'STEP 1', title:'시작할 때: 어떤 프로필이 있나',
      body:'Claude Code는 계정의 <b>추론 프로필 목록</b>을 보고 쓸 수 있는 프로필을 고릅니다. 이 권한은 리소스를 지정할 수 없어서 <b>Resource "*"인 별도 문장</b>에 둡니다.',
-     facts:['ListInferenceProfiles: 리소스 지정 불가','ARN 목록 문장에 합치면 목록 조회가 거부됨','없으면 prefix를 확인 없이 적용'],
+     facts:['ListInferenceProfiles: 리소스 지정 불가','ARN(AWS 리소스 주소) 목록 문장에 합치면 목록 조회가 거부됨','없으면 prefix를 확인 없이 적용'],
      zones:Z, nodes:ALL, hot:['cc','ls','pr'],
      edges:[{f:'cc',t:'ls',c:'info',o:0},{f:'ls',t:'pr',c:'info',l:'목록',o:1}],
      loop:true, stagger:0.7,
@@ -524,7 +525,7 @@ Claude Code가 부르는 API마다 필요한 권한
      edges:[{f:'iv',t:'mk',c:'warning',l:'구독 확인',o:0}],
      loop:true,
      snip:{hd:'문장 3',path:'claude-code-bedrock-policy.json',lines:['{ "Effect": "Allow",','  "Action": [ "aws-marketplace:ViewSubscriptions",','              "aws-marketplace:Subscribe" ],','  "Resource": "*",','  "Condition": { "StringEquals": {','    "aws:CalledViaLast": "bedrock.amazonaws.com" } } }'],hl:[2,3,6],note:'모델 사용 신청(use case 양식)은 계정마다 한 번, 콘솔에서 합니다.'}}
-  ], { static: true,legend:[['accent','모델 호출'],['info','프로필 조회'],['warning','Marketplace']]});
+  ], { legend:[['accent','모델 호출'],['info','프로필 조회'],['warning','Marketplace']]});
 });
 :::
 
@@ -728,7 +729,7 @@ Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
      edges:[{f:'ap',t:'br',c:'warning',curve:70,o:0}],
      loop:true,
      snip:{hd:'Bedrock API 키',path:'Terminal',lines:['export AWS_BEARER_TOKEN_BEDROCK=...','# 체인과 자격증명 캐시를 거치지 않음'],hl:[1],note:'키 하나가 곧 권한이라, <b>나눠 주는 키</b>와 같은 문제가 생깁니다.'}}
-  ], { static: true,legend:[['success','권장'],['info','보조'],['danger','장기 키'],['warning','체인 밖']]});
+  ], { legend:[['success','권장'],['info','보조'],['danger','장기 키'],['warning','체인 밖']]});
 });
 :::
 
@@ -938,7 +939,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      edges:[{f:'al',t:'df',c:'warning',o:0},{f:'df',t:'px',c:'info',o:1},{f:'px',t:'i3',c:'info',o:2}],
      loop:true, stagger:0.7,
      snip:{hd:'prefix만',path:'환경변수',lines:['export ANTHROPIC_BEDROCK_REGION_PREFIX=global','# opus → global.anthropic.','#        claude-opus-5-5'],hl:[1],note:'예를 들어 us-* 리전에서도 <b>global.</b> 프로필을 쓰게 합니다.'}}
-  ], { static: true,legend:[['accent','별칭'],['warning','내장 기본값'],['success','고정'],['info','prefix']]});
+  ], { legend:[['accent','별칭'],['warning','내장 기본값'],['success','고정'],['info','prefix']]});
 });
 :::
 
@@ -1027,7 +1028,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      edges:[{f:'pa',t:'md',c:'info',o:0}],
      loop:true,
      snip:{hd:'이름표 만들기',path:'Terminal',lines:['aws bedrock create-inference-profile \\','  --inference-profile-name sonnet-team-a \\','  --model-source copyFrom=arn:aws:bedrock:\\','us-east-1:111122223333:inference-profile/\\','global.anthropic.claude-sonnet-5-5 \\','  --tags key=team,value=team-a','# 결과','arn:aws:bedrock:us-east-1:111122223333:','application-inference-profile/a1b2c3d4e5f6'],hl:[2,6,8,9],note:'ARN은 화면 폭 때문에 나눠 적었습니다. 실제로는 한 줄입니다.'}}
-  ], { static: true,legend:[['accent','팀'],['info','이름표'],['success','기록'],['warning','통제'],['danger','거부']]});
+  ], { legend:[['accent','팀'],['info','이름표'],['success','기록'],['warning','통제'],['danger','거부']]});
 });
 :::
 
@@ -1434,7 +1435,7 @@ managed-settings.json, 줄마다 담은 뜻
      facts:['실행은 exit=0으로 끝남','우회 모드만 꺼짐'],
      zones:Z, nodes:ALL, hot:['f4','r4'], edges:[E(4)], loop:true,
      snip:sn([9,10],'랩 TASK 03에서 <b>직접 확인</b>합니다.')}
-  ], { static: true,legend:[['accent','모델'],['info','보존 기간'],['warning','원본 데이터'],['success','우회 모드']]});
+  ], { legend:[['accent','모델'],['info','보존 기간'],['warning','원본 데이터'],['success','우회 모드']]});
 });
 :::
 
@@ -1545,7 +1546,7 @@ QUICK CHECK, 손을 들어 답해 주세요
     st(3,'STEP 4','개인이 되돌릴 수 없나','개인 <b>settings.json</b>에 allow를 넣어도 읽기는 여전히 거부됩니다. 우회 플래그를 줘도 우회 모드로 들어가지 않습니다.',
        ['권한 규칙은 합쳐지고 deny가 먼저','끝나면 개인 설정을 원복'],
        {hd:'Terminal', path:'~/claude-lab/ch2', lines:['# ~/.claude/settings.json에 allow 추가','"allow": ["Read(~/claude-lab/ch2/raw/**)"]','claude -p "Use the Read tool to read raw/customers.csv"','# → 여전히 거부','claude --dangerously-skip-permissions -p "hi"','# → exit=0, 우회 모드는 꺼진 채'], hl:[2,3,5], note:'이 확인이 <b>정책이 강제된다</b>는 증거입니다.'})
-  ], { static: true,legend:[['info','확인할 것'],['success','보여야 하는 것']]});
+  ], { legend:[['info','확인할 것'],['success','보여야 하는 것']]});
 });
 :::
 
@@ -1784,7 +1785,7 @@ auto mode의 판정 순서
      facts:['hard_deny: 무조건 막음','soft_deny: 막되 allow 예외나 명시 의도로 풀림','"정리해 줘"는 명시 의도 아님, "force push 해 줘"는 명시 의도'],
      zones:Z, nodes:N, hot:['rq','g4','o4'], edges:chain(3).concat([{f:'g4',t:'o4',c:'info',o:4}]), stagger:0.4,
      snip:{hd:'분류기 판정 순서',path:'GATE 2',lines:['hard_deny          # 무조건','soft_deny          # 기본 차단','allow 예외         # soft_deny를 풂','사용자 명시 의도   # 정확히 그 동작을 지시'],hl:[1,2,3,4],note:'분류기는 <b>별도 모델 호출</b>이라 Bedrock에서는 토큰이 듭니다.'}}
-  ], { static: true,legend:[['danger','거부'],['warning','사람 확인'],['success','바로 실행'],['info','분류기 판정']]});
+  ], { legend:[['danger','거부'],['warning','사람 확인'],['success','바로 실행'],['info','분류기 판정']]});
 });
 :::
 
@@ -1864,7 +1865,7 @@ Bash npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집�
      facts:['작업 폴더 파일, lock 의존성, 읽기 HTTP','현재 저장소 push는 기본 통과 (기본 브랜치 포함)','push만은 묻게: permissions.ask'],
      zones:[], nodes:N, hot:['cl','ps'], edges:[{f:'cl',t:'ps',c:'success',o:0}],
      snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[8,9,10],note:'규칙을 더할 때는 <b>"$defaults"</b>를 남겨 기본 규칙을 지킵니다.'}}
-  ], { static: true,legend:[['warning','soft_deny'],['danger','hard_deny'],['success','통과'],['info','분류기']]});
+  ], { legend:[['warning','soft_deny'],['danger','hard_deny'],['success','통과'],['info','분류기']]});
 });
 :::
 
@@ -2169,7 +2170,7 @@ DLP 훅 예제와 fail-open, 그리고 수정본
      zones:[], nodes:N, hot:['in','hk','o2','cc'],
      edges:[{f:'in',t:'hk',c:'accent',o:0},{f:'hk',t:'o2',c:'danger',o:1},{f:'o2',t:'cc',c:'danger',o:2}], loop:true,
      snip:{hd:'/opt/dlp/dlp-guard.sh',path:'수정본 요약 (Lab 2 TASK 02)',lines:fixed,hl:[3,4,5,7,8,9,10],note:'<b>if grep ...; then</b> 형태는 grep 오류를 불일치처럼 통과시킵니다.'}}
-  ], { static: true,legend:[['accent','입력'],['success','통과'],['danger','차단'],['muted','검사 실패']]});
+  ], { legend:[['accent','입력'],['success','통과'],['danger','차단'],['muted','검사 실패']]});
 });
 :::
 
@@ -2294,7 +2295,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      facts:['managed hooks only 표시 확인','managed 훅은 목록에 안 보임','managed 설정이 있으면 mod가 승인해도 훅 차단은 유지'],
      zones:[], nodes:N, hot:['ms','hc'], edges:[{f:'ms',t:'hc',c:'info',o:0}],
      snip:{hd:'확인',path:'Claude 입력창',lines:['/hooks','# managed hooks only','# Only hooks from managed settings run here'],hl:[1,2,3],note:'랩 TASK 01 마지막 단계에서 직접 봅니다.'}}
-  ], { static: true,legend:[['danger','정책, 강제'],['accent','훅 지점'],['warning','스크립트'],['muted','무시됨']]});
+  ], { legend:[['danger','정책, 강제'],['accent','훅 지점'],['warning','스크립트'],['muted','무시됨']]});
 });
 :::
 
@@ -2370,7 +2371,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      facts:['플러그인, claude.ai 커넥터도 검사','managed-mcp.json: 정해 둔 서버만, 나머지 금지','사용 현황은 OTel로 (OTEL_LOG_TOOL_DETAILS=1)'],
      zones:[], nodes:N, hot:['cc','po','p1'], edges:[base,{f:'po',t:'p1',c:'warning',o:1}],
      snip:{hd:'managed-settings.json (MCP)',path:'',lines:code,hl:[2,8],note:'플러그인 자체의 허용 목록은 <b>Ch4</b>에서 다룹니다.'}}
-  ], { static: true,legend:[['success','허용, 연결'],['danger','거부'],['muted','목록에 없음'],['warning','플러그인 경로']]});
+  ], { legend:[['success','허용, 연결'],['danger','거부'],['muted','목록에 없음'],['warning','플러그인 경로']]});
 });
 :::
 

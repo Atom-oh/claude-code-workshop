@@ -221,11 +221,17 @@ export function mount(sel, S) {
   if (STEP && window.FSI && window.FSI.bindKeys) {
     window.FSI.bindKeys(host, {
       down: () => { if (idx < PH.length - 1) { go(idx + 1); return true; } return false; },
-      up: () => { if (idx > 0) { go(idx - 1); return true; } return false; }
+      up: () => { if (idx > 0) { go(idx - 1); return true; } return false; },
+      // the overview is step 0, so the count matches the phase labels (1 출발 ... 10 응답)
+      state: () => ({ cur: idx, total: PH.length - 1 })
     });
   }
   const active = () => !slide || slide.classList.contains('active');
-  document.addEventListener('rp:slidechange', () => { if (active()) { clock = 0; paused = false; go(0); } });
+  // .active is added about 350 ms after rp:slidechange, so match the event's slide index instead.
+  const myIndex = () => Array.from(document.querySelectorAll('.slide-deck .slide')).indexOf(slide);
+  document.addEventListener('rp:slidechange', e => {
+    if (e.detail && e.detail.index === myIndex()) { clock = 0; paused = false; go(0); }
+  });
 
   function frame(now) { requestAnimationFrame(frame); draw(now); }
   // Fallback when animation frames stop (occluded or background window): wall-clock timers.

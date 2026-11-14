@@ -402,5 +402,5 @@ body:has(.overview-mode) .fsi-sidebar-toggle { display: none; }
 :root:fullscreen .fsi-hidden-badge, :root:-webkit-full-screen .fsi-hidden-badge { display: none; }
 @media print { .fsi-hidden-badge, .fsi-hide-menu { display: none; } }
 
-/* Static step diagrams: overview only, no navigation */
-.sv-static .sv-nav { display: none; }
+/* Still step diagrams: steps stay, nothing moves on its own */
+.sv-static .sv-edge.hot { animation: none; stroke-dasharray: none; }

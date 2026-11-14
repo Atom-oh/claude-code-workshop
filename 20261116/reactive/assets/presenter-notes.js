@@ -1,4 +1,5 @@
-/* Presenter view: spoken script first, [요약] and [출처] below it (loaded once by stepviz.js).
+/* Presenter view: spoken script first, [요약] and [출처] below it, and a step cue under the
+ * arrow buttons (loaded once by stepviz.js).
  *
  * The compiled notes read "<cue emoji> [N min] [요약]" bullets, then the script, then "[출처]",
  * each a blank-line paragraph (README section 3). On stage the presenter reads the script, so
@@ -64,6 +65,81 @@
     PV.prototype.__fsiNotes = true;
     return true;
   }
+
+  /* Step cue under the arrow buttons: tells the presenter whether ↓ (or →) still has a step on
+   * this slide, or the slide is done and the next press moves on. Scenes report their place through
+   * a state() function on the handlers they register with deck.registerSlideAction (F.bindKeys);
+   * Remarp fragments are read from the framework's fragment state. */
+  function cueFor(fw) {
+    var i = fw.currentSlide;
+    var fr = fw.fragmentState && fw.fragmentState[i];
+    if (fr && fr.fragments && fr.fragments.length && fr.currentIndex < fr.fragments.length - 1) {
+      return { more: true, text: '→ 다음 항목 있음 (' + (fr.currentIndex + 1) + '/' + fr.fragments.length + ')' };
+    }
+    var act = fw.slideActions && fw.slideActions[i];
+    if (act && typeof act.state === 'function') {
+      var st = null;
+      try { st = act.state(); } catch (e) { st = null; }
+      if (st && st.total >= 1) {
+        if (st.cur < st.total) return { more: true, text: '↓ 다음 단계 있음 (지금 ' + st.cur + '/' + st.total + ')' };
+        return { more: false, text: '✓ 마지막 단계 (' + st.total + '/' + st.total + '), 누르면 다음 슬라이드' };
+      }
+    } else if (act && act.down) {
+      return { more: true, text: '↓ 이 장에 단계가 있음' };
+    }
+    return { more: false, text: '✓ 단계 없음, 누르면 다음 슬라이드' };
+  }
+
+  function renderCue(pv) {
+    var win = pv.presenterWindow;
+    if (!win || win.closed || !pv.framework) return;
+    var doc = win.document, nav = doc.querySelector('.presenter-nav');
+    if (!nav) return;
+    var box = doc.getElementById('fsi-step-cue');
+    if (!box) {
+      nav.style.flexWrap = 'wrap';
+      box = doc.createElement('div');
+      box.id = 'fsi-step-cue';
+      box.setAttribute('role', 'status');
+      box.style.cssText = 'flex-basis:100%;text-align:center;font-size:15px;font-weight:600;' +
+        'padding:5px 10px;border-radius:6px;border:1px solid;';
+      nav.appendChild(box);
+    }
+    var c = cueFor(pv.framework);
+    if (box.textContent !== c.text) box.textContent = c.text;
+    box.dataset.more = c.more ? '1' : '0';
+    box.style.color = c.more ? '#ffb454' : '#7ee2a8';
+    box.style.borderColor = c.more ? '#ffb454' : '#3f8f62';
+    box.style.background = c.more ? 'rgba(255,180,84,0.10)' : 'rgba(126,226,168,0.08)';
+  }
+
+  function patchCue() {
+    var PV = window.PresenterView || (typeof PresenterView !== 'undefined' ? PresenterView : null); // eslint-disable-line no-undef
+    if (!PV || !PV.prototype || typeof PV.prototype.updatePresenterView !== 'function') return false;
+    if (PV.prototype.__fsiCue) return true;
+    var orig = PV.prototype.updatePresenterView;
+    PV.prototype.updatePresenterView = function () {
+      var r = orig.apply(this, arguments);
+      var self = this;
+      try { renderCue(self); } catch (e) { /* the cue is optional */ }
+      // Clicks on the live slide or the preview change the step without a presenter update.
+      if (!self.__fsiCueTimer) {
+        self.__fsiCueTimer = setInterval(function () {
+          if (!self.presenterWindow || self.presenterWindow.closed) { clearInterval(self.__fsiCueTimer); self.__fsiCueTimer = null; return; }
+          try { renderCue(self); } catch (e) { /* ignore */ }
+        }, 250);
+      }
+      return r;
+    };
+    PV.prototype.__fsiCue = true;
+    return true;
+  }
+
+  var cueTries = 0;
+  (function waitCue() {
+    if (patchCue()) return;
+    if (cueTries++ < 100) setTimeout(waitCue, 100);
+  })();
 
   var tries = 0;
   (function wait() {

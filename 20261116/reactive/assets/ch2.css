@@ -217,7 +217,9 @@
 /* Flow scenes: the row never grows past the slide; slide 5 has the longest side panel */
 .fs { grid-template-rows: minmax(0, 1fr); }
 .fs-side { overflow: hidden; }
-.slide-deck #c2-pl .fs-code { font-size: .74rem; line-height: 1.5; }
+.slide-deck #c2-pl .fs-code { font-size: .7rem; line-height: 1.45; }
+.slide-deck #c2-pl .fs-say { font-size: var(--fs-caption); line-height: 1.5; }
+.slide-deck #c2-pl .fs-side { gap: var(--space-2); }
 .slide-deck #c2-pl .fs-checks { gap: 2px; }
 .fs-wire.fs-bad.on { stroke: var(--danger); }
 .fs-wire.fs-bad { stroke: var(--danger); opacity: .55; } .fs-wire.fs-bad.on { opacity: 1; }
