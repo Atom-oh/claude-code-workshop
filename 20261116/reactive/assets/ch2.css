@@ -175,3 +175,6 @@
 .fs-prog { height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; margin-top: auto; }
 .fs-prog i { display: block; height: 100%; width: 0; background: var(--accent); }
 .fs-hint { font-size: var(--fs-caption); color: var(--text-muted); }
+
+/* Part 1 visual rebuild (slides 5-11): long ARNs and IDs never split mid-word */
+.slide-deck #c2-sv-iam .sv-pre, .slide-deck #c2-sv-pin .sv-pre, .slide-deck #c2-sv-env .sv-pre, .slide-deck #c2-sv-sso .sv-pre, .slide-deck #c2-sv-cred .sv-pre { white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; }
