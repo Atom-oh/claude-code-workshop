@@ -191,7 +191,7 @@ window.__c3codepick = function (F, name, preId, lines, map) {
     <div class="fs-checks"></div>
     <div class="fs-say"></div>
     <div class="fs-prog"><i></i></div>
-    <div class="fs-hint">누르면 멈춤과 재생, IP와 이름은 예시</div>
+    <div class="fs-hint">장면을 누르거나 ↓ 키로 다음 단계, ↑ 키로 이전 단계</div>
   </div>
 </div>
 :::
@@ -249,14 +249,14 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
   checksDoneAfter: 'iam',
   overview: { label: '전체 그림', title: '사내망에서 Bedrock까지, 공용 인터넷 없이', say: '출발, 이름 찾기, 전용선, 엔드포인트, IAM 판단, 모델. Part 1은 이 길을 하나씩 엽니다.' },
   phases: [
-    { key: 'start', d: 2.8, focus: ['pc'], badge: 'pc', lines: [1, 3], label: '1  출발', title: '요청은 사내망의 개발자 PC에서', say: 'Claude Code가 Bedrock 모드로 요청을 만들고, <b>SSO로 받은 임시 자격증명</b>으로 서명합니다. PC에 오래 쓰는 키는 없습니다.' },
+    { key: 'start', d: 2.8, focus: ['pc'], cam: ['pc', 'dns'], zoom: 0.3, badge: 'pc', lines: [1, 3], label: '1  출발', title: '요청은 사내망의 개발자 PC에서', say: 'Claude Code가 Bedrock 모드로 요청을 만들고, <b>SSO로 받은 임시 자격증명</b>으로 서명합니다. PC에 오래 쓰는 키는 없습니다.' },
     { key: 'inet', d: 2.8, focus: ['pc', 'net'], cam: ['pc', 'fw', 'net'], badge: 'net', lines: [4], packet: { wire: 'inet', mode: 'block', mark: 'x' }, label: '2  인터넷은 막힘', title: '인터넷으로 가는 길은 없다', say: '망분리 환경이라 인터넷 길은 막혀 있습니다. 업데이트나 오류 리포트 같은 부가 통신도 <b>환경변수 하나로</b> 끕니다.' },
-    { key: 'dns', d: 4.2, focus: ['pc', 'dns', 'dx', 'vgw', 'r53'], badge: 'dns', lines: [6], packet: { wire: 'dns', mode: 'pingpong', colour: 'var(--info)', follow: false }, label: '3  이름 찾기', title: 'Bedrock 주소를 사설 IP로 바꾼다', say: '사내 DNS가 질문을 전용선 너머 <b>Route 53 Resolver</b>로 넘기면, Bedrock 주소가 <b>VPC 안의 사설 IP</b>로 돌아옵니다.' },
-    { key: 'dx', d: 3.2, focus: ['pc', 'fw', 'dx', 'vgw'], cam: ['fw', 'dx', 'vgw'], badge: 'dx', lines: [2], packet: { wire: 'req', span: [0, 4] }, label: '4  전용선', title: '요청은 전용선으로 회사 VPC에', say: '요청은 방화벽을 지나 <b>Direct Connect 전용선</b>으로 회사 VPC에 들어갑니다. 공용 인터넷을 거치지 않습니다.' },
+    { key: 'dns', d: 5.2, focus: ['pc', 'dns', 'dx', 'vgw', 'r53'], badge: 'dns', lines: [6], packet: { wire: 'dns', mode: 'pingpong', colour: 'var(--info)' }, label: '3  이름 찾기', title: 'Bedrock 주소를 사설 IP로 바꾼다', say: '사내 DNS가 질문을 전용선 너머 <b>Route 53 Resolver</b>로 넘기면, Bedrock 주소가 <b>VPC 안의 사설 IP</b>로 돌아옵니다.' },
+    { key: 'dx', d: 4.2, focus: ['pc', 'fw', 'dx', 'vgw'], cam: ['dx'], zoom: 0.3, segment: false, badge: 'dx', lines: [2], packet: { wire: 'req', span: [0, 4] }, label: '4  전용선', title: '요청은 전용선으로 회사 VPC에', say: '요청은 방화벽을 지나 <b>Direct Connect 전용선</b>으로 회사 VPC에 들어갑니다. 공용 인터넷을 거치지 않습니다.' },
     { key: 'vpce', d: 2.8, focus: ['vpce'], badge: 'vpce', lines: [6], packet: { wire: 'req', span: [4, 5] }, label: '5  PrivateLink', title: 'VPC 엔드포인트가 Bedrock의 입구', say: '사설 IP의 주인은 <b>Bedrock Runtime VPC 엔드포인트</b>입니다. 보안 그룹은 443 포트만 엽니다.' },
-    { key: 'iam', d: 4.6, focus: ['iam'], badge: 'iam', lines: [3, 7], checks: true, packet: { wire: 'req', span: [5, 6], mode: 'wait', waitAt: 0.55, hold: 0.82 }, label: '6  IAM 판단', title: '네 번 확인하고, 하나라도 거부면 멈춤', say: '서명, 역할 정책, 엔드포인트 정책, 조직 SCP를 차례로 봅니다. <b>모두 허용일 때만</b> 지나갑니다.' },
-    { key: 'model', d: 2.8, focus: ['bedrock'], badge: 'bedrock', lines: [5], packet: { wire: 'req', span: [6, 7] }, label: '7  모델', title: '이름표가 가리키는 모델이 답한다', say: '요청의 <b>모델 ID(추론 프로필)</b>가 어떤 Claude가 답할지 정합니다.' },
-    { key: 'back', d: 3.2, focus: ['bedrock', 'iam', 'vpce', 'dx', 'pc'], lines: [], packet: { wire: 'req', span: [7, 0] }, label: '8  응답', title: '답은 같은 길로 돌아온다', say: '답도 같은 길로 돌아옵니다. <b>처음부터 끝까지 공용 인터넷을 지나지 않습니다.</b>' }
+    { key: 'iam', d: 4.6, focus: ['iam'], zoom: 0.26, badge: 'iam', lines: [3, 7], checks: true, packet: { wire: 'req', span: [5, 6], mode: 'wait', waitAt: 0.55, hold: 0.82 }, label: '6  IAM 판단', title: '네 번 확인하고, 하나라도 거부면 멈춤', say: '서명, 역할 정책, 엔드포인트 정책, 조직 SCP를 차례로 봅니다. <b>모두 허용일 때만</b> 지나갑니다.' },
+    { key: 'model', d: 2.8, focus: ['bedrock'], zoom: 0.28, badge: 'bedrock', lines: [5], packet: { wire: 'req', span: [6, 7] }, label: '7  모델', title: '이름표가 가리키는 모델이 답한다', say: '요청의 <b>모델 ID(추론 프로필)</b>가 어떤 Claude가 답할지 정합니다.' },
+    { key: 'back', d: 5.0, focus: ['bedrock', 'iam', 'vpce', 'dx', 'pc'], lines: [], packet: { wire: 'req', span: [7, 0] }, label: '8  응답', title: '답은 같은 길로 돌아온다', say: '답도 같은 길로 돌아옵니다. <b>처음부터 끝까지 공용 인터넷을 지나지 않습니다.</b>' }
   ],
   frame: function (c) {
     var rings = c.parts.iam.querySelectorAll('.fs-box');
@@ -275,7 +275,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 • 응답도 같은 길로, 공용 인터넷을 지나지 않음
 
 {cue: demo}
-이 장면은 저절로 돌아가요. 사내망에 있는 개발자 PC에서 요청 하나가 Bedrock까지 어떻게 가는지 따라가 볼게요.
+장면을 누를 때마다 한 단계씩 넘어가요. 사내망에 있는 개발자 PC에서 요청 하나가 Bedrock까지 어떻게 가는지, 구간마다 가까이 가서 볼게요.
 먼저 Claude Code가 Bedrock 모드로 요청을 만들고, SSO로 받은 임시 자격증명으로 서명합니다. PC에 오래 쓰는 키는 없어요.
 인터넷 쪽 길은 막혀 있습니다. 업데이트나 오류 리포트 같은 부가 통신도 환경변수 하나로 끕니다.
 그다음 이름 찾기예요. 사내 DNS가 질문을 전용선 너머 Route 53 Resolver로 넘기면, Bedrock 주소가 VPC 안의 사설 IP로 돌아옵니다.
@@ -509,7 +509,7 @@ IAM 권한은 Claude Code가 부르는 API를 따라가면 쉬워요. 위에서�
     <pre class="fs-code"></pre>
     <div class="fs-say"></div>
     <div class="fs-prog"><i></i></div>
-    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 키와 이름은 예시 값</div>
+    <div class="fs-hint">장면을 누르거나 ↓ 키로 다음 단계, ↑ 키로 이전 단계</div>
   </div>
 </div>
 :::
@@ -592,7 +592,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-key', {
 • 만료되면 Claude Code가 GetCallerIdentity로 확인한 뒤 awsAuthRefresh(aws sso login)를 실행하고 요청을 다시 보냄
 
 {cue: demo}
-이 장면도 저절로 돌아가요. 위쪽은 키를 나눠 줬을 때, 아래쪽은 SSO로 로그인했을 때입니다.
+이 장면도 누를 때마다 한 단계씩 넘어가요. 위쪽은 키를 나눠 줬을 때, 아래쪽은 SSO로 로그인했을 때입니다.
 먼저 위쪽이요. aws configure로 넣은 IAM 사용자 액세스 키는 누가 지우기 전까지 계속 유효합니다. 그런데 설정을 도와주다가 이 키를 메신저에 붙여 넣거나, .env 파일을 실수로 커밋하면 키가 회사 밖으로 나가요.
 그러면 키를 가진 누구든 다른 PC에서 같은 권한으로 Bedrock을 부를 수 있습니다. 키에는 만료가 없거든요.
 {cue: pause}
@@ -1043,7 +1043,7 @@ Part 1 마지막은 팀마다 다른 이름표예요. A팀과 B팀이 같은 Son
     <div class="fs-checks"></div>
     <div class="fs-say"></div>
     <div class="fs-prog"><i></i></div>
-    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 경로 이름은 이 랩의 예시 값</div>
+    <div class="fs-hint">장면을 누르거나 ↓ 키로 다음 단계, ↑ 키로 이전 단계</div>
   </div>
 </div>
 :::
@@ -1145,7 +1145,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 • Claude Code는 시작할 때 읽고 파일이 바뀌면 다시 읽음. 개인 설정의 allow로는 managed deny를 풀 수 없음
 
 {cue: demo}
-이 장면도 저절로 돌아가요. 왼쪽이 인프라 팀, 오른쪽이 전 직원의 개발자 PC입니다.
+이 장면도 누를 때마다 한 단계씩 넘어가요. 왼쪽이 인프라 팀, 오른쪽이 전 직원의 개발자 PC입니다.
 먼저 인프라 엔지니어가 정책 파일 한 장을 씁니다. 여기서는 원본 고객 데이터, raw 폴더 읽기 금지를 예로 들었어요.
 위쪽 claude.ai 콘솔에서 내려오는 서버 관리 설정은 Team, Enterprise 플랜용이에요. 그리고 CLAUDE_CODE_USE_BEDROCK을 켜면 Claude Code가 이 길을 아예 건너뜁니다. 그래서 Bedrock에서는 파일과 MDM을 씁니다.
 Jamf, Intune, GPO 같은 MDM은 plist나 레지스트리로, Ansible 같은 배포 도구는 파일 복사로 모든 PC에 같은 정책을 내려보내요.
@@ -1843,7 +1843,7 @@ Bash npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집�
     <pre class="fs-code"></pre>
     <div class="fs-say"></div>
     <div class="fs-prog"><i></i></div>
-    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 폴더 이름은 예시 값</div>
+    <div class="fs-hint">장면을 누르거나 ↓ 키로 다음 단계, ↑ 키로 이전 단계</div>
   </div>
 </div>
 :::
@@ -1931,7 +1931,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-layers', {
 • 랩의 층 번호(1 권한 규칙, 2 샌드박스, 3 훅, 4 Guardrails, 5 반출 채널)는 종류 번호, 실제 검사는 훅이 먼저
 
 {cue: demo}
-이 장면도 저절로 돌아가요. 개발자가 공간 좀 정리해 달라고만 했는데, Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황입니다.
+이 장면도 누를 때마다 한 단계씩 넘어가요. 개발자가 공간 좀 정리해 달라고만 했는데, Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황입니다.
 도구가 실행되기 직전에 가장 먼저 도는 건 PreToolUse 훅이에요. 우리 DLP 훅은 주민번호 같은 패턴만 보니까 이 명령은 통과시킵니다. 훅은 적어 둔 것만 잡아요.
 그다음이 권한 규칙이에요. managed에 deny Bash rm -rf 별표가 있으니 여기서 즉시 거부됩니다.
 {cue: pause}
@@ -1965,7 +1965,7 @@ UserPromptSubmit 훅이 모델보다 먼저 본다
     <pre class="fs-code"></pre>
     <div class="fs-say"></div>
     <div class="fs-prog"><i></i></div>
-    <div class="fs-hint">장면을 누르면 멈춤, 다시 누르면 재생. 주민번호는 형식만 맞춘 가짜 값</div>
+    <div class="fs-hint">장면을 누르거나 ↓ 키로 다음 단계, ↑ 키로 이전 단계</div>
   </div>
 </div>
 :::

@@ -93,7 +93,7 @@ export function mount(sel, S) {
       const r = (s - cum[k - 1]) / ((cum[k] - cum[k - 1]) || 1);
       return [Sx[k - 1][0] + (Sx[k][0] - Sx[k - 1][0]) * r, Sx[k - 1][1] + (Sx[k][1] - Sx[k - 1][1]) * r];
     };
-    wires[id] = { node, at, n: Sx.length };
+    wires[id] = { node, at, n: Sx.length, pts: Sx };
   }
   const dot = el('circle', { r: 6.5, class: 'fs-dot', filter: `url(#${gid})` }, L3);
 
@@ -154,7 +154,7 @@ export function mount(sel, S) {
   const prog = $('.fs-prog i');
 
   // camera
-  function frameOf(ids, wide) {
+  function frameOf(ids, minW) {
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     const add = n => { const b = n.getBBox(); if (!b.width && !b.height) return; x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); };
     if (!ids) { add(L0); add(L1); add(L2); add(L3); }
@@ -163,13 +163,34 @@ export function mount(sel, S) {
     const pad = ids ? 46 : 18; x0 -= pad; y0 -= pad; x1 += pad; y1 += pad;
     let w = x1 - x0, h = y1 - y0; const r = W / H;
     if (w / h < r) { const nw = h * r; x0 -= (nw - w) / 2; w = nw; } else { const nh = w / r; y0 -= (nh - h) / 2; h = nh; }
-    if (ids) { const cx = x0 + w / 2, cy = y0 + h / 2; w = Math.max(w, W * 0.42); h = w / r; x0 = cx - w / 2; y0 = cy - h / 2; }
+    if (ids) { const cx = x0 + w / 2, cy = y0 + h / 2; w = Math.max(w, W * (minW || 0.26)); h = w / r; x0 = cx - w / 2; y0 = cy - h / 2; }
     return [x0, y0, w, h];
   }
-  const OVER = frameOf(null);
+  let OVER = frameOf(null);
   const PH = [{ key: 'all', d: S.hold || 2.6, label: S.overview.label, title: S.overview.title, say: S.overview.say, lines: S.overview.lines || [], all: true }]
     .concat(S.phases.map((p, i) => Object.assign({ key: p.key || ('p' + (i + 1)) }, p)));
-  PH.forEach(ph => { ph.frame = ph.all ? OVER : frameOf(ph.cam || ph.focus); });
+  function segFrame(ph) {
+    // the packet's travel in this phase: every waypoint between span[0] and span[1]
+    const pk = ph.packet; if (!pk || !wires[pk.wire]) return null;
+    const w = wires[pk.wire], [a, b] = pk.span || [0, w.n - 1], lo = Math.min(a, b), hi = Math.max(a, b);
+    return w.pts.slice(lo, hi + 1);
+  }
+  function computeFrames() {
+    OVER = frameOf(null);
+  PH.forEach(ph => {
+      if (ph.all) { ph.frame = OVER; return; }
+      const base = frameOf(ph.cam || ph.focus, ph.zoom), seg = segFrame(ph);
+      if (!seg || ph.segment === false) { ph.frame = base; return; }
+      // grow the frame so the whole segment fits, keeping the aspect ratio
+      let [x0, y0, w, h] = base, x1 = x0 + w, y1 = y0 + h; const pad = 40;
+      seg.forEach(([x, y]) => { x0 = Math.min(x0, x - pad); y0 = Math.min(y0, y - pad); x1 = Math.max(x1, x + pad); y1 = Math.max(y1, y + pad); });
+      w = x1 - x0; h = y1 - y0; const r = W / H;
+      if (w / h < r) { const nw = h * r; x0 -= (nw - w) / 2; w = nw; } else { const nh = w / r; y0 -= (nh - h) / 2; h = nh; }
+      ph.frame = [x0, y0, w, h];
+    });
+  }
+  computeFrames();
+  let framesReady = svg.getBBox().width > 0;
   const CYCLE = PH.reduce((a, p) => a + p.d, 0);
   let cam = OVER.slice();
   svg.setAttribute('viewBox', OVER.map(v => v.toFixed(1)).join(' '));
@@ -188,21 +209,39 @@ export function mount(sel, S) {
   }
 
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let clock = 0, paused = false, last = 0;
-  stage.addEventListener('click', () => { paused = !paused; });
+  // Step mode (default): each click on the stage, or ArrowDown, plays the next phase once and
+  // holds its end state; ArrowUp goes back. The scene opens on the full picture. mode: 'auto'
+  // keeps the old continuous loop.
+  const STEP = S.mode !== 'auto';
+  let clock = 0, paused = false, last = 0, idx = 0, phaseT = 0;
+  const go = n => { idx = Math.max(0, Math.min(PH.length - 1, n)); phaseT = 0; };
+  stage.addEventListener('click', () => { if (STEP) go(idx < PH.length - 1 ? idx + 1 : 0); else paused = !paused; });
+  if (STEP && window.FSI && window.FSI.bindKeys) {
+    window.FSI.bindKeys(host, {
+      down: () => { if (idx < PH.length - 1) { go(idx + 1); return true; } return false; },
+      up: () => { if (idx > 0) { go(idx - 1); return true; } return false; }
+    });
+  }
   const active = () => !slide || slide.classList.contains('active');
-  document.addEventListener('rp:slidechange', () => { if (active()) { clock = 0; paused = false; } });
+  document.addEventListener('rp:slidechange', () => { if (active()) { clock = 0; paused = false; go(0); } });
 
   function frame(now) {
     requestAnimationFrame(frame);
     const dt = Math.min(0.05, last ? (now - last) / 1000 : 0); last = now;
     if (!active()) return;
-    if (!paused && !still) clock += dt;
-    let s = still ? 0 : clock % CYCLE, i = 0;
-    while (s >= PH[i].d) { s -= PH[i].d; i++; }
+    // the slide may have been hidden when the scene mounted (getBBox is 0 then): measure now
+    if (!framesReady && svg.getBBox().width > 0) { computeFrames(); framesReady = true; cam = OVER.slice(); }
+    let i, s;
+    if (STEP) { i = still ? 0 : idx; phaseT = Math.min(phaseT + dt, PH[i].d); s = still ? 0 : phaseT; }
+    else {
+      if (!paused && !still) clock += dt;
+      s = still ? 0 : clock % CYCLE; i = 0;
+      while (s >= PH[i].d) { s -= PH[i].d; i++; }
+    }
     enter(i);
-    const ph = PH[i], u = clamp(s / ph.d, 0, 1), t = now / 1000;
-    if (prog) prog.style.width = (still ? 100 : ((clock % CYCLE) / CYCLE) * 100).toFixed(1) + '%';
+    const ph = PH[i], lead = (STEP && !ph.all) ? (ph.lead != null ? ph.lead : 0.9) : 0;
+    const u = clamp((s - lead) / Math.max(0.1, ph.d - lead), 0, 1), t = now / 1000;
+    if (prog) prog.style.width = (still ? 100 : STEP ? (i / (PH.length - 1)) * 100 : ((clock % CYCLE) / CYCLE) * 100).toFixed(1) + '%';
 
     // packet
     let q = null, colour = 'var(--accent)';
@@ -226,13 +265,13 @@ export function mount(sel, S) {
     chk.forEach((c, k) => c.classList.toggle('ok', k < lit));
     if (S.frame) S.frame({ parts, marks, tags, wires, svg, lit, ph, u, t, all: !!ph.all });
 
-    figs.forEach(fg => fg.draw(t, dt, ph, (fg.f.act || {})[ph.key] || (ph.all ? null : null)));
+    figs.forEach(fg => fg.draw(t, dt, ph, (fg.f.act || {})[ph.key] || null));
 
     if (still) svg.setAttribute('viewBox', OVER.map(v => v.toFixed(1)).join(' '));
     else {
-      let tg = ph.frame;
-      if (q && pk && pk.follow !== false && !ph.all) { const [x, y, w, h] = tg; tg = [x + (q[0] - (x + w / 2)) * 0.35, y + (q[1] - (y + h / 2)) * 0.35, w, h]; }
-      const k = 1 - Math.exp(-dt * 2.4);
+      // fixed per phase: the camera moves only when the phase changes, never while the packet travels
+      const tg = ph.frame, rate = 4.2;
+      const k = 1 - Math.exp(-dt * rate);
       cam = cam.map((v, j) => v + (tg[j] - v) * k);
       svg.setAttribute('viewBox', cam.map(v => v.toFixed(1)).join(' '));
     }
