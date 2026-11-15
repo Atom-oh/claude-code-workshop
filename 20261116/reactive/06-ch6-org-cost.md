@@ -508,8 +508,8 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
   var col = ['# collector-config.yaml (요약)','receivers:','  otlp: grpc 127.0.0.1:4317, http 4318','processors:','  Claude Code 지표 8개만 허용','  로그 본문은 지우고 내보냄','exporters:','  clickhouse: 디스크 큐, 재시도'];
   F.stepviz('#c6-sv-dash', [
     {kicker:'OVERVIEW', title:'받고, 쌓고, 보여 주고, 답한다',
-     body:'ccdash는 이 워크숍을 위해 만든 <b>사용량 대시보드</b>입니다. GitHub에서 소스를 볼 수 있지만 라이선스는 proprietary라 사용과 복제는 별도 허락이 필요합니다. 참가자 PC의 수집기가 보낸 OTel을 ClickHouse에 쌓고, 화면과 Ask Claude로 보여 줍니다.',
-     facts:['github.com/Atom-oh/claude-code-usage-dashboard (proprietary)','Claude Code와 Codex 사용량','숫자는 관측값과 추정치, 청구서가 아님'],
+     body:'ccdash는 이 워크숍을 위해 만든 <b>사용량 대시보드</b>입니다. 참가자 PC의 수집기가 보낸 OTel을 ClickHouse에 쌓고, 화면과 Ask Claude로 보여 줍니다.',
+     facts:['github.com/Atom-oh/claude-code-usage-dashboard','Claude Code와 Codex 사용량','숫자는 관측값과 추정치, 청구서가 아님'],
      zones:Z, nodes:N,
      edges:[{f:'pc',t:'col',c:'accent',o:0},{f:'col',t:'ch',c:'warning',o:1},{f:'ch',t:'api',c:'info',o:2},{f:'api',t:'cf',c:'success',o:3},{f:'api',t:'bd',c:'accent',o:3}],
      loop:true, stagger:0.6,
@@ -545,14 +545,14 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
 :::notes
 {timing: 1.5min}
 [요약]
-• ccdash: 이 워크숍용 사용량 대시보드, GitHub에서 소스 열람 가능 (라이선스 proprietary, 사용과 복제는 별도 허락)
+• ccdash: 이 워크숍용 사용량 대시보드 (github.com/Atom-oh/claude-code-usage-dashboard)
 • 수집: PC 안 수집기(loopback 4317)가 Claude Code 지표 8개만 통과, 로그 본문 삭제, 디스크 큐
 • 저장: ClickHouse 원본과 시간별 롤업, 기본 2일, 최대 90일
 • 화면: CloudFront로 접속, 조직 OIDC와 viewer, analyst, admin 그룹
 • Ask Claude: Bedrock의 Claude가 읽기 전용 SQL로 조회, 숫자는 관측값이고 평가 근거가 아님
 
 {cue: demo}
-이번 워크숍에서 쓰는 대시보드가 ccdash예요. GitHub에서 소스를 보실 수는 있는데, 라이선스가 proprietary라서 가져다 쓰시려면 별도 허락이 필요합니다. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓
+이번 워크숍에서 쓰는 대시보드가 ccdash예요. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓
 먼저 수집이에요. Claude Code는 같은 PC 안의 수집기로 보내고, 수집기는 Claude Code 지표 여덟 개만 통과시키고 로그 본문은 지운 뒤 내보냅니다.↓
 저장은 ClickHouse예요. 원본과 시간별 롤업이 따로 있어서 긴 기간도 빠르게 그립니다. 화면은 기본 최근 2일이에요.↓
 화면은 CloudFront를 거쳐 접속하고, 조직 OIDC 로그인을 켜면 역할대로 볼 수 있는 범위가 나뉩니다.↓
