@@ -365,7 +365,7 @@ done</code></pre></div>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/model</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
-<li data-lines="1"><code>/model</code>은 이 세션이 쓸 모델을 고르는 메뉴를 엽니다. 간단한 질문은 Haiku, 일반 작업은 Sonnet, 설계나 어려운 디버깅만 Opus로 고르는 습관이 기본입니다. 이 환경의 Fable 5.1은 가장 크고 오래 걸리는 작업용이고 단가가 가장 높으므로, 그런 작업에만 고릅니다.</li>
+<li data-lines="1"><code>/model</code>은 이 세션이 쓸 모델을 고르는 메뉴를 엽니다. 간단한 질문은 Haiku, 일반 작업은 Sonnet, 설계나 어려운 디버깅만 Opus로 고르는 습관이 기본입니다. 이 환경의 Fable 5.1은 가장 어렵고 오래 걸리는 작업용이고 단가가 가장 높으므로, 그런 작업에만 고릅니다.</li>
 </ol></details>
 
 <p>간단한 질문은 Haiku, 일반 작업은 Sonnet, 설계나 어려운 디버깅만 Opus로 고르는 습관이 기본입니다. 서브에이전트는 정의 파일의 <code>model:</code>로 고정할 수 있습니다(Ch3). 병렬 에이전트 팀은 단일 세션보다 토큰을 몇 배로 쓴다는 점도 기억하세요.</p>
@@ -618,7 +618,7 @@ claude --continue</code></pre></div>
 <li data-lines="1"><code>/config</code>는 설정 목록을 엽니다. 검색창에 <code>idle</code>을 입력해 Idle compaction 항목을 <strong>찾아보기만</strong> 합니다. 이 목록에서 Enter와 Space는 값을 바로 바꾸므로 조심하고, 확인 뒤에는 Esc를 두 번 눌러 닫습니다.</li>
 </ol></details>
 
-<p>검색창에 <code>idle</code>을 입력해 <strong>Idle compaction</strong> 항목을 찾아봅니다(v2.1.302 이상에서 <code>/config</code>에 표시, 설정 키는 <code>idleCompaction</code>). 이 기능은 <strong>1시간 캐시 TTL</strong>로 도는 큰 대화를 오래 비워 두면, 캐시가 만료되기 직전에 미리 압축해 다음 메시지가 전체 기록을 비싼 값에 다시 처리하지 않게 합니다. 값은 <code>true</code>로 보입니다. Bedrock 기본 5분 캐시에서는 동작할 일이 없지만, 이 랩 환경은 <code>~/.claude/settings.json</code>의 env에 <code>ENABLE_PROMPT_CACHING_1H=1</code>을 넣어 1시간 캐시를 쓰므로, 아래 표의 조건(대화형 세션, 20만 토큰 이상, 약 1시간 유휴)을 채우면 동작할 수 있습니다. 확인 후 <code>Esc</code>를 두 번 눌러 닫습니다.</p>
+<p>검색창에 <code>idle</code>을 입력해 <strong>Idle compaction</strong> 항목을 찾아봅니다(v2.1.302 이상에서 <code>/config</code>에 표시, 설정 키는 <code>idleCompaction</code>). 이 기능은 <strong>1시간 캐시 TTL</strong>로 도는 큰 대화를 오래 비워 두면, 캐시가 만료되기 직전에 미리 압축해 다음 메시지가 전체 기록을 비싼 값에 다시 처리하지 않게 합니다. 값은 <code>true</code>로 보입니다. Bedrock 기본 5분 캐시에서는 동작할 일이 없습니다. 이 랩 환경은 <code>~/.claude/settings.json</code>의 env에 <code>ENABLE_PROMPT_CACHING_1H=1</code>을 넣어 1시간 캐시를 쓰므로, 아래 표의 조건(v2.1.314 이상, 대화형 세션, <code>autoCompactEnabled</code> 켜짐, 20만 토큰 이상, 약 1시간 유휴)을 모두 채우면 동작할 수 있습니다. 확인 후 <code>Esc</code>를 두 번 눌러 닫습니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong><code>/config</code>에서 Enter·Space는 값을 바꿉니다</strong></p>
 <p><code>/config</code>는 목록에서 Enter·Space로 바로 토글합니다. 리허설 중 검색창에서 키를 잘못 눌러 맨 위 항목인 <strong>Auto-compact</strong>가 <code>false</code>로 바뀐 일이 있었습니다. 실수로 바꿨다면 <code>/config</code>에서 같은 항목을 다시 토글해 되돌립니다. <code>use_bedrock_direct</code>는 모드 키만 바꾸므로 이 값을 되돌리지 않습니다.</p></div></div>
 
@@ -642,7 +642,7 @@ claude --continue</code></pre></div>
 <td>기본으로는 해당 없음</td>
 </tr>
 <tr>
-<td>Bedrock + <code>ENABLE_PROMPT_CACHING_1H=1</code> 또는 <code>promptCacheTtl: "1h"</code>(이 랩)</td>
+<td>Bedrock + <code>ENABLE_PROMPT_CACHING_1H=1</code>(이 랩) 또는 <code>promptCacheTtl: "1h"</code></td>
 <td>1시간(모델별 지원 확인)</td>
 <td>v2.1.314 이상에서 조건 충족 시 동작(대화형 세션, <code>autoCompactEnabled</code>, 20만 토큰 이상, 약 1시간 유휴). 그 전 버전에서는 Bedrock처럼 Anthropic feature flag를 가져오지 못하는 환경이면 동작하지 않음. 1시간 캐시 쓰기 단가가 더 높음</td>
 </tr>
