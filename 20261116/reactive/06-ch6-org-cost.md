@@ -126,7 +126,7 @@ Bedrock 비용을 파악하는 방법부터 살펴보고,
     <li><b>01</b>Bedrock에서 비용을 보는 법</li>
     <li><b>02</b>OTel 대시보드</li>
     <li><b>03</b>modelPricing과 AWS 쪽 도구</li>
-    <li><b>04</b>Claude Apps Gateway (참가자 실습)</li>
+    <li><b>04</b>Claude Apps Gateway (데모)</li>
   </ol>
 </div>
 :::
@@ -135,7 +135,7 @@ Bedrock 비용을 파악하는 방법부터 살펴보고,
 {timing: 0.5min}
 [요약]
 • Chapter 6은 조직의 비용 통제, 쓴 만큼 보고 넘치면 막는다
-• Bedrock 비용 보기, OTel 대시보드, modelPricing과 AWS 도구, Claude Apps Gateway 실습
+• Bedrock 비용 보기, OTel 대시보드, modelPricing과 AWS 도구, Claude Apps Gateway 데모
 
 Chapter 5에서는 개인이 덜 쓰는 방법을 봤습니다.
 이제 조직이 사용량을 파악하고 통제할 차례입니다.
@@ -630,7 +630,7 @@ DEMO, 강사 대시보드 (URL은 현장 안내)
   <ol class="steps">
     <li><b>1</b><span>Day 1부터 OTel 수집 중 (참가 안내문 고지)</span></li>
     <li><b>2</b><span>Overview: 토큰, 비용 추이, Capstone 피크</span></li>
-    <li><b>3</b><span>Usage, Tools, Cost mix: 모델, 도구, 캐시</span></li>
+    <li><b>3</b><span>Usage(도구 표), Cost(비용 구성): 모델, 도구, 캐시</span></li>
     <li><b>4</b><span>작업 상세: 비용이 커진 이유</span></li>
     <li><b>5</b><span>Ask Claude: 말로 묻고 표로 받기</span></li>
   </ol>
@@ -656,14 +656,14 @@ DEMO, 강사 대시보드 (URL은 현장 안내)
 • 이름이 보이는 영역(우측 상단 로그인 이름)은 화면 공유 전에 가리거나 창을 좁힘
 • 작업 상세로 보여 줄 참가자 작업 하나를 미리 골라 둠(서브에이전트가 여러 개 돈 작업이 좋음)
 • Ask Claude 질문 두 개를 메모장에 준비
-  1) 지난 2시간 동안 토큰을 가장 많이 쓴 팀 5개와 모델별 비중을 표로 보여줘
+  1) 지난 2시간 동안 토큰을 가장 많이 쓴 사용자 5명과 모델별 비중을 표로 보여줘 (모든 PC의 team 값이 같으므로 팀이 아니라 사용자로 묻기)
   2) 오류가 가장 많이 난 도구 3개와 오류율은?
 • 대시보드가 안 열리면 슬라이드 11의 캡처로 같은 순서를 설명
 
 [진행]
 ① Overview: 이틀 합계 토큰과 추정 비용, 시간대별 추이 그래프에서 Capstone 구간이 솟은 부분을 가리킴
-② Usage와 Tools: 모델별 비중(Opus, Sonnet, Haiku), 호출이 많은 도구와 오류가 잦은 도구
-③ Cost mix: 캐시 읽기와 캐시 쓰기 비중, 캐시 적중률. Chapter 5의 캐시 이야기와 연결
+② Usage(도구 표): 모델별 비중(Opus, Sonnet, Haiku), 호출이 많은 도구와 오류가 잦은 도구
+③ Cost(비용 구성): 캐시 읽기와 캐시 쓰기 비중, 캐시 적중률. Chapter 5의 캐시 이야기와 연결
 ④ Users에서 미리 고른 작업 열기: 레인별 호출 타임라인, 누적 비용, "왜 많이 썼나" 패널
 ⑤ Ask Claude: 질문 1을 보내고 표가 나오면 SQL을 펼쳐 읽기 전용 쿼리임을 보여 줌, 이어서 질문 2
 
@@ -672,9 +672,9 @@ Day 1부터 OTel을 수집하고 있습니다.
 먼저 Overview에서 이틀 동안 쓴 토큰과 추정 비용을 보겠습니다.
 그래프가 솟은 곳이 Capstone 구간입니다.
 여럿이 에이전트를 오래 돌리면 이렇게 보입니다.
-Usage와 Tools에서는 어느 모델을 얼마나 썼는지,
+Usage에서는 어느 모델을 얼마나 썼는지,
 어떤 도구를 많이 부르고 어디서 오류가 났는지 보입니다.
-Cost mix에서는 캐시 읽기 비중을 봐 주세요.
+Cost에서는 캐시 읽기 비중을 봐 주세요.
 Chapter 5에서 말씀드린 캐시가 실제로 비용을 얼마나 줄였는지가 여기 나옵니다.
 작업 하나를 열어 보면 메인 세션과 서브에이전트가
 언제 얼마씩 썼는지, 왜 많이 썼는지까지 보입니다.
@@ -1086,10 +1086,10 @@ DEMO A, 강사 PC에서 Ch6 랩 TASK 01
 <div class="fsi fsi-lab c6-lab">
   <div class="head"><span class="tag">DEMO A</span></div>
   <ol class="steps">
-    <li><b>1</b><span>settings.json의 OTEL_*: gRPC <code>localhost:4317</code>, <code>user.email</code>와 <code>team</code></span></li>
+    <li><b>1</b><span>settings.json의 OTEL_*: gRPC <code>localhost:4317</code>, <code>user.email</code>과 <code>team</code></span></li>
     <li><b>2</b><span>otelcol과 fanout 타이머가 active</span></li>
     <li><b>3</b><span><code>transform/scrub_logs</code>: 내보내기 전에 프롬프트 본문 삭제</span></li>
-    <li><b>4</b><span>exporters: CloudWatch와 중앙 대시보드(ClickHouse)로 이중 전송</span></li>
+    <li><b>4</b><span>exporters: 지표는 CloudWatch와 중앙 대시보드(ClickHouse), 로그와 trace는 대시보드로</span></li>
   </ol>
   <p class="where">같은 명령은 Ch6 랩 페이지 TASK 01에 있습니다. 자율로 따라 해 보셔도 됩니다.</p>
 </div>
@@ -1107,6 +1107,8 @@ DEMO A, 강사 PC에서 Ch6 랩 TASK 01
 • 참가자와 같은 팀 PC 하나를 강사용으로 확보(테스트 이벤트 팀 또는 남는 팀), code-server 터미널 글꼴을 크게
 • Ch6 랩 페이지 TASK 01 블록을 미리 복사해 둠(여러 줄은 한 번에 붙여 넣기)
 • 출력이 길면 clear 뒤 다시 실행
+• DEMO B 준비로 use_gateway를 먼저 했다면, 그 전에 이 블록을 한 번 실행해 출력을 확인해 둠(직결 모드 기준 출력)
+• otelcol이 active가 아니거나 출력이 다르면 슬라이드 8~10과 Ch6 랩 페이지의 텔레메트리 그림으로 대신 설명
 
 [진행]
 ① 블록 실행 뒤 jq 결과에서 OTEL_EXPORTER_OTLP_PROTOCOL grpc, ENDPOINT localhost:4317, OTEL_RESOURCE_ATTRIBUTES의 user.email과 team=cco-deep-dive를 가리킴
@@ -1114,7 +1116,7 @@ DEMO A, 강사 PC에서 Ch6 랩 TASK 01
 ③ 41번 줄 근처 transform/scrub_logs: 이벤트 로그에서 프롬프트 본문을 지우는 규칙
 ④ exporters 줄: 지표는 otlphttp/cloudwatch와 clickhouse, 로그와 trace는 clickhouse
 
-방금 대시보드에서 본 숫자가 어디서 출발하는지 보겠습니다.
+앞에서 대시보드로 본 숫자가 어디서 출발하는지 보겠습니다.
 참가자 여러분 PC와 같은 구성의 PC입니다.
 설정 파일에는 텔레메트리를 켜는 값과
 PC 안 수집기 주소 localhost 4317이 있습니다.
@@ -1157,16 +1159,18 @@ DEMO B, 게이트웨이에서 bob에게 1센트 한도
 • DELETE로 원복하면 다시 통과, 마지막에 use_bedrock_direct
 
 [데모 준비] 로그인 과정이 길어 강의 전에 끝내 둠
-• 강사 PC에서 use_gateway 실행, cd ~/claude-lab/ch6 && claude, /login으로 bob 로그인(Ch6 랩 TASK 02 Step 3 순서)
+• 강사 PC에서 Ch6 랩 TASK 00 블록 실행(ch6 폴더, pseudo 링크, 정책이 깨끗한지 확인)
+• use_gateway 실행, cd ~/claude-lab/ch6 && claude, /login으로 bob 로그인(Ch6 랩 TASK 02 Step 3 순서). 승인은 새 시크릿 창에서 함(일반 창에 alice 로그인이 남아 있으면 비밀번호 없이 alice로 들어감)
+• 로그인 뒤 /model에 Opus가 없는지 확인(있으면 alice이므로 /logout, gateway_logout 뒤 새 시크릿 창에서 다시)
 • bob 세션에서 질문 하나를 보내 지출 기록을 만들어 둠(TASK 03 Step 1 조회에 필요)
-• 오른쪽 터미널에 Ch6 랩 TASK 03 Step 1 블록을 실행해 두고, BOB= 값이 나오는지 확인
+• 오른쪽 터미널에 Ch6 랩 TASK 03 Step 1의 두 블록을 실행해 두고, BOB= 값이 나오는지 확인
 • 같은 날 리허설로 한도를 걸었다면 Step 4로 지웠는지 확인(적용 한도가 그룹 5000이어야 함)
 • 게이트웨이가 응답하지 않으면 슬라이드 16 설명과 랩 페이지 그림(6단계)으로 대신함
 
 [진행]
 ① 왼쪽 bob 세션에서 /model: Default, Sonnet, Haiku만 있음, Esc
 ② /usage: Spend limit 막대와 오늘 쓴 금액 / $50.00, Esc
-③ 오른쪽에서 TASK 03 Step 1 두 번째 블록: amount 5000, source standard-users, period_to_date_spend
+③ 오른쪽에서 TASK 03 Step 1 첫 블록(지금 조회)과 두 번째 블록: amount 5000, source standard-users, period_to_date_spend
 ④ TASK 03 Step 2 블록: LIMIT_ID=spl_로 시작하는 값
 ⑤ 왼쪽에서 "pseudo 디렉터리에 파일이 몇 개 있는지 알려줘": spend limit reached · resets 12am (UTC) 메시지, 바로 안 막히면 한 번 더
 ⑥ /usage: 사용률이 100%를 넘은 막대(예: 521% used), Esc
@@ -1222,6 +1226,7 @@ DEMO C, managed settings의 modelPricing
 [데모 준비]
 • DEMO B 끝에서 use_bedrock_direct로 돌아왔는지 확인(managed settings가 {})
 • Ch6 랩 선택 TASK 04 블록을 복사해 둠
+• configured rates 표시가 안 보이면 랩 페이지의 예시 줄 Total cost: $0.0954 (at your organization's configured rates)로 설명
 
 [진행]
 ① TASK 04 블록 실행: sudo jq 출력에 modelPricing이 들어간 것 확인, claude가 열림
