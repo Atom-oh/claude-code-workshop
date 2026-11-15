@@ -7,7 +7,7 @@ block: ch6-org-cost
 @background: linear-gradient(120deg, var(--surface-1) 0%, var(--surface-2) 70%, var(--surface-3) 100%)
 
 # Chapter 6. 조직의 비용 보고 통제하기
-## 쓴 만큼 보고, 넘치면 막는다 (Claude Code v2.1.319, 2026-11-08 리허설 검증)
+## 쓴 만큼 보기, 한도 초과 시 차단 (Claude Code v2.1.319, 2026-11-08 리허설 검증)
 Oh, Junseok
 Sr. Solutions Architect
 AWS Korea
@@ -19,15 +19,14 @@ AWS Korea
 :::notes
 {timing: 0.5min}
 [요약]
-• Chapter 6 조직의 비용 보고 통제하기, 쓴 만큼 보고 넘치면 막는다
+• Chapter 6 조직의 비용 보고 통제하기, 쓴 만큼 보기, 한도 초과 시 차단
 • Claude Code v2.1.319(2026-11-08 리허설 검증)와 Amazon Bedrock 기준
 • 강의와 데모로 진행, 랩 페이지(TASK 01~04)는 자율 실습
 
-마지막 챕터에서는 조직이 쓴 비용을 보고,
-필요할 때 한도로 통제하는 방법을 살펴보겠습니다.
+마지막 챕터에서는 조직이 쓴 비용을 보고, 필요할 때 한도로 통제하는 방법을 살펴볼게요.
 
 {cue: transition}
-사전 설문 결과부터 보겠습니다.
+사전 설문 결과부터 볼게요.
 :::
 ---
 <!-- Slide 2: Survey -->
@@ -42,8 +41,8 @@ AWS Korea
   <div class="sv-big">
     <span class="eyebrow">PRE-SURVEY</span>
     <div class="num"><span id="c6b-survey-num">26명</span></div>
-    <p class="lead">참가 확정자 <b>142명 중 26명</b>이 FinOps(모델 라우팅, 토큰 메터링, OTel 대시보드)를 기대 주제로 골랐습니다.</p>
-    <p class="why">자유 의견에도 조직 사용 비용의 가시화, 사내 토큰 배분 정책을 묻는 질문이 있었습니다. 이 챕터는 OTel로 모은 사용량을 대시보드로 보고, 한도로 막는 법입니다.</p>
+    <p class="lead">참가 확정자 <b>142명 중 26명</b>이 FinOps(모델 라우팅, 토큰 메터링, OTel 대시보드)를 기대 주제로 골랐어요.</p>
+    <p class="why">자유 의견에도 조직 사용 비용의 가시화와 사내 토큰 배분 정책을 묻는 질문이 있었어요. 이 챕터에서는 OTel로 모은 사용량을 대시보드로 보고, 한도로 통제하는 방법을 살펴볼게요.</p>
   </div>
   <figure class="shot">
     <img src="image/ch6-ccdash-users.jpg" alt="ccdash Users 화면: 관측 사용자 6명, 세션 81개, 사용자별 토큰과 비용 표 (사용자 식별자는 가림)">
@@ -63,14 +62,7 @@ AWS Korea
 • 자유 의견: 조직 사용 비용의 가시화, 사내 토큰 배분 정책
 • 이 챕터는 OTel로 모은 사용량을 대시보드로 보고, 게이트웨이 한도로 막는 법
 
-사전 설문에서 142분 중 26분이
-FinOps를 기대 주제로 골라 주셨습니다.
-자유 의견에도 조직의 비용을 파악하는 방법과
-사내 토큰 배분 정책을 묻는 질문이 있었습니다.
-오른쪽은 랩에서 OTel로 모은 사용량입니다.
-사용자별 세션, 토큰, 추정 비용을 볼 수 있습니다.
-이 데이터가 모이는 경로를 살펴보고,
-게이트웨이 한도로 통제하는 방법까지 이어가겠습니다.
+사전 설문에서 142분 중 26분이 FinOps를 기대 주제로 골라 주셨어요. 자유 의견에도 조직의 비용을 파악하는 방법과 사내 토큰 배분 정책을 묻는 질문이 있었어요. 오른쪽은 랩에서 OTel로 모은 사용량이에요. 사용자별 세션, 토큰, 추정 비용을 볼 수 있어요. 이 데이터가 모이는 경로를 살펴보고, 게이트웨이 한도로 통제하는 방법까지 이어갈게요.
 
 [출처]
 • 이번 워크숍 사전 설문, 참가 확정자 142명 기준 (2026-11-14 집계)
@@ -91,9 +83,9 @@ FinOps를 기대 주제로 골라 주셨습니다.
 <div class="c6 c6-agenda fsi">
   <div class="fsi-grid-2">
     <div class="pick"><span class="k">CHAPTER 06</span><span class="t">조직의 비용 통제</span><span class="d"><span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span> 대시보드, modelPricing, 게이트웨이 지출 한도</span><span class="when">강의와 데모</span></div>
-    <div class="pick lab"><span class="k">DEMO / 강사 화면</span><span class="t">대시보드, 텔레메트리 경로, 지출 한도, 계약 단가</span><span class="d">Ch6 랩 페이지(TASK 01~04)는 행사 뒤에도 자율로 따라 할 수 있습니다</span><span class="when">강의 사이사이</span></div>
+    <div class="pick lab"><span class="k">DEMO / 강사 화면</span><span class="t">대시보드, 텔레메트리 경로, 지출 한도, 계약 단가</span><span class="d">Ch6 랩 페이지(TASK 01~04), 행사 뒤에도 자율 실습 가능</span><span class="when">강의 사이사이</span></div>
   </div>
-  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 둡니다</span></div>
+  <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 두기</span></div>
 </div>
 :::
 
@@ -105,12 +97,7 @@ FinOps를 기대 주제로 골라 주셨습니다.
 • 데모 네 가지: 대시보드, 텔레메트리 경로, 지출 한도, 계약 단가
 • Ch6 랩 페이지(TASK 01~04)는 자율 실습
 
-Bedrock 비용을 파악하는 방법부터 살펴보고,
-계약 단가와 AWS 도구로 수치를 맞춰 보겠습니다.
-이어서 게이트웨이의 그룹 정책과 한도를 다룹니다.
-이번 챕터는 랩 대신 제 화면으로 데모를 보여 드립니다.
-같은 과정은 Ch6 랩 페이지에 그대로 있으니,
-나중에 직접 따라 해 보셔도 됩니다.
+Bedrock 비용을 파악하는 방법부터 살펴보고, 계약 단가와 AWS 도구로 수치를 맞춰 볼게요. 이어서 게이트웨이의 그룹 정책과 한도를 다룰게요. 이번 챕터는 랩 대신 제 화면으로 데모를 보여 드릴게요. 같은 과정은 Ch6 랩 페이지에 그대로 있으니, 나중에 직접 따라 해 보셔도 좋아요.
 :::
 ---
 <!-- Slide 4: Part 02 divider -->
@@ -121,7 +108,7 @@ Bedrock 비용을 파악하는 방법부터 살펴보고,
 <div class="fsi fsi-section">
   <span class="num">CHAPTER 06</span>
   <div class="name">조직의 비용 통제</div>
-  <p class="what">쓴 만큼 보고, 넘치면 막는다</p>
+  <p class="what">쓴 만큼 보기, 한도 초과 시 차단</p>
   <ol>
     <li><b>01</b>Bedrock에서 비용을 보는 법</li>
     <li><b>02</b>OTel 대시보드</li>
@@ -134,15 +121,10 @@ Bedrock 비용을 파악하는 방법부터 살펴보고,
 :::notes
 {timing: 0.5min}
 [요약]
-• Chapter 6은 조직의 비용 통제, 쓴 만큼 보고 넘치면 막는다
+• Chapter 6은 조직의 비용 통제, 쓴 만큼 보기, 한도 초과 시 차단
 • Bedrock 비용 보기, OTel 대시보드, modelPricing과 AWS 도구, Claude Apps Gateway 데모
 
-Chapter 5에서는 개인이 덜 쓰는 방법을 봤습니다.
-이제 조직이 사용량을 파악하고 통제할 차례입니다.
-사용량을 사람과 팀에 연결해야
-필요한 한도를 정할 수 있습니다.
-계측으로 비용이 발생한 경로를 확인한 뒤,
-게이트웨이로 한도를 적용해 보겠습니다.
+Chapter 5에서는 개인이 덜 쓰는 방법을 봤어요. 이제 조직이 사용량을 파악하고 통제할 차례예요. 사용량을 사람과 팀에 연결해야 필요한 한도를 정할 수 있어요. 계측으로 비용이 발생한 경로를 확인한 뒤, 게이트웨이로 한도를 적용해 볼게요.
 :::
 ---
 <!-- Slide 5: Cost by setup -->
@@ -162,7 +144,7 @@ Chapter 5에서는 개인이 덜 쓰는 방법을 봤습니다.
   <div class="panel" data-pick-panel="c6-setup">
     <div data-for="team"><h4>Claude Team, Enterprise</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">조직 Analytics</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">관리 콘솔 지출 한도</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">CSV, Analytics API</span></div></div>
     <div data-for="console"><h4>Claude Console</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">Console Usage</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">Workspace limit</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">Claude Code Analytics API</span></div></div>
-    <div data-for="bedrock"><h4>Amazon Bedrock</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">AWS 청구 콘솔</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">AWS 예산 도구</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">IAM principal, 태그(<span class="rp-detail" tabindex="0" data-tip="Cost and Usage Report 2.0. AWS 비용과 사용량 상세 보고서">CUR 2.0</span>), OTel, 게이트웨이</span></div><p>사용자별로 보려면 클라우드 콘솔만으로는 부족하고, 직접 설치한 계측이 필요합니다.</p></div>
+    <div data-for="bedrock"><h4>Amazon Bedrock</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">AWS 청구 콘솔</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">AWS 예산 도구</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">IAM principal, 태그(<span class="rp-detail" tabindex="0" data-tip="Cost and Usage Report 2.0. AWS 비용과 사용량 상세 보고서">CUR 2.0</span>), OTel, 게이트웨이</span></div><p>사용자별로 보려면 클라우드 콘솔만으로는 부족하고, 직접 설치한 계측이 필요해요.</p></div>
   </div>
 </div>
 :::
@@ -178,17 +160,9 @@ Chapter 5에서는 개인이 덜 쓰는 방법을 봤습니다.
 • Claude Team, Enterprise: 조직 Analytics, 관리 콘솔 지출 한도, CSV와 Analytics API
 • Claude Console: Console Usage, Workspace limit, Claude Code Analytics API
 
-구성에 따라 비용을 보는 방법이 달라집니다.
-이번 워크숍의 Bedrock 비용은 AWS 청구 콘솔로,
-예산 알림은 AWS 예산 도구로 확인합니다.
-사용자 구분에는 IAM principal과 CUR 2.0 태그,
-OTel과 게이트웨이의 계측을 함께 살펴야 합니다.
+구성에 따라 비용을 보는 방법이 달라져요. 이번 워크숍의 Bedrock 비용은 AWS 청구 콘솔로, 예산 알림은 AWS 예산 도구로 확인해요. 사용자 구분에는 IAM principal과 CUR 2.0 태그, OTel과 게이트웨이의 계측을 함께 살펴야 해요.
 {cue: demo}
-다른 구성도 비교해 보겠습니다.↓
-Claude Team과 Enterprise는 조직 Analytics와
-관리 콘솔 지출 한도를 제공합니다.↓
-Console은 Workspace limit과 Analytics API로
-관리합니다. Bedrock에서는 별도 계측이 필요합니다.
+다른 구성도 비교해 볼게요.↓ Claude Team과 Enterprise는 조직 Analytics와 관리 콘솔 지출 한도를 제공해요.↓ Console은 Workspace limit과 Analytics API로 관리해요. Bedrock에서는 별도 계측이 필요해요.
 :::
 ---
 <!-- Slide 6: Bedrock reality -->
@@ -198,8 +172,8 @@ Console은 Workspace limit과 Analytics API로
 :::html
 <div class="fsi fsi-statement">
   <span class="eyebrow">BEDROCK REALITY</span>
-  <div class="big">Bedrock에는 <em>Analytics</em><br>대시보드가 없습니다</div>
-  <p class="lead">계측을 설치해야 보이고, 설치하지 않은 사람은 잡히지 않습니다.</p>
+  <div class="big">Bedrock에는 <em>Analytics</em><br>대시보드 미제공</div>
+  <p class="lead">계측 설치가 필수, 미설치 사용자는 집계에서 누락</p>
 </div>
 :::
 
@@ -210,10 +184,7 @@ Console은 Workspace limit과 Analytics API로
 • 계측을 설치해야 보이고, 설치하지 않은 사람은 잡히지 않음
 
 {cue: pause}
-Bedrock에서 누가 얼마나 썼는지 보려면 별도 계측이 필요합니다.
-Claude 조직 Analytics는 제공되지 않습니다. AWS 비용 조회와 구분하시면 됩니다.
-계측 누락이나 수집 장애가 있으면 사용량이 빠질 수 있습니다.
-OTel로 기록을 모읍니다. 다음 화면에서 요청이 숫자가 되는 과정을 볼게요.
+Bedrock에서 누가 얼마나 썼는지 보려면 별도 계측이 필요해요. Claude 조직 Analytics는 제공되지 않아요. AWS 비용 조회와 구분하시면 돼요. 계측 누락이나 수집 장애가 있으면 사용량이 빠질 수 있어요. OTel로 기록을 모아요. 다음 화면에서 요청이 숫자가 되는 과정을 볼게요.
 :::
 ---
 <!-- Slide 7: Prompt to dashboard scene -->
@@ -298,15 +269,15 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
     '#   cost_usd, duration_ms',
     '# 프롬프트 본문: 기본 미전송 (길이만)'
   ],
-  overview: { label: '전체 그림', title: '내 PC에서 관리자 화면까지', say: '프롬프트를 보내면 Claude Code는 답과 별도로 <b>무엇을 얼마나 썼는지</b>를 기록합니다. 그 기록이 PC 안의 수집기를 거쳐 <b>조직이 고른 저장소</b>에 쌓이고, 대시보드의 숫자가 됩니다.' },
+  overview: { label: '전체 그림', title: '내 PC에서 관리자 화면까지', say: '프롬프트를 보내면 Claude Code는 답과 별도로 <b>무엇을 얼마나 썼는지</b>를 기록해요. 그 기록이 PC 안의 수집기를 거쳐 <b>조직이 고른 저장소</b>에 쌓이고, 대시보드의 숫자가 돼요.' },
   phases: [
-    { key: 'start', d: 2.6, focus: ['pc'], cam: ['pc', 'col'], zoom: 0.3, badge: 'pc', lines: [1], label: '1  입력', title: '개발자가 프롬프트를 보낸다', say: '정책으로 OTel이 켜진 PC에서는 개발자가 따로 할 일이 없습니다. 평소처럼 Claude Code를 쓰면 <b>사용 기록이 자동으로</b> 남습니다.' },
-    { key: 'emit', d: 2.8, focus: ['pc', 'col'], cam: ['pc', 'col'], zoom: 0.3, badge: 'col', lines: [2, 3, 7, 8, 9, 10], packet: { wire: 'emit' }, label: '2  기록', title: '요청마다 이벤트, 1분마다 지표', say: '모델 호출 한 번마다 <b>api_request</b> 이벤트가 생기고 모델, 토큰, 추정 비용이 담깁니다. token.usage 같은 지표는 기본 1분마다 모아서 보냅니다.' },
-    { key: 'scrub', d: 2.6, focus: ['col'], cam: ['col'], zoom: 0.28, badge: 'col', lines: [11], label: '3  지우기', title: '본문은 보내지 않는다', say: '프롬프트 본문은 <b>기본으로 보내지 않고 길이만</b> 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막습니다.' },
-    { key: 'store', d: 3.2, focus: ['col', 'cw', 'ch', 'duck'], badge: 'ch', lines: [4, 5, 6], packet: { wire: 'toch' }, label: '4  저장', title: '수집기, 조직이 고른 저장소로', say: '수집기는 OTLP로 받아 <b>조직이 고른 저장소</b>로 내보냅니다. 이번 랩 대시보드(ccdash)는 <b>ClickHouse</b>에 쌓고, 끊겨도 디스크 큐에 모아 두었다가 다시 보냅니다.' },
-    { key: 'cw', d: 3.2, focus: ['col', 'cw', 'duck'], badge: 'cw', lines: [], packet: { wire: 'tocw', colour: 'var(--info)' }, label: '5  다른 선택', title: 'CloudWatch, DuckDB도 된다', say: 'AWS 안에서 끝내려면 <b>CloudWatch</b>입니다. 수집기의 <b>file exporter</b>로 JSON 파일을 남기고 <b>DuckDB</b>로 조회하는 방법도 있습니다. 이번 랩은 CloudWatch에도 함께 보냅니다.' },
-    { key: 'view', d: 3.0, focus: ['ch', 'api'], badge: 'api', lines: [], packet: { wire: 'read' }, label: '6  화면', title: '대시보드가 읽어서 화면으로', say: 'ccdash 같은 대시보드가 저장소를 <b>읽기 쿼리</b>로 조회해 Overview, Users, Cost 화면을 만듭니다. 브라우저는 데이터베이스에 직접 붙지 않습니다.' },
-    { key: 'ask', d: 3.4, focus: ['api', 'bedrock'], badge: 'bedrock', lines: [], packet: { wire: 'ask', mode: 'pingpong', colour: 'var(--success)' }, label: '7  질문', title: 'Ask Claude, 말로 묻고 표로 받기', say: '“오류가 많은 도구는?”처럼 물으면 Bedrock의 Claude가 <b>읽기 전용 SQL</b>로 조회하고, 표와 해석으로 답합니다.' }
+    { key: 'start', d: 2.6, focus: ['pc'], cam: ['pc', 'col'], zoom: 0.3, badge: 'pc', lines: [1], label: '1  입력', title: '개발자의 프롬프트 입력', say: '정책으로 OTel이 켜진 PC에서는 개발자가 따로 할 일이 없어요. 평소처럼 Claude Code를 쓰면 <b>사용 기록이 자동으로</b> 남죠.' },
+    { key: 'emit', d: 2.8, focus: ['pc', 'col'], cam: ['pc', 'col'], zoom: 0.3, badge: 'col', lines: [2, 3, 7, 8, 9, 10], packet: { wire: 'emit' }, label: '2  기록', title: '요청마다 이벤트, 1분마다 지표', say: '모델 호출 한 번마다 <b>api_request</b> 이벤트가 생기고 모델, 토큰, 추정 비용이 담겨요. token.usage 같은 지표는 기본 1분마다 모아서 보내요.' },
+    { key: 'scrub', d: 2.6, focus: ['col'], cam: ['col'], zoom: 0.28, badge: 'col', lines: [11], label: '3  지우기', title: '본문 미전송', say: '프롬프트 본문은 <b>기본으로 보내지 않고 길이만</b> 남겨요. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막아요.' },
+    { key: 'store', d: 3.2, focus: ['col', 'cw', 'ch', 'duck'], badge: 'ch', lines: [4, 5, 6], packet: { wire: 'toch' }, label: '4  저장', title: '수집기, 조직이 고른 저장소로', say: '수집기는 OTLP로 받아 <b>조직이 고른 저장소</b>로 내보내요. 이번 랩 대시보드(ccdash)는 <b>ClickHouse</b>에 쌓고, 끊겨도 디스크 큐에 모아 두었다가 다시 보내요.' },
+    { key: 'cw', d: 3.2, focus: ['col', 'cw', 'duck'], badge: 'cw', lines: [], packet: { wire: 'tocw', colour: 'var(--info)' }, label: '5  다른 선택', title: 'CloudWatch, DuckDB도 선택 가능', say: 'AWS 안에서 끝내려면 <b>CloudWatch</b>예요. 수집기의 <b>file exporter</b>로 JSON 파일을 남기고 <b>DuckDB</b>로 조회하는 방법도 있어요. 이번 랩은 CloudWatch에도 함께 보내죠.' },
+    { key: 'view', d: 3.0, focus: ['ch', 'api'], badge: 'api', lines: [], packet: { wire: 'read' }, label: '6  화면', title: '대시보드가 읽어서 화면으로', say: 'ccdash 같은 대시보드가 저장소를 <b>읽기 쿼리</b>로 조회해 Overview, Users, Cost 화면을 만들어요. 브라우저는 데이터베이스에 직접 붙지 않아요.' },
+    { key: 'ask', d: 3.4, focus: ['api', 'bedrock'], badge: 'bedrock', lines: [], packet: { wire: 'ask', mode: 'pingpong', colour: 'var(--success)' }, label: '7  질문', title: 'Ask Claude, 말로 묻고 표로 받기', say: '“오류가 많은 도구는?”처럼 물으면 Bedrock의 Claude가 <b>읽기 전용 SQL</b>로 조회하고, 표와 해석으로 답해요.' }
   ]
 }); });
 :::
@@ -321,17 +292,10 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c6-flow', {
 • 수집기는 디스크 큐로 끊겨도 다시 보냄, 대시보드는 읽기 쿼리로 화면 구성
 
 {cue: demo}
-OTel을 켜면 실제로 무슨 일이 일어나는지, 요청 하나를 따라가 볼게요.↓
-개발자는 평소처럼 Claude Code에 프롬프트를 보내요. 정책으로 이미 켜져 있으니까 따로 할 일은 없습니다.↓
-모델을 한 번 부를 때마다 api_request라는 이벤트가 생기는데요, 여기에 모델, 토큰, 추정 비용이 담겨요. 토큰 사용량 같은 지표는 기본 1분마다 모아서 보냅니다.↓
-금융권에서 제일 많이 물어보시는 게 이거예요. 프롬프트 본문은 기본으로 보내지 않고 길이만 남깁니다. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막아요.↓
-PC 안의 수집기가 이걸 받아서 조직이 고른 저장소로 보내요. 이번 랩 대시보드인 ccdash는 ClickHouse에 쌓고요, 연결이 잠깐 끊겨도 디스크에 모아 뒀다가 다시 보냅니다.↓
-저장소는 정하시기 나름이에요. AWS 안에서 끝내려면 CloudWatch고요, 수집기가 JSON 파일로 남기게 한 뒤 DuckDB로 조회하는 방법도 있습니다. 이번 랩은 CloudWatch에도 같이 보내요.↓
-ccdash 같은 대시보드가 저장소를 읽어서 관리자가 보는 화면을 만듭니다.↓
-그리고 Ask Claude에 말로 물어보면, Bedrock의 Claude가 읽기 전용 SQL로 조회해서 표로 답해 줘요.
+OTel을 켜면 실제로 무슨 일이 일어나는지, 요청 하나를 따라가 볼게요.↓ 개발자는 평소처럼 Claude Code에 프롬프트를 보내요. 정책으로 이미 켜져 있으니까 따로 할 일은 없죠.↓ 모델을 한 번 부를 때마다 api_request라는 이벤트가 생기는데요, 여기에 모델, 토큰, 추정 비용이 담겨요. 토큰 사용량 같은 지표는 기본 1분마다 모아서 보내요.↓ 금융권에서 제일 많이 물어보시는 게 이거예요. 프롬프트 본문은 기본으로 보내지 않고 길이만 남겨요. 랩 수집기는 내보내기 전에 로그 본문을 지우는 규칙으로 한 번 더 막아요.↓ PC 안의 수집기가 이걸 받아서 조직이 고른 저장소로 보내요. 이번 랩 대시보드인 ccdash는 ClickHouse에 쌓고요, 연결이 잠깐 끊겨도 디스크에 모아 뒀다가 다시 보내요.↓ 저장소는 정하시기 나름이에요. AWS 안에서 끝내려면 CloudWatch고요, 수집기가 JSON 파일로 남기게 한 뒤 DuckDB로 조회하는 방법도 있어요. 이번 랩은 CloudWatch에도 같이 보내요.↓ ccdash 같은 대시보드가 저장소를 읽어서 관리자가 보는 화면을 만들어요.↓ 그리고 Ask Claude에 말로 물어보면, Bedrock의 Claude가 읽기 전용 SQL로 조회해서 표로 답해 줘요.
 
 {cue: transition}
-그럼 이걸 모두에게 어떻게 켜는지 보겠습니다.
+그럼 이걸 모두에게 어떻게 켜는지 살펴보죠.
 
 [출처]
 • code.claude.com/docs/en/monitoring-usage (metrics, events, 기본 미전송 항목, export interval)
@@ -361,36 +325,36 @@ managed settings env 한 블록이면 모두에게
   var N = [MS, CC, COL, DB, CW];
   var env = ['"env": {','  "CLAUDE_CODE_ENABLE_TELEMETRY": "1",','  "OTEL_METRICS_EXPORTER": "otlp",','  "OTEL_LOGS_EXPORTER": "otlp",','  "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",','  "OTEL_EXPORTER_OTLP_ENDPOINT":','    "https://otel.corp.example.internal:4317",','  "OTEL_RESOURCE_ATTRIBUTES":','    "department=platform,team=core"','}'];
   F.stepviz('#c6-sv-otel', [
-    {kicker:'STEP 1', title:'정책으로 켜면 모두가 계측됩니다',
-     body:'OTel(OpenTelemetry)은 켜야 생깁니다. <b>managed settings의 env 한 블록</b>으로 배포하면 사용자가 끌 수 없고, 빠지는 사람이 없습니다.',
-     facts:['CLAUDE_CODE_ENABLE_TELEMETRY: 1','managed settings로 배포','설치하지 않은 사람이 없게'],
+    {kicker:'STEP 1', title:'정책으로 모두에게 계측 적용',
+     body:'OTel(OpenTelemetry)은 켜야 기록이 생겨요. <b>managed settings의 env 한 블록</b>으로 배포하면 사용자가 끌 수 없고, 빠지는 사람이 없어요.',
+     facts:['CLAUDE_CODE_ENABLE_TELEMETRY: 1','managed settings로 배포','계측 설치 누락 없이'],
      zones:Z, nodes:N, hot:['ms','cc'],
      edges:[{f:'ms',t:'cc',c:'danger',l:'env 배포',o:0}],
-     snip:{hd:'managed-settings.json (env)',path:'OTel을 정책으로 켜기',lines:env,hl:[2],note:'엔드포인트는 예시 주소입니다.'}},
-    {kicker:'STEP 2', title:'OTLP로 조직 수집기에 보냅니다',
-     body:'지표와 로그를 <b>OTLP(OpenTelemetry 전송 규격), gRPC</b>로 조직이 정한 수집기 엔드포인트에 보냅니다.',
+     snip:{hd:'managed-settings.json (env)',path:'OTel을 정책으로 켜기',lines:env,hl:[2],note:'엔드포인트는 예시 주소'}},
+    {kicker:'STEP 2', title:'OTLP로 조직 수집기에 전송',
+     body:'지표와 로그를 <b>OTLP(OpenTelemetry 전송 규격), gRPC</b>로 조직이 정한 수집기 엔드포인트에 보내요.',
      facts:['OTEL_METRICS_EXPORTER: otlp','OTEL_LOGS_EXPORTER: otlp','목적지는 조직 수집기'],
      zones:Z, nodes:N, hot:['cc','col'],
      edges:[{f:'cc',t:'col',c:'warning',l:'OTLP, gRPC',o:0}], loop:true,
-     snip:{hd:'managed-settings.json (env)',path:'내보내기 설정',lines:env,hl:[3,4,5,6,7],note:'목적지가 회사 안이라는 점이 Bedrock 경로의 장점입니다.'}},
+     snip:{hd:'managed-settings.json (env)',path:'내보내기 설정',lines:env,hl:[3,4,5,6,7],note:'목적지가 회사 안이라는 점이 Bedrock 경로의 장점이에요.'}},
     {kicker:'STEP 3', title:'대표 지표',
-     body:'수집기에서 대시보드로 가는 대표 지표는 <b>token.usage, cost.usage, session.count</b>와 코드 산출물 지표입니다.',
+     body:'수집기에서 대시보드로 가는 대표 지표는 <b>token.usage, cost.usage, session.count</b>와 코드 산출물 지표예요.',
      facts:['claude_code.token.usage','claude_code.cost.usage','claude_code.session.count','lines_of_code, commit, PR'],
      zones:Z, nodes:N, hot:['col','db'],
      edges:[{f:'cc',t:'col',c:'warning',o:0},{f:'col',t:'db',c:'info',l:'지표',o:1}], loop:true,
-     snip:{hd:'대표 지표',path:'OTel metrics',lines:['claude_code.token.usage','claude_code.cost.usage','claude_code.session.count','claude_code.lines_of_code.count','claude_code.commit.count','claude_code.pull_request.count'],hl:[1,2,3],note:'cost.usage는 추정 비용입니다. 정산은 AWS입니다.'}},
+     snip:{hd:'대표 지표',path:'OTel metrics',lines:['claude_code.token.usage','claude_code.cost.usage','claude_code.session.count','claude_code.lines_of_code.count','claude_code.commit.count','claude_code.pull_request.count'],hl:[1,2,3],note:'cost.usage는 추정 비용, 정산은 AWS 기준'}},
     {kicker:'STEP 4', title:'resource 속성으로 팀별 집계',
-     body:'<b>OTEL_RESOURCE_ATTRIBUTES</b>에 부서와 팀을 넣으면 대시보드에서 <b>팀별로 집계</b>할 수 있습니다.',
+     body:'<b>OTEL_RESOURCE_ATTRIBUTES</b>에 부서와 팀을 넣으면 대시보드에서 <b>팀별로 집계</b>할 수 있어요.',
      facts:['department=platform','team=core','팀마다 다른 값으로 배포'],
      zones:Z, nodes:N, hot:['ms','db'],
      edges:[{f:'col',t:'db',c:'info',l:'팀별',o:0}],
-     snip:{hd:'managed-settings.json (env)',path:'팀 속성',lines:env,hl:[8,9],note:'값은 예시입니다. 팀별 managed settings로 다르게 배포합니다.'}},
-    {kicker:'LAB', title:'랩 환경은 두 곳으로 보냅니다',
-     body:'이번 랩 환경은 <b>otelcol</b>이 받아 내보내기 전에 <b>scrub_logs</b>로 프롬프트 본문을 지우고, <b>CloudWatch와 중앙 대시보드</b>로 이중 전송합니다.',
+     snip:{hd:'managed-settings.json (env)',path:'팀 속성',lines:env,hl:[8,9],note:'예시 값, 팀별 managed settings로 다르게 배포'}},
+    {kicker:'LAB', title:'랩 환경의 두 곳 전송',
+     body:'이번 랩 환경은 <b>otelcol</b>이 받아 내보내기 전에 <b>scrub_logs</b>로 프롬프트 본문을 지우고, <b>CloudWatch와 중앙 대시보드</b>로 이중 전송해요.',
      facts:['otelcol, fanout 타이머 active','scrub_logs: 내보내기 전 프롬프트 본문 삭제','exporters: CloudWatch + 중앙 대시보드'],
      zones:Z, nodes:[MS, CC, {id:'col',x:460,y:300,w:320,h:90,t:'otelcol',s:'scrub_logs로 본문 삭제',c:'warning',icon:'pipe'}, {id:'db',x:860,y:150,w:280,h:90,t:'중앙 대시보드',s:'이틀간 사용량',c:'info',icon:'chart'}, CW], hot:['cc','col','db','cw'],
      edges:[{f:'cc',t:'col',c:'warning',o:0},{f:'col',t:'db',c:'info',o:1},{f:'col',t:'cw',c:'info',o:1}], loop:true,
-     snip:{hd:'데모에서 확인',path:'랩 환경',lines:['# settings.json의 OTEL_* 환경 변수','# otelcol, fanout 타이머 active','# scrub_logs: 프롬프트 본문 삭제 규칙','# exporters: CloudWatch + 중앙 대시보드'],hl:[],note:'프롬프트 본문을 <b>내보내기 전에 지우는</b> 규칙이 금융권 운영의 기본입니다.'}}
+     snip:{hd:'데모에서 확인',path:'랩 환경',lines:['# settings.json의 OTEL_* 환경 변수','# otelcol, fanout 타이머 active','# scrub_logs: 프롬프트 본문 삭제 규칙','# exporters: CloudWatch + 중앙 대시보드'],hl:[],note:'프롬프트 본문을 <b>내보내기 전에 지우는</b> 규칙이 금융권 운영의 기본이에요.'}}
   ], {legend:[['danger','관리자가 강제'],['accent','Claude Code'],['warning','수집기'],['info','보는 곳']]});
 });
 :::
@@ -405,17 +369,7 @@ managed settings env 한 블록이면 모두에게
 • 랩 환경: otelcol, scrub_logs로 프롬프트 본문 삭제, CloudWatch와 중앙 대시보드 이중 전송
 
 {cue: demo}
-managed settings의 env로 OTel을 켭니다.
-사용자가 끌 수 없는 정책으로 배포하되,
-수집기 연결과 실제 수신도 확인해야 합니다.↓
-OTLP로 조직 수집기에 지표와 로그를 보냅니다.↓
-토큰과 추정 비용, 세션 수로 사용량을 보고,
-코드 줄 수와 커밋, PR도 함께 집계합니다.↓
-resource 속성에 부서와 팀을 넣으면
-팀별로 나누어 볼 수 있습니다.↓
-랩에서는 otelcol이 프롬프트 본문을 지운 뒤,
-CloudWatch와 중앙 대시보드로 보냅니다.
-이 경로를 TASK 01에서 확인하겠습니다.
+managed settings의 env로 OTel을 켜요. 사용자가 끌 수 없는 정책으로 배포하되, 수집기 연결과 실제 수신도 확인해야 해요.↓ OTLP로 조직 수집기에 지표와 로그를 보내요.↓ 토큰과 추정 비용, 세션 수로 사용량을 보고, 코드 줄 수와 커밋, PR도 함께 집계해요.↓ resource 속성에 부서와 팀을 넣으면 팀별로 나누어 볼 수 있어요.↓ 랩에서는 otelcol이 프롬프트 본문을 지운 뒤, CloudWatch와 중앙 대시보드로 보내요. 이 경로를 TASK 01에서 확인해 볼게요.
 
 [약어]
 • OTLP: OpenTelemetry Protocol
@@ -461,9 +415,9 @@ CloudWatch와 중앙 대시보드로 보냅니다.
       <li>응답 본문 <code>OTEL_LOG_<wbr>ASSISTANT_RESPONSES</code></li>
       <li>API 원문 <code>OTEL_LOG_<wbr>RAW_API_BODIES</code></li>
     </ul>
-    <p>금융권 운영은 이 스위치를 <b>끈 채로</b> 두고, 수집기에서 한 번 더 지웁니다.</p>
+    <p>금융권 운영은 이 스위치를 <b>끈 채로</b> 두고, 수집기에서 한 번 더 지워요.</p>
   </div>
-  <p class="c6-sig-note">모든 지표 이름 앞에는 <code>claude_code.</code>가 붙습니다. 비용 지표는 추정치이고, 정산은 AWS 청구서가 기준입니다.</p>
+  <p class="c6-sig-note">모든 지표 이름 앞에는 <code>claude_code.</code>가 붙어요. 비용 지표는 추정치이고, 정산은 AWS 청구서가 기준이에요.</p>
 </div>
 :::
 
@@ -475,12 +429,9 @@ CloudWatch와 중앙 대시보드로 보냅니다.
 • 기본 미전송: 프롬프트 본문, 도구 인자, 응답 본문, API 원문. 각각 스위치를 켜야만 전송
 • 비용 지표는 추정치, 정산 기준은 AWS 청구서
 
-그럼 OTel로 정확히 뭐가 나가는지 볼게요.
-왼쪽은 지표예요. 토큰, 추정 비용, 세션 수, 코드 줄 수와 커밋, PR 같은 숫자 여덟 가지가 기본 1분마다 쌓입니다.
-가운데는 이벤트인데요, 모델 호출이나 도구 실행 한 건마다 남는 기록이에요. 대시보드에서 어떤 도구가 자주 실패하는지 같은 건 여기서 나옵니다.
-오른쪽이 제일 중요해요. 프롬프트 본문, 도구 인자, 응답 본문은 기본으로 보내지 않습니다. 스위치를 켜야만 나가요. 금융권에서는 이 스위치를 끈 채로 두고, 수집기에서 한 번 더 지우시면 됩니다.
+그럼 OTel로 정확히 뭐가 나가는지 볼게요. 왼쪽은 지표예요. 토큰, 추정 비용, 세션 수, 코드 줄 수와 커밋, PR 같은 숫자 여덟 가지가 기본 1분마다 쌓여요. 가운데는 이벤트인데요, 모델 호출이나 도구 실행 한 건마다 남는 기록이에요. 대시보드에서 어떤 도구가 자주 실패하는지 같은 건 여기서 나와요. 오른쪽이 제일 중요해요. 프롬프트 본문, 도구 인자, 응답 본문은 기본으로 보내지 않아요. 스위치를 켜야만 나가요. 금융권에서는 이 스위치를 끈 채로 두고, 수집기에서 한 번 더 지워 주세요.
 {cue: pause}
-그리고 비용 지표는 추정치예요. 정산은 AWS 청구서가 기준입니다.
+그리고 비용 지표는 추정치예요. 정산은 AWS 청구서가 기준이에요.
 
 [출처]
 • code.claude.com/docs/en/monitoring-usage (Available metrics, Events, Privacy and content logging, Cost metrics are approximations)
@@ -509,37 +460,37 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
   var N = [PC, COL, CH, API, CF, BD];
   var col = ['# collector-config.yaml (요약)','receivers:','  otlp: grpc 127.0.0.1:4317, http 4318','processors:','  Claude Code 지표 8개만 허용','  로그 본문은 지우고 내보냄','exporters:','  clickhouse: 디스크 큐, 재시도'];
   F.stepviz('#c6-sv-dash', [
-    {kicker:'OVERVIEW', title:'받고, 쌓고, 보여 주고, 답한다',
-     body:'ccdash는 이 워크숍을 위해 만든 <b>사용량 대시보드</b>입니다. 참가자 PC의 수집기가 보낸 OTel을 ClickHouse에 쌓고, 화면과 Ask Claude로 보여 줍니다.',
+    {kicker:'OVERVIEW', title:'수집, 저장, 화면, 답변',
+     body:'ccdash는 이 워크숍을 위해 만든 <b>사용량 대시보드</b>예요. 참가자 PC의 수집기가 보낸 OTel을 ClickHouse에 쌓고, 화면과 Ask Claude로 보여 줘요.',
      facts:['github.com/Atom-oh/claude-code-usage-dashboard','Claude Code와 Codex 사용량','숫자는 관측값과 추정치, 청구서가 아님'],
      zones:Z, nodes:N,
      edges:[{f:'pc',t:'col',c:'accent',o:0},{f:'col',t:'ch',c:'warning',o:1},{f:'ch',t:'api',c:'info',o:2},{f:'api',t:'cf',c:'success',o:3},{f:'api',t:'bd',c:'accent',o:3}],
      loop:true, stagger:0.6,
-     snip:{hd:'구성 요소',path:'docs/architecture.md',lines:['Claude Code  → 수집기 (PC 안)','수집기       → ClickHouse','ClickHouse   → Express API, React','브라우저     → CloudFront → API','Ask Claude   → Amazon Bedrock'],hl:[],note:'브라우저는 ClickHouse에 <b>직접 붙지 않습니다</b>. 모든 조회는 API를 거칩니다.'}},
-    {kicker:'STEP 1', title:'수집: PC 안의 수집기가 먼저 받는다',
-     body:'Claude Code는 같은 PC의 <b>loopback 4317</b>로 보냅니다. 수집기는 Claude Code 지표 여덟 개만 통과시키고, 로그 본문은 지운 뒤 내보냅니다.',
+     snip:{hd:'구성 요소',path:'docs/architecture.md',lines:['Claude Code  → 수집기 (PC 안)','수집기       → ClickHouse','ClickHouse   → Express API, React','브라우저     → CloudFront → API','Ask Claude   → Amazon Bedrock'],hl:[],note:'브라우저는 ClickHouse에 <b>직접 붙지 않아요</b>. 모든 조회는 API를 거쳐요.'}},
+    {kicker:'STEP 1', title:'수집: PC 안의 수집기에서 먼저 수신',
+     body:'Claude Code는 같은 PC의 <b>loopback 4317</b>로 보내요. 수집기는 Claude Code 지표 여덟 개만 통과시키고, 로그 본문은 지운 뒤 내보내요.',
      facts:['OTLP gRPC 4317, HTTP 4318','지표 허용 목록','디스크 큐, 끊겨도 다시 보냄'],
      zones:Z, nodes:N, hot:['pc','col','ch'],
      edges:[{f:'pc',t:'col',c:'accent',l:'OTLP',o:0},{f:'col',t:'ch',c:'warning',l:'내보내기',o:1}], loop:true, stagger:0.7,
      snip:{hd:'수집기 설정',path:'collector-config.yaml',lines:col,hl:[2,3,4,5,6]}},
     {kicker:'STEP 2', title:'저장: ClickHouse와 시간별 롤업',
-     body:'원본 지표와 로그는 <b>ClickHouse</b>에 쌓이고, 지표는 시간별 롤업 표로도 모입니다. 긴 기간 화면은 롤업을 읽어 빠르게 그립니다.',
+     body:'원본 지표와 로그는 <b>ClickHouse</b>에 쌓이고, 지표는 시간별 롤업 표로도 모여요. 긴 기간 화면은 롤업을 읽어 빠르게 그려요.',
      facts:['원본: 지표, 로그, 선택 시 트레이스','롤업: 시간별 지표','기본 2일, 최대 90일 범위'],
      zones:Z, nodes:N, hot:['ch','api'],
      edges:[{f:'ch',t:'api',c:'info',l:'읽기 쿼리',o:0}], loop:true,
-     snip:{hd:'화면 범위',path:'환경 변수',lines:['DEFAULT_RANGE_DAYS=2','RANGE_CAP_DAYS=90','PII_MASK_ENABLED  # 화면, CSV, 채팅 가림', '                  # 표시용, 권한 경계 아님'],hl:[1,2],note:'이 워크숍 화면도 <b>최근 2일</b>이 기본입니다.'}},
+     snip:{hd:'화면 범위',path:'환경 변수',lines:['DEFAULT_RANGE_DAYS=2','RANGE_CAP_DAYS=90','PII_MASK_ENABLED  # 화면, CSV, 채팅 가림', '                  # 표시용, 권한 경계 아님'],hl:[1,2],note:'이 워크숍 화면도 <b>최근 2일</b>이 기본이에요.'}},
     {kicker:'STEP 3', title:'화면: 로그인한 사람만, 역할대로',
-     body:'관리자는 브라우저로 <b>CloudFront</b>를 거쳐 접속합니다. ccdash의 조직 OIDC 로그인(선택)을 켜면 viewer, analyst, admin 그룹대로 볼 수 있는 범위가 나뉩니다.',
+     body:'관리자는 브라우저로 <b>CloudFront</b>를 거쳐 접속해요. ccdash의 조직 OIDC 로그인(선택)을 켜면 viewer, analyst, admin 그룹대로 볼 수 있는 범위가 나뉘어요.',
      facts:['Overview, Users, Usage, Cost 등 메뉴','조직 OIDC(선택), viewer / analyst / admin','식별자 가림은 표시용, 권한 경계 아님'],
      zones:Z, nodes:N, hot:['api','cf'],
      edges:[{f:'api',t:'cf',c:'success',l:'HTTPS',o:0}], loop:true,
      snip:{hd:'메뉴',path:'ccdash 왼쪽 메뉴',lines:['Overview    핵심 지표 요약','Users       사용자별 활동','Usage       토큰, 도구 사용','Cost        비용, 모델별 비교','Reliability 오류, 응답 시간','Analytics   모델, 진단 분석'],hl:[1,2,3,4]}},
     {kicker:'STEP 4', title:'Ask Claude: 말로 묻고 표로 받기',
-     body:'질문을 하면 Bedrock의 Claude가 <b>SQL을 작성해 읽기 전용으로</b> 조회하고, 표와 해석, 데이터의 한계까지 함께 답합니다.',
+     body:'질문을 하면 Bedrock의 Claude가 <b>SQL을 작성해 읽기 전용으로</b> 조회하고, 표와 해석, 데이터의 한계까지 함께 답해요.',
      facts:['인증된 사용자만 사용','읽기 전용 ClickHouse 세션','답에 쿼리와 커버리지 한계 표시'],
      zones:Z, nodes:N, hot:['api','bd'],
      edges:[{f:'api',t:'bd',c:'accent',l:'SQL 도구',o:0}], loop:true,
-     snip:{hd:'예시 질문',path:'Ask Claude',lines:['지난 2일 동안 오류가 가장 많은','도구 3개와 오류율을 표로 보여줘'],hl:[1,2],note:'답의 숫자는 <b>관측값</b>입니다. 도구 품질이나 사람의 생산성 평가에 쓰지 않습니다.'}}
+     snip:{hd:'예시 질문',path:'Ask Claude',lines:['지난 2일 동안 오류가 가장 많은','도구 3개와 오류율을 표로 보여줘'],hl:[1,2],note:'답의 숫자는 <b>관측값</b>이에요. 도구 품질이나 사람의 생산성 평가에 쓰지 마세요.'}}
   ], {legend:[['accent','Claude Code, Bedrock'],['warning','수집기'],['info','저장, API'],['success','접속']]});
 });
 :::
@@ -554,11 +505,7 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
 • Ask Claude: Bedrock의 Claude가 읽기 전용 SQL로 조회, 숫자는 관측값이고 평가 근거가 아님
 
 {cue: demo}
-이번 워크숍에서 쓰는 대시보드가 ccdash예요. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓
-먼저 수집이에요. Claude Code는 같은 PC 안의 수집기로 보내고, 수집기는 Claude Code 지표 여덟 개만 통과시키고 로그 본문은 지운 뒤 내보냅니다.↓
-저장은 ClickHouse예요. 원본과 시간별 롤업이 따로 있어서 긴 기간도 빠르게 그립니다. 화면은 기본 최근 2일이에요.↓
-화면은 CloudFront를 거쳐 접속하고, 조직 OIDC 로그인을 켜면 역할대로 볼 수 있는 범위가 나뉩니다.↓
-마지막이 Ask Claude예요. 말로 물으면 Bedrock의 Claude가 읽기 전용 SQL로 조회해서 표로 답해 줍니다. 다만 이 숫자는 관측값이라서, 사람의 생산성을 평가하는 데 쓰시면 안 돼요.
+이번 워크숍에서 쓰는 대시보드가 ccdash예요. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓ 먼저 수집이에요. Claude Code는 같은 PC 안의 수집기로 보내고, 수집기는 Claude Code 지표 여덟 개만 통과시키고 로그 본문은 지운 뒤 내보내요.↓ 저장은 ClickHouse예요. 원본과 시간별 롤업이 따로 있어서 긴 기간도 빠르게 그려요. 화면은 기본 최근 2일이에요.↓ 화면은 CloudFront를 거쳐 접속하고, 조직 OIDC 로그인을 켜면 역할대로 볼 수 있는 범위가 나뉘어요.↓ 마지막이 Ask Claude예요. 말로 물으면 Bedrock의 Claude가 읽기 전용 SQL로 조회해서 표로 답해 줘요. 다만 이 숫자는 관측값이라서, 사람의 생산성을 평가하는 데 쓰시면 안 돼요.
 
 [출처]
 • github.com/Atom-oh/claude-code-usage-dashboard (README, docs/architecture.md)
@@ -581,11 +528,11 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
     <button class="pick" data-key="ask"><span class="k">Ask Claude</span><span class="t">말로 묻고 표로 받기</span></button>
   </div>
   <div class="panel" data-pick-panel="c6-tour">
-    <figure data-for="ov"><img src="image/ch6-ccdash-overview.jpg" alt="ccdash Overview를 내려 본 화면: 시간별 토큰과 비용 추이 두 그래프, 모델별 사용량 표(모델, 백엔드, 토큰, 비용, 세션)"><figcaption>피크는 실습을 돌린 구간입니다. 아래 표에서 어느 모델이 비용을 만들었는지 바로 보입니다.</figcaption></figure>
-    <figure data-for="tool"><img src="image/ch6-ccdash-usage-tools.jpg" alt="ccdash Usage 화면의 도구 사용 표: Bash, Read, mcp_tool, Edit 등 도구별 호출 수, 오류 수, 오류율, 평균 시간"><figcaption>Bash가 가장 많이 불리고, WebFetch는 호출은 적어도 오류율이 높습니다.</figcaption></figure>
-    <figure data-for="task"><img src="image/ch6-ccdash-user-tasks-cost.jpg" alt="ccdash 사용자 상세의 작업 목록을 비용 높은 순으로 정렬한 화면: 작업별 모델, LLM 호출 수, 서브에이전트 수, 토큰, 비용, 소요 시간"><figcaption>정렬 탭을 <b>비용 높은 순</b>으로 바꾸면 비싼 작업이 위로 올라옵니다. 행을 누르면 작업 상세가 열립니다.</figcaption></figure>
-    <figure data-for="cost"><img src="image/ch6-ccdash-cost-mix.jpg" alt="ccdash Cost 화면: 모델별 비용 도넛, effort와 백엔드별 비용 도넛, 입력 토큰 구성 도넛(캐시 읽기가 대부분)"><figcaption>입력 토큰 대부분이 캐시 읽기입니다. Ch5에서 본 캐시가 실제로 일하고 있다는 뜻입니다.</figcaption></figure>
-    <figure data-for="ask"><img src="image/ch6-ccdash-ask-claude.jpg" alt="ccdash Ask Claude 패널: '지난 2일 동안 오류가 가장 많은 도구 3개와 오류율을 표로 보여줘' 질문과 도구별 오류 표, 해석, 오류 판단 기준, 커버리지와 한계가 담긴 답"><figcaption>질문 하나에 표, 해석, 판단 기준, 데이터의 한계까지 함께 돌아옵니다.</figcaption></figure>
+    <figure data-for="ov"><img src="image/ch6-ccdash-overview.jpg" alt="ccdash Overview를 내려 본 화면: 시간별 토큰과 비용 추이 두 그래프, 모델별 사용량 표(모델, 백엔드, 토큰, 비용, 세션)"><figcaption>피크는 실습을 돌린 구간이에요. 아래 표에서 어느 모델이 비용을 만들었는지 바로 보여요.</figcaption></figure>
+    <figure data-for="tool"><img src="image/ch6-ccdash-usage-tools.jpg" alt="ccdash Usage 화면의 도구 사용 표: Bash, Read, mcp_tool, Edit 등 도구별 호출 수, 오류 수, 오류율, 평균 시간"><figcaption>Bash가 가장 많이 불리고, WebFetch는 호출은 적어도 오류율이 높아요.</figcaption></figure>
+    <figure data-for="task"><img src="image/ch6-ccdash-user-tasks-cost.jpg" alt="ccdash 사용자 상세의 작업 목록을 비용 높은 순으로 정렬한 화면: 작업별 모델, LLM 호출 수, 서브에이전트 수, 토큰, 비용, 소요 시간"><figcaption>정렬 탭을 <b>비용 높은 순</b>으로 바꾸면 비싼 작업이 위로 올라와요. 행을 누르면 작업 상세가 열려요.</figcaption></figure>
+    <figure data-for="cost"><img src="image/ch6-ccdash-cost-mix.jpg" alt="ccdash Cost 화면: 모델별 비용 도넛, effort와 백엔드별 비용 도넛, 입력 토큰 구성 도넛(캐시 읽기가 대부분)"><figcaption>입력 토큰 대부분이 캐시 읽기예요. Ch5에서 본 캐시가 실제로 일하고 있다는 뜻이에요.</figcaption></figure>
+    <figure data-for="ask"><img src="image/ch6-ccdash-ask-claude.jpg" alt="ccdash Ask Claude 패널: '지난 2일 동안 오류가 가장 많은 도구 3개와 오류율을 표로 보여줘' 질문과 도구별 오류 표, 해석, 오류 판단 기준, 커버리지와 한계가 담긴 답"><figcaption>질문 하나에 표, 해석, 판단 기준, 데이터의 한계까지 함께 돌아와요.</figcaption></figure>
   </div>
 </div>
 :::
@@ -604,14 +551,10 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
 • Ask Claude: 질문 하나에 표, 해석, 판단 기준, 커버리지 한계
 
 {cue: demo}
-데모 전에 화면을 미리 한 번 볼게요. Overview를 내려 보면 시간별 추이가 나오는데요, 솟은 구간이 실습을 돌린 때예요. 아래 표에서 어느 모델이 비용을 만들었는지 바로 보입니다.↓
-Usage에서는 도구별로 봐요. Bash가 가장 많이 불리고, WebFetch는 호출은 적어도 오류율이 높죠.↓
-Users에서 사용자를 누르면 작업 목록이 나오는데요, 정렬을 비용 높은 순으로 바꾸면 비싼 작업이 위로 올라옵니다. 행을 누르면 작업 상세가 열려요.↓
-Cost에서는 입력 토큰 구성을 꼭 보세요. 대부분이 캐시 읽기예요. Chapter 5에서 본 캐시가 실제로 일하고 있다는 뜻입니다.↓
-마지막으로 Ask Claude에 물어봤어요. 오류가 많은 도구 세 개를 표로 달라고 했더니, 표와 해석에 판단 기준, 데이터의 한계까지 같이 답해 줍니다.
+데모 전에 화면을 미리 한 번 볼게요. Overview를 내려 보면 시간별 추이가 나오는데요, 솟은 구간이 실습을 돌린 때예요. 아래 표에서 어느 모델이 비용을 만들었는지 바로 보여요.↓ Usage에서는 도구별로 봐요. Bash가 가장 많이 불리고, WebFetch는 호출은 적어도 오류율이 높죠.↓ Users에서 사용자를 누르면 작업 목록이 나오는데요, 정렬을 비용 높은 순으로 바꾸면 비싼 작업이 위로 올라와요. 행을 누르면 작업 상세가 열려요.↓ Cost에서는 입력 토큰 구성을 꼭 보세요. 대부분이 캐시 읽기예요. Chapter 5에서 본 캐시가 실제로 일하고 있다는 뜻이죠.↓ 마지막으로 Ask Claude에 물어봤어요. 오류가 많은 도구 세 개를 표로 달라고 했더니, 표와 해석에 판단 기준, 데이터의 한계까지 같이 답해 줘요.
 
 {cue: transition}
-이제 실제 대시보드를 같이 열어 보겠습니다.
+이제 실제 대시보드를 같이 열어 볼게요.
 
 [출처]
 • ccdash 화면 캡처, 리허설 데이터 (github.com/Atom-oh/claude-code-usage-dashboard), 로그인 이름은 가림
@@ -634,7 +577,7 @@ DEMO, 강사 대시보드 (URL은 현장 안내)
     <li><b>4</b><span>작업 상세: 비용이 커진 이유</span></li>
     <li><b>5</b><span>Ask Claude: 말로 묻고 표로 받기</span></li>
   </ol>
-  <p class="where">화면에는 참가자 ID만 표시합니다. 회사별 사용량은 노출하지 않습니다.</p>
+  <p class="where">화면에는 참가자 ID만 표시해요. 회사별 사용량은 노출하지 않아요.</p>
   <figure class="shot">
     <img src="image/ch6-ccdash-task.jpg" alt="ccdash 작업 상세 화면: 메인 세션과 Explore 서브에이전트 세 개의 호출 타임라인, 누적 비용, 컨텍스트 크기, 왜 많이 썼나 패널, 세션 환경 카드 (이메일과 MCP 서버 이름은 가림)">
     <figcaption>작업 상세: 레인별 호출, 누적 비용, 비용이 커진 이유 (식별자 가림)</figcaption>
@@ -661,28 +604,9 @@ DEMO, 강사 대시보드 (URL은 현장 안내)
 • 대시보드가 안 열리면 슬라이드 11의 캡처로 같은 순서를 설명
 
 [진행]
-① Overview: 이틀 합계 토큰과 추정 비용, 시간대별 추이 그래프에서 Capstone 구간이 솟은 부분을 가리킴
-② Usage(도구 표): 모델별 비중(Opus, Sonnet, Haiku), 호출이 많은 도구와 오류가 잦은 도구
-③ Cost(비용 구성): 캐시 읽기와 캐시 쓰기 비중, 캐시 적중률. Chapter 5의 캐시 이야기와 연결
-④ Users에서 미리 고른 작업 열기: 레인별 호출 타임라인, 누적 비용, "왜 많이 썼나" 패널
-⑤ Ask Claude: 질문 1을 보내고 표가 나오면 SQL을 펼쳐 읽기 전용 쿼리임을 보여 줌, 이어서 질문 2
+① Overview: 이틀 합계 토큰과 추정 비용, 시간대별 추이 그래프에서 Capstone 구간이 솟은 부분을 가리킴 ② Usage(도구 표): 모델별 비중(Opus, Sonnet, Haiku), 호출이 많은 도구와 오류가 잦은 도구 ③ Cost(비용 구성): 캐시 읽기와 캐시 쓰기 비중, 캐시 적중률. Chapter 5의 캐시 이야기와 연결 ④ Users에서 미리 고른 작업 열기: 레인별 호출 타임라인, 누적 비용, "왜 많이 썼나" 패널 ⑤ Ask Claude: 질문 1을 보내고 표가 나오면 SQL을 펼쳐 읽기 전용 쿼리임을 보여 줌, 이어서 질문 2
 
-참가 안내문에 고지한 대로 랩에서는
-Day 1부터 OTel을 수집하고 있습니다.
-먼저 Overview에서 이틀 동안 쓴 토큰과 추정 비용을 보겠습니다.
-그래프가 솟은 곳이 Capstone 구간입니다.
-여럿이 에이전트를 오래 돌리면 이렇게 보입니다.
-Usage에서는 어느 모델을 얼마나 썼는지,
-어떤 도구를 많이 부르고 어디서 오류가 났는지 보입니다.
-Cost에서는 캐시 읽기 비중을 봐 주세요.
-Chapter 5에서 말씀드린 캐시가 실제로 비용을 얼마나 줄였는지가 여기 나옵니다.
-작업 하나를 열어 보면 메인 세션과 서브에이전트가
-언제 얼마씩 썼는지, 왜 많이 썼는지까지 보입니다.
-마지막으로 Ask Claude에 말로 물어보겠습니다.
-Bedrock의 Claude가 읽기 전용 SQL로 조회해 표로 답합니다.
-SQL을 펼쳐 보시면 어떤 쿼리를 썼는지 확인할 수 있습니다.
-화면에는 참가자 ID만 표시하며,
-회사별 사용량은 보여 드리지 않습니다.
+참가 안내문에 고지한 대로 랩에서는 Day 1부터 OTel을 수집하고 있어요. 먼저 Overview에서 이틀 동안 쓴 토큰과 추정 비용을 볼게요. 그래프가 솟은 곳이 Capstone 구간이에요. 여럿이 에이전트를 오래 돌리면 이렇게 보여요. Usage에서는 어느 모델을 얼마나 썼는지, 어떤 도구를 많이 부르고 어디서 오류가 났는지 보여요. Cost에서는 캐시 읽기 비중을 봐 주세요. Chapter 5에서 말씀드린 캐시가 실제로 비용을 얼마나 줄였는지가 여기 나와요. 작업 하나를 열어 보면 메인 세션과 서브에이전트가 언제 얼마씩 썼는지, 왜 많이 썼는지까지 보여요. 마지막으로 Ask Claude에 말로 물어볼게요. Bedrock의 Claude가 읽기 전용 SQL로 조회해 표로 답해요. SQL을 펼쳐 보시면 어떤 쿼리를 썼는지 확인할 수 있어요. 화면에는 참가자 ID만 표시하며, 회사별 사용량은 보여 드리지 않아요.
 :::
 ---
 <!-- Slide 13: modelPricing -->
@@ -711,9 +635,9 @@ SQL을 펼쳐 보시면 어떤 쿼리를 썼는지 확인할 수 있습니다.
       <input type="range" min="0.5" max="1.5" step="0.05" value="0.9" id="c6-price-in" aria-label="modelPricing multiplier">
       <div class="row"><span>multiplier</span><b id="c6-price-m">0.90</b></div>
       <div class="disp" id="c6-price-out">$0.50</div>
-      <p class="cap">예시: 원리 1의 /usage 세션 $0.55에 배수를 곱한 표시 금액입니다.</p>
+      <p class="cap">예시: 원리 1의 /usage 세션 $0.55 × 배수 = 표시 금액</p>
     </div>
-    <p class="c6-note">실제 정산은 AWS 청구서입니다. modelPricing은 /usage와 대시보드의 숫자를 청구서에 가깝게 맞추는 표시 설정입니다.</p>
+    <p class="c6-note">실제 정산은 AWS 청구서예요. modelPricing은 /usage와 대시보드의 숫자를 청구서에 가깝게 맞추는 표시 설정이에요.</p>
   </div>
 </div>
 :::
@@ -741,18 +665,9 @@ SQL을 펼쳐 보시면 어떤 쿼리를 썼는지 확인할 수 있습니다.
 • 1보다 작으면 할인, 크면 할증, 모델별 단가는 overrides
 • 표시만 바꾸고 청구는 그대로, 숫자는 계약 단가로
 
-/usage와 대시보드 비용은 목록가 기준 추정치입니다.
-계약 단가가 다르면 청구서와 차이가 납니다.
-modelPricing으로 표시 단가를 맞춥니다.
+/usage와 대시보드 비용은 목록가 기준 추정치예요. 계약 단가가 다르면 청구서와 차이가 나요. modelPricing으로 표시 단가를 맞춰요.
 {cue: demo}
-multiplier를 바꿔 보겠습니다.
-원리 1의 0.55달러 세션에 0.9를 곱하면
-0.50달러로 표시됩니다.
-1보다 작으면 할인, 크면 할증을 반영하고,
-모델별 차이는 overrides로 설정합니다.
-managed settings에서만 적용되며,
-표시를 바꿀 뿐 실제 청구는 바꾸지 않습니다.
-정산은 AWS 청구서와 대사하시면 됩니다.
+multiplier를 바꿔 볼게요. 원리 1의 0.55달러 세션에 0.9를 곱하면 0.50달러로 표시돼요. 1보다 작으면 할인, 크면 할증을 반영하고, 모델별 차이는 overrides로 설정해요. managed settings에서만 적용되며, 표시를 바꿀 뿐 실제 청구는 바꾸지 않아요. 정산은 AWS 청구서와 대사하시면 돼요.
 :::
 ---
 <!-- Slide 14: AWS side tools -->
@@ -765,7 +680,7 @@ Claude Code 계측과 별개로 계정에서 보이는 것, 둘을 대사
 :::html
 <div class="c6">
   <div class="c6-cards four">
-    <div class="c6-card"><span class="k">01</span><span class="t">Application inference profile 태그</span><span class="d">Ch2의 modelOverrides로 팀별 경로를 만들고 Cost Explorer에서 봅니다.</span></div>
+    <div class="c6-card"><span class="k">01</span><span class="t">Application inference profile 태그</span><span class="d">Ch2의 modelOverrides로 팀별 경로 구성, Cost Explorer에서 확인</span></div>
     <div class="c6-card"><span class="k">02</span><span class="t">AWS Budgets</span><span class="d">계정, 태그 단위 예산 알람</span></div>
     <div class="c6-card"><span class="k">03</span><span class="t">전용 AWS 계정</span><span class="d">Claude Code 비용을 계정 경계로 분리 (공식 권장)</span></div>
     <div class="c6-card"><span class="k">04</span><span class="t"><span class="rp-detail" tabindex="0" data-tip="Tokens Per Minute. 분당 처리할 수 있는 토큰 수 한도">TPM</span> 쿼터</span><span class="d">라이브 교육 같은 동시 사용 급증은 사전 증액</span></div>
@@ -782,15 +697,7 @@ Claude Code 계측과 별개로 계정에서 보이는 것, 둘을 대사
 • TPM 쿼터: 동시 사용 급증은 사전 증액
 • Claude Code 계측과 AWS 쪽 숫자를 대사해야 정확
 
-Claude Code 계측은 AWS 계정의 비용과 대사합니다.
-Ch2의 modelOverrides로 팀별 경로를 만들고,
-application inference profile의 태그를
-Cost Explorer에서 나누어 볼 수 있습니다.
-AWS Budgets는 계정과 태그 단위로 알림을 줍니다.
-전용 AWS 계정으로 비용을 분리하는 것이
-공식 권장 방식입니다.
-동시 사용이 몰리는 교육은 TPM 쿼터도
-미리 증액해 두셔야 합니다.
+Claude Code 계측은 AWS 계정의 비용과 대사해요. Ch2의 modelOverrides로 팀별 경로를 만들고, application inference profile의 태그를 Cost Explorer에서 나누어 볼 수 있어요. AWS Budgets는 계정과 태그 단위로 알림을 줘요. 전용 AWS 계정으로 비용을 분리하는 것이 공식 권장 방식이에요. 동시 사용이 몰리는 교육은 TPM 쿼터도 미리 증액해 두셔야 해요.
 
 [약어]
 • TPM: Tokens Per Minute
@@ -830,42 +737,42 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
   var N = [DEV, ALB, GW, BR, IDP, OT];
   F.stepviz('#c6-sv-gw', [
     {kicker:'OVERVIEW', title:'SSO, 그룹 정책, 지출 한도를 한곳에서',
-     body:'Claude Apps Gateway는 Bedrock 앞단에 <b>직접 운영하는</b> 게이트웨이로, SSO(Single Sign-On) 로그인, IdP(사내 인증 시스템) 그룹별 모델과 정책, 사용자별 지출 한도, OTLP 중계를 맡습니다.',
+     body:'Claude Apps Gateway는 Bedrock 앞단에 <b>직접 운영하는</b> 게이트웨이로, SSO(Single Sign-On) 로그인, IdP(사내 인증 시스템) 그룹별 모델과 정책, 사용자별 지출 한도, OTLP 중계를 맡아요.',
      facts:['SSO 로그인','IdP 그룹별 모델과 정책','사용자별 지출 한도','OTLP 중계'],
      zones:Z, nodes:N, hot:['dev','gw','br','idp','ot'],
      edges:[{f:'dev',t:'gw',c:'accent',side:'b',curve:70,o:0},{f:'gw',t:'idp',c:'success',o:1},{f:'gw',t:'br',c:'info',o:2},{f:'gw',t:'ot',c:'muted',o:2}],
-     snip:{hd:'claude 바이너리에 포함',path:'게이트웨이 실행',lines:['claude gateway --config gateway.yaml'],hl:[1],note:'별도 제품 설치가 아니라 <b>claude 바이너리의 하위 명령</b>입니다.'}},
-    {kicker:'STEP 1', title:'개발자: /login으로 정책을 받습니다',
-     body:'개발자는 <b>/login</b>으로 디바이스 인증을 하고, 소속 그룹에 맞는 정책을 받습니다.',
+     snip:{hd:'claude 바이너리에 포함',path:'게이트웨이 실행',lines:['claude gateway --config gateway.yaml'],hl:[1],note:'별도 제품 설치가 아니라 <b>claude 바이너리의 하위 명령</b>이에요.'}},
+    {kicker:'STEP 1', title:'개발자: /login으로 정책 수신',
+     body:'개발자는 <b>/login</b>으로 디바이스 인증을 하고, 소속 그룹에 맞는 정책을 받아요.',
      facts:['/login, 디바이스 인증','그룹별 정책 수신','로그인 브라우저도 사설망 안에'],
      zones:Z, nodes:N, hot:['dev','alb','gw','idp'],
      edges:[{f:'dev',t:'alb',c:'accent',l:'/login',o:0},{f:'alb',t:'gw',c:'info',o:1},{f:'gw',t:'idp',c:'success',l:'OIDC',o:2}],
-     snip:{hd:'개발자 쪽',path:'Claude Code',lines:['/login','# 디바이스 인증','# 그룹별 정책 수신'],hl:[1],note:'<b>/login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만</b> 통과합니다.'}},
+     snip:{hd:'개발자 쪽',path:'Claude Code',lines:['/login','# 디바이스 인증','# 그룹별 정책 수신'],hl:[1],note:'<b>/login은 게이트웨이 호스트가 사설 IP로만 resolve될 때만</b> 통과해요.'}},
     {kicker:'STEP 2', title:'Internal ALB와 사설 존',
-     body:'공식 AWS 예제는 <b>internal ALB</b>(Application Load Balancer, IPv4 전용, idle 3600초)와 <b>Route 53 사설 존</b>을 씁니다. 사설망 전용 구성입니다.',
+     body:'공식 AWS 예제는 <b>internal ALB</b>(Application Load Balancer, IPv4 전용, idle 3600초)와 <b>Route 53 사설 존</b>을 써요. 사설망 전용 구성이에요.',
      facts:['IPv4 전용','idle 3600초','Route 53 사설 존'],
      zones:Z, nodes:N, hot:['dev','alb'],
      edges:[{f:'dev',t:'alb',c:'accent',o:0}], loop:true,
-     snip:{hd:'공식 AWS 예제',path:'사설망 전용, internal ALB, IPv4',lines:['# Internal ALB','IPv4 전용','idle timeout 3600초','# DNS','Route 53 사설 존'],hl:[2,3,5],note:'인터넷에 열지 않는 것이 전제입니다.'}},
+     snip:{hd:'공식 AWS 예제',path:'사설망 전용, internal ALB, IPv4',lines:['# Internal ALB','IPv4 전용','idle timeout 3600초','# DNS','Route 53 사설 존'],hl:[2,3,5],note:'인터넷에 열지 않는 것이 전제예요.'}},
     {kicker:'STEP 3', title:'게이트웨이: ECS Fargate와 RDS',
-     body:'게이트웨이는 <b>ECS Fargate</b>에서 돌고, 상태는 <b>RDS PostgreSQL</b>에, 로그인은 <b>OIDC IdP</b>(OpenID Connect 표준으로 로그인하는 인증 시스템)에 맡깁니다.',
+     body:'게이트웨이는 <b>ECS Fargate</b>에서 돌고, 상태는 <b>RDS PostgreSQL</b>에, 로그인은 <b>OIDC IdP</b>(OpenID Connect 표준으로 로그인하는 인증 시스템)에 맡겨요.',
      facts:['ECS Fargate','RDS PostgreSQL','OIDC IdP'],
      zones:Z, nodes:N, hot:['gw','idp'],
      edges:[{f:'gw',t:'idp',c:'success',o:0}],
-     snip:{hd:'공식 AWS 예제',path:'게이트웨이',lines:['ECS Fargate','RDS PostgreSQL','OIDC IdP'],hl:[1,2,3],note:'지출 기록과 사용자 정보가 이 DB에 쌓입니다. 뒤에서 개인정보 항목을 봅니다.'}},
+     snip:{hd:'공식 AWS 예제',path:'게이트웨이',lines:['ECS Fargate','RDS PostgreSQL','OIDC IdP'],hl:[1,2,3],note:'지출 기록과 사용자 정보가 이 DB에 쌓여요. 뒤에서 개인정보 항목을 봐요.'}},
     {kicker:'STEP 4', title:'Bedrock은 공유 자격증명 하나로',
-     body:'게이트웨이가 <b>IAM 역할</b>로 Bedrock을 호출합니다. 개발자마다 AWS 자격증명을 나눠 줄 필요 없이 <b>공유 자격증명 하나</b>입니다.',
+     body:'게이트웨이가 <b>IAM 역할</b>로 Bedrock을 호출해요. 개발자마다 AWS 자격증명을 나눠 줄 필요 없이 <b>공유 자격증명 하나</b>예요.',
      facts:['IAM 역할로 호출','공유 자격증명 하나','개발자 PC에 AWS 키 없음'],
      zones:Z, nodes:N, hot:['gw','br'],
      edges:[{f:'gw',t:'br',c:'info',o:0}], loop:true,
-     snip:{hd:'공식 AWS 예제',path:'Amazon Bedrock',lines:['# 게이트웨이의 IAM 역할로 호출','# 공유 자격증명 하나'],hl:[],note:'사용자 구분은 게이트웨이의 OIDC sub로 합니다.'}},
+     snip:{hd:'공식 AWS 예제',path:'Amazon Bedrock',lines:['# 게이트웨이의 IAM 역할로 호출','# 공유 자격증명 하나'],hl:[],note:'사용자 구분은 게이트웨이의 OIDC sub로 해요.'}},
     {kicker:'LAB', title:'이번 랩 전용 구성: 계정마다 VPC 안에 한 대',
-     body:'랩에서는 참가자 계정마다 VPC(AWS 안의 사설 네트워크) 안에 게이트웨이가 한 대 있습니다. 로그인 브라우저만 <b>CloudFront에서 ccb-endpoint nginx</b>로 노출하고, 게이트웨이는 VPC CIDR(그 네트워크의 IP 주소 범위)만 허용합니다. 운영 환경은 사설망 전용입니다.',
+     body:'랩에서는 참가자 계정마다 VPC(AWS 안의 사설 네트워크) 안에 게이트웨이가 한 대 있어요. 로그인 브라우저만 <b>CloudFront에서 ccb-endpoint nginx</b>로 노출하고, 게이트웨이는 VPC CIDR(그 네트워크의 IP 주소 범위)만 허용해요. 운영 환경은 사설망 전용이에요.',
      facts:['ccb-endpoint(참가자 실습 PC): use_gateway(모드 전환 스크립트)로 managed settings에 forceLoginGatewayUrl','gateway.workshop.internal, 자체 서명 TLS(전송 암호화 인증서)','게이트웨이 EC2: Docker, PostgreSQL, Cognito OIDC (alice, bob)','Bedrock: 인스턴스 역할, us-east-1, global 추론 프로필의 5.5 모델'],
      zones:[{x:20,y:20,w:1140,h:440,l:'참가자 VPC',tone:'info'}],
      nodes:[{id:'dev',x:40,y:200,w:230,h:96,t:'ccb-endpoint',s:'use_gateway',c:'accent',icon:'terminal'},{id:'alb',x:320,y:200,w:230,h:96,t:'Route 53 사설 존',s:'gateway.workshop.internal',c:'info',icon:'aws:Route-53'},{id:'gw',x:600,y:200,w:260,h:96,t:'게이트웨이 EC2',s:'Docker, PostgreSQL',c:'warning',icon:'aws:EC2-Instance'},{id:'br',x:910,y:200,w:230,h:96,t:'Amazon Bedrock',s:'인스턴스 역할',c:'info',icon:'aws:Bedrock'},{id:'idp',x:600,y:50,w:260,h:84,t:'Cognito OIDC',s:'alice, bob',c:'success',icon:'aws:Cognito'}],
      edges:[{f:'dev',t:'alb',c:'accent',o:0},{f:'alb',t:'gw',c:'info',o:1},{f:'gw',t:'idp',c:'success',o:2},{f:'gw',t:'br',c:'info',o:2}], loop:true,
-     snip:{hd:'랩 토폴로지',path:'TASK 02, 03',lines:['use_gateway','# managed settings에 forceLoginGatewayUrl','# gateway.workshop.internal (자체 서명 TLS, trust 확인)','use_bedrock_direct   # 실습 끝나면 원복'],hl:[1,4],note:'각자 계정의 게이트웨이로 실습합니다.'}}
+     snip:{hd:'랩 토폴로지',path:'TASK 02, 03',lines:['use_gateway','# managed settings에 forceLoginGatewayUrl','# gateway.workshop.internal (자체 서명 TLS, trust 확인)','use_bedrock_direct   # 실습 끝나면 원복'],hl:[1,4],note:'각자 계정의 게이트웨이로 실습해요.'}}
   ], {legend:[['accent','개발자'],['info','네트워크와 Bedrock'],['warning','게이트웨이'],['success','IdP'],['muted','텔레메트리 중계']]});
 });
 :::
@@ -880,23 +787,7 @@ Claude Apps Gateway, 공식 구성과 이번 랩 구성
 • ccb-endpoint는 참가자 실습 PC, use_gateway는 모드 전환 스크립트
 
 {cue: demo}
-이제 지출을 통제해 보겠습니다.
-Claude Apps Gateway는 Bedrock 앞단에서
-직접 운영하며, claude 바이너리에 포함됩니다.↓
-공식 AWS 예제에서 개발자는 /login으로
-디바이스 인증을 하고 그룹 정책을 받습니다.↓
-네트워크는 internal ALB와
-Route 53 사설 존을 사용합니다.↓
-ECS Fargate의 게이트웨이로 이어집니다.
-상태는 RDS PostgreSQL, 인증은 OIDC IdP가
-담당합니다.↓
-Bedrock은 IAM 역할로 호출합니다.
-운영 구성은 사설망 전용입니다.
-/login은 게이트웨이 호스트가
-사설 IP로만 해석될 때 통과하며,
-로그인 브라우저도 사설망 안에 있어야 합니다.↓
-랩은 각 계정의 VPC 안에 게이트웨이가 한 대씩 있고,
-데모는 타 부서 bob 계정으로 보여 드립니다.
+이제 지출을 통제해 볼게요. Claude Apps Gateway는 Bedrock 앞단에서 직접 운영하며, claude 바이너리에 포함돼요.↓ 공식 AWS 예제에서 개발자는 /login으로 디바이스 인증을 하고 그룹 정책을 받아요.↓ 네트워크는 internal ALB와 Route 53 사설 존을 사용해요.↓ ECS Fargate의 게이트웨이로 이어져요. 상태는 RDS PostgreSQL, 인증은 OIDC IdP가 담당해요.↓ Bedrock은 IAM 역할로 호출해요. 운영 구성은 사설망 전용이에요. /login은 게이트웨이 호스트가 사설 IP로만 해석될 때 통과하며, 로그인 브라우저도 반드시 사설망 안에 있어야 해요.↓ 랩은 각 계정의 VPC 안에 게이트웨이가 한 대씩 있고, 데모는 타 부서 bob 계정으로 보여 드릴게요.
 
 [약어]
 • SSO: Single Sign-On
@@ -919,7 +810,7 @@ Bedrock은 IAM 역할로 호출합니다.
     <div class="ticks"><b class="tk" style-left="75">75%</b><b class="tk" style-left="95">95%</b><b class="tk up" style-left="100">100%</b></div>
     <input type="range" min="0" max="110" step="5" value="40" id="c6-spend-in" aria-label="한도 대비 사용액(%)">
     <div class="state" id="c6-spend-st"></div>
-    <p class="cap">한도 대비 사용액은 설명용 예시입니다.</p>
+    <p class="cap">한도 대비 사용액, 설명용 예시</p>
   </div>
   <div class="rows">
     <div class="r"><span class="lb">범위</span><span class="vl">user (<span class="rp-detail" tabindex="0" data-tip="OIDC sub. IdP가 발급하는 사용자 고유 식별자">OIDC sub</span>), rbac_group, organization<em>그룹, 조직 한도는 1인당 기본값</em></span></div>
@@ -940,10 +831,10 @@ Bedrock은 IAM 역할로 호출합니다.
     document.getElementById('c6-spend-fill').style.width = (Math.min(v, 110) / 110 * 100) + '%';
     bar.classList.toggle('w75', v >= 75 && v < 100); bar.classList.toggle('w100', v >= 100);
     st.className = 'state' + (v >= 100 ? ' w100' : v >= 75 ? ' w75' : '');
-    if (v >= 100) st.innerHTML = '한도 도달. 다음 요청은 <code>429 billing_error</code>와 리셋 시각을 받습니다.';
-    else if (v >= 95) st.textContent = '95% 사전 경고. 곧 한도에 닿습니다.';
+    if (v >= 100) st.innerHTML = '한도 도달. 다음 요청은 <code>429 billing_error</code>와 리셋 시각을 받아요.';
+    else if (v >= 95) st.textContent = '95% 사전 경고, 한도 도달 임박';
     else if (v >= 75) st.textContent = '75% 사전 경고.';
-    else st.textContent = '한도 대비 ' + v + '%, 정상 사용 중입니다.';
+    else st.textContent = '한도 대비 ' + v + '%, 정상 사용 중';
   }
   inp.addEventListener('input', draw);
   F.onEnter(inp, function () { inp.value = 40; draw(); });
@@ -969,17 +860,7 @@ Bedrock은 IAM 역할로 호출합니다.
 • 설정은 Admin API POST /v1/organizations/spend_limits, gateway.yaml이 아님
 
 {cue: demo}
-사용자별 한도에 가까워질 때의 동작을 보겠습니다.
-지금은 한도 대비 40%로 정상 사용 중입니다.↓
-75%에서 사전 경고가 나옵니다.↓
-95%에서 다시 경고합니다.↓
-100%에 닿으면 다음 요청은
-429 billing_error와 리셋 시각을 받습니다.
-범위는 사용자, 그룹, 조직이며,
-그룹과 조직 한도는 공유 풀이 아닌 1인당 기본값입니다.
-일, 주, 월 단위로 UTC 기준에 맞춰 리셋됩니다.
-한도 판단은 추정 비용이며 정산은 AWS와 대사합니다.
-설정은 gateway.yaml 대신 Admin API로 합니다.
+사용자별 한도에 가까워질 때의 동작을 볼게요. 지금은 한도 대비 40%라 정상 사용 중이죠.↓ 75%에서 사전 경고가 나와요.↓ 95%에서 다시 경고가 나오죠.↓ 100%에 닿으면 다음 요청은 429 billing_error와 리셋 시각을 받아요. 범위는 사용자, 그룹, 조직이며, 그룹과 조직 한도는 공유 풀이 아니라 1인당 기본값이라는 점을 기억해 주세요. 일, 주, 월 단위로 UTC 기준에 맞춰 리셋돼요. 한도는 추정 비용으로 판단하고, 정산은 AWS와 대사해야 해요. 설정은 gateway.yaml 대신 Admin API로 해요.
 :::
 ---
 <!-- Slide 17: Two decisions before operation -->
@@ -987,7 +868,7 @@ Bedrock은 IAM 역할로 호출합니다.
 @fit: off
 
 ## 운영 전에 정할 두 가지
-기본값이 금융권 기대와 다를 수 있습니다
+금융권 기대와 다를 수 있는 기본값
 
 :::html
 <div class="c6 c6-ops fsi">
@@ -1010,7 +891,7 @@ Bedrock은 IAM 역할로 호출합니다.
 (window.__fsiq = window.__fsiq || []).push(function (F) {
   F.cycle('#c6-ops-fail', 2, function (i) {
     document.getElementById('c6-ops-cur').textContent = i === 0 ? 'fail-open (기본값)' : 'fail_closed_on_error: true';
-    document.getElementById('c6-ops-res').textContent = i === 0 ? '저장소 장애 중에도 요청은 통과하고 경고 로그만 남습니다. 그동안의 지출은 계측되지 않을 수 있습니다.' : '저장소 장애 중에는 요청을 차단합니다. 지출은 지켜지지만 추론이 멈춥니다.';
+    document.getElementById('c6-ops-res').textContent = i === 0 ? '저장소 장애 중에도 요청은 통과하고 경고 로그만 남아요. 그동안의 지출은 계측되지 않을 수 있어요.' : '저장소 장애 중에는 요청을 차단해요. 지출은 지켜지지만 추론이 멈춰요.';
   });
 });
 :::
@@ -1023,34 +904,25 @@ Bedrock은 IAM 역할로 호출합니다.
 • 퇴사나 열람 요청 시 행 삭제, spend와 audit은 OIDC sub만 참조
 
 {cue: question}
-운영 전 보안 검토에서 장애 처리와
-개인정보 보존 정책을 확인하시면 됩니다.
-저장소 장애 시 기본은 fail-open입니다.
-요청은 통과시키고 경고를 남깁니다.↓
-fail_closed_on_error를 켜면 요청을 차단합니다.
-추론 중단과 계측되지 않는 지출 중
-무엇을 감수할지 정하는 선택입니다.
-이메일과 이름, 그룹은 기본 90일 보존합니다.
-퇴사나 열람 요청을 처리하는 절차와
-필요한 행을 삭제하는 기준도 정해 두시면 됩니다.
+운영 전 보안 검토에서 장애 처리와 개인정보 보존 정책을 확인해 주세요. 저장소 장애 시 기본은 fail-open이에요. 요청은 통과시키고 경고를 남겨요.↓ fail_closed_on_error를 켜면 요청을 차단해요. 추론 중단과 계측되지 않는 지출 중 무엇을 감수할지 정하는 선택이에요. 이메일과 이름, 그룹은 기본 90일 보존해요. 퇴사나 열람 요청을 처리하는 절차와 필요한 행을 삭제하는 기준도 정해 두세요.
 :::
 ---
 <!-- Slide 18: Quick check 2 -->
 @type: content
 @fit: off
 
-## 그룹 한도와 사용자 한도, 누가 이기나
+## 그룹 한도와 사용자 한도, 어느 쪽이 우선일까요?
 QUICK CHECK, 손을 들어 답해 주세요
 
 :::html
 <div class="fsi qc" id="c6-qc-3">
   <p class="q">standard-users 그룹 한도가 $50/일인데 bob에게만 1센트 사용자 한도를 걸면?</p>
   <div class="opts three">
-    <button class="opt"><b>A</b>그룹 한도 $50이 우선한다</button>
-    <button class="opt right"><b>B</b>사용자 한도가 우선해 다음 요청부터 429로 막힌다</button>
-    <button class="opt"><b>C</b>진행 중인 응답까지 즉시 끊긴다</button>
+    <button class="opt"><b>A</b>그룹 한도 $50 우선</button>
+    <button class="opt right"><b>B</b>사용자 한도 우선, 다음 요청부터 429로 차단</button>
+    <button class="opt"><b>C</b>진행 중인 응답까지 즉시 중단</button>
   </div>
-  <p class="ans">정답 B. 사용자 한도가 그룹 기본값보다 우선합니다. 진행 중인 응답은 끝까지 갑니다.</p>
+  <p class="ans">정답 B. 사용자 한도가 그룹 기본값보다 우선해요. 진행 중인 응답은 끝까지 가요.</p>
 </div>
 :::
 
@@ -1065,21 +937,16 @@ QUICK CHECK, 손을 들어 답해 주세요
 • 정답 B, 사용자 한도가 그룹 기본값보다 우선해 다음 요청부터 429
 • 진행 중인 응답은 끝까지 감
 
-standard-users의 하루 기본 한도는 50달러입니다.
-bob에게만 1센트 한도를 걸면 어떻게 될까요?↓
+standard-users의 하루 기본 한도는 50달러예요. bob에게만 1센트 한도를 걸면 어떻게 될까요?↓
 {cue: pause}
-정답은 B입니다. 사용자 한도가 우선합니다.
-집계된 지출이 한도에 닿으면
-다음 요청부터 429로 거절됩니다.
-진행 중인 응답은 끝까지 갑니다.
-이 동작을 잠시 뒤 데모로 보여 드리겠습니다.
+정답은 B예요. 사용자 한도가 우선하죠. 집계된 지출이 한도에 닿으면 다음 요청부터 429로 거절돼요. 진행 중인 응답은 끝까지 가요. 이 동작을 잠시 뒤 데모로 보여 드릴게요.
 :::
 ---
 <!-- Slide 19: Demo telemetry path -->
 @type: content
 @fit: off
 
-## 텔레메트리는 어디로 가는가
+## 텔레메트리의 전송 경로
 DEMO A, 강사 PC에서 Ch6 랩 TASK 01
 
 :::html
@@ -1091,7 +958,7 @@ DEMO A, 강사 PC에서 Ch6 랩 TASK 01
     <li><b>3</b><span><code>transform/scrub_logs</code>: 내보내기 전에 프롬프트 본문 삭제</span></li>
     <li><b>4</b><span>exporters: 지표는 CloudWatch와 중앙 대시보드(ClickHouse), 로그와 trace는 대시보드로</span></li>
   </ol>
-  <p class="where">같은 명령은 Ch6 랩 페이지 TASK 01에 있습니다. 자율로 따라 해 보셔도 됩니다.</p>
+  <p class="where">같은 명령은 Ch6 랩 페이지 TASK 01에 있어요. 자율로 따라 해 보셔도 좋아요.</p>
 </div>
 :::
 
@@ -1111,22 +978,9 @@ DEMO A, 강사 PC에서 Ch6 랩 TASK 01
 • otelcol이 active가 아니거나 출력이 다르면 슬라이드 8~10과 Ch6 랩 페이지의 텔레메트리 그림으로 대신 설명
 
 [진행]
-① 블록 실행 뒤 jq 결과에서 OTEL_EXPORTER_OTLP_PROTOCOL grpc, ENDPOINT localhost:4317, OTEL_RESOURCE_ATTRIBUTES의 user.email과 team=cco-deep-dive를 가리킴
-② active 두 줄: otelcol 수집기와 중앙 전송 타이머
-③ 41번 줄 근처 transform/scrub_logs: 이벤트 로그에서 프롬프트 본문을 지우는 규칙
-④ exporters 줄: 지표는 otlphttp/cloudwatch와 clickhouse, 로그와 trace는 clickhouse
+① 블록 실행 뒤 jq 결과에서 OTEL_EXPORTER_OTLP_PROTOCOL grpc, ENDPOINT localhost:4317, OTEL_RESOURCE_ATTRIBUTES의 user.email과 team=cco-deep-dive를 가리킴 ② active 두 줄: otelcol 수집기와 중앙 전송 타이머 ③ 41번 줄 근처 transform/scrub_logs: 이벤트 로그에서 프롬프트 본문을 지우는 규칙 ④ exporters 줄: 지표는 otlphttp/cloudwatch와 clickhouse, 로그와 trace는 clickhouse
 
-앞에서 대시보드로 본 숫자가 어디서 출발하는지 보겠습니다.
-참가자 여러분 PC와 같은 구성의 PC입니다.
-설정 파일에는 텔레메트리를 켜는 값과
-PC 안 수집기 주소 localhost 4317이 있습니다.
-user.email과 team이 사람과 팀으로 묶는 키입니다.
-회사에서는 사번이나 부서 코드를 넣으시면 됩니다.
-수집기는 내보내기 전에 scrub_logs 규칙으로
-프롬프트 본문을 지웁니다.
-비용은 보되 내용은 남기지 않는 설정입니다.
-마지막 줄들이 보내는 곳입니다.
-지표는 내 계정 CloudWatch와 중앙 대시보드 두 곳으로 갑니다.
+앞에서 대시보드로 본 숫자가 어디서 출발하는지 볼게요. 참가자 여러분 PC와 같은 구성의 PC예요. 설정 파일에는 텔레메트리를 켜는 값과 PC 안 수집기 주소 localhost 4317이 있어요. user.email과 team이 사람과 팀으로 묶는 키예요. 회사에서는 사번이나 부서 코드를 넣어 주세요. 수집기는 내보내기 전에 scrub_logs 규칙으로 프롬프트 본문을 지워요. 비용은 보되 내용은 남기지 않는 설정이에요. 마지막 줄들이 보내는 곳이에요. 지표는 내 계정 CloudWatch와 중앙 대시보드 두 곳으로 가요.
 :::
 ---
 <!-- Slide 20: Demo spend limit -->
@@ -1145,7 +999,7 @@ DEMO B, 게이트웨이에서 bob에게 1센트 한도
     <li><b>3</b><span>bob에게만 1센트 사용자 한도, 다음 요청이 <code>spend limit reached</code></span></li>
     <li><b>4</b><span>한도 DELETE, 그룹 한도로 돌아와 요청이 다시 통과</span></li>
   </ol>
-  <p class="where">같은 과정은 Ch6 랩 페이지 TASK 02와 03에 있습니다. 자율로 따라 해 보셔도 됩니다.</p>
+  <p class="where">같은 과정은 Ch6 랩 페이지 TASK 02와 03에 있어요. 자율로 따라 해 보셔도 좋아요.</p>
 </div>
 :::
 
@@ -1168,31 +1022,9 @@ DEMO B, 게이트웨이에서 bob에게 1센트 한도
 • 게이트웨이가 응답하지 않으면 슬라이드 16 설명과 랩 페이지 그림(6단계)으로 대신함
 
 [진행]
-① 왼쪽 bob 세션에서 /model: Default, Sonnet, Haiku만 있음, Esc
-② /usage: Spend limit 막대와 오늘 쓴 금액 / $50.00, Esc
-③ 오른쪽에서 TASK 03 Step 1 첫 블록(지금 조회)과 두 번째 블록: amount 5000, source standard-users, period_to_date_spend
-④ TASK 03 Step 2 블록: LIMIT_ID=spl_로 시작하는 값
-⑤ 왼쪽에서 "pseudo 디렉터리에 파일이 몇 개 있는지 알려줘": spend limit reached · resets 12am (UTC) 메시지, 바로 안 막히면 한 번 더
-⑥ /usage: 사용률이 100%를 넘은 막대(예: 521% used), Esc
-⑦ 오른쪽에서 TASK 03 Step 4 첫 블록: delete=200, 적용 한도가 다시 5000과 그룹 출처
-⑧ 왼쪽에서 같은 질문을 다시 보내 통과 확인, /exit 뒤 use_bedrock_direct
+① 왼쪽 bob 세션에서 /model: Default, Sonnet, Haiku만 있음, Esc ② /usage: Spend limit 막대와 오늘 쓴 금액 / $50.00, Esc ③ 오른쪽에서 TASK 03 Step 1 첫 블록(지금 조회)과 두 번째 블록: amount 5000, source standard-users, period_to_date_spend ④ TASK 03 Step 2 블록: LIMIT_ID=spl_로 시작하는 값 ⑤ 왼쪽에서 "pseudo 디렉터리에 파일이 몇 개 있는지 알려줘": spend limit reached · resets 12am (UTC) 메시지, 바로 안 막히면 한 번 더 ⑥ /usage: 사용률이 100%를 넘은 막대(예: 521% used), Esc ⑦ 오른쪽에서 TASK 03 Step 4 첫 블록: delete=200, 적용 한도가 다시 5000과 그룹 출처 ⑧ 왼쪽에서 같은 질문을 다시 보내 통과 확인, /exit 뒤 use_bedrock_direct
 
-이번에는 조직이 쓰는 양을 막는 쪽입니다.
-왼쪽은 타 부서 bob으로 로그인한 세션이고,
-오른쪽은 관리자 터미널입니다.
-bob의 모델 목록에는 Opus가 없습니다.
-내 설정이 아니라 게이트웨이가 그룹 정책으로 내려준 목록입니다.
-/usage에는 bob 그룹의 하루 한도 50달러와 오늘 쓴 금액이 보입니다.
-관리자 쪽에서 bob에게 지금 적용된 한도를 조회하면
-출처가 standard-users 그룹으로 나옵니다.
-이제 bob에게만 1센트 한도를 걸어 보겠습니다.
-bob이 질문을 보내면 이렇게 거절됩니다.
-오늘 이미 쓴 금액이 새 한도보다 크기 때문이고,
-사용자 한도가 그룹 한도보다 우선한다는 앞의 퀴즈 답이 이것입니다.
-회사에서는 이 메시지에 사내 증액 요청 절차를 적어 두시면 됩니다.
-한도를 지우면 다시 그룹 한도로 돌아가고 질문이 통과합니다.
-한도에 가까워지면 75%와 95%에서 경고가 먼저 나오고,
-진행 중인 응답은 끝까지 갑니다.
+이번에는 조직이 쓰는 양을 막는 쪽이에요. 왼쪽은 타 부서 bob으로 로그인한 세션이고, 오른쪽은 관리자 터미널이에요. bob의 모델 목록에는 Opus가 없어요. 내 설정이 아니라 게이트웨이가 그룹 정책으로 내려준 목록이죠. /usage에는 bob 그룹의 하루 한도 50달러와 오늘 쓴 금액이 보여요. 관리자 쪽에서 bob에게 지금 적용된 한도를 조회하면 출처가 standard-users 그룹으로 나와요. 이제 bob에게만 1센트 한도를 걸어 볼게요. bob이 질문을 보내면 이렇게 거절돼요. 오늘 이미 쓴 금액이 새 한도보다 크기 때문이고, 앞의 퀴즈에서 본 것처럼 사용자 한도가 그룹 한도보다 우선하는 거죠. 회사에서는 이 메시지에 사내 증액 요청 절차를 적어 두세요. 한도를 지우면 다시 그룹 한도로 돌아가고 질문이 통과해요. 한도에 가까워지면 75%와 95%에서 경고가 먼저 나오고, 진행 중인 응답은 끝까지 가요.
 :::
 ---
 <!-- Slide 21: Demo modelPricing -->
@@ -1210,7 +1042,7 @@ DEMO C, managed settings의 modelPricing
     <li><b>2</b><span>질문 하나 뒤 <code>/usage</code>: <code>(at your organization's configured rates)</code></span></li>
     <li><b>3</b><span>백업으로 원복, 정산은 AWS 청구서 기준</span></li>
   </ol>
-  <p class="where">같은 과정은 Ch6 랩 페이지 선택 TASK 04에 있습니다. TASK 01부터 04까지 행사 뒤에도 자율로 해 볼 수 있습니다.</p>
+  <p class="where">같은 과정은 Ch6 랩 페이지 선택 TASK 04에 있어요. TASK 01부터 04까지 행사 뒤에도 자율로 해 볼 수 있어요.</p>
 </div>
 :::
 
@@ -1229,17 +1061,9 @@ DEMO C, managed settings의 modelPricing
 • configured rates 표시가 안 보이면 랩 페이지의 예시 줄 Total cost: $0.0954 (at your organization's configured rates)로 설명
 
 [진행]
-① TASK 04 블록 실행: sudo jq 출력에 modelPricing이 들어간 것 확인, claude가 열림
-② 질문 하나 뒤 /usage: Total cost 줄 끝의 (at your organization's configured rates)
-③ /exit 뒤 원복 블록: 출력이 {}로 돌아옴
+① TASK 04 블록 실행: sudo jq 출력에 modelPricing이 들어간 것 확인, claude가 열림 ② 질문 하나 뒤 /usage: Total cost 줄 끝의 (at your organization's configured rates) ③ /exit 뒤 원복 블록: 출력이 {}로 돌아옴
 
-마지막으로 화면의 비용을 계약 단가에 맞추는 방법입니다.
-managed settings에 배율 0.9를 넣으면
-/usage의 비용이 조직이 정한 단가 기준이라고 표시됩니다.
-화면과 텔레메트리의 추정치를 보정할 뿐이고,
-실제 정산은 AWS 청구서로 맞추셔야 합니다.
-오늘 보여 드린 데모는 모두 Ch6 랩 페이지에 그대로 있으니,
-행사 뒤에도 직접 따라 해 보실 수 있습니다.
+마지막으로 화면의 비용을 계약 단가에 맞추는 방법이에요. managed settings에 배율 0.9를 넣으면 /usage의 비용이 조직이 정한 단가 기준이라고 표시돼요. 화면과 텔레메트리의 추정치를 보정할 뿐이고, 실제 정산은 AWS 청구서로 맞추셔야 해요. 오늘 보여 드린 데모는 모두 Ch6 랩 페이지에 그대로 있으니, 행사 뒤에도 직접 따라 해 보실 수 있어요.
 :::
 ---
 <!-- Slide 22: Deep dive FAQ -->
@@ -1257,7 +1081,7 @@ managed settings에 배율 0.9를 넣으면
     <button class="pick" data-key="api"><span class="k">3</span><span class="t">Admin API로 한도 운영</span></button>
   </div>
   <div class="panel" data-pick-panel="c6-dd2">
-    <div data-for="met"><h4>대시보드의 숫자는 어디서 오나</h4>
+    <div data-for="met"><h4>대시보드 숫자의 출처</h4>
       <div class="c6-tbl">
         <div class="tr h"><span>지표</span><span>속성</span><span>용도</span></div>
         <div class="tr"><span>token.usage</span><span>type: input, output, cacheRead, cacheCreation</span><span>캐시 효율, 모델별 사용량</span></div>
@@ -1266,8 +1090,8 @@ managed settings에 배율 0.9를 넣으면
         <div class="tr"><span>lines_of_code.count</span><span>type: added, removed</span><span>생산성 지표</span></div>
         <div class="tr"><span>commit.count, pull_request.count</span><span>없음</span><span>산출물</span></div>
         <div class="tr"><span>active_time.total</span><span>없음</span><span>실제 사용 시간</span></div>
-      </div><p>지표 이름 앞에는 모두 <code>claude_code.</code> 접두사가 붙습니다.</p></div>
-    <div data-for="anom"><h4>숫자를 보고 무엇을 의심하나</h4>
+      </div><p>지표 이름 앞에는 모두 <code>claude_code.</code> 접두사가 붙어요.</p></div>
+    <div data-for="anom"><h4>숫자로 살펴보는 이상 징후</h4>
       <div class="c6-tbl">
         <div class="tr h"><span>패턴</span><span>의심</span><span>처방</span></div>
         <div class="tr"><span>cacheRead 비율이 낮음</span><span>긴 휴식 후 재개, 접두부가 자주 바뀜</span><span>세션 위생, CLAUDE.md 안정화</span></div>
@@ -1278,7 +1102,7 @@ managed settings에 배율 0.9를 넣으면
       </div></div>
     <div data-for="api"><h4>그룹 기본값 + 예외 사용자</h4>
       <pre class="c6-code"><span class="ln c"># 그룹 기본값: standard-users 1인당 하루 $50</span><span class="ln k">curl -X POST "$GW/v1/organizations/spend_limits" \</span><span class="ln">  -H "x-api-key: $WRITE" \</span><span class="ln">  -H "Content-Type: application/json" \</span><span class="ln">  -d '{"scope":{"type":"rbac_group",</span><span class="ln">             "rbac_group_id":"standard-users"},</span><span class="ln">       "amount":"5000","period":"daily"}'</span><span class="ln c"># 현재 적용 한도와 사용액</span><span class="ln k">curl -G "$GW/v1/organizations/spend_limits/effective" \</span><span class="ln">  --data-urlencode 'period[]=daily' -H "x-api-key: $READ"</span></pre>
-      <p>amount는 US 센트 문자열입니다. 그룹 한도는 공유 풀이 아닌 1인당 기본값이고, 사용자 한도가 그룹보다 우선합니다. write 키는 소수만, 비밀 저장소에 보관합니다.</p></div>
+      <p>amount는 US 센트 문자열이에요. 그룹 한도는 공유 풀이 아닌 1인당 기본값이고, 사용자 한도가 그룹보다 우선해요. write 키는 소수만, 비밀 저장소에 보관해요.</p></div>
   </div>
 </div>
 :::
@@ -1294,18 +1118,9 @@ managed settings에 배율 0.9를 넣으면
 • 이상 징후: cacheRead 낮음, input 급증, Opus 비중, 특정 사용자 급증, 분류기 호출 비중과 각 처방
 • Admin API: 그룹 기본값 POST, effective 조회, amount는 US 센트 문자열, 사용자 한도 우선, write 키는 소수만
 
-질문에 따라 필요한 세부 내용을 살펴보겠습니다.
+질문에 따라 필요한 세부 내용을 살펴볼게요.
 {cue: demo}
-token.usage의 type 속성으로 캐시 효율을 보고,
-cost.usage로 추정 비용을 확인합니다.↓
-cacheRead 비율이 낮으면 긴 휴식 뒤 재개나
-접두부 변경을 살펴보고 세션 위생을 점검합니다.
-Opus 비중이 높으면 기본 모델 설정을 확인합니다.
-분류기 호출이 많으면 Ch2 Lab 2처럼
-auto mode 분류기 모델을 명시합니다.↓
-Admin API로 그룹 기본값과 사용자 예외를 둡니다.
-amount는 US 센트 문자열로,
-하루 50달러는 5000으로 설정합니다.
+token.usage의 type 속성으로 캐시 효율을 보고, cost.usage로 추정 비용을 확인해요.↓ cacheRead 비율이 낮으면 긴 휴식 뒤 재개나 접두부 변경을 살펴보고 세션 위생을 점검해요. Opus 비중이 높으면 기본 모델 설정을 확인해요. 분류기 호출이 많으면 Ch2 Lab 2처럼 auto mode 분류기 모델을 명시해요.↓ Admin API로 그룹 기본값을 정하고 사용자 예외도 둘 수 있어요. amount는 US 센트 문자열로, 하루 50달러는 5000으로 설정해요.
 :::
 ---
 <!-- Slide 23: Key Takeaways -->
@@ -1318,7 +1133,7 @@ Chapter 6 Key Takeaways
 :::html
 <div class="c6-recap">
   <div class="grid">
-    <div class="rc"><b>01</b><span>Bedrock은 Analytics가 없다. OTel을 정책으로 켠다</span></div>
+    <div class="rc"><b>01</b><span>Bedrock은 Analytics 미제공, OTel은 정책으로 활성화</span></div>
     <div class="rc"><b>02</b><span>modelPricing으로 계약 단가 표시, 정산은 AWS와 대사</span></div>
     <div class="rc"><b>03</b><span>게이트웨이: SSO, 그룹 정책, 지출 한도, 사설망 전용</span></div>
   </div>
@@ -1332,19 +1147,15 @@ Chapter 6 Key Takeaways
 • modelPricing으로 계약 단가 표시, 정산은 AWS와 대사
 • 막기: 게이트웨이의 SSO, 그룹 정책, 지출 한도, 사설망 전용
 
-조직의 비용 관리를 정리하겠습니다.
+조직의 비용 관리를 정리해 볼게요.
 {cue: pause}
-OTel을 정책으로 켜서 사용량을 보고,
-modelPricing으로 계약 단가를 반영합니다.
-실제 정산은 AWS 청구서와 맞춰 확인합니다.
-게이트웨이의 그룹 정책과 한도로 통제하면,
-Chapter 5에서 본 비용 절감이 조직 관리로 이어집니다.
+OTel을 정책으로 켜서 사용량을 보고, modelPricing으로 계약 단가를 반영해요. 실제 정산은 AWS 청구서와 맞춰 확인해요. 게이트웨이의 그룹 정책과 한도로 통제하면, Chapter 5에서 본 비용 절감이 조직 관리로 이어져요.
 :::
 ---
 <!-- Slide 24: Thank you -->
 @type: thankyou
 @toc: toc.html
-@message: 다음은 Capstone 쇼케이스와 Closing입니다. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에 언제든 편하게 남겨 주세요.
+@message: 다음은 Capstone 쇼케이스와 Closing이에요. 질문은 Slack #20261116-claude-code-workshop-for-fsi 채널에 언제든 편하게 남겨 주세요.
 
 :::notes
 {timing: 0.5min}
@@ -1352,9 +1163,5 @@ Chapter 5에서 본 비용 절감이 조직 관리로 이어집니다.
 • 다음은 Capstone 쇼케이스와 Closing
 • 질문은 Slack #20261116-claude-code-workshop-for-fsi
 
-감사합니다. 여섯 개 챕터를 모두 마쳤습니다.
-다음은 Capstone 쇼케이스와 Closing입니다.
-질문은 Slack 채널
-#20261116-claude-code-workshop-for-fsi에
-편하게 남겨 주시면 됩니다.
+함께해 주셔서 고맙습니다. 여섯 개 챕터를 모두 마쳤네요. 다음은 Capstone 쇼케이스와 Closing이에요. 질문은 Slack 채널 #20261116-claude-code-workshop-for-fsi에 편하게 남겨 주시면 돼요.
 :::
