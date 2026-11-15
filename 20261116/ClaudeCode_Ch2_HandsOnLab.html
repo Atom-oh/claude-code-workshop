@@ -188,12 +188,12 @@ use_bedrock_direct</code></pre></div>
 <tr>
 <td><code>ANTHROPIC_BEDROCK_REGION_PREFIX</code></td>
 <td><code>global</code></td>
-<td>추론 프로파일 접두사. 모델 이름 앞에 <code>global.</code>을 붙여 global 추론 프로파일로 호출</td>
+<td>추론 프로파일 접두사. 고정하지 않은 모델도 global 추론 프로파일로 호출</td>
 </tr>
 <tr>
 <td><code>ANTHROPIC_DEFAULT_*_MODEL</code></td>
-<td><code>claude-*-5-5</code>, Fable은 <code>claude-fable-5-1</code></td>
-<td>모델 버전 고정. 접두사와 합쳐 <code>global.anthropic.claude-opus-5-5</code>, <code>global.anthropic.claude-fable-5-1</code>처럼 호출</td>
+<td><code>global.anthropic.claude-*-5-5</code>, Fable은 <code>global.anthropic.claude-fable-5-1</code></td>
+<td>모델 버전 고정 (global 추론 프로파일)</td>
 </tr>
 <tr>
 <td><code>availableModels</code></td>

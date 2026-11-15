@@ -448,7 +448,7 @@ claude auto-mode defaults | jq -r &#x27;.soft_deny[] | split(&quot; [&quot;)[0] 
 <li data-lines="6">분류기의 기본 규칙(<code>claude auto-mode defaults</code>) 중 <code>soft_deny</code>를 꺼내, 설명을 떼고 규칙 이름만 남겨 앞 15개를 보여 줍니다.</li>
 </ol></details>
 
-<p><code>200</code> 다음 줄에 <code style="overflow-wrap:anywhere">ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5 cannot serve as the classifier; using the Sonnet 5 default instead</code>가 나옵니다. 이 환경의 기본 Sonnet은 5.5라서 분류기로 쓸 수 없고, <strong>Sonnet 5</strong>가 판정합니다. 마지막 명령의 출력은 분류기가 <strong>기본으로 막는 규칙의 이름</strong>입니다(Git Destructive, Code from External, Production Deploy, Secret-Store Writes 등). 거부 메시지의 <code>[...]</code> 안에 이 이름이 나옵니다. 기본 규칙은 <code>allow</code>, <code>environment</code>, <code>soft_deny</code>, <code>hard_deny</code> 네 목록으로 나뉩니다.</p>
+<p><code>200</code> 다음 줄에 <code style="overflow-wrap:anywhere">ANTHROPIC_DEFAULT_SONNET_MODEL=global.anthropic.claude-sonnet-5-5 cannot serve as the classifier; using the Sonnet 5 default instead</code>가 나옵니다. 이 환경의 기본 Sonnet은 5.5라서 분류기로 쓸 수 없고, <strong>Sonnet 5</strong>가 판정합니다. 마지막 명령의 출력은 분류기가 <strong>기본으로 막는 규칙의 이름</strong>입니다(Git Destructive, Code from External, Production Deploy, Secret-Store Writes 등). 거부 메시지의 <code>[...]</code> 안에 이 이름이 나옵니다. 기본 규칙은 <code>allow</code>, <code>environment</code>, <code>soft_deny</code>, <code>hard_deny</code> 네 목록으로 나뉩니다.</p>
 <table>
 <thead>
 <tr>
