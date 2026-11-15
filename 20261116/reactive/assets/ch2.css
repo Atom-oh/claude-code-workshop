@@ -177,7 +177,8 @@
 .slide-deck #c2-pl .fs-say { font-size: var(--fs-caption); line-height: 1.5; }
 .slide-deck #c2-pl .fs-side { gap: var(--space-2); }
 .slide-deck #c2-pl .fs-checks { gap: 2px; }
-/* Air-gap checklist: eight static cards; long env names may wrap */
-.c2-air8 .fsi-grid-4 { gap: var(--space-4); }
-.c2-air8 .pick { cursor: default; }
-.c2-air8 .pick .t { overflow-wrap: anywhere; }
+/* Air-gap checklist: three key checks, with settings in term tooltips */
+.c2-air-check { display: flex; flex-direction: column; justify-content: center; gap: var(--space-6); }
+.c2-air-check .pick { min-height: 22rem; display: flex; flex-direction: column; justify-content: center; gap: var(--space-3); cursor: default; }
+.c2-air-check .pick .t { font-size: var(--fs-subtitle); }
+.c2-air-check .pick .d { font-size: var(--fs-card); }

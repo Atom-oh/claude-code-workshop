@@ -306,38 +306,28 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 @type: content
 @fit: off
 
-## 망분리 환경의 여덟 가지 점검
-인터넷 없이 Bedrock만 열려 있을 때 먼저 확인할 것
+## 망분리 환경, 먼저 볼 세 가지
+연결, 사내 네트워크, 외부 접근
 
 :::html
-<div class="fsi c2-air8">
-  <div class="fsi-grid-4">
-    <div class="pick"><span class="k">모델 호출</span><span class="t">Bedrock Runtime VPC 엔드포인트</span><span class="d">PrivateLink로 계정 안에서 추론 (앞 장의 길)</span></div>
-    <div class="pick"><span class="k">SSO 로그인</span><span class="t">Identity Center, OIDC, STS</span><span class="d">aws sso login이 되는지 먼저 확인 (OIDC: 로그인(인증) 표준, STS: 임시 자격증명 발급)</span></div>
-    <div class="pick"><span class="k">사내 프록시</span><span class="t">HTTPS_PROXY, NO_PROXY</span><span class="d">프록시를 거쳐야 하는 경우</span></div>
-    <div class="pick"><span class="k">사내 인증서</span><span class="t">NODE_EXTRA_CA_CERTS</span><span class="d">프록시가 TLS(HTTPS 암호화)를 다시 서명할 때</span></div>
-    <div class="pick"><span class="k">외부 통신 끄기</span><span class="t">CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</span><span class="d">자동 업데이트, 오류 리포트 등을 한 번에</span></div>
-    <div class="pick"><span class="k">설치와 업데이트</span><span class="t">사내 배포, DISABLE_AUTOUPDATER=1</span><span class="d">버전을 정해 단말에 배포</span></div>
-    <div class="pick"><span class="k">플러그인</span><span class="t">사내 git 마켓플레이스</span><span class="d">Ch4에서 실습</span></div>
-    <div class="pick"><span class="k">웹 접근</span><span class="t">WebFetch deny 또는 허용 도메인</span><span class="d">허용 도메인은 skipWebFetchPreflight: true와 함께, WebSearch는 Bedrock에 없음</span></div>
+<div class="fsi c2-air-check">
+  <div class="fsi-grid-3">
+    <div class="pick"><span class="k">01 / 연결</span><span class="t"><span class="rp-detail" tabindex="0" data-tip="모델 호출은 Bedrock Runtime VPC 엔드포인트(PrivateLink), SSO 로그인은 Identity Center, OIDC, STS 경로를 각각 확인. aws sso login으로 로그인 경로 점검.">Bedrock과 SSO</span></span><span class="d">모델 호출과 로그인, 두 경로 확인</span></div>
+    <div class="pick"><span class="k">02 / 사내 네트워크</span><span class="t"><span class="rp-detail" tabindex="0" data-tip="프록시를 쓰면 HTTPS_PROXY와 NO_PROXY 설정. 프록시가 TLS(HTTPS 암호화)를 다시 서명한다면 NODE_EXTRA_CA_CERTS에 사내 인증서 지정.">프록시와 인증서</span></span><span class="d">회사 네트워크 환경에 맞춰 설정</span></div>
+    <div class="pick"><span class="k">03 / 외부 접근</span><span class="t"><span class="rp-detail" tabindex="0" data-tip="CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1로 부가 통신 끄기. 설치와 업데이트는 사내 배포, DISABLE_AUTOUPDATER=1. 플러그인은 사내 git 마켓플레이스. WebFetch는 deny 또는 허용 도메인만, 허용 도메인을 쓰면 skipWebFetchPreflight: true. WebSearch는 Bedrock에 없음.">설치와 외부 통신</span></span><span class="d">업데이트, 플러그인, 웹 접근은 사내 정책에 맞춰 관리</span></div>
   </div>
+  <p class="c2-cap">마우스를 올리거나 Tab으로 선택해 세부 설정 확인</p>
 </div>
 :::
 
 :::notes
 {timing: 1min}
 [요약]
-• 모델 호출은 Bedrock Runtime VPC 엔드포인트(PrivateLink), SSO 로그인은 Identity Center, OIDC, STS 엔드포인트에 닿아야 함
-• 사내 프록시 HTTPS_PROXY와 NO_PROXY, 사내 인증서 NODE_EXTRA_CA_CERTS
-• 외부 통신은 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1, 업데이트는 사내 배포와 DISABLE_AUTOUPDATER=1
-• 플러그인은 사내 git 마켓플레이스(Ch4), WebFetch는 deny 또는 허용 도메인만. 허용 도메인을 쓰면 skipWebFetchPreflight: true
+• 연결: Bedrock 모델 호출과 SSO 로그인 경로를 각각 확인
+• 사내 네트워크: 프록시와 인증서 설정
+• 외부 접근: 설치, 업데이트, 플러그인과 웹 접근을 사내 정책에 맞춰 관리
 
-인터넷 없이 Bedrock을 쓰는 환경에서는 화면의 여덟 항목을 확인해요. 모델 호출은 방금 본 VPC 엔드포인트를 쓰지만, SSO는 Identity Center 포털과 OIDC, STS에도 닿아야 해요. aws sso login이 되는지부터 확인해 보세요. 모델에 연결되는 것과 로그인에 필요한 경로가 열리는 것은 따로 확인해요. 사내 프록시는 HTTPS_PROXY와 NO_PROXY로 지정하고, TLS를 다시 서명한다면 NODE_EXTRA_CA_CERTS에 사내 인증서를 넣어요. 업데이트와 오류 리포트 같은 외부 통신은 환경변수로 끄고, 설치와 업데이트는 버전을 정해 사내에서 배포해요. 플러그인은 사내 git 마켓플레이스에서 받고, WebFetch는 막거나 허용 도메인만 열어요. 이 도구는 호스트명을 api.anthropic.com에 먼저 확인해요. 망분리에서 허용 도메인을 쓸 때는 그 검사에 닿지 못하므로 skipWebFetchPreflight를 true로 둬요.
-
-[약어]
-• OIDC: OpenID Connect. 로그인 결과를 토큰으로 넘겨주는 표준
-• STS: Security Token Service. 짧게 쓰는 임시 AWS 자격증명을 발급
-• TLS: Transport Layer Security. HTTPS 암호화 통신 규약
+망분리 환경에서는 세 가지만 먼저 볼게요. Bedrock 호출과 SSO 로그인이 모두 되는지 확인하고, 사내 프록시와 인증서를 맞춰요. 설치와 업데이트, 플러그인과 웹 접근은 회사 정책에 맞춰 관리해요. 지금은 이 세 가지 흐름만 기억해 주세요.
 
 [출처]
 • code.claude.com/docs/en/network-config
@@ -994,7 +984,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      zones:Z, nodes:ALL, hot:['pa','md'],
      edges:[{f:'pa',t:'md',c:'info',o:0}],
      loop:true,
-     snip:{hd:'이름표 만들기',path:'Terminal',lines:['aws bedrock create-inference-profile \\','  --inference-profile-name sonnet-team-a \\','  --model-source copyFrom=arn:aws:bedrock:\\','us-east-1:111122223333:inference-profile/\\','global.anthropic.claude-sonnet-5-5 \\','  --tags key=team,value=team-a','# 결과','arn:aws:bedrock:us-east-1:111122223333:','application-inference-profile/a1b2c3d4e5f6'],hl:[2,6,8,9],note:'ARN은 화면 폭 때문에 나눠 적었어요. 실제로는 한 줄여요.'}}
+     snip:{hd:'이름표 만들기',path:'Terminal',lines:['aws bedrock create-inference-profile \\','  --inference-profile-name sonnet-team-a \\','  --model-source copyFrom=arn:aws:bedrock:\\','us-east-1:111122223333:inference-profile/\\','global.anthropic.claude-sonnet-5-5 \\','  --tags key=team,value=team-a','# 결과','arn:aws:bedrock:us-east-1:111122223333:','application-inference-profile/a1b2c3d4e5f6'],hl:[2,6,8,9],note:'ARN은 화면 폭 때문에 나눠 적었어요. 실제로는 한 줄이에요.'}}
   ], { legend:[['accent','팀'],['info','이름표'],['success','기록'],['warning','통제'],['danger','거부']]});
 });
 :::
@@ -1240,7 +1230,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
     mk(cdays(4), {kicker:'STEP 4', title:'마지막은 User',
      body:'<b>~/.claude/settings.json</b>은 내 PC의 모든 프로젝트에 적용되는 <b>가장 아래 층</b>이에요.',
      facts:['내 PC의 모든 프로젝트','위 층에 같은 키가 있으면 짐'],
-     hd:'개인 설정만 남으면', path:'~/.claude/settings.json', note:'키가 어디에도 없으면 기본값(30일)예요.'}),
+     hd:'개인 설정만 남으면', path:'~/.claude/settings.json', note:'키가 어디에도 없으면 기본값인 30일을 써요.'}),
     mk(LIST, {kicker:'LISTS', title:'목록 키는 선택 대신 합산',
      body:'<b>permissions.deny</b> 같은 목록은 <b>모든 층의 항목을 합쳐요</b>. User가 빈 목록을 적어도 조직이 넣은 deny는 남아요.',
      facts:['목록: 모든 층의 항목을 합침','예외: managed의 availableModels는 합치지 않고 그대로','fallbackModel처럼 순서가 있는 목록은 한 층 값만'],
@@ -1258,7 +1248,7 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 • 목록 키(permissions.allow, deny 등)는 모든 층을 합침. 예외: managed의 availableModels는 그대로 적용, fallbackModel은 한 층 값만
 
 {cue: demo}
-세션 기록의 보존 기간인 cleanupPeriodDays를 다섯 층에 다르게 지정했어요. 같은 키의 값이 다를 때는 여러 값을 합치는 대신 하나를 선택해요. 적용되는 값은 맨 위 Managed의 14일이며, 아래의 설정으로 덮어쓸 수 없어요.↓ Managed가 없으면 --settings로 전달한 CLI 인자가 적용돼요. 이번 세션에만 쓰는 설정이에요.↓ 그다음은 개인 Local예요.↓ 이어 팀이 커밋한 Project예요.↓ 내 PC의 User예요. 어디에도 없으면 기본값 30일을 써요.↓ deny 같은 목록 키는 한 값을 고르지 않고 모든 층에서 합쳐요. 개인이 빈 목록을 넣어도 조직의 deny는 남아요. 다만 managed의 availableModels는 병합하지 않고 해당 목록을 그대로 써요.
+세션 기록의 보존 기간인 cleanupPeriodDays를 다섯 층에 다르게 지정했어요. 같은 키의 값이 다를 때는 여러 값을 합치는 대신 하나를 선택해요. 적용되는 값은 맨 위 Managed의 14일이며, 아래의 설정으로 덮어쓸 수 없어요.↓ Managed가 없으면 --settings로 전달한 CLI 인자가 적용돼요. 이번 세션에만 쓰는 설정이에요.↓ 그다음은 개인 Local 설정이에요.↓ 이어 팀이 커밋한 Project예요.↓ 내 PC의 User예요. 어디에도 없으면 기본값 30일을 써요.↓ deny 같은 목록 키는 한 값을 고르지 않고 모든 층에서 합쳐요. 개인이 빈 목록을 넣어도 조직의 deny는 남아요. 다만 managed의 availableModels는 병합하지 않고 해당 목록을 그대로 써요.
 
 {cue: transition}
 개인이 allow를 추가하는 것까지 제한하려면 잠금 설정이 필요해요.
@@ -1772,7 +1762,7 @@ Lab 2의 auto mode는 권한 규칙을 확인한 뒤 분류기로 판단해요.�
      zones:[], nodes:N, edges:[into('e1','warning'),into('e2','danger'),into('e3','warning'),into('e4','warning'),{f:'cl',t:'sd',c:'warning',o:1},{f:'cl',t:'hd',c:'danger',o:1},{f:'cl',t:'ps',c:'success',o:1}], stagger:0.5,
      snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[],note:'거부 메시지의 <b>[...]</b> 안에 이 규칙 이름이 나와요.'}},
     {kicker:'1 EXEC', title:'외부 코드 실행',
-     body:'인터넷에서 받은 스크립트를 <b>바로 실행</b>하는 것을 막아요. <code>curl ... | bash</code>가 대표 예예요.',
+     body:'인터넷에서 받은 스크립트를 <b>바로 실행</b>하는 것을 막아요. 대표적인 예로 <code>curl ... | bash</code>를 들 수 있어요.',
      facts:['다운로드 후 바로 실행','soft_deny: 정확히 그 명령을 지시하면 풀림','Lab 2 TASK 03에서 확인'],
      zones:[], nodes:N, hot:['e1','cl','sd'], edges:[into('e1','warning'),{f:'cl',t:'sd',c:'warning',o:1}],
      snip:{hd:'기본 규칙 이름 (일부)',path:'claude auto-mode defaults',lines:codes,hl:[2,3],note:'모델이 먼저 받아 내용을 확인하는 쪽을 고르기도 해요.'}},
@@ -2211,7 +2201,7 @@ QUICK CHECK, 손을 들어 답해 주세요
      zones:[], nodes:N, hot:['sh','of'], edges:[{f:'sh',t:'of',c:'danger',side:'v',o:0}],
      snip:{hd:'managed-settings.json (hooks)',path:'',lines:code,hl:[6],note:'스크립트 안의 fail-closed와 <b>설정의 onFailure</b>, 둘 다 걸어요.'}},
     {kicker:'STEP 5', title:'/hooks에서 적용 상태 확인',
-     body:'세션에서 <b>/hooks</b>를 열면 <b>managed hooks only</b> 표시와 "Only hooks from managed settings run here"가 보예요. managed 훅 자체는 이 목록에 나오지 않아요.',
+     body:'세션에서 <b>/hooks</b>를 열면 <b>managed hooks only</b> 표시와 "Only hooks from managed settings run here"가 보여요. managed 훅 자체는 이 목록에 나오지 않아요.',
      facts:['managed hooks only 표시 확인','managed 훅은 목록에 안 보임','managed 설정이 있으면 mod가 승인해도 훅 차단은 유지'],
      zones:[], nodes:N, hot:['ms','hc'], edges:[{f:'ms',t:'hc',c:'info',o:0}],
      snip:{hd:'확인',path:'Claude 입력창',lines:['/hooks','# managed hooks only','# Only hooks from managed settings run here'],hl:[1,2,3],note:'랩 TASK 01 마지막 단계에서 직접 봐요.'}}
