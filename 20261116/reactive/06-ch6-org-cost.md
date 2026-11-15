@@ -357,7 +357,7 @@ managed settings env 한 블록이면 모두에게
   var CW = {id:'cw',x:860,y:340,w:280,h:90,t:'CloudWatch',s:'랩 환경 이중 전송',c:'info',icon:'aws:CloudWatch'};
   var Z = [{x:20,y:20,w:1140,h:440,l:'텔레메트리 경로'}];
   var N = [MS, CC, COL, DB, CW];
-  var env = ['"env": {','  "CLAUDE_CODE_ENABLE_TELEMETRY": "1",','  "OTEL_METRICS_EXPORTER": "otlp",','  "OTEL_LOGS_EXPORTER": "otlp",','  "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",','  "OTEL_EXPORTER_OTLP_ENDPOINT":','    "https://otel.corp.example.internal",','  "OTEL_RESOURCE_ATTRIBUTES":','    "department=platform,team=core"','}'];
+  var env = ['"env": {','  "CLAUDE_CODE_ENABLE_TELEMETRY": "1",','  "OTEL_METRICS_EXPORTER": "otlp",','  "OTEL_LOGS_EXPORTER": "otlp",','  "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",','  "OTEL_EXPORTER_OTLP_ENDPOINT":','    "https://otel.corp.example.internal:4317",','  "OTEL_RESOURCE_ATTRIBUTES":','    "department=platform,team=core"','}'];
   F.stepviz('#c6-sv-otel', [
     {kicker:'STEP 1', title:'정책으로 켜면 모두가 계측됩니다',
      body:'OTel(OpenTelemetry)은 켜야 생깁니다. <b>managed settings의 env 한 블록</b>으로 배포하면 사용자가 끌 수 없고, 빠지는 사람이 없습니다.',
@@ -366,10 +366,10 @@ managed settings env 한 블록이면 모두에게
      edges:[{f:'ms',t:'cc',c:'danger',l:'env 배포',o:0}],
      snip:{hd:'managed-settings.json (env)',path:'OTel을 정책으로 켜기',lines:env,hl:[2],note:'엔드포인트는 예시 주소입니다.'}},
     {kicker:'STEP 2', title:'OTLP로 조직 수집기에 보냅니다',
-     body:'지표와 로그를 <b>OTLP(OpenTelemetry 전송 규격), http/protobuf</b>로 조직이 정한 수집기 엔드포인트에 보냅니다.',
+     body:'지표와 로그를 <b>OTLP(OpenTelemetry 전송 규격), gRPC</b>로 조직이 정한 수집기 엔드포인트에 보냅니다.',
      facts:['OTEL_METRICS_EXPORTER: otlp','OTEL_LOGS_EXPORTER: otlp','목적지는 조직 수집기'],
      zones:Z, nodes:N, hot:['cc','col'],
-     edges:[{f:'cc',t:'col',c:'warning',l:'OTLP, http/protobuf',o:0}], loop:true,
+     edges:[{f:'cc',t:'col',c:'warning',l:'OTLP, gRPC',o:0}], loop:true,
      snip:{hd:'managed-settings.json (env)',path:'내보내기 설정',lines:env,hl:[3,4,5,6,7],note:'목적지가 회사 안이라는 점이 Bedrock 경로의 장점입니다.'}},
     {kicker:'STEP 3', title:'대표 지표',
      body:'수집기에서 대시보드로 가는 대표 지표는 <b>token.usage, cost.usage, session.count</b>와 코드 산출물 지표입니다.',
@@ -397,7 +397,7 @@ managed settings env 한 블록이면 모두에게
 {timing: 1.5min}
 [요약]
 • managed settings env 한 블록으로 OTel을 모두에게 켬 (CLAUDE_CODE_ENABLE_TELEMETRY 1)
-• OTLP http/protobuf로 조직 수집기 엔드포인트에 지표와 로그 전송
+• OTLP gRPC로 조직 수집기 엔드포인트에 지표와 로그 전송
 • 대표 지표: claude_code.token.usage, cost.usage, session.count, lines_of_code, commit, PR
 • OTEL_RESOURCE_ATTRIBUTES로 팀별 집계
 • 랩 환경: otelcol, scrub_logs로 프롬프트 본문 삭제, CloudWatch와 중앙 대시보드 이중 전송
