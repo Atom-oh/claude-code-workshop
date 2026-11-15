@@ -158,7 +158,9 @@ The decks use a small subset of Remarp:
   minutes over).
 - In the spoken script, put `↓` right after the sentence that finishes a
   step (`PC에 오래 쓰는 키는 없어요.↓`), one mark per ↓ press the slide takes
-  (a quick check counts one). The presenter view draws it as an orange badge,
+  (a quick check counts one). Always start a new line immediately after `↓`;
+  let sentences within each step wrap to the available width. The presenter
+  view uses a reading width of `53em`, draws the mark as an orange badge,
   and the cue under the arrow buttons says whether a step is left. The script
   itself never says what to press: it is read aloud.
 

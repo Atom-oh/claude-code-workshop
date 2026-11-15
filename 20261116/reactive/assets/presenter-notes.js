@@ -103,7 +103,11 @@
   function renderCue(pv) {
     var win = pv.presenterWindow;
     if (!win || win.closed || !pv.framework) return;
-    var doc = win.document, nav = doc.querySelector('.presenter-nav');
+    var doc = win.document;
+    var notes = doc.getElementById('p-notes');
+    // About one line of the speaker's example at the default font size; scales with note zoom.
+    if (notes) notes.style.maxWidth = '53em';
+    var nav = doc.querySelector('.presenter-nav');
     if (!nav) return;
     var box = doc.getElementById('fsi-step-cue');
     if (!box) {
