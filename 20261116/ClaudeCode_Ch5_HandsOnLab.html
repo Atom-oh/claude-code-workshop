@@ -644,12 +644,12 @@ claude --continue</code></pre></div>
 <tr>
 <td>Bedrock + <code>promptCacheTtl: "1h"</code></td>
 <td>1시간(모델별 지원 확인)</td>
-<td>Anthropic feature flag 조회가 필요해 Bedrock에서는 동작하지 않는다는 보고가 있음(리허설 확인). 1시간 캐시 쓰기 단가가 더 높음</td>
+<td>v2.1.314 이상에서 조건 충족 시 동작(대화형 세션, <code>autoCompactEnabled</code>, 20만 토큰 이상, 약 1시간 유휴). 그 전 버전은 Anthropic feature flag를 가져올 수 없어 동작하지 않음. 1시간 캐시 쓰기 단가가 더 높음</td>
 </tr>
 <tr>
 <td>Claude Apps Gateway 경유</td>
-<td>1시간 TTL 미지원</td>
-<td>해당 없음</td>
+<td>5분. 관리자가 게이트웨이 정책으로 1시간 옵트인 가능(서빙하는 모든 업스트림 모델이 지원해야 하며, 거부되면 요청이 실패)</td>
+<td>1시간 옵트인 시 위와 같은 조건</td>
 </tr>
 </tbody>
 </table>

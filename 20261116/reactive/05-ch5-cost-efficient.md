@@ -904,8 +904,8 @@ Bedrock에서 캐시 수명과 idle compaction
   var D = {
     sub: { ttl: 60, v: '1시간', i: '동작' },
     br: { ttl: 5, v: '5분', i: '기본으로는 해당 없음' },
-    br1h: { ttl: 60, v: '1시간 (ENABLE_PROMPT_CACHING_1H=1 또는 promptCacheTtl "1h", 모델별 지원 확인)', i: '조건 충족 시 동작: 대화형 세션, autoCompactEnabled, 20만 토큰 이상, 약 1시간 유휴' },
-    gw: { ttl: 5, v: '5분, 정책으로 1시간 옵트인 (서빙하는 모든 업스트림 모델이 지원해야 함)', i: '1시간 옵트인 시 같은 조건' }
+    br1h: { ttl: 60, v: '1시간 (ENABLE_PROMPT_CACHING_1H=1 또는 promptCacheTtl "1h", 모델별 지원 확인)', i: '조건 충족 시 동작 (v2.1.314+): 대화형 세션, autoCompactEnabled, 20만 토큰 이상, 약 1시간 유휴' },
+    gw: { ttl: 5, v: '5분, 관리자가 게이트웨이 정책으로 1시간 옵트인 (서빙하는 모든 업스트림 모델이 지원해야 하며, 거부되면 요청 실패)', i: '1시간 옵트인 시 같은 조건' }
   };
   var cur = null, inp = document.getElementById('c6-ttl-in');
   function draw() {
@@ -934,17 +934,18 @@ Bedrock에서 캐시 수명과 idle compaction
 [요약]
 • Claude 구독(플랜 사용량 안): 메인 대화 기본 TTL 1시간, idle compaction 동작
 • API 키와 Amazon Bedrock: 5분, idle compaction 기본으로는 해당 없음
-• Bedrock + ENABLE_PROMPT_CACHING_1H=1(또는 promptCacheTtl "1h"): 1시간(모델별 지원 확인), idle compaction은 조건 충족 시 동작(대화형 세션, autoCompactEnabled, 20만 토큰 이상, 약 1시간 유휴)
-• Claude Apps Gateway 경유: 5분, 정책으로 1시간 옵트인(서빙하는 모든 업스트림 모델이 지원해야 함), 옵트인 시 같은 조건
+• Bedrock + ENABLE_PROMPT_CACHING_1H=1(또는 promptCacheTtl "1h"): 1시간(모델별 지원 확인), idle compaction은 v2.1.314+에서 조건 충족 시 동작(대화형 세션, autoCompactEnabled, 20만 토큰 이상, 약 1시간 유휴)
+• Claude Apps Gateway 경유: 5분, 관리자가 게이트웨이 정책으로 1시간 옵트인(서빙하는 모든 업스트림 모델이 지원해야 하며, 거부되면 요청 실패), 옵트인 시 같은 조건
 
 같은 기능이라도 어떻게 접속하느냐에 따라 동작이 달라요. 많이 오해하시는 부분이라 시뮬레이터로 준비했습니다.
 {cue: demo}
 위에서부터 하나씩 보겠습니다.↓ 구독은 1시간입니다.↓ Bedrock 기본은 5분이라, 자리 비운 시간을 30분으로 두면 돌아온 첫 요청은 캐시 미스예요. 자리 비운 시간이 5분 아래면 캐시가 따뜻한 그대로고요.↓
-ENABLE_PROMPT_CACHING_1H를 켜거나 promptCacheTtl을 1h로 주면 1시간까지 버텨요. 다만 모델별 지원을 확인하셔야 하고 비용도 더 듭니다. 이때 idle compaction은 대화형 세션, autoCompactEnabled, 20만 토큰 이상, 약 1시간 유휴라는 조건이 맞으면 동작하고요.↓
-Claude Apps Gateway를 경유하면 기본 5분이에요. 정책으로 1시간을 옵트인할 수 있는데, 서빙하는 모든 업스트림 모델이 지원해야 합니다. 5분 캐시라면 떠나기 전에 /compact를 하세요.
+ENABLE_PROMPT_CACHING_1H를 켜거나 promptCacheTtl을 1h로 주면 1시간까지 버텨요. 다만 모델별 지원을 확인하셔야 하고 비용도 더 듭니다. 이때 idle compaction은 대화형 세션, autoCompactEnabled, 20만 토큰 이상, 약 1시간 유휴라는 조건이 맞으면 동작하고요. Bedrock에서는 v2.1.314부터입니다.↓
+Claude Apps Gateway를 경유하면 기본 5분이에요. 관리자가 게이트웨이 정책으로 1시간을 옵트인할 수 있는데, 서빙하는 모든 업스트림 모델이 지원해야 하고 하나라도 거부하면 요청이 실패합니다. 5분 캐시라면 떠나기 전에 /compact를 하세요.
 
 [출처]
 • 원본 Ch6 강의자료 p14, p20
+• code.claude.com/docs: prompt-caching(Choose the TTL yourself), settings-reference(idleCompaction), claude-apps-gateway-config(One-hour prompt cache), changelog v2.1.314
 :::
 ---
 <!-- Slide 21: Org defaults for compaction -->
