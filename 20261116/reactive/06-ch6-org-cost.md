@@ -21,7 +21,7 @@ AWS Korea
 [요약]
 • Chapter 6 조직의 비용 보고 통제하기, 쓴 만큼 보고 넘치면 막는다
 • Claude Code v2.1.319(2026-11-08 리허설 검증)와 Amazon Bedrock 기준
-• 강의와 데모, 이어서 랩 TASK 01부터 03 (선택 TASK 04)
+• 강의와 데모로 진행, 랩 페이지(TASK 01~04)는 자율 실습
 
 마지막 챕터에서는 조직이 쓴 비용을 보고,
 필요할 때 한도로 통제하는 방법을 살펴보겠습니다.
@@ -84,14 +84,14 @@ FinOps를 기대 주제로 골라 주셨습니다.
 @type: content
 @fit: off
 
-## 강의와 데모, 그리고 랩
+## 강의와 데모
 계측, 계약 단가, 게이트웨이 지출 한도의 순서
 
 :::html
 <div class="c6 c6-agenda fsi">
   <div class="fsi-grid-2">
     <div class="pick"><span class="k">CHAPTER 06</span><span class="t">조직의 비용 통제</span><span class="d"><span class="rp-detail" tabindex="0" data-tip="OpenTelemetry. 사용량과 이벤트를 조직의 수집기로 보내는 표준">OTel</span> 대시보드, modelPricing, 게이트웨이 지출 한도</span><span class="when">강의와 데모</span></div>
-    <div class="pick lab"><span class="k">LAB / Ch6 Lab</span><span class="t">TASK 01부터 03, 선택 TASK 04</span><span class="d">텔레메트리 경로, 그룹별 모델 정책, 지출 한도, 계약 단가</span><span class="when">강의 뒤 바로</span></div>
+    <div class="pick lab"><span class="k">DEMO / 강사 화면</span><span class="t">대시보드, 텔레메트리 경로, 지출 한도, 계약 단가</span><span class="d">Ch6 랩 페이지(TASK 01~04)는 행사 뒤에도 자율로 따라 할 수 있습니다</span><span class="when">강의 사이사이</span></div>
   </div>
   <div class="pick more"><span class="k">MORE</span><span class="t">더 알아보기</span><span class="d">자주 묻는 세부 내용은 마지막에 모아 둡니다</span></div>
 </div>
@@ -100,15 +100,17 @@ FinOps를 기대 주제로 골라 주셨습니다.
 :::notes
 {timing: 0.5min}
 [요약]
-• 강의와 데모를 짧게 하고, 이어서 랩
+• 이번 챕터는 랩 없이 강의와 데모로 진행
 • OTel 계측, modelPricing, 게이트웨이 지출 한도
-• 랩 TASK 01, TASK 02와 03, 선택 TASK 04
+• 데모 네 가지: 대시보드, 텔레메트리 경로, 지출 한도, 계약 단가
+• Ch6 랩 페이지(TASK 01~04)는 자율 실습
 
 Bedrock 비용을 파악하는 방법부터 살펴보고,
 계약 단가와 AWS 도구로 수치를 맞춰 보겠습니다.
 이어서 게이트웨이의 그룹 정책과 한도를 다룹니다.
-데모 뒤에는 TASK 01부터 03을 실습하고,
-선택 TASK 04도 해 보실 수 있습니다.
+이번 챕터는 랩 대신 제 화면으로 데모를 보여 드립니다.
+같은 과정은 Ch6 랩 페이지에 그대로 있으니,
+나중에 직접 따라 해 보셔도 됩니다.
 :::
 ---
 <!-- Slide 4: Part 02 divider -->
@@ -388,7 +390,7 @@ managed settings env 한 블록이면 모두에게
      facts:['otelcol, fanout 타이머 active','scrub_logs: 내보내기 전 프롬프트 본문 삭제','exporters: CloudWatch + 중앙 대시보드'],
      zones:Z, nodes:[MS, CC, {id:'col',x:460,y:300,w:320,h:90,t:'otelcol',s:'scrub_logs로 본문 삭제',c:'warning',icon:'pipe'}, {id:'db',x:860,y:150,w:280,h:90,t:'중앙 대시보드',s:'이틀간 사용량',c:'info',icon:'chart'}, CW], hot:['cc','col','db','cw'],
      edges:[{f:'cc',t:'col',c:'warning',o:0},{f:'col',t:'db',c:'info',o:1},{f:'col',t:'cw',c:'info',o:1}], loop:true,
-     snip:{hd:'TASK 01에서 확인',path:'랩 환경',lines:['# settings.json의 OTEL_* 환경 변수','# otelcol, fanout 타이머 active','# scrub_logs: 프롬프트 본문 삭제 규칙','# exporters: CloudWatch + 중앙 대시보드'],hl:[],note:'프롬프트 본문을 <b>내보내기 전에 지우는</b> 규칙이 금융권 운영의 기본입니다.'}}
+     snip:{hd:'데모에서 확인',path:'랩 환경',lines:['# settings.json의 OTEL_* 환경 변수','# otelcol, fanout 타이머 active','# scrub_logs: 프롬프트 본문 삭제 규칙','# exporters: CloudWatch + 중앙 대시보드'],hl:[],note:'프롬프트 본문을 <b>내보내기 전에 지우는</b> 규칙이 금융권 운영의 기본입니다.'}}
   ], {legend:[['danger','관리자가 강제'],['accent','Claude Code'],['warning','수집기'],['info','보는 곳']]});
 });
 :::
@@ -626,11 +628,11 @@ DEMO, 강사 대시보드 (URL은 현장 안내)
 <div class="fsi fsi-lab c6-lab c6-demo">
   <div class="head"><span class="tag">DEMO</span></div>
   <ol class="steps">
-    <li><b>1</b><span>랩 환경은 Day 1부터 OTel 수집 중 (참가 안내문 고지)</span></li>
-    <li><b>2</b><span>전체 토큰, 비용 추이, Capstone 구간 피크 확인</span></li>
-    <li><b>3</b><span>모델별, 도구별 분포, 캐시 적중률</span></li>
-    <li><b>4</b><span>내 참가자 ID로 내 사용량 찾기</span></li>
-    <li><b>5</b><span>가장 비용이 컸던 패턴을 Ch5의 원리로 해석</span></li>
+    <li><b>1</b><span>Day 1부터 OTel 수집 중 (참가 안내문 고지)</span></li>
+    <li><b>2</b><span>Overview: 토큰, 비용 추이, Capstone 피크</span></li>
+    <li><b>3</b><span>Usage, Tools, Cost mix: 모델, 도구, 캐시</span></li>
+    <li><b>4</b><span>작업 상세: 비용이 커진 이유</span></li>
+    <li><b>5</b><span>Ask Claude: 말로 묻고 표로 받기</span></li>
   </ol>
   <p class="where">화면에는 참가자 ID만 표시합니다. 회사별 사용량은 노출하지 않습니다.</p>
   <figure class="shot">
@@ -645,19 +647,40 @@ DEMO, 강사 대시보드 (URL은 현장 안내)
 {cue: demo}
 [요약]
 • 강사 대시보드(URL은 현장 안내), 랩 환경은 Day 1부터 OTel 수집 중 (참가 안내문에 고지)
-• 전체 추이와 Capstone 피크, 모델별과 도구별 분포, 캐시 적중률, 내 참가자 ID로 찾기
-• 가장 비용이 컸던 패턴을 Ch5의 원리로 해석
+• 전체 추이와 Capstone 피크, 모델별과 도구별 분포, 캐시 적중률, 참가자 한 명의 작업 상세
+• Ask Claude에 미리 정한 질문 두 개, 읽기 전용 SQL 펼쳐 보기
 • 화면에는 참가자 ID만, 회사별 사용량은 노출하지 않음
+
+[데모 준비]
+• 대시보드는 ?days=2로 미리 열고 로그인해 둠, 브라우저 확대 125% 정도
+• 이름이 보이는 영역(우측 상단 로그인 이름)은 화면 공유 전에 가리거나 창을 좁힘
+• 작업 상세로 보여 줄 참가자 작업 하나를 미리 골라 둠(서브에이전트가 여러 개 돈 작업이 좋음)
+• Ask Claude 질문 두 개를 메모장에 준비
+  1) 지난 2시간 동안 토큰을 가장 많이 쓴 팀 5개와 모델별 비중을 표로 보여줘
+  2) 오류가 가장 많이 난 도구 3개와 오류율은?
+• 대시보드가 안 열리면 슬라이드 11의 캡처로 같은 순서를 설명
+
+[진행]
+① Overview: 이틀 합계 토큰과 추정 비용, 시간대별 추이 그래프에서 Capstone 구간이 솟은 부분을 가리킴
+② Usage와 Tools: 모델별 비중(Opus, Sonnet, Haiku), 호출이 많은 도구와 오류가 잦은 도구
+③ Cost mix: 캐시 읽기와 캐시 쓰기 비중, 캐시 적중률. Chapter 5의 캐시 이야기와 연결
+④ Users에서 미리 고른 작업 열기: 레인별 호출 타임라인, 누적 비용, "왜 많이 썼나" 패널
+⑤ Ask Claude: 질문 1을 보내고 표가 나오면 SQL을 펼쳐 읽기 전용 쿼리임을 보여 줌, 이어서 질문 2
 
 참가 안내문에 고지한 대로 랩에서는
 Day 1부터 OTel을 수집하고 있습니다.
-이틀간 수집된 사용량의 전체 추이를 보며,
-Capstone 구간에서 사용량이 늘어난 지점을
-찾아보겠습니다.
-모델과 도구별 분포, 캐시 적중률을 살펴본 뒤,
-참가자 ID로 본인 사용량을 찾아보시면 됩니다.
-값이 없으면 계측 연결도 확인하시면 됩니다.
-비용이 컸던 패턴은 Chapter 5의 원리로 해석합니다.
+먼저 Overview에서 이틀 동안 쓴 토큰과 추정 비용을 보겠습니다.
+그래프가 솟은 곳이 Capstone 구간입니다.
+여럿이 에이전트를 오래 돌리면 이렇게 보입니다.
+Usage와 Tools에서는 어느 모델을 얼마나 썼는지,
+어떤 도구를 많이 부르고 어디서 오류가 났는지 보입니다.
+Cost mix에서는 캐시 읽기 비중을 봐 주세요.
+Chapter 5에서 말씀드린 캐시가 실제로 비용을 얼마나 줄였는지가 여기 나옵니다.
+작업 하나를 열어 보면 메인 세션과 서브에이전트가
+언제 얼마씩 썼는지, 왜 많이 썼는지까지 보입니다.
+마지막으로 Ask Claude에 말로 물어보겠습니다.
+Bedrock의 Claude가 읽기 전용 SQL로 조회해 표로 답합니다.
+SQL을 펼쳐 보시면 어떤 쿼리를 썼는지 확인할 수 있습니다.
 화면에는 참가자 ID만 표시하며,
 회사별 사용량은 보여 드리지 않습니다.
 :::
@@ -873,7 +896,7 @@ Bedrock은 IAM 역할로 호출합니다.
 사설 IP로만 해석될 때 통과하며,
 로그인 브라우저도 사설망 안에 있어야 합니다.↓
 랩은 각 계정의 VPC 안에 게이트웨이가 한 대씩 있고,
-alice와 bob으로 실습합니다.
+데모는 타 부서 bob 계정으로 보여 드립니다.
 
 [약어]
 • SSO: Single Sign-On
@@ -1049,117 +1072,169 @@ bob에게만 1센트 한도를 걸면 어떻게 될까요?↓
 집계된 지출이 한도에 닿으면
 다음 요청부터 429로 거절됩니다.
 진행 중인 응답은 끝까지 갑니다.
-이 동작을 랩에서 확인하겠습니다.
+이 동작을 잠시 뒤 데모로 보여 드리겠습니다.
 :::
 ---
-<!-- Slide 19: Lab TASK 01 -->
+<!-- Slide 19: Demo telemetry path -->
 @type: content
 @fit: off
 
 ## 텔레메트리는 어디로 가는가
-LAB, Chapter 6 TASK 01
+DEMO A, 강사 PC에서 Ch6 랩 TASK 01
 
 :::html
 <div class="fsi fsi-lab c6-lab">
+  <div class="head"><span class="tag">DEMO A</span></div>
   <ol class="steps">
-    <li><b>1</b><span>settings.json의 OTEL_* 환경 변수 읽기</span></li>
-    <li><b>2</b><span>otelcol, fanout 타이머 active 확인</span></li>
-    <li><b>3</b><span>scrub_logs: 내보내기 전 프롬프트 본문 삭제 규칙 찾기</span></li>
-    <li><b>4</b><span>exporters에서 CloudWatch + 중앙 대시보드 이중 전송 확인</span></li>
+    <li><b>1</b><span>settings.json의 OTEL_*: gRPC <code>localhost:4317</code>, <code>user.email</code>와 <code>team</code></span></li>
+    <li><b>2</b><span>otelcol과 fanout 타이머가 active</span></li>
+    <li><b>3</b><span><code>transform/scrub_logs</code>: 내보내기 전에 프롬프트 본문 삭제</span></li>
+    <li><b>4</b><span>exporters: CloudWatch와 중앙 대시보드(ClickHouse)로 이중 전송</span></li>
   </ol>
-  <p class="where">Hands-on Lab 포털에서 Chapter 6 TASK 01을 엽니다.</p>
+  <p class="where">같은 명령은 Ch6 랩 페이지 TASK 01에 있습니다. 자율로 따라 해 보셔도 됩니다.</p>
 </div>
 :::
 
 :::notes
-{timing: 0.5min}
-[요약]
-• LAB, Chapter 6 TASK 01
-• OTEL_* 환경 변수, otelcol과 fanout 타이머, scrub_logs 규칙, CloudWatch와 중앙 대시보드 이중 전송 확인
-
+{timing: 3min}
 {cue: demo}
-Chapter 6 TASK 01에서 계측 경로를 확인합니다.
-settings.json의 OTEL 환경 변수를 읽고,
-otelcol과 fanout 타이머가 실행 중인지 봅니다.
-이어서 프롬프트 본문을 지우는 scrub_logs와
-두 곳으로 보내는 exporters를 찾아보시면 됩니다.
-프롬프트 본문이 외부로 나가기 전에 지워지는지
-직접 확인하는 과정입니다.
+[요약]
+• 강사 PC에서 Ch6 랩 TASK 01 블록을 그대로 실행
+• OTEL_* 환경 변수, otelcol과 fanout 타이머, scrub_logs 규칙, 이중 전송 exporters
+• 방금 본 대시보드 숫자가 이 PC에서 출발한다는 연결
+
+[데모 준비]
+• 참가자와 같은 팀 PC 하나를 강사용으로 확보(테스트 이벤트 팀 또는 남는 팀), code-server 터미널 글꼴을 크게
+• Ch6 랩 페이지 TASK 01 블록을 미리 복사해 둠(여러 줄은 한 번에 붙여 넣기)
+• 출력이 길면 clear 뒤 다시 실행
+
+[진행]
+① 블록 실행 뒤 jq 결과에서 OTEL_EXPORTER_OTLP_PROTOCOL grpc, ENDPOINT localhost:4317, OTEL_RESOURCE_ATTRIBUTES의 user.email과 team=cco-deep-dive를 가리킴
+② active 두 줄: otelcol 수집기와 중앙 전송 타이머
+③ 41번 줄 근처 transform/scrub_logs: 이벤트 로그에서 프롬프트 본문을 지우는 규칙
+④ exporters 줄: 지표는 otlphttp/cloudwatch와 clickhouse, 로그와 trace는 clickhouse
+
+방금 대시보드에서 본 숫자가 어디서 출발하는지 보겠습니다.
+참가자 여러분 PC와 같은 구성의 PC입니다.
+설정 파일에는 텔레메트리를 켜는 값과
+PC 안 수집기 주소 localhost 4317이 있습니다.
+user.email과 team이 사람과 팀으로 묶는 키입니다.
+회사에서는 사번이나 부서 코드를 넣으시면 됩니다.
+수집기는 내보내기 전에 scrub_logs 규칙으로
+프롬프트 본문을 지웁니다.
+비용은 보되 내용은 남기지 않는 설정입니다.
+마지막 줄들이 보내는 곳입니다.
+지표는 내 계정 CloudWatch와 중앙 대시보드 두 곳으로 갑니다.
 :::
 ---
-<!-- Slide 20: Lab TASK 02 to 03 -->
+<!-- Slide 20: Demo spend limit -->
 @type: content
 @fit: off
 
 ## 모델 정책과 지출 한도
-LAB, 게이트웨이 실습 Chapter 6 TASK 02부터 03까지
+DEMO B, 게이트웨이에서 bob에게 1센트 한도
 
 :::html
 <div class="fsi fsi-lab c6-lab">
+  <div class="head"><span class="tag">DEMO B</span></div>
   <ol class="steps">
-    <li><b>1</b><span>use_gateway, alice 로그인, /model에 Opus 포함, /usage Spend limit 확인</span></li>
-    <li><b>2</b><span>bob으로 재로그인, Opus 없음, 질문 1개로 지출 기록</span></li>
-    <li><b>3</b><span>Terminal 2: Admin API로 bob 조회, 사용자 한도 1센트</span></li>
-    <li><b>4</b><span>bob 다음 요청이 지출 한도 메시지로 거절</span></li>
-    <li><b>5</b><span>한도 DELETE, 그룹 한도 복원, use_bedrock_direct</span></li>
+    <li><b>1</b><span>bob 세션: <code>/model</code>에 Opus 없음, <code>/usage</code>에 그룹 한도 $50</span></li>
+    <li><b>2</b><span>관리자 터미널: 적용 한도 조회, 출처는 standard-users 그룹</span></li>
+    <li><b>3</b><span>bob에게만 1센트 사용자 한도, 다음 요청이 <code>spend limit reached</code></span></li>
+    <li><b>4</b><span>한도 DELETE, 그룹 한도로 돌아와 요청이 다시 통과</span></li>
   </ol>
-  <p class="where">각자 계정의 게이트웨이로 진행합니다. Hands-on Lab 포털, Chapter 6 TASK 02부터 03. 게이트웨이 장애 팀은 강사 화면을 봅니다.</p>
+  <p class="where">같은 과정은 Ch6 랩 페이지 TASK 02와 03에 있습니다. 자율로 따라 해 보셔도 됩니다.</p>
 </div>
 :::
 
 :::notes
-{timing: 0.5min}
-[요약]
-• LAB, Chapter 6 TASK 02부터 03, 각자 계정의 게이트웨이
-• alice와 bob으로 그룹별 모델 정책 비교, Admin API로 bob 한도 1센트, 거절 확인
-• 끝나면 한도 DELETE, 그룹 한도 복원, use_bedrock_direct로 원복
-
+{timing: 6min}
 {cue: demo}
-각자 계정에서 use_gateway로 전환합니다.
-alice로 로그인해 /model의 Opus와
-/usage의 한도를 확인합니다.
-bob으로 다시 로그인하면 Opus가 없습니다.
-질문 하나로 지출 기록을 만든 뒤,
-다른 터미널의 Admin API로 bob을 조회하고
-1센트 한도를 설정합니다.
-다음 요청의 거절을 확인하되, 집계가 늦으면
-한두 번 더 요청해 보시면 됩니다.
-끝나면 한도를 삭제하고 적용 한도와 출처가
-이전 상태로 돌아왔는지 확인한 뒤,
-use_bedrock_direct로 복구합니다.
-게이트웨이에 문제가 있으면 제 화면을 보시면 됩니다.
+[요약]
+• 왼쪽 터미널은 bob 세션, 오른쪽 터미널은 관리자(Admin API)
+• bob은 standard-users라 Opus가 없고 하루 한도 $50
+• bob에게만 1센트 사용자 한도를 걸면 다음 요청이 거절, 사용자 한도가 그룹 한도보다 우선
+• DELETE로 원복하면 다시 통과, 마지막에 use_bedrock_direct
+
+[데모 준비] 로그인 과정이 길어 강의 전에 끝내 둠
+• 강사 PC에서 use_gateway 실행, cd ~/claude-lab/ch6 && claude, /login으로 bob 로그인(Ch6 랩 TASK 02 Step 3 순서)
+• bob 세션에서 질문 하나를 보내 지출 기록을 만들어 둠(TASK 03 Step 1 조회에 필요)
+• 오른쪽 터미널에 Ch6 랩 TASK 03 Step 1 블록을 실행해 두고, BOB= 값이 나오는지 확인
+• 같은 날 리허설로 한도를 걸었다면 Step 4로 지웠는지 확인(적용 한도가 그룹 5000이어야 함)
+• 게이트웨이가 응답하지 않으면 슬라이드 16 설명과 랩 페이지 그림(6단계)으로 대신함
+
+[진행]
+① 왼쪽 bob 세션에서 /model: Default, Sonnet, Haiku만 있음, Esc
+② /usage: Spend limit 막대와 오늘 쓴 금액 / $50.00, Esc
+③ 오른쪽에서 TASK 03 Step 1 두 번째 블록: amount 5000, source standard-users, period_to_date_spend
+④ TASK 03 Step 2 블록: LIMIT_ID=spl_로 시작하는 값
+⑤ 왼쪽에서 "pseudo 디렉터리에 파일이 몇 개 있는지 알려줘": spend limit reached · resets 12am (UTC) 메시지, 바로 안 막히면 한 번 더
+⑥ /usage: 사용률이 100%를 넘은 막대(예: 521% used), Esc
+⑦ 오른쪽에서 TASK 03 Step 4 첫 블록: delete=200, 적용 한도가 다시 5000과 그룹 출처
+⑧ 왼쪽에서 같은 질문을 다시 보내 통과 확인, /exit 뒤 use_bedrock_direct
+
+이번에는 조직이 쓰는 양을 막는 쪽입니다.
+왼쪽은 타 부서 bob으로 로그인한 세션이고,
+오른쪽은 관리자 터미널입니다.
+bob의 모델 목록에는 Opus가 없습니다.
+내 설정이 아니라 게이트웨이가 그룹 정책으로 내려준 목록입니다.
+/usage에는 bob 그룹의 하루 한도 50달러와 오늘 쓴 금액이 보입니다.
+관리자 쪽에서 bob에게 지금 적용된 한도를 조회하면
+출처가 standard-users 그룹으로 나옵니다.
+이제 bob에게만 1센트 한도를 걸어 보겠습니다.
+bob이 질문을 보내면 이렇게 거절됩니다.
+오늘 이미 쓴 금액이 새 한도보다 크기 때문이고,
+사용자 한도가 그룹 한도보다 우선한다는 앞의 퀴즈 답이 이것입니다.
+회사에서는 이 메시지에 사내 증액 요청 절차를 적어 두시면 됩니다.
+한도를 지우면 다시 그룹 한도로 돌아가고 질문이 통과합니다.
+한도에 가까워지면 75%와 95%에서 경고가 먼저 나오고,
+진행 중인 응답은 끝까지 갑니다.
 :::
 ---
-<!-- Slide 21: Optional lab TASK 04 -->
+<!-- Slide 21: Demo modelPricing -->
 @type: content
 @fit: off
 
-## 내 계정에 비용 설정 적용
-선택 LAB, Chapter 6 선택 TASK 04
+## 추정 비용을 계약 단가로
+DEMO C, managed settings의 modelPricing
 
 :::html
 <div class="fsi fsi-lab c6-lab">
+  <div class="head"><span class="tag">DEMO C</span></div>
   <ol class="steps">
-    <li><b>1</b><span>managed settings에 modelPricing.multiplier 병합</span></li>
-    <li><b>2</b><span>/usage에서 configured rates 표시 확인</span></li>
-    <li><b>3</b><span>대시보드에서 적용 전후 내 사용량 비교</span></li>
-    <li><b>4</b><span>백업으로 원복</span></li>
+    <li><b>1</b><span>Bedrock 직결 모드에서 managed settings에 <code>modelPricing.multiplier: 0.9</code></span></li>
+    <li><b>2</b><span>질문 하나 뒤 <code>/usage</code>: <code>(at your organization's configured rates)</code></span></li>
+    <li><b>3</b><span>백업으로 원복, 정산은 AWS 청구서 기준</span></li>
   </ol>
-  <p class="where">각자 Bedrock 직결로 진행합니다. Hands-on Lab 포털, Chapter 6 선택 TASK 04.</p>
+  <p class="where">같은 과정은 Ch6 랩 페이지 선택 TASK 04에 있습니다. TASK 01부터 04까지 행사 뒤에도 자율로 해 볼 수 있습니다.</p>
 </div>
 :::
 
 :::notes
-{timing: 0.5min}
+{timing: 2min}
+{cue: demo}
 [요약]
-• 선택 LAB, Chapter 6 선택 TASK 04, 각자 Bedrock 직결
-• modelPricing.multiplier 병합, /usage configured rates 확인, 대시보드 전후 비교, 백업으로 원복
+• Bedrock 직결 모드에서 modelPricing.multiplier 0.9를 managed settings에 병합
+• /usage의 Total cost 뒤에 configured rates 표시
+• 백업으로 원복, 실제 정산은 Cost Explorer와 청구서로 대사
+• Ch6 랩 페이지 TASK 01~04는 자율 실습
 
-선택 랩은 Bedrock 직결 상태에서 진행합니다.
-managed settings에 modelPricing을 넣고,
-/usage의 configured rates 표시와
-대시보드의 적용 전후를 비교해 보시면 됩니다.
-끝나면 백업으로 복구합니다.
+[데모 준비]
+• DEMO B 끝에서 use_bedrock_direct로 돌아왔는지 확인(managed settings가 {})
+• Ch6 랩 선택 TASK 04 블록을 복사해 둠
+
+[진행]
+① TASK 04 블록 실행: sudo jq 출력에 modelPricing이 들어간 것 확인, claude가 열림
+② 질문 하나 뒤 /usage: Total cost 줄 끝의 (at your organization's configured rates)
+③ /exit 뒤 원복 블록: 출력이 {}로 돌아옴
+
+마지막으로 화면의 비용을 계약 단가에 맞추는 방법입니다.
+managed settings에 배율 0.9를 넣으면
+/usage의 비용이 조직이 정한 단가 기준이라고 표시됩니다.
+화면과 텔레메트리의 추정치를 보정할 뿐이고,
+실제 정산은 AWS 청구서로 맞추셔야 합니다.
+오늘 보여 드린 데모는 모두 Ch6 랩 페이지에 그대로 있으니,
+행사 뒤에도 직접 따라 해 보실 수 있습니다.
 :::
 ---
 <!-- Slide 22: Deep dive FAQ -->

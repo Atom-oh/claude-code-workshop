@@ -526,7 +526,7 @@ jq &#x27;has(&quot;availableModels&quot;)&#x27; ~/.claude/settings.json</code></
 <li data-lines="1"><code>/model</code>은 쓸 수 있는 모델 목록을 엽니다. bob은 standard-users 그룹이라 Sonnet과 Haiku만 보이고 Opus는 없어야 합니다.</li>
 </ol></details>
 
-<p>TASK 02에서는 로컬 파일로 Opus를 뺐지만, 지금은 그 파일 없이도 <strong>bob에게 Opus가 보이지 않습니다</strong>. 같은 PC라도 alice로 로그인하면 Opus가 보입니다(Ch6에서 확인).</p>
+<p>TASK 02에서는 로컬 파일로 Opus를 뺐지만, 지금은 그 파일 없이도 <strong>bob에게 Opus가 보이지 않습니다</strong>. 같은 PC라도 alice로 로그인하면 Opus가 보입니다(Ch6 데모와 자율 실습에서 확인).</p>
 <h3 id="step-3-사용자-설정으로-우회-시도">Step 3 · 사용자 설정으로 우회 시도</h3>
 <p><code>/exit</code>로 나와 사용자 설정에 Opus를 넣어 봅니다.</p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>jq &#x27;.availableModels = [&quot;opus&quot;,&quot;sonnet&quot;,&quot;haiku&quot;]&#x27; ~/.claude/settings.json &gt; /tmp/s.json &amp;&amp; cp /tmp/s.json ~/.claude/settings.json
