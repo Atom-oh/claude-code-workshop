@@ -1180,7 +1180,7 @@
       { id: "d-over", shape: "note", tone: "err", label: "오늘 쓴 금액이 한도보다 큼\n예: $0.08 / $0.01", x: 520, y: 385, w: 340, h: 82, appear: 5, until: 5 },
       { id: "d-back", shape: "note", tone: "ok", label: "한도 삭제\n그룹 한도로 복귀", x: 520, y: 385, w: 340, h: 82, appear: 6 },
       { id: "bedrock", shape: "icon", icon: "Bedrock", label: "Amazon Bedrock\n(모델)", x: 880, y: 150 },
-      { id: "blocked", shape: "note", tone: "err", label: "차단 (bob)\nspend limit reached (daily)\n\"You have reached your\nspend limit. Contact your\nadministrator …\"", x: 870, y: 385, w: 220, h: 112, appear: 5, until: 5 }
+      { id: "blocked", shape: "note", tone: "err", label: "차단 (bob)\nspend limit reached\n\"You have reached your\nspend limit. Contact your\nadministrator …\"", x: 870, y: 385, w: 220, h: 112, appear: 5, until: 5 }
     ],
     edges: [
       { id: "e-alice", from: "alice", to: "login", label: "로그인", appear: 1, until: 2 },
