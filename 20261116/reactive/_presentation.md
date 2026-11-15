@@ -10,7 +10,7 @@ speaker:
 audience: "금융 서비스 산업 고객 개발자와 플랫폼 관리자"
 level: "200"
 quiz: false
-duration: 201
+duration: 227
 date: 2026-11-16
 event: "Claude Code Deep Dive Workshop, FSI Edition"
 lang: ko
@@ -32,7 +32,7 @@ blocks:
     duration: 22
   - name: ch6-org-cost
     title: "Chapter 6. 조직의 비용 보고 통제하기"
-    duration: 24
+    duration: 50
 theme:
   mode: dark
   footer: "© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved."
