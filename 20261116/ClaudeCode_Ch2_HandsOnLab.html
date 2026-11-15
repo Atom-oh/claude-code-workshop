@@ -186,19 +186,24 @@ use_bedrock_direct</code></pre></div>
 <td>호출 리전</td>
 </tr>
 <tr>
+<td><code>ANTHROPIC_BEDROCK_REGION_PREFIX</code></td>
+<td><code>global</code></td>
+<td>추론 프로파일 접두사. 모델 이름 앞에 <code>global.</code>을 붙여 global 추론 프로파일로 호출</td>
+</tr>
+<tr>
 <td><code>ANTHROPIC_DEFAULT_*_MODEL</code></td>
-<td><code>global.anthropic.claude-*-5-5</code></td>
-<td>모델 버전 고정 (global 추론 프로파일)</td>
+<td><code>claude-*-5-5</code>, Fable은 <code>claude-fable-5-1</code></td>
+<td>모델 버전 고정. 접두사와 합쳐 <code>global.anthropic.claude-*-5-5</code>로 호출</td>
 </tr>
 <tr>
 <td><code>availableModels</code></td>
-<td><code>opus, sonnet, haiku</code></td>
+<td><code>opus, sonnet, haiku, fable</code></td>
 <td><code>/model</code> 선택지 제한</td>
 </tr>
 </tbody>
 </table>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>모델을 고정하지 않으면</strong></p>
-<p>Bedrock의 기본 주 모델은 Opus 5.5이고 Opus 단가로 청구됩니다. 여러 사용자에게 배포할 때는 이 환경처럼 반드시 <code>ANTHROPIC_DEFAULT_*_MODEL</code>을 고정합니다.</p></div></div>
+<p>Bedrock의 기본 주 모델은 Opus 5.5이고 Opus 단가로 청구됩니다. 고정하지 않으면 Bedrock의 <code>sonnet</code> 별칭은 Sonnet 4.5로 연결됩니다. 여러 사용자에게 배포할 때는 이 환경처럼 반드시 <code>ANTHROPIC_DEFAULT_*_MODEL</code>을 고정하고, 처리 리전 범위는 <code>ANTHROPIC_BEDROCK_REGION_PREFIX</code>(<code>global</code>, <code>us</code>, <code>apac</code> 등)로 정합니다.</p></div></div>
 
 <h3 id="step-2-이-계정에서-쓸-수-있는-추론-프로파일">Step 2 · 이 계정에서 쓸 수 있는 추론 프로파일</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
