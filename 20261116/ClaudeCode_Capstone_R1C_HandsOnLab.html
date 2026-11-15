@@ -907,7 +907,7 @@ for c in jq npx uvx; do command -v "$c" &gt;/dev/null &amp;&amp; echo "OK   $c" 
   <details class="solution">
     <summary>alphavantage: 시세, 환율, 경제지표 (무료 키)</summary>
     <div class="sol-body">
-      <p class="body"><strong>먼저 키를 받습니다.</strong> 이 서버는 키가 없으면 시작하지 못하므로, 블록을 실행하기 전에 브라우저에서 <a href="https://www.alphavantage.co/support/#api-key">Alpha Vantage 무료 키 신청</a>을 엽니다. 이름, 직업 유형, 소속, 이메일을 적고 <strong>Get Free API Key</strong>를 누르면 같은 페이지에 키가 표시됩니다. 그 키를 복사해 둡니다.</p>
+      <p class="body"><strong>먼저 키를 받습니다.</strong> 이 서버는 키가 없으면 시작하지 못하므로, 블록을 실행하기 전에 브라우저에서 <a href="https://www.alphavantage.co/support/#api-key">Alpha Vantage 무료 키 신청</a>을 새 탭으로 엽니다. 자신을 가장 잘 설명하는 항목을 고르고 소속과 이메일을 적은 뒤 <strong>Get Free API Key</strong>를 누르면 같은 페이지에 키가 표시됩니다. 그 탭을 열어 두고, 아래 블록이 키를 기다릴 때 그 탭에서 키를 복사해 붙여 넣습니다(블록의 복사 버튼을 누르면 먼저 복사한 키는 클립보드에서 지워집니다).</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 이 서버를 골랐을 때 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>cd ~/claude-lab/capstone
@@ -927,7 +927,7 @@ fi
 unset AV_KEY
 claude mcp list</code></pre>
   </div>
-      <p class="body">블록이 <code class="inline">read -rs</code> 줄에서 멈추면 받아 둔 키를 붙여 넣고 Enter를 누릅니다(화면과 셸 기록에 남지 않음). 키 없이 Enter를 누르면 등록하지 않고 안내만 냅니다. 키는 <code class="inline">--env</code>로 <code class="inline">~/.claude.json</code>에만 들어갑니다. 제공처 안내의 <code class="inline">uvx marketdata-mcp-server 키</code> 한 줄은 2026-11-09 확인 때 실행 파일 이름이 <code class="inline">marketdata-mcp</code>로 바뀌어 실패했고, 최신 <code class="inline">mcp</code> 2.x와도 맞지 않아서 <code class="inline">--from</code>과 <code class="inline">--with "mcp&lt;2"</code>로 고정했습니다. 서버는 키를 인자 대신 환경 변수 <code class="inline">ALPHA_VANTAGE_API_KEY</code>로도 읽습니다(공식 저장소 소스 확인). 무료 키는 하루 25회라 시험 호출을 아껴 씁니다.</p>
+      <p class="body">블록이 <code class="inline">read -rs</code> 줄에서 멈추면 신청 페이지 탭에서 키를 복사해 붙여 넣고 Enter를 누릅니다(화면과 셸 기록에 남지 않음). 키 없이 Enter를 누르면 등록하지 않고 안내만 냅니다. 키는 <code class="inline">--env</code>로 <code class="inline">~/.claude.json</code>에만 들어갑니다. 제공처 안내의 <code class="inline">uvx marketdata-mcp-server 키</code> 한 줄은 2026-11-09 확인 때 실행 파일 이름이 <code class="inline">marketdata-mcp</code>로 바뀌어 실패했고, 최신 <code class="inline">mcp</code> 2.x와도 맞지 않아서 <code class="inline">--from</code>과 <code class="inline">--with "mcp&lt;2"</code>로 고정했습니다. 서버는 키를 인자 대신 환경 변수 <code class="inline">ALPHA_VANTAGE_API_KEY</code>로도 읽습니다(공식 저장소 소스 확인). 무료 키는 하루 25회라 시험 호출을 아껴 씁니다.</p>
     </div>
   </details>
   <details class="solution">
