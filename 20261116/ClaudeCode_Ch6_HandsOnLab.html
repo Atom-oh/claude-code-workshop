@@ -262,7 +262,7 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <li data-lines="1">작업 폴더에서 Claude Code를 엽니다. 처음 여는 폴더라 <strong>Accessing workspace</strong> 창이 먼저 뜨면 ↓로 <strong>Yes, I trust this folder</strong>를 고르고 Enter를 누릅니다. 로그인 화면은 저절로 뜨지 않을 수 있으니, 아래 순서대로 <code>/login</code>으로 로그인합니다.</li>
 </ol></details>
 
-<p>Ch2 Lab 1에서 Claude Code를 이미 써 봤다면 로그인 화면이 저절로 뜨지 않고 입력창만 나옵니다. 상태줄 오른쪽에 <code>Not logged in · Run /login</code>이 보이면 아직 로그인 전입니다. 이 상태로 질문을 보내면 <code>API Error: Not signed in to the Cloud gateway — run /login.</code>으로 실패합니다. 입력창에 <code>/login</code>을 입력합니다.</p>
+<p>앞 챕터에서 이 PC의 Claude Code를 이미 써 봤으므로 로그인 화면이 저절로 뜨지 않고 입력창만 나올 수 있습니다. 상태줄 오른쪽에 <code>Not logged in · Run /login</code>이 보이면 아직 로그인 전입니다. 이 상태로 질문을 보내면 <code>API Error: Not signed in to the Cloud gateway — run /login.</code>으로 실패합니다. 입력창에 <code>/login</code>을 입력합니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>/login</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
@@ -272,7 +272,7 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <ol>
 <li><strong>Cloud gateway</strong> 화면에 <code>https://gateway.workshop.internal</code>이 이미 들어 있습니다(managed settings가 정한 주소). Enter를 누릅니다.</li>
 <li><strong>Trust gateway gateway.workshop.internal?</strong> 화면은 기본 선택이 <strong>No, go back</strong>입니다. ↑ 키로 <strong>Yes, trust this gateway</strong>를 고르고 Enter를 누릅니다. 랩 게이트웨이가 자체 서명 인증서를 쓰기 때문에 나오는 확인입니다.</li>
-<li>code-server가 <strong>Do you want code-server to open the external website?</strong> 창을 띄웁니다. <strong>Open</strong>을 누르면 코드가 미리 채워진 승인 페이지가 새 탭에서 열립니다. 코드를 확인하고 <code>alice@workshop.example</code>(비밀번호 <code>DemoPassword123!</code>, 팀 Outputs의 <code>GatewayDemoPassword</code>)로 로그인합니다.</li>
+<li>code-server가 <strong>Do you want code-server to open the external website?</strong> 창을 띄웁니다. <strong>Open</strong>을 누르면 코드가 미리 채워진 승인 페이지가 새 탭에서 열립니다. 페이지의 코드가 터미널에 표시된 코드와 같은지 확인하고 <code>alice@workshop.example</code>(비밀번호 <code>DemoPassword123!</code>, 팀 Outputs의 <code>GatewayDemoPassword</code>)로 로그인합니다.</li>
 <li>터미널로 돌아오면 <code>Connected to Cloud gateway.</code>가 보입니다. Enter를 누르면 <code>Signed in to Cloud gateway … Restarting Claude Code</code>와 함께 Claude Code가 스스로 다시 시작합니다.</li>
 </ol>
 <p>로그인하기 전에는 시작 화면과 상태줄에 <code>Opus 4.7 · Cloud gateway</code>처럼 게이트웨이와 무관한 기본 모델 이름이 보일 수 있습니다. 로그인하면 Claude Code가 조직 설정을 받으려고 스스로 다시 시작하고, <code>Using … 5.5 (from managed settings)</code> 줄과 함께 게이트웨이가 그룹별로 정한 5.5 모델로 바뀝니다. 다만 <code>Using … (from managed settings)</code> 줄은 이전 로그인 때 받아 둔 설정으로도 나오므로, 로그인됐는지는 상태줄의 <code>Not logged in</code>이 사라졌는지와 아래 질문의 응답으로 확인합니다.</p>
@@ -316,7 +316,8 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 <li data-lines="1">실습 환경에 준비된 명령입니다. Claude Code의 게이트웨이 로그인을 한 번 더 지우고, 브라우저에 남은 로그인을 지우는 로그아웃 주소(<code>https://….auth.us-east-1.amazoncognito.com/logout?…</code>)를 출력합니다.</li>
 </ol></details>
 
-<p>bob은 <strong>Chrome 시크릿 창</strong>(⌘+Shift+N 또는 Ctrl+Shift+N)에서 승인합니다. 시크릿 창에는 alice의 로그인이 남아 있지 않기 때문입니다. 이미 열려 있는 시크릿 창이 있으면 모두 닫고 새로 엽니다. 시크릿 창끼리는 로그인을 함께 쓰기 때문입니다.</p><div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>같은 창에서 하려면: 로그아웃 주소 열기</strong></p>
+<p>bob은 <strong>Chrome 시크릿 창</strong>(⌘+Shift+N 또는 Ctrl+Shift+N)에서 승인합니다. 시크릿 창에는 alice의 로그인이 남아 있지 않기 때문입니다. 이미 열려 있는 시크릿 창이 있으면 모두 닫고 새로 엽니다. 시크릿 창끼리는 로그인을 함께 쓰기 때문입니다.</p>
+<div class="alert info"><div class="alert-icon" aria-hidden="true">ℹ</div><div class="alert-body"><p><strong>같은 창에서 하려면: 로그아웃 주소 열기</strong></p>
 <p><code>gateway_logout</code>이 출력한 <code>https://…amazoncognito.com/logout?…</code> 주소를 승인 페이지를 열었던 같은 브라우저에서 열어도 됩니다. 빈 로그인 화면이 나오면 브라우저 쪽 로그인이 지워진 것입니다. 다만 주소가 길어 터미널에서 여러 줄로 접혀 보이므로 마우스로 정확히 고르기 어렵습니다(실습 환경에서 확인). 어려우면 위의 시크릿 창 방법을 씁니다.</p></div></div>
 <p>같은 터미널(<code>~/claude-lab/ch6</code>)에서 Claude Code를 다시 엽니다.</p>
 <div class="code copyable"><div class="code-head"><span>bash</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>cd ~/claude-lab/ch6 &amp;&amp; claude</code></pre></div>
@@ -326,12 +327,13 @@ sudo jq . /etc/claude-code/managed-settings.json</code></pre></div>
 </ol></details>
 
 <ol>
-<li>처음 쓸 때처럼 <strong>Welcome</strong> 화면(테마 선택)이 나오면 Enter를 누릅니다. Security notes나 Terminal setup 창이 나오면 각각 Enter, Esc로 넘깁니다.</li>
+<li>처음 쓸 때처럼 <strong>Welcome</strong> 화면(테마 선택)이 나오면 Enter를 누릅니다.</li>
 <li><strong>Cloud gateway</strong> 화면에서 Enter, <strong>Trust gateway</strong> 화면에서 ↑ 키로 <strong>Yes, trust this gateway</strong>를 고르고 Enter를 누릅니다. 로그인 화면이 나오지 않고 <code>Not logged in · Run /login</code>만 보이면 <code>/login</code>을 입력합니다.</li>
-<li>code-server의 외부 사이트 열기 창에서 <strong>Copy</strong>를 누릅니다. 코드가 채워진 승인 주소가 복사됩니다. 새 시크릿 창 주소창에 붙여 넣고 <code>bob@workshop.example</code>(비밀번호 <code>DemoPassword123!</code>, 팀 Outputs의 <code>GatewayDemoPassword</code>)로 로그인합니다.</li>
-<li>터미널로 돌아와 <code>Connected to Cloud gateway.</code>에서 Enter를 누르면 Claude Code가 다시 시작하고 <code>Using Sonnet 5.5 (from managed settings)</code>가 보입니다. 시작 화면 첫 줄에 <code>Opus 5.5 · Cloud gateway</code>가 남아 보여도 실제 모델은 이 줄이 맞습니다.</li>
+<li>code-server의 외부 사이트 열기 창에서 <strong>Copy</strong>를 누릅니다. 코드가 채워진 승인 주소가 복사됩니다. 새 시크릿 창 주소창에 붙여 넣고 <code>bob@workshop.example</code>(비밀번호 <code>DemoPassword123!</code>, 팀 Outputs의 <code>GatewayDemoPassword</code>)로 로그인합니다. 복사가 안 되면 <strong>Cancel</strong>로 닫고, 터미널에 나온 <code>https://…cloudfront.net/device</code> 주소를 시크릿 창에 열어 터미널의 코드를 입력합니다.</li>
+<li>터미널로 돌아와 <code>Connected to Cloud gateway.</code>에서 Enter를 누르면 Claude Code가 다시 시작하고 <code>Using Sonnet 5.5 (from managed settings)</code>가 보입니다. 시작 화면에 <code>Opus 5.5 · Cloud gateway</code>가 남아 보여도 실제 모델은 이 줄이 맞습니다. Security notes나 Terminal setup 창이 이어서 나오면 각각 Enter, Esc로 넘깁니다.</li>
 </ol>
-<p>같은 창에서 승인했는데 비밀번호를 묻지 않고 바로 승인되면 브라우저 쪽 로그인이 남아 있는 것입니다. <code>/model</code>에 Opus가 보이면 아직 alice이므로, <code>/logout</code> 뒤 <code>gateway_logout</code>부터 다시 하고 이번에는 새 시크릿 창에서 승인합니다.</p><p><code>/model</code>에서 <strong>Opus가 없는 것</strong>(Default, Sonnet, Haiku만 보임)을 확인하고 <code>Esc</code>로 닫은 뒤, 지출 기록이 생기도록 질문을 하나 보냅니다.</p>
+<p>같은 창에서 승인했는데 비밀번호를 묻지 않고 바로 승인되면 브라우저 쪽 로그인이 남아 있는 것입니다. <code>/model</code>에 Opus가 보이면 아직 alice이므로, <code>/logout</code> 뒤 <code>gateway_logout</code>부터 다시 하고 이번에는 새 시크릿 창에서 승인합니다.</p>
+<p><code>/model</code>에서 <strong>Opus가 없는 것</strong>(Default, Sonnet, Haiku만 보임)을 확인하고 <code>Esc</code>로 닫은 뒤, 지출 기록이 생기도록 질문을 하나 보냅니다.</p>
 <div class="code copyable"><div class="code-head"><span>text</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>이 폴더의 pseudo 디렉터리에 어떤 파일이 있는지 이름만 알려줘</code></pre></div>
 <details class="cmd-explain"><summary>이 입력이 하는 일 (붙여넣는 곳: Claude 입력창)</summary>
 <ol>
@@ -468,7 +470,7 @@ cd ~/claude-lab/ch6 &amp;&amp; claude</code></pre></div>
 <li data-lines="5-6">결과를 출력해 modelPricing이 들어갔는지 확인하고, 작업 폴더에서 Claude Code를 엽니다. 질문을 하나 보낸 뒤 <code>/usage</code>에서 비용 줄의 표시를 봅니다.</li>
 </ol></details>
 
-<p>질문을 하나 보낸 뒤 <code>/usage</code>에서 비용 줄에 조직 설정 단가(configured rates) 기준이라는 표시가 붙는지 확인합니다. 표시가 다르면 배포된 버전의 공식 문서를 기준으로 진행자와 확인합니다.</p>
+<p>질문을 하나 보낸 뒤 <code>/usage</code>에서 비용 줄에 조직 설정 단가 기준이라는 표시가 붙는지 확인합니다. 예: <code>Total cost: $0.0954 (at your organization's configured rates)</code>. 표시가 다르면 배포된 버전의 공식 문서를 기준으로 진행자와 확인합니다.</p>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>정산은 AWS 청구서가 기준입니다</strong></p>
 <p><code>modelPricing</code>은 화면과 텔레메트리의 추정치를 계약 단가에 가깝게 보정할 뿐입니다. 실제 비용은 Cost Explorer와 대사하세요.</p></div></div>
 
