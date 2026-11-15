@@ -687,7 +687,7 @@ claude /status                 # CLI 인증이 살아 있으면 SDK도 그대로
   <p class="body">
     Bedrock 경로 사용자는 Ch2에서 본 설정이 <code class="inline">~/.claude/settings.json</code>의 env에 있는지만 확인하세요:
     <code class="inline">CLAUDE_CODE_USE_BEDROCK=1</code>과
-    <code class="inline">ANTHROPIC_MODEL=opus</code>(Opus 5.5, <code class="inline">ANTHROPIC_BEDROCK_REGION_PREFIX=global</code>로 global 프로필 호출).
+    <code class="inline">ANTHROPIC_MODEL=opus</code>(<code class="inline">ANTHROPIC_DEFAULT_OPUS_MODEL=global.anthropic.claude-opus-5-5</code>로 Opus 5.5 global 프로필 호출).
     이 값은 셸 export가 아니라 사용자 설정에 들어 있으므로, <code class="inline">settingSources</code>를 생략하거나 <code class="inline">"user"</code>를 포함해 user 설정을 읽게 해야 SDK도 같은 모델과 리전으로 호출합니다.
   </p>
   <div class="callout tip">

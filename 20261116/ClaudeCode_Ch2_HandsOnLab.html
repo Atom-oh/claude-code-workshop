@@ -203,7 +203,7 @@ use_bedrock_direct</code></pre></div>
 </tbody>
 </table>
 <div class="alert warning"><div class="alert-icon" aria-hidden="true">⚠</div><div class="alert-body"><p><strong>모델을 고정하지 않으면</strong></p>
-<p>Bedrock의 기본 주 모델은 Opus 5.5이고 Opus 단가로 청구됩니다. 고정하지 않으면 Bedrock의 <code>sonnet</code> 별칭은 Sonnet 4.5로 연결됩니다. 여러 사용자에게 배포할 때는 이 환경처럼 반드시 <code>ANTHROPIC_DEFAULT_*_MODEL</code>을 고정하고, 처리 리전 범위는 <code>ANTHROPIC_BEDROCK_REGION_PREFIX</code>(<code>global</code>, <code>us</code>, <code>apac</code> 등)로 정합니다.</p></div></div>
+<p>Bedrock의 기본 주 모델은 Opus 5.5이고 Opus 단가로 청구됩니다. 고정하지 않으면 Bedrock의 <code>sonnet</code> 별칭은 Sonnet 4.5로 연결됩니다. 여러 사용자에게 배포할 때는 이 환경처럼 반드시 <code>ANTHROPIC_DEFAULT_*_MODEL</code>을 처리 범위가 붙은 프로파일 ID(<code>global.</code>, <code>us.</code>, <code>apac.</code>)로 고정하고, 고정하지 않은 모델은 <code>ANTHROPIC_BEDROCK_REGION_PREFIX</code>로 같은 범위를 따르게 합니다.</p></div></div>
 
 <h3 id="step-2-이-계정에서-쓸-수-있는-추론-프로파일">Step 2 · 이 계정에서 쓸 수 있는 추론 프로파일</h3>
 <p><strong>Terminal, 전체 복사</strong></p>
@@ -217,7 +217,7 @@ use_bedrock_direct</code></pre></div>
 <li data-lines="3"><code>--output text</code>로 받으면 ID가 탭으로 구분된 한 줄로 나옵니다. <code>tr '\t' '\n'</code>이 탭을 줄바꿈으로 바꿔 한 줄에 하나씩 만들고, <code>grep -E '5-5'</code>가 5.5 모델만 남기고, <code>sort</code>가 이름순으로 정렬합니다.</li>
 </ol></details>
 
-<p><code>global.</code>과 <code>us.</code> 프로파일이 보입니다. 서울 리전 고객이라면 <code>apac.</code> 프로파일을 고정하는 것이 기본입니다(<code>ANTHROPIC_BEDROCK_REGION_PREFIX</code>).</p>
+<p><code>global.</code>과 <code>us.</code> 프로파일이 보입니다. 서울 리전 고객이라면 <code>apac.</code> 프로파일을 고정하는 것이 기본입니다(<code>apac.anthropic.…</code> ID로 고정하고, 고정하지 않은 모델은 <code>ANTHROPIC_BEDROCK_REGION_PREFIX=apac</code>).</p>
 <h3 id="step-3-최소-iam-정책과-비교하기">Step 3 · 최소 IAM 정책과 비교하기</h3>
 <p>이 인스턴스 역할은 실습 편의를 위해 넓은 권한을 갖고 있습니다. 실제 배포에서 개발자에게 줄 최소 정책은 아래와 같습니다.</p>
 <div class="code copyable"><div class="code-head"><span>json</span><button class="copy" type="button" aria-label="복사">복사</button></div><pre><code>{
