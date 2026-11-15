@@ -281,7 +281,17 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 • 응답도 같은 길로, 공용 인터넷을 지나지 않음
 
 {cue: demo}
-사내 개발자 PC의 요청이 Bedrock까지 가는 길을 구간별로 볼게요.↓ Claude Code가 Bedrock 모드로 요청을 만들고, SSO의 임시 자격증명으로 서명해요. PC에 장기 키를 두지 않아요.↓ PrivateLink가 없는 경로도 비교해 볼게요. Anthropic API를 직접 쓰면 인터넷을 지나 api.anthropic.com으로 가요.↓ Bedrock도 VPC 엔드포인트가 없으면 공용 엔드포인트로, 인터넷 구간을 거쳐요.↓ 망분리에서는 두 경로가 모두 방화벽에 막혀요. 업데이트와 오류 리포트 같은 부가 통신도 환경변수로 끄므로, 인터넷 없이 닿는 길이 필요해요.↓ 사내 DNS가 질문을 전용선 너머 Route 53 Resolver로 넘기면, Bedrock 주소가 VPC 안의 사설 IP로 돌아와요.↓ 요청은 방화벽과 Direct Connect를 지나 회사 계정의 VPC로 들어가요.↓ 앞에서 DNS가 찾아 준 사설 IP가 이 엔드포인트의 주소예요. 그 사설 IP의 VPC 엔드포인트, 즉 PrivateLink를 통해 AWS 사설망으로 Bedrock에 닿아요.↓ IAM에서는 서명과 역할의 호출 권한, 엔드포인트 정책과 SCP를 확인해요. 어느 하나라도 거부하면 요청이 멈춰요.↓ 통과하면 추론 프로필이 가리키는 Claude가 답해요.↓ 응답도 같은 길로 돌아와 공용 인터넷을 거치지 않아요.
+사내 개발자 PC의 요청이 Bedrock까지 가는 길을 구간별로 볼게요.↓
+Claude Code가 Bedrock 모드로 요청을 만들고, SSO의 임시 자격증명으로 서명해요. PC에 장기 키를 두지 않아요.↓
+PrivateLink가 없는 경로도 비교해 볼게요. Anthropic API를 직접 쓰면 인터넷을 지나 api.anthropic.com으로 가요.↓
+Bedrock도 VPC 엔드포인트가 없으면 공용 엔드포인트로, 인터넷 구간을 거쳐요.↓
+망분리에서는 두 경로가 모두 방화벽에 막혀요. 업데이트와 오류 리포트 같은 부가 통신도 환경변수로 끄므로, 인터넷 없이 닿는 길이 필요해요.↓
+사내 DNS가 질문을 전용선 너머 Route 53 Resolver로 넘기면, Bedrock 주소가 VPC 안의 사설 IP로 돌아와요.↓
+요청은 방화벽과 Direct Connect를 지나 회사 계정의 VPC로 들어가요.↓
+앞에서 DNS가 찾아 준 사설 IP가 이 엔드포인트의 주소예요. 그 사설 IP의 VPC 엔드포인트, 즉 PrivateLink를 통해 AWS 사설망으로 Bedrock에 닿아요.↓
+IAM에서는 서명과 역할의 호출 권한, 엔드포인트 정책과 SCP를 확인해요. 어느 하나라도 거부하면 요청이 멈춰요.↓
+통과하면 추론 프로필이 가리키는 Claude가 답해요.↓
+응답도 같은 길로 돌아와 공용 인터넷을 거치지 않아요.
 
 {cue: transition}
 이 경로를 열기 위한 설정부터 살펴볼게요.
@@ -433,7 +443,11 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-pl', {
 • /status로 공급자, 리전, 리전의 출처 확인
 
 {cue: demo}
-연결에 필요한 환경변수 두 개가 그림에서 무엇을 바꾸는지 볼게요.↓ CLAUDE_CODE_USE_BEDROCK=1은 목적지를 Bedrock으로 바꿔요. 없으면 Anthropic API로 가지만, 이 값을 켜면 claude.ai 로그인 대신 AWS 자격증명으로 서명해요.↓ AWS_REGION은 호출할 리전을 정해요. AWS_REGION, AWS_DEFAULT_REGION, 프로필의 region 순으로 찾고, 아무것도 없으면 us-east-1을 써요. 프로필에 리전이 있다면 따로 넣지 않아도 돼요. 값이 여러 곳에 있어도 위에서 처음 찾은 하나를 적용해요.↓ 사내 게이트웨이를 거칠 때는 ANTHROPIC_BEDROCK_BASE_URL로 주소를 바꿔요.↓ 슬래시 status에서 공급자와 리전, 그 출처까지 확인해 주세요.
+연결에 필요한 환경변수 두 개가 그림에서 무엇을 바꾸는지 볼게요.↓
+CLAUDE_CODE_USE_BEDROCK=1은 목적지를 Bedrock으로 바꿔요. 없으면 Anthropic API로 가지만, 이 값을 켜면 claude.ai 로그인 대신 AWS 자격증명으로 서명해요.↓
+AWS_REGION은 호출할 리전을 정해요. AWS_REGION, AWS_DEFAULT_REGION, 프로필의 region 순으로 찾고, 아무것도 없으면 us-east-1을 써요. 프로필에 리전이 있다면 따로 넣지 않아도 돼요. 값이 여러 곳에 있어도 위에서 처음 찾은 하나를 적용해요.↓
+사내 게이트웨이를 거칠 때는 ANTHROPIC_BEDROCK_BASE_URL로 주소를 바꿔요.↓
+슬래시 status에서 공급자와 리전, 그 출처까지 확인해 주세요.
 
 {cue: transition}
 이제 이 호출을 허용할 IAM 권한이 필요해요.
@@ -515,7 +529,11 @@ Claude Code가 부르는 API마다 필요한 권한
 • 실제 배포는 허용할 프로필 ARN으로 좁히고, Claude Code 전용 AWS 계정 권장
 
 {cue: demo}
-IAM 권한은 Claude Code가 호출하는 API를 따라가며 볼게요.↓ 시작할 때는 ListInferenceProfiles로 계정의 추론 프로필을 조회해요. 리소스를 지정할 수 없어 Resource 별표인 별도 문장에 둬요. 다른 ARN 목록과 합치면 조회가 거부돼요.↓ 팀별 이름표인 애플리케이션 추론 프로필은 이름만으로 실제 모델을 알 수 없어 GetInferenceProfile로 뒤의 모델을 읽어요. 이 권한이 없어도 호출은 되지만 새 모델마다 한 번 더 왕복해요.↓ 대화에는 InvokeModel과 스트리밍 호출 권한이 필요해요. 프로필뿐 아니라 뒤의 기반 모델도 허용해야 해요. 예시는 와일드카드이지만 운영에서는 허용할 프로필 ARN으로 좁혀 주세요.↓ Marketplace 구독 확인 권한은 Bedrock을 거친 요청에만 허용하도록 조건을 둬요.
+IAM 권한은 Claude Code가 호출하는 API를 따라가며 볼게요.↓
+시작할 때는 ListInferenceProfiles로 계정의 추론 프로필을 조회해요. 리소스를 지정할 수 없어 Resource 별표인 별도 문장에 둬요. 다른 ARN 목록과 합치면 조회가 거부돼요.↓
+팀별 이름표인 애플리케이션 추론 프로필은 이름만으로 실제 모델을 알 수 없어 GetInferenceProfile로 뒤의 모델을 읽어요. 이 권한이 없어도 호출은 되지만 새 모델마다 한 번 더 왕복해요.↓
+대화에는 InvokeModel과 스트리밍 호출 권한이 필요해요. 프로필뿐 아니라 뒤의 기반 모델도 허용해야 해요. 예시는 와일드카드이지만 운영에서는 허용할 프로필 ARN으로 좁혀 주세요.↓
+Marketplace 구독 확인 권한은 Bedrock을 거친 요청에만 허용하도록 조건을 둬요.
 
 {cue: transition}
 이 권한을 개발자 PC에 전달할 때 키와 SSO가 어떻게 다른지 볼게요.
@@ -625,9 +643,16 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-key', {
 • 만료되면 Claude Code가 GetCallerIdentity로 확인한 뒤 awsAuthRefresh(aws sso login)를 실행하고 요청을 다시 보냄
 
 {cue: demo}
-위쪽은 키를 나눠 준 경우, 아래쪽은 SSO로 로그인한 경우예요.↓ aws configure의 IAM 사용자 액세스 키는 삭제하기 전까지 유효해요.↓ 설정을 돕다가 메신저에 복사하거나 .env 파일을 커밋하면 키가 회사 밖으로 나갈 수 있어요.↓ 만료가 없으므로 그 키를 가진 사람은 다른 PC에서도 같은 권한으로 호출해요. 원래 PC에만 권한이 남는 것이 아니라, 복사된 키로도 같은 호출이 돼요.↓
+위쪽은 키를 나눠 준 경우, 아래쪽은 SSO로 로그인한 경우예요.↓
+aws configure의 IAM 사용자 액세스 키는 삭제하기 전까지 유효해요.↓
+설정을 돕다가 메신저에 복사하거나 .env 파일을 커밋하면 키가 회사 밖으로 나갈 수 있어요.↓
+만료가 없으므로 그 키를 가진 사람은 다른 PC에서도 같은 권한으로 호출해요. 원래 PC에만 권한이 남는 것이 아니라, 복사된 키로도 같은 호출이 돼요.↓
 {cue: pause}
-SSO에서는 장기 키 대신 aws sso login으로 회사 계정에 로그인해요.↓ Identity Center에서 만료 시각이 있는 STS 임시 자격증명을 받아요.↓ 복사되더라도 시간이 지나면 더는 사용할 수 없어요.↓ 만료 시에는 GetCallerIdentity로 상태를 확인하고, awsAuthRefresh의 로그인 명령을 실행해요.↓ 사용자가 브라우저 인증을 마치면 같은 요청을 다시 보내고 세션을 이어가요.
+SSO에서는 장기 키 대신 aws sso login으로 회사 계정에 로그인해요.↓
+Identity Center에서 만료 시각이 있는 STS 임시 자격증명을 받아요.↓
+복사되더라도 시간이 지나면 더는 사용할 수 없어요.↓
+만료 시에는 GetCallerIdentity로 상태를 확인하고, awsAuthRefresh의 로그인 명령을 실행해요.↓
+사용자가 브라우저 인증을 마치면 같은 요청을 다시 보내고 세션을 이어가요.
 
 {cue: transition}
 이 차이를 자격증명 방식의 선택과 연결해 볼게요.
@@ -710,7 +735,11 @@ Bedrock API 키만 AWS SDK 기본 체인을 거치지 않음
 • 보조: aws login 콘솔 자격증명, 최대 12시간
 
 {cue: demo}
-화면의 다섯 방식 중 위의 네 개는 AWS SDK 기본 체인을 쓰고, Bedrock API 키만 체인을 거치지 않아요.↓ aws configure와 액세스 키 환경변수는 장기 키라서 앞에서 본 유출 위험을 고려해야 해요.↓ 조직의 기본 방식으로는 회사 계정에서 임시 자격증명을 받는 SSO를 권장해요. 장기 키를 나눠 주는 대신 로그인과 만료를 함께 관리하는 선택이에요.↓ aws login의 콘솔 자격증명은 최대 12시간인 보조 수단이에요.↓ Bedrock API 키는 키 자체가 권한이므로 배포용으로는 권장하지 않아요.
+화면의 다섯 방식 중 위의 네 개는 AWS SDK 기본 체인을 쓰고, Bedrock API 키만 체인을 거치지 않아요.↓
+aws configure와 액세스 키 환경변수는 장기 키라서 앞에서 본 유출 위험을 고려해야 해요.↓
+조직의 기본 방식으로는 회사 계정에서 임시 자격증명을 받는 SSO를 권장해요. 장기 키를 나눠 주는 대신 로그인과 만료를 함께 관리하는 선택이에요.↓
+aws login의 콘솔 자격증명은 최대 12시간인 보조 수단이에요.↓
+Bedrock API 키는 키 자체가 권한이므로 배포용으로는 권장하지 않아요.
 
 [출처]
 • code.claude.com/docs/en/amazon-bedrock (2. Configure AWS credentials)
@@ -791,7 +820,11 @@ SSO 자동 갱신, awsAuthRefresh와 awsCredentialExport
 • 무한 로그인 탭이면 awsAuthRefresh를 빼고 aws sso login을 직접 실행
 
 {cue: demo}
-자동 재로그인 설정은 AWS_PROFILE의 SSO 프로필과 awsAuthRefresh의 로그인 명령으로 구성해요. 한 값은 사용할 프로필을, 다른 값은 갱신할 때 실행할 명령을 정해요.↓ 세션이 시작되면 SDK 체인으로 찾은 자격증명을 메모리에 두고, 만료 5분 전까지 재사용해요.↓ 만료가 의심되면 GetCallerIdentity로 확인한 뒤 정말 만료됐을 때만 설정한 로그인 명령을 실행해요. 사용자가 인증을 마치면 요청을 다시 보내요.↓ 교차 계정에서 .aws를 바꿀 수 없다면 awsCredentialExport를 써요. 세션 시작마다 실행해 자격증명을 JSON으로 전달해요.↓ VPN이나 TLS 검사 프록시로 로그인 탭이 반복되면, 갱신 설정을 빼고 시작 전에 aws sso login을 직접 실행해요.
+자동 재로그인 설정은 AWS_PROFILE의 SSO 프로필과 awsAuthRefresh의 로그인 명령으로 구성해요. 한 값은 사용할 프로필을, 다른 값은 갱신할 때 실행할 명령을 정해요.↓
+세션이 시작되면 SDK 체인으로 찾은 자격증명을 메모리에 두고, 만료 5분 전까지 재사용해요.↓
+만료가 의심되면 GetCallerIdentity로 확인한 뒤 정말 만료됐을 때만 설정한 로그인 명령을 실행해요. 사용자가 인증을 마치면 요청을 다시 보내요.↓
+교차 계정에서 .aws를 바꿀 수 없다면 awsCredentialExport를 써요. 세션 시작마다 실행해 자격증명을 JSON으로 전달해요.↓
+VPN이나 TLS 검사 프록시로 로그인 탭이 반복되면, 갱신 설정을 빼고 시작 전에 aws sso login을 직접 실행해요.
 
 [출처]
 • code.claude.com/docs/en/amazon-bedrock (Credential caching and resolution timeout, Advanced credential configuration, Troubleshooting)
@@ -913,7 +946,11 @@ QUICK CHECK, 손을 들어 답해 주세요
 • ANTHROPIC_BEDROCK_REGION_PREFIX는 기본값을 두고 prefix만 바꿈 (us, eu, apac, jp, au, global)
 
 {cue: demo}
-사용자가 별칭을 고르면 Claude Code가 실제 모델 ID로 바꿔요. 이 과정에서 조직이 어떤 값을 정할지 볼게요.↓ 고정하지 않으면 내장된 기본값을 써요. 이 덱의 기준 버전은 Opus 5.5이며, 업데이트하면 기본값도 바뀔 수 있어요.↓ 여러 사용자에게 배포할 때는 managed settings의 env에 모델을 고정해요. 새 버전 제안도 뜨지 않아 바꾸는 시점을 조직이 정할 수 있어요. 사용자마다 기본값이 바뀌지 않도록 배포 설정에서 버전을 정하는 것이에요.↓ ID 앞의 접두어는 리전 그룹을 따라요. 서울을 포함한 ap는 apac., 이 랩의 global 프로필은 global.을 써요.↓ 접두어만 바꿀 때는 ANTHROPIC_BEDROCK_REGION_PREFIX를 사용해요. 이 설정만으로 모델 버전이 고정되지는 않으며, 실제 ID는 계정에서 사용할 수 있는 프로필로 확인해 주세요.
+사용자가 별칭을 고르면 Claude Code가 실제 모델 ID로 바꿔요. 이 과정에서 조직이 어떤 값을 정할지 볼게요.↓
+고정하지 않으면 내장된 기본값을 써요. 이 덱의 기준 버전은 Opus 5.5이며, 업데이트하면 기본값도 바뀔 수 있어요.↓
+여러 사용자에게 배포할 때는 managed settings의 env에 모델을 고정해요. 새 버전 제안도 뜨지 않아 바꾸는 시점을 조직이 정할 수 있어요. 사용자마다 기본값이 바뀌지 않도록 배포 설정에서 버전을 정하는 것이에요.↓
+ID 앞의 접두어는 리전 그룹을 따라요. 서울을 포함한 ap는 apac., 이 랩의 global 프로필은 global.을 써요.↓
+접두어만 바꿀 때는 ANTHROPIC_BEDROCK_REGION_PREFIX를 사용해요. 이 설정만으로 모델 버전이 고정되지는 않으며, 실제 ID는 계정에서 사용할 수 있는 프로필로 확인해 주세요.
 
 [출처]
 • code.claude.com/docs/en/amazon-bedrock (4. Pin model versions, Startup model checks, Cross-region inference profile prefixes)
@@ -999,7 +1036,12 @@ QUICK CHECK, 손을 들어 답해 주세요
 • ARN 문자열은 마지막에. 태그로 나눈 비용 계산은 Ch6에서
 
 {cue: demo}
-A팀과 B팀이 같은 Sonnet을 쓰더라도 각자의 프로필로 호출해요. 모델은 같고 호출에 붙는 팀 식별 정보가 다르다고 보시면 돼요.↓ 이 프로필의 정식 이름은 애플리케이션 추론 프로필이에요. 원본을 복사하고 팀 이름과 태그를 다르게 붙여요.↓ 팀별 managed settings의 modelOverrides로 선택한 모델을 프로필에 연결해요. 개발자가 슬래시 model에서 고르면 해당 팀 프로필로 호출해요.↓ CloudTrail에는 누가 어느 프로필을 호출했는지 남아, 감사에서 팀별 호출을 확인할 수 있어요.↓ IAM에서 자기 팀 프로필만 허용하면, 다른 팀 프로필로는 호출할 수 없어요.↓ 생성 명령의 결과인 ARN을 앞에서 본 정책에 넣어요. 태그로 비용을 나누는 방법은 Ch6에서 다룰게요.
+A팀과 B팀이 같은 Sonnet을 쓰더라도 각자의 프로필로 호출해요. 모델은 같고 호출에 붙는 팀 식별 정보가 다르다고 보시면 돼요.↓
+이 프로필의 정식 이름은 애플리케이션 추론 프로필이에요. 원본을 복사하고 팀 이름과 태그를 다르게 붙여요.↓
+팀별 managed settings의 modelOverrides로 선택한 모델을 프로필에 연결해요. 개발자가 슬래시 model에서 고르면 해당 팀 프로필로 호출해요.↓
+CloudTrail에는 누가 어느 프로필을 호출했는지 남아, 감사에서 팀별 호출을 확인할 수 있어요.↓
+IAM에서 자기 팀 프로필만 허용하면, 다른 팀 프로필로는 호출할 수 없어요.↓
+생성 명령의 결과인 ARN을 앞에서 본 정책에 넣어요. 태그로 비용을 나누는 방법은 Ch6에서 다룰게요.
 
 {cue: transition}
 이제 이 설정을 회사 전체에 배포하는 방법으로 이어갈게요.
@@ -1158,7 +1200,14 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 • Claude Code는 시작할 때 읽고 파일이 바뀌면 다시 읽음. 개인 설정의 allow로는 managed deny를 풀 수 없음
 
 {cue: demo}
-왼쪽의 인프라 팀이 오른쪽 개발자 PC에 정책을 전달하는 흐름이에요.↓ 관리자가 정책 파일을 작성해요. 예제는 원본 고객 데이터인 raw 폴더의 읽기를 제한해요.↓ 서버 관리 설정은 claude.ai의 Team과 Enterprise 플랜에서 사용해요. Bedrock 모드를 켜면 이 경로를 건너뛰므로 파일과 MDM으로 배포해요.↓ 단말 관리 도구는 plist나 레지스트리로, Ansible 같은 도구는 파일 복사로 같은 정책을 전달해요.↓ 파일은 OS별로 정해진 관리자 경로에 둬요. Linux 랩은 /etc/claude-code를 사용하고, 정책을 나누면 managed-settings.d의 조각을 이름순으로 합쳐요.↓ Claude Code는 시작할 때와 파일이 바뀔 때 정책을 읽고, 사용자나 프로젝트 설정보다 우선 적용해요.↓ 개발자가 settings.json에 같은 경로의 allow를 넣어 봐요.↓ 규칙을 합친 뒤 deny부터 평가하므로 읽기는 계속 거부돼요. 개인 설정으로 조직의 거부 규칙을 되돌릴 수는 없어요. 정책 조각을 합치는 것과 배포 소스를 선택하는 것은 나눠 보시면 돼요. MDM과 파일을 함께 쓰더라도 기본은 우선순위가 높은 소스 하나를 선택해요. 모두 합치려면 managedSourcesBehavior를 merge로 지정해요.
+왼쪽의 인프라 팀이 오른쪽 개발자 PC에 정책을 전달하는 흐름이에요.↓
+관리자가 정책 파일을 작성해요. 예제는 원본 고객 데이터인 raw 폴더의 읽기를 제한해요.↓
+서버 관리 설정은 claude.ai의 Team과 Enterprise 플랜에서 사용해요. Bedrock 모드를 켜면 이 경로를 건너뛰므로 파일과 MDM으로 배포해요.↓
+단말 관리 도구는 plist나 레지스트리로, Ansible 같은 도구는 파일 복사로 같은 정책을 전달해요.↓
+파일은 OS별로 정해진 관리자 경로에 둬요. Linux 랩은 /etc/claude-code를 사용하고, 정책을 나누면 managed-settings.d의 조각을 이름순으로 합쳐요.↓
+Claude Code는 시작할 때와 파일이 바뀔 때 정책을 읽고, 사용자나 프로젝트 설정보다 우선 적용해요.↓
+개발자가 settings.json에 같은 경로의 allow를 넣어 봐요.↓
+규칙을 합친 뒤 deny부터 평가하므로 읽기는 계속 거부돼요. 개인 설정으로 조직의 거부 규칙을 되돌릴 수는 없어요. 정책 조각을 합치는 것과 배포 소스를 선택하는 것은 나눠 보시면 돼요. MDM과 파일을 함께 쓰더라도 기본은 우선순위가 높은 소스 하나를 선택해요. 모두 합치려면 managedSourcesBehavior를 merge로 지정해요.
 
 {cue: transition}
 같은 키의 값이 겹칠 때도 살펴볼게요.
@@ -1248,7 +1297,12 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-mdm', {
 • 목록 키(permissions.allow, deny 등)는 모든 층을 합침. 예외: managed의 availableModels는 그대로 적용, fallbackModel은 한 층 값만
 
 {cue: demo}
-세션 기록의 보존 기간인 cleanupPeriodDays를 다섯 층에 다르게 지정했어요. 같은 키의 값이 다를 때는 여러 값을 합치는 대신 하나를 선택해요. 적용되는 값은 맨 위 Managed의 14일이며, 아래의 설정으로 덮어쓸 수 없어요.↓ Managed가 없으면 --settings로 전달한 CLI 인자가 적용돼요. 이번 세션에만 쓰는 설정이에요.↓ 그다음은 개인 Local 설정이에요.↓ 이어 팀이 커밋한 Project예요.↓ 내 PC의 User예요. 어디에도 없으면 기본값 30일을 써요.↓ deny 같은 목록 키는 한 값을 고르지 않고 모든 층에서 합쳐요. 개인이 빈 목록을 넣어도 조직의 deny는 남아요. 다만 managed의 availableModels는 병합하지 않고 해당 목록을 그대로 써요.
+세션 기록의 보존 기간인 cleanupPeriodDays를 다섯 층에 다르게 지정했어요. 같은 키의 값이 다를 때는 여러 값을 합치는 대신 하나를 선택해요. 적용되는 값은 맨 위 Managed의 14일이며, 아래의 설정으로 덮어쓸 수 없어요.↓
+Managed가 없으면 --settings로 전달한 CLI 인자가 적용돼요. 이번 세션에만 쓰는 설정이에요.↓
+그다음은 개인 Local 설정이에요.↓
+이어 팀이 커밋한 Project예요.↓
+내 PC의 User예요. 어디에도 없으면 기본값 30일을 써요.↓
+deny 같은 목록 키는 한 값을 고르지 않고 모든 층에서 합쳐요. 개인이 빈 목록을 넣어도 조직의 deny는 남아요. 다만 managed의 availableModels는 병합하지 않고 해당 목록을 그대로 써요.
 
 {cue: transition}
 개인이 allow를 추가하는 것까지 제한하려면 잠금 설정이 필요해요.
@@ -1316,7 +1370,13 @@ managed-settings.json에 넣는 잠금 키와 그 효과
 • strictKnownMarketplaces: 마켓플레이스 출처 허용 목록 (managed 전용)
 
 {cue: demo}
-개인의 allow 추가까지 제한하는 것이 화면의 잠금 키예요. 각 키가 어떤 동작을 제한하는지 볼게요.↓ disableBypassPermissionsMode는 모든 확인을 건너뛰는 우회 모드를 막아요. 조직 배포에서는 이 설정을 켜 두세요.↓ allowManagedPermissionRulesOnly는 개인과 프로젝트의 권한 규칙을 무시해요. 규제 환경의 기본 설정으로 권장해요.↓ allowManagedHooksOnly는 조직이 배포한 훅만 실행하도록 해, 뒤에서 만들 DLP 훅과 함께 사용해요.↓ allowedHttpHookUrls로 HTTP 훅의 목적지를 감사 수집기로 제한해요.↓ requiredMinimumVersion은 지정한 버전보다 낮으면 시작을 거부해요. 업데이트 하한만 정하는 minimumVersion과 구분해 주세요.↓ strictKnownMarketplaces는 마켓플레이스를 허용 목록으로 제한해요. Ch4에서 이어서 볼게요.
+개인의 allow 추가까지 제한하는 것이 화면의 잠금 키예요. 각 키가 어떤 동작을 제한하는지 볼게요.↓
+disableBypassPermissionsMode는 모든 확인을 건너뛰는 우회 모드를 막아요. 조직 배포에서는 이 설정을 켜 두세요.↓
+allowManagedPermissionRulesOnly는 개인과 프로젝트의 권한 규칙을 무시해요. 규제 환경의 기본 설정으로 권장해요.↓
+allowManagedHooksOnly는 조직이 배포한 훅만 실행하도록 해, 뒤에서 만들 DLP 훅과 함께 사용해요.↓
+allowedHttpHookUrls로 HTTP 훅의 목적지를 감사 수집기로 제한해요.↓
+requiredMinimumVersion은 지정한 버전보다 낮으면 시작을 거부해요. 업데이트 하한만 정하는 minimumVersion과 구분해 주세요.↓
+strictKnownMarketplaces는 마켓플레이스를 허용 목록으로 제한해요. Ch4에서 이어서 볼게요.
 
 [출처]
 • code.claude.com/docs/en/settings-reference (permissions.disableBypassPermissionsMode, allowManagedPermissionRulesOnly, allowManagedHooksOnly, allowedHttpHookUrls, requiredMinimumVersion, minimumVersion, strictKnownMarketplaces)
@@ -1385,7 +1445,10 @@ managed-settings.json, 줄마다 담은 뜻
 
 오늘 랩의 정책은 줄 묶음마다 개발자 PC의 동작이 달라져요.↓
 {cue: demo}
-모델 설정은 세 줄을 함께 봐요. availableModels로 선택지를 Sonnet과 Haiku로 줄이고, enforceAvailableModels로 목록 밖의 지정도 목록 안으로 바꿔요. env의 ANTHROPIC_MODEL은 기본 모델을 고정해요. 선택 목록만으로 기본 모델이 바뀌지는 않아 세 설정을 함께 둬요. 선택할 수 있는 모델과 시작할 때 쓰는 모델을 각각 정하는 과정이에요.↓ cleanupPeriodDays 14는 PC의 세션 기록을 14일 보존해요. 기본값은 30일이에요.↓ deny에는 원본 데이터의 실제 경로와 링크 경로를 모두 넣어요. 도구에 전달된 경로 그대로 규칙과 비교하기 때문이에요. Read deny는 파일 도구를 막고, cat 같은 셸 명령은 Lab 2의 샌드박스로 제한해요.↓ disableBypassPermissionsMode로 우회 모드도 잠가요.
+모델 설정은 세 줄을 함께 봐요. availableModels로 선택지를 Sonnet과 Haiku로 줄이고, enforceAvailableModels로 목록 밖의 지정도 목록 안으로 바꿔요. env의 ANTHROPIC_MODEL은 기본 모델을 고정해요. 선택 목록만으로 기본 모델이 바뀌지는 않아 세 설정을 함께 둬요. 선택할 수 있는 모델과 시작할 때 쓰는 모델을 각각 정하는 과정이에요.↓
+cleanupPeriodDays 14는 PC의 세션 기록을 14일 보존해요. 기본값은 30일이에요.↓
+deny에는 원본 데이터의 실제 경로와 링크 경로를 모두 넣어요. 도구에 전달된 경로 그대로 규칙과 비교하기 때문이에요. Read deny는 파일 도구를 막고, cat 같은 셸 명령은 Lab 2의 샌드박스로 제한해요.↓
+disableBypassPermissionsMode로 우회 모드도 잠가요.
 
 [출처]
 • Ch2 Lab 1 TASK 02 (정책 내용과 효과 표), TASK 03
@@ -1492,7 +1555,10 @@ QUICK CHECK, 손을 들어 답해 주세요
 
 정책 배포 뒤에는 설정의 출처와 실제 동작을 함께 확인해요. 파일이 있다는 것만으로 적용됐다고 보기는 어렵기 때문이에요.↓
 {cue: demo}
-슬래시 status의 Setting sources에서 Enterprise managed settings를 찾아요. 괄호 안의 file은 파일로 전달된 정책이라는 뜻이에요.↓ 시작 모델은 Sonnet 5.5이고, 슬래시 model에는 Sonnet과 Haiku만 보여야 해요.↓ Read 도구로 raw는 거부되고 pseudo는 읽히는지 확인해요.↓ 개인 settings.json에 allow를 넣어도 계속 거부되면 정책이 강제되는 것이에요.
+슬래시 status의 Setting sources에서 Enterprise managed settings를 찾아요. 괄호 안의 file은 파일로 전달된 정책이라는 뜻이에요.↓
+시작 모델은 Sonnet 5.5이고, 슬래시 model에는 Sonnet과 Haiku만 보여야 해요.↓
+Read 도구로 raw는 거부되고 pseudo는 읽히는지 확인해요.↓
+개인 settings.json에 allow를 넣어도 계속 거부되면 정책이 강제되는 것이에요.
 
 {cue: transition}
 이제 위험한 동작을 어디에서 막을지 살펴볼게요.
@@ -1609,7 +1675,12 @@ QUICK CHECK, 손을 들어 답해 주세요
 • Bash 패턴은 우회가 쉬우니 샌드박스와 함께, 복잡한 판단은 훅으로
 
 {cue: demo}
-왼쪽 스코프의 규칙을 한 목록으로 모은 뒤, deny, ask, allow 순으로 처음 일치하는 규칙을 적용해요.↓ 규칙을 합치므로 어느 파일에 있는지보다 어떤 규칙과 일치하는지가 중요해요. 상위 설정의 값 하나를 고르는 앞 장의 우선순위와는 다른 방식이에요.↓ deny에 일치하면 다른 곳에 allow가 있어도 거부돼요. 더 구체적인 allow로도 deny의 예외를 만들 수 없어요.↓ ask에 일치하면 사용자에게 확인해요.↓ allow에 일치하면 바로 실행해요.↓ 어디에도 맞지 않으면 현재 권한 모드가 결정해요. auto mode의 분류기는 다음 장에서 볼게요. 오른쪽 문법은 도구 이름과 괄호 안 조건이에요. Bash 패턴만으로는 여러 표현을 모두 막기 어려워 샌드박스로 보완해요.
+왼쪽 스코프의 규칙을 한 목록으로 모은 뒤, deny, ask, allow 순으로 처음 일치하는 규칙을 적용해요.↓
+규칙을 합치므로 어느 파일에 있는지보다 어떤 규칙과 일치하는지가 중요해요. 상위 설정의 값 하나를 고르는 앞 장의 우선순위와는 다른 방식이에요.↓
+deny에 일치하면 다른 곳에 allow가 있어도 거부돼요. 더 구체적인 allow로도 deny의 예외를 만들 수 없어요.↓
+ask에 일치하면 사용자에게 확인해요.↓
+allow에 일치하면 바로 실행해요.↓
+어디에도 맞지 않으면 현재 권한 모드가 결정해요. auto mode의 분류기는 다음 장에서 볼게요. 오른쪽 문법은 도구 이름과 괄호 안 조건이에요. Bash 패턴만으로는 여러 표현을 모두 막기 어려워 샌드박스로 보완해요.
 
 [출처]
 • code.claude.com/docs/en/permissions (Manage permissions, Settings precedence)
@@ -1723,7 +1794,11 @@ auto mode의 판정 순서
 • 분류기 판정: hard_deny, soft_deny, allow 예외, 사용자 명시 의도 순. 일반적인 요청은 명시 의도가 아님
 
 {cue: demo}
-Lab 2의 auto mode는 권한 규칙을 확인한 뒤 분류기로 판단해요.↓ deny에 일치하면 분류기나 사용자 의도로도 풀 수 없어요.↓ ask에 일치하면 분류기가 안전하다고 봐도 사용자에게 확인해요.↓ npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집은 바로 실행해요. 반면 Bash 별표처럼 넓은 allow는 auto mode에서 비활성화돼요.↓ 분류기는 hard_deny, soft_deny, allow 예외, 사용자 명시 의도를 평가해요. 명시 의도는 정확히 그 동작을 요청한 경우를 말해요. 넓은 작업 목표가 그 과정의 모든 위험한 동작까지 허용하지는 않아요. “정리해 줘”만으로 force push까지 허용한 것은 아니에요.
+Lab 2의 auto mode는 권한 규칙을 확인한 뒤 분류기로 판단해요.↓
+deny에 일치하면 분류기나 사용자 의도로도 풀 수 없어요.↓
+ask에 일치하면 분류기가 안전하다고 봐도 사용자에게 확인해요.↓
+npm test처럼 좁게 허용한 명령과 읽기, 작업 폴더 안 편집은 바로 실행해요. 반면 Bash 별표처럼 넓은 allow는 auto mode에서 비활성화돼요.↓
+분류기는 hard_deny, soft_deny, allow 예외, 사용자 명시 의도를 평가해요. 명시 의도는 정확히 그 동작을 요청한 경우를 말해요. 넓은 작업 목표가 그 과정의 모든 위험한 동작까지 허용하지는 않아요. “정리해 줘”만으로 force push까지 허용한 것은 아니에요.
 
 [출처]
 • code.claude.com/docs/en/permission-modes (How the classifier evaluates actions)
@@ -1801,7 +1876,11 @@ Lab 2의 auto mode는 권한 규칙을 확인한 뒤 분류기로 판단해요.�
 
 분류기에는 별도 설정 없이 적용되는 기본 규칙이 있어요.↓
 {cue: demo}
-외부에서 코드를 받아 바로 실행하는 동작이 대상이에요.↓ 민감한 데이터를 밖으로 보내는 동작을 제한해요. 반출은 기본 hard_deny라 사용자가 요청해도 허용되지 않아요.↓ force push나 세션 전부터 있던 파일 삭제처럼 되돌리기 어려운 일도 대상이에요.↓ 운영 배포와 마이그레이션도 확인해요.↓ 작업 폴더의 파일 작업과 lock 파일의 의존성 설치, 읽기 전용 HTTP는 기본으로 통과해요. 현재 저장소에 push하는 것도 통과하므로 확인을 받으려면 ask 규칙을 둬요.
+외부에서 코드를 받아 바로 실행하는 동작이 대상이에요.↓
+민감한 데이터를 밖으로 보내는 동작을 제한해요. 반출은 기본 hard_deny라 사용자가 요청해도 허용되지 않아요.↓
+force push나 세션 전부터 있던 파일 삭제처럼 되돌리기 어려운 일도 대상이에요.↓
+운영 배포와 마이그레이션도 확인해요.↓
+작업 폴더의 파일 작업과 lock 파일의 의존성 설치, 읽기 전용 HTTP는 기본으로 통과해요. 현재 저장소에 push하는 것도 통과하므로 확인을 받으려면 ask 규칙을 둬요.
 
 [출처]
 • code.claude.com/docs/en/permission-modes (What the classifier blocks by default, Critical paths)
@@ -1912,9 +1991,14 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-layers', {
 • 랩의 층 번호(1 권한 규칙, 2 샌드박스, 3 훅, 4 Guardrails, 5 반출 채널)는 종류 번호, 실제 검사는 훅이 먼저
 
 {cue: demo}
-한 명령이 훅에서 권한 규칙, 분류기와 샌드박스로 이어지는 흐름이에요.↓ 공간을 정리해 달라는 요청에 Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황이에요.↓ 실행 직전에는 PreToolUse 훅이 먼저 검사해요. 이 DLP 예제는 주민번호 패턴을 보므로 해당 명령은 통과해요.↓ 권한 규칙의 deny Bash rm -rf 별표에 일치하면 바로 거부돼요.↓
+한 명령이 훅에서 권한 규칙, 분류기와 샌드박스로 이어지는 흐름이에요.↓
+공간을 정리해 달라는 요청에 Claude가 작업 폴더 밖의 shared-ledger를 rm -rf로 지우려는 상황이에요.↓
+실행 직전에는 PreToolUse 훅이 먼저 검사해요. 이 DLP 예제는 주민번호 패턴을 보므로 해당 명령은 통과해요.↓
+권한 규칙의 deny Bash rm -rf 별표에 일치하면 바로 거부돼요.↓
 {cue: pause}
-이번에는 같은 삭제를 다른 표현으로 시도하는 경우예요. find에 -delete를 붙여 패턴을 피하더라도, auto 분류기가 기존 파일의 영구 삭제로 판단해 막아요. Manual 모드에서는 사용자에게 확인해요.↓ 승인하더라도 샌드박스가 작업 폴더 밖 쓰기를 OS에서 제한해요.↓ 이 설정을 managed 정책에 두면 사용자가 끌 수 없어요. 랩의 층 번호는 종류를 구분한 것이며, 실제 실행은 훅부터 시작해요.
+이번에는 같은 삭제를 다른 표현으로 시도하는 경우예요. find에 -delete를 붙여 패턴을 피하더라도, auto 분류기가 기존 파일의 영구 삭제로 판단해 막아요. Manual 모드에서는 사용자에게 확인해요.↓
+승인하더라도 샌드박스가 작업 폴더 밖 쓰기를 OS에서 제한해요.↓
+이 설정을 managed 정책에 두면 사용자가 끌 수 없어요. 랩의 층 번호는 종류를 구분한 것이며, 실제 실행은 훅부터 시작해요.
 
 {cue: transition}
 이번에는 프롬프트에 민감정보가 포함된 경우를 볼게요.
@@ -2020,9 +2104,12 @@ import('./assets/flowscene.js').then(function (m) { m.mount('#c2-dlp', {
 • 수정본: command -v jq || exit 2, 스크립트 없음, 시작 실패, 시간 초과는 onFailure: block (v2.1.295+)
 
 {cue: demo}
-프롬프트는 모델로 가기 전에 UserPromptSubmit 훅에서 검사해요. 랩의 dlp-guard.sh가 이 위치에 붙어요.↓ 가명 토큰만 있으면 패턴이 없으므로 exit 0으로 Bedrock에 전달돼요.↓ 형식에 맞는 가짜 주민번호가 있으면 exit 2로 차단해요. Claude에 전달되지 않고 입력창으로 문장이 돌아와요.↓
+프롬프트는 모델로 가기 전에 UserPromptSubmit 훅에서 검사해요. 랩의 dlp-guard.sh가 이 위치에 붙어요.↓
+가명 토큰만 있으면 패턴이 없으므로 exit 0으로 Bedrock에 전달돼요.↓
+형식에 맞는 가짜 주민번호가 있으면 exit 2로 차단해요. Claude에 전달되지 않고 입력창으로 문장이 돌아와요.↓
 {cue: pause}
-jq가 없으면 검사 없이 끝나 요청이 진행될 수 있어요. 별도 실패 차단 설정 없이 127로 끝나는 경우도 비차단 오류예요. Bedrock Guardrails를 적용했다면 AWS 쪽에서도 검사해요.↓ 수정본은 jq가 없을 때 exit 2로 차단하고, 스크립트 누락이나 시간 초과는 onFailure block으로 처리해요. 검사를 마친 경우와 검사 자체가 실패한 경우를 함께 확인해야 해요.
+jq가 없으면 검사 없이 끝나 요청이 진행될 수 있어요. 별도 실패 차단 설정 없이 127로 끝나는 경우도 비차단 오류예요. Bedrock Guardrails를 적용했다면 AWS 쪽에서도 검사해요.↓
+수정본은 jq가 없을 때 exit 2로 차단하고, 스크립트 누락이나 시간 초과는 onFailure block으로 처리해요. 검사를 마친 경우와 검사 자체가 실패한 경우를 함께 확인해야 해요.
 
 [출처]
 • code.claude.com/docs/en/hooks (Exit code output, onFailure)
@@ -2097,9 +2184,12 @@ DLP 훅 예제와 fail-open, 그리고 수정본
 • 패턴은 탐지 예시, 운영 룰은 사내 DLP 기준
 
 {cue: demo}
-방금 장면의 스크립트를 볼게요.↓ 패턴이 없으면 exit 0으로 통과해요. 프롬프트는 .prompt, 도구 실행 전에는 .tool_input을 검사해요.↓ 일치하면 exit 2로 차단하며, 사유는 프롬프트 단계에서는 사용자에게, 도구 단계에서는 Claude에게 전달해요.↓
+방금 장면의 스크립트를 볼게요.↓
+패턴이 없으면 exit 0으로 통과해요. 프롬프트는 .prompt, 도구 실행 전에는 .tool_input을 검사해요.↓
+일치하면 exit 2로 차단하며, 사유는 프롬프트 단계에서는 사용자에게, 도구 단계에서는 Claude에게 전달해요.↓
 {cue: pause}
-원본은 jq가 없으면 검사할 내용이 비어 exit 0으로 끝나요. 다른 종료 코드도 기본 처리에서는 요청을 차단하지 않는 fail-open이에요.↓ 수정본은 jq가 없으면 exit 2로 막아요. grep은 불일치인 1일 때만 통과하고, 일치나 실행 오류는 차단해요.
+원본은 jq가 없으면 검사할 내용이 비어 exit 0으로 끝나요. 다른 종료 코드도 기본 처리에서는 요청을 차단하지 않는 fail-open이에요.↓
+수정본은 jq가 없으면 exit 2로 막아요. grep은 불일치인 1일 때만 통과하고, 일치나 실행 오류는 차단해요.
 
 [출처]
 • code.claude.com/docs/en/hooks (Exit code output)
@@ -2220,7 +2310,11 @@ QUICK CHECK, 손을 들어 답해 주세요
 
 훅은 사용자가 끌 수 없도록 배포하고 실패할 때도 차단하도록 준비해요.↓
 {cue: demo}
-allowManagedHooksOnly를 켜면 개인과 프로젝트, 플러그인의 훅은 실행되지 않아요. 사용자가 조직의 DLP 훅을 끌 수 없게 해요.↓ 같은 스크립트를 프롬프트 제출과 Bash, Write, Edit, WebFetch 실행 전에 연결해요. 검사 대상은 입력이므로 Read 결과나 리다이렉션 출력은 볼 수 없어요.↓ 스크립트도 관리자만 수정할 수 있는 경로에 둬요. 사용자가 파일을 바꿀 수 있다면 정책을 우회할 수 있기 때문이에요.↓ v2.1.295 이상에서 onFailure block을 적용하면 스크립트 누락과 시작 실패, 시간 초과에도 차단해요.↓ 슬래시 hooks에서 managed hooks only 표시를 확인해요.
+allowManagedHooksOnly를 켜면 개인과 프로젝트, 플러그인의 훅은 실행되지 않아요. 사용자가 조직의 DLP 훅을 끌 수 없게 해요.↓
+같은 스크립트를 프롬프트 제출과 Bash, Write, Edit, WebFetch 실행 전에 연결해요. 검사 대상은 입력이므로 Read 결과나 리다이렉션 출력은 볼 수 없어요.↓
+스크립트도 관리자만 수정할 수 있는 경로에 둬요. 사용자가 파일을 바꿀 수 있다면 정책을 우회할 수 있기 때문이에요.↓
+v2.1.295 이상에서 onFailure block을 적용하면 스크립트 누락과 시작 실패, 시간 초과에도 차단해요.↓
+슬래시 hooks에서 managed hooks only 표시를 확인해요.
 
 [출처]
 • code.claude.com/docs/en/hooks (allowManagedHooksOnly, onFailure)
@@ -2292,7 +2386,10 @@ allowManagedHooksOnly를 켜면 개인과 프로젝트, 플러그인의 훅은 �
 
 MCP 서버도 외부로 데이터를 보낼 수 있는 통로예요.↓
 {cue: demo}
-allowManagedMcpServersOnly를 켜면 조직의 허용 목록만 인정해, 사용자가 추가한 서버는 켜지지 않아요.↓ 목록에는 사용자가 바꿀 수 있는 이름 대신 URL이나 실행 명령을 지정해요.↓ 거부 목록에 일치하면 허용 목록에 있어도 차단해요.↓ 플러그인에 포함된 서버도 같은 검사를 받아 우회할 수 없어요.
+allowManagedMcpServersOnly를 켜면 조직의 허용 목록만 인정해, 사용자가 추가한 서버는 켜지지 않아요.↓
+목록에는 사용자가 바꿀 수 있는 이름 대신 URL이나 실행 명령을 지정해요.↓
+거부 목록에 일치하면 허용 목록에 있어도 차단해요.↓
+플러그인에 포함된 서버도 같은 검사를 받아 우회할 수 없어요.
 
 [출처]
 • code.claude.com/docs/en/managed-mcp (Policy-based control with allowlists and denylists, How a server is evaluated)
@@ -2362,7 +2459,9 @@ allowManagedMcpServersOnly를 켜면 조직의 허용 목록만 인정해, 사�
 
 확인할 기록은 PC와 AWS에 나뉘어 있으며, 각각 남기는 내용이 달라요.↓
 {cue: demo}
-PC의 세션 JSONL에는 요청과 작업 내용이 평문으로 기본 30일 남아요. 고객 데이터가 포함될 수 있다는 점도 고려해 주세요.↓ CloudTrail에는 누가 언제 어떤 모델을 호출했는지 남아요. SSO의 임시 자격증명에서 역할 뒤의 사용자까지 연결하며, 원문은 기록하지 않아요.↓ OTel을 켜면 사용자별 토큰과 추정 비용, 도구 사용을 사내 수집기로 보내요. Ch6에서는 이 내용을 대시보드로 볼게요.↓
+PC의 세션 JSONL에는 요청과 작업 내용이 평문으로 기본 30일 남아요. 고객 데이터가 포함될 수 있다는 점도 고려해 주세요.↓
+CloudTrail에는 누가 언제 어떤 모델을 호출했는지 남아요. SSO의 임시 자격증명에서 역할 뒤의 사용자까지 연결하며, 원문은 기록하지 않아요.↓
+OTel을 켜면 사용자별 토큰과 추정 비용, 도구 사용을 사내 수집기로 보내요. Ch6에서는 이 내용을 대시보드로 볼게요.↓
 {cue: pause}
 Bedrock invocation logging을 켜면 프롬프트 원문도 남으므로, 저장소 권한과 보존 정책을 함께 정해야 해요. 이 기록들이 같은 내용을 남기거나 저절로 모두 켜지는 것은 아니에요. Anthropic 텔레메트리는 Bedrock에서 기본으로 꺼져 있지만, WebFetch의 호스트명 사전 검사는 별개예요. 이를 끄는 값은 앞에서 본 skipWebFetchPreflight예요.
 
