@@ -483,7 +483,7 @@
    * Diagram definitions. Each chapter appends its own delimited section.
    * ==================================================================== */
 
-  /* ---- Preflight: CHECK 06 kit download ---- */
+  /* ---- Preflight: CHECK 05 kit download ---- */
   LabViz.register("kit-download", {
     title: "S3의 마이데이터 키트가 EC2(ccb-endpoint)로 복사되고 풀리는 과정",
     viewBox: "0 0 800 400",

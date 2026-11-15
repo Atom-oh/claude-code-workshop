@@ -109,7 +109,7 @@ body.nav-open .side{transform:none}main{padding:22px 16px 60px}.page-title{font-
 </ul></div></div>
 
 <h2 id="check-02-접속-주소-확인">CHECK 02 · 접속 주소 확인</h2>
-<p>Workshop Studio 이벤트 화면의 <strong>Event outputs</strong> 표에서 <code>IDEUrl</code>(브라우저에서 여는 실습 IDE 주소, code-server)과 <code>Password</code>(code-server 비밀번호)를 확인합니다. 접속에 필요한 값은 이 둘뿐이고, AWS 콘솔에서 따로 찾을 것은 없습니다. 아래 화면에서 가려진 값이 여러분 화면에서는 그대로 보입니다.</p>
+<p>Workshop Studio 이벤트 화면의 <strong>Event outputs</strong> 표에서 <code>IDEUrl</code>(브라우저에서 여는 실습 IDE 주소, code-server)과 <code>Password</code>(code-server 비밀번호)를 확인합니다. 접속에 필요한 값은 이 둘뿐이고, AWS 콘솔에서 따로 찾을 것은 없습니다. <code>IDEUrl</code>은 <code>https://d….cloudfront.net/…</code> 모양의 CloudFront 주소입니다. CloudFront는 바깥에서 실습 PC로 들어오는 AWS의 입구 서비스입니다. 아래 화면에서 가려진 값이 여러분 화면에서는 그대로 보입니다.</p>
 <p><img alt="Event outputs 표: IDEUrl을 열어 code-server에 접속하고 Password로 로그인합니다. Id와 Password 값은 가렸습니다." src="images/guides/preflight/fig-01.png" onerror="this.closest(\'p\').classList.add(\'img-missing\')" /></p>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
@@ -163,7 +163,7 @@ https://d3f4g87xxxxx.cloudfront.net</code></pre></div>
 <div class="alert success"><div class="alert-icon" aria-hidden="true">✓</div><div class="alert-body"><p><strong>CHECKPOINT</strong></p>
 <ul>
 <li class="check"><label><input type="checkbox"> <span>Claude Code 버전과 Bedrock 설정이 보인다</span></label></li>
-<li class="check"><label><input type="checkbox"> <span>게이트웨이가 VPC 안에서 응답한다, 프리플라이트 완료</span></label></li>
+<li class="check"><label><input type="checkbox"> <span>게이트웨이가 VPC 안에서 응답한다</span></label></li>
 </ul></div></div>
 
 <h2 id="check-05-마이데이터-내려받기">CHECK 05 · 마이데이터 내려받기</h2>
@@ -232,7 +232,7 @@ checkpoints  pseudo  raw  SHA256SUMS  VERSION</code></pre></div>
 <td>이벤트 화면을 새로고침, 계속 보이지 않으면 진행자에게 알림</td>
 </tr>
 <tr>
-<td>CloudFront 주소가 안 열림</td>
+<td>IDEUrl(CloudFront 주소)이 안 열림</td>
 <td>배포 직후 전파 지연</td>
 <td>2~3분 뒤 새로고침</td>
 </tr>
