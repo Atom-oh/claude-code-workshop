@@ -605,7 +605,7 @@ plugin_installed는 설치할 때마다 기록합니다. 누가 설치했는지 
 :::
 
 ---
-<!-- Slide 14: Part 03 divider (PDF p14) -->
+<!-- Slide 14: Part 03 divider -->
 @type: content
 @fit: off
 
@@ -613,11 +613,11 @@ plugin_installed는 설치할 때마다 기록합니다. 누가 설치했는지 
 <div class="fsi fsi-section">
   <span class="num">CHAPTER 04 / PART 03</span>
   <div class="name">Mods</div>
-  <p class="what">Claude Code 안에서 도는 코드</p>
+  <p class="what">Claude Code를 내 손에 맞게 바꾸는 방법</p>
   <ol>
-    <li><b>01</b>mod가 할 수 있는 것</li>
-    <li><b>02</b>구조와 예시</li>
-    <li><b>03</b>조직 통제</li>
+    <li><b>01</b>mod로 바꿀 수 있는 것</li>
+    <li><b>02</b>공식 샘플 셋</li>
+    <li><b>03</b>동작 원리와 써 보기</li>
   </ol>
 </div>
 :::
@@ -625,119 +625,459 @@ plugin_installed는 설치할 때마다 기록합니다. 누가 설치했는지 
 :::notes
 {timing: 0.5min}
 [요약]
-• Part 3은 mod: 할 수 있는 것, 구조와 예시, 조직 통제
+• Part 3은 mod: 바꿀 수 있는 것, 공식 샘플 셋, 동작 원리와 써 보기
 
-세 번째 Part는 mod예요. Claude Code 안에서 직접 도는 코드라 할 수 있는 일이 많거든요. 그만큼 통제도 중요합니다.
+세 번째 Part는 mod예요. 앞의 두 Part가 팀에 배포하는 이야기였다면, 이번에는 조금 가볍게, 내 Claude Code를 내 손에 맞게 바꾸는 이야기입니다.
 :::
 
 ---
-<!-- Slide 15: Mod statement (PDF p15) -->
+<!-- Slide 15: Mod statement -->
 @type: content
 @fit: off
 
 :::html
 <div class="fsi fsi-statement">
   <span class="eyebrow">NEW, v2.1.287+</span>
-  <div class="big">mod = 플러그인 안의 <em>이벤트 핸들러</em></div>
-  <p class="lead">도구 호출, 프롬프트, 커맨드, 화면 그리기 이벤트를 관찰하고, 바꾸고, 대신 처리합니다. Bedrock에서도 동작합니다.</p>
+  <div class="big" style="white-space:nowrap;">mod = <em>나만의</em> Claude Code</div>
+  <p class="lead">화면을 바꾸고, 명령어를 만들고, 동작에 끼어듭니다. 설정으로 고르는 것이 아니라, Claude Code 자체를 내 방식대로 고쳐 쓰는 방법입니다.</p>
 </div>
 :::
 
 :::notes
 {timing: 1min}
+{cue: pause}
 [요약]
 • v2.1.287부터 들어온 새 기능
-• mod는 플러그인 안의 이벤트 핸들러
-• 도구 호출, 프롬프트, 커맨드, 화면 그리기 이벤트를 관찰, 변경, 대신 처리
-• Bedrock에서도 동작
+• mod는 Claude Code 자체를 내 방식대로 고쳐 쓰는 방법
+• 화면을 바꾸고, 명령어를 만들고, 동작에 끼어듦
 
-{cue: pause}
-mod를 한 줄로 말씀드리면, 플러그인 안의 이벤트 핸들러예요. v2.1.287부터 들어온 새 기능입니다.
-도구 호출, 프롬프트, 커맨드, 화면 그리기 같은 이벤트를 관찰하고, 바꾸고, 대신 처리할 수 있어요.
-그리고 Bedrock에서도 똑같이 동작합니다.
+한 문장으로 하면 mod는 나만의 Claude Code를 만드는 방법이에요. 설정 화면에서 옵션을 고르는 수준이 아니라, 화면에 없던 패널을 붙이고, 없던 명령어를 만들고, 도구가 실행되는 순간에 끼어들 수 있습니다.
 :::
 
 ---
-<!-- Slide 16: Smallest mod (PDF p16) -->
+<!-- Slide 16: What a mod can change -->
 @type: content
 @fit: off
 
-## 스피너 옆 도구 호출 수
-가장 작은 mod, 이벤트 두 개를 다루는 register.js
+## mod로 바꿀 수 있는 네 가지
+화면, 커맨드, 동작, 모양
 
 :::html
-<div id="c5-sv-mod"></div>
+<div class="fsi c5-pickrow">
+  <div class="row4" data-pick="c5m-what">
+    <button class="pick" data-key="screen"><span class="k">SCREEN</span><span class="t">화면</span><span class="d">패널, 띠, 상태 줄, 알림</span></button>
+    <button class="pick" data-key="cmd"><span class="k">COMMAND</span><span class="t">커맨드</span><span class="d">나만의 /명령어</span></button>
+    <button class="pick" data-key="act"><span class="k">BEHAVIOR</span><span class="t">동작</span><span class="d">도구 호출과 프롬프트</span></button>
+    <button class="pick" data-key="look"><span class="k">LOOK</span><span class="t">모양</span><span class="d">소리와 테마</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5m-what">
+    <p class="hint">네 가지를 눌러 봅니다. 스킬과 MCP가 <b>Claude가 아는 것과 쓰는 도구</b>를 바꾼다면, mod는 <b>Claude Code 프로그램 자체</b>를 바꿉니다.</p>
+    <div data-for="screen"><dl class="kv"><dt>무엇을</dt><dd>채팅 옆 패널, 프롬프트 위 띠, 상태 줄, 토스트 알림을 새로 그립니다</dd><dt>예</dt><dd>이번 세션에 바뀐 파일 목록을 옆 패널에 계속 표시</dd><dt>다음 장</dt><dd>화면 어디를 바꿀 수 있는지, 공식 샘플의 실제 화면과 함께 봅니다</dd></dl></div>
+    <div data-for="cmd"><dl class="kv"><dt>무엇을</dt><dd>내가 정한 이름의 슬래시 커맨드를 추가합니다</dd><dt>예</dt><dd><code>/replay</code>, <code>/tool-calls</code></dd><dt>특징</dt><dd>Claude에게 묻지 않고 mod의 코드가 바로 실행됩니다</dd></dl></div>
+    <div data-for="act"><dl class="kv"><dt>무엇을</dt><dd>도구 호출과 프롬프트를 지켜보고, 고치고, 막습니다</dd><dt>예</dt><dd><code>.env</code> 파일 편집 막기, 실패한 명령을 상태 줄에 표시</dd><dt>특징</dt><dd>지나가는 이벤트마다 내 코드가 한 번씩 불립니다</dd></dl></div>
+    <div data-for="look"><dl class="kv"><dt>무엇을</dt><dd>소리를 재생하고, 색 테마와 배경을 바꿉니다</dd><dt>예</dt><dd>턴이 끝나면 알림음, 종이 노트 느낌의 테마</dd><dt>참고</dt><dd>테마는 데스크톱과 모바일 앱에서 적용되고, 터미널에는 그려지지 않습니다</dd></dl></div>
+  </div>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5m-what'); });
+:::
+
+:::notes
+{timing: 2min}
+{cue: demo}
+[요약]
+• 화면: 패널, 띠, 상태 줄, 토스트
+• 커맨드: 나만의 슬래시 커맨드, 코드가 바로 실행
+• 동작: 도구 호출과 프롬프트를 지켜보고, 고치고, 막기
+• 모양: 소리, 그리고 데스크톱과 모바일 앱의 테마
+
+mod로 바꿀 수 있는 건 크게 네 가지예요. 하나씩 눌러 보겠습니다. 스킬과 MCP는 Claude가 아는 것과 쓰는 도구를 바꾸죠. mod는 Claude Code라는 프로그램 자체를 바꿉니다. 그 차이만 기억하시면 됩니다.
+:::
+
+---
+<!-- Slide 17: Screen map -->
+@type: content
+@fit: off
+
+## 화면의 어디든 바꿉니다
+Claude Code 화면에서 mod가 그릴 수 있는 자리
+
+:::html
+<div class="fsi c5m-screen">
+  <div class="mock" data-pick="c5m-screen" id="c5m-mock">
+    <div class="bar"><i></i><i></i><i></i><span class="ttl">claude · ~/asset-team-kit</span></div>
+    <div class="body">
+      <button class="rg pane" data-key="pane" data-tag="PANE">
+        <span class="pt">바뀐 파일</span>
+        <span class="ln"><b>M</b> src/gap.ts</span>
+        <span class="ln"><b>M</b> src/gap.test.ts</span>
+        <span class="ln"><b>A</b> docs/pension.md</span>
+        <span class="ln dim">3개, 방금 갱신</span>
+      </button>
+      <div class="chat">
+        <p class="ln">&gt; 연금 격차 계산 테스트 돌려 줘</p>
+        <button class="rg" data-key="tool" data-tag="TOOL ROW">
+          <span class="ln">● Bash(npm test)</span>
+          <span class="ln dim">└ 테스트 42개, 지난번 8초</span>
+        </button>
+        <p class="ln dim">✻ 실행하는 중…</p>
+        <div class="gap"></div>
+        <button class="rg toast" data-key="toast" data-tag="TOAST"><span class="ln">이번 턴이 2분을 넘었습니다</span></button>
+        <button class="rg" data-key="band" data-tag="ABOVE PROMPT"><span class="ln">지난 턴 38초 · 도구 5회 <b>[숨기기]</b></span></button>
+        <div class="prompt">&gt; _</div>
+        <button class="rg" data-key="status" data-tag="STATUS"><span class="ln dim">도구 호출 12회</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="panel" data-pick-panel="c5m-screen">
+      <p class="hint">점선으로 표시한 곳이 mod가 그릴 수 있는 자리입니다.<br>영역을 누르거나 ↓ 키로 하나씩 봅니다.</p>
+      <div data-for="pane"><h4>패널</h4><p>채팅 옆에 붙어 <b>계속 갱신되는 화면</b>입니다.</p><p class="eg">예: 바뀐 파일 목록, 도구 호출 기록</p><p><code>$.ui.open({ id, title })</code></p></div>
+      <div data-for="tool"><h4>도구 호출 줄</h4><p>도구가 실행되는 줄의 <b>위아래에 내용을 덧붙입니다</b>.</p><p class="eg">예: 명령 아래에 예상 시간, 영향 범위</p><p><code>ui.render { component: 'ToolUse' }</code></p></div>
+      <div data-for="band"><h4>프롬프트 위 띠</h4><p>입력창 바로 위의 <b>한 줄</b>입니다. 버튼도 둘 수 있습니다.</p><p class="eg">예: 지난 턴에 걸린 시간, 컨텍스트 사용량</p><p><code>ui.render { component: 'AbovePrompt' }</code></p></div>
+      <div data-for="status"><h4>상태 줄</h4><p>가장 간단한 표시. <b>글자 한 줄</b>을 올리고 지웁니다.</p><p class="eg">예: 도구 호출 수, 실패한 명령</p><p><code>$.ui.status(text)</code></p></div>
+      <div data-for="toast"><h4>토스트</h4><p>잠깐 떴다 사라지는 <b>알림</b>입니다.</p><p class="eg">예: 턴이 오래 걸릴 때, 작업이 끝났을 때</p><p><code>$.ui.toast(text)</code></p></div>
+    </div>
+    <p class="cap">화면 예시는 설명용 그림입니다. 권한 프롬프트 화면은 mod가 바꿀 수 없습니다.</p>
+  </div>
+</div>
 :::
 
 :::script
 (window.__fsiq = window.__fsiq || []).push(function (F) {
-  var Z = [{x:20,y:40,w:1140,h:410,l:'hooks/register.js'}];
-  var EV = {id:'ev',x:50,y:90,w:250,h:84,t:'tool.call',s:'도구 호출 이벤트',c:'info'};
-  var H1 = {id:'h1',x:350,y:90,w:300,h:84,t:'calls += 1',s:'관찰하고 세기',c:'accent'};
-  var NX = {id:'nx',x:710,y:90,w:420,h:84,t:'next(e)',s:'도구는 그대로 실행',c:'success'};
-  var IV = {id:'iv',x:350,y:220,w:300,h:84,t:'$.ui.invalidate',s:'ui.render 다시 그리기',c:'accent'};
-  var RD = {id:'rd',x:50,y:340,w:250,h:84,t:'ui.render',s:'component: Spinner',c:'info'};
-  var SP = {id:'sp',x:710,y:340,w:420,h:84,t:'스피너 suffix',s:'tool calls: N',c:'success'};
-  var ALL = [EV, H1, NX, IV, RD, SP];
-  var CODE = ['let calls = 0','export function register(on) {','  on(\'tool.call\', async ($, e, next) => {','    calls += 1','    $.ui.invalidate(\'ui.render\')','    return next(e)            // 도구는 그대로 실행','  })','  on(\'ui.render\', { component: \'Spinner\' }, async ($, e, next) => {','    return next({ ...e, props: { ...e.props,','      suffix: \' · tool calls: \' + calls + \'…\' } })','  })','}'];
-  function snip(hl, note) { return {hd:'가장 작은 mod',path:'hooks/register.js',lines:CODE,hl:hl,note:note}; }
-  F.stepviz('#c5-sv-mod', [
-    {kicker:'STEP 1', title:'register(on)으로 핸들러를 겁니다',
-     body:'mod는 <b>register 함수</b> 하나를 내보냅니다. Claude Code가 넘겨준 <b>on</b>으로 어떤 이벤트에 끼어들지 등록합니다.',
-     zones:Z, nodes:ALL, hot:['ev','rd'],
-     edges:[],
-     snip:snip([2,3,8],'핸들러는 <code>($, e, next)</code>를 받습니다. $는 바깥 작업용 API입니다.')},
-    {kicker:'STEP 2', title:'tool.call: 세고 그대로 넘깁니다',
-     body:'도구가 호출될 때마다 <b>calls를 1 올리고</b>, <b>next(e)</b>로 원래 이벤트를 넘겨 도구는 그대로 실행됩니다. 이것이 <b>관찰</b>입니다.',
-     zones:Z, nodes:ALL, hot:['ev','h1','nx'],
-     edges:[{f:'ev',t:'h1',c:'info',o:0},{f:'h1',t:'nx',c:'success',l:'next(e)',o:1}],
-     loop:true, stagger:0.8,
-     snip:snip([3,4,6],'관찰, 변경, 대신 처리 중 이 핸들러는 <b>관찰</b>만 합니다.')},
-    {kicker:'STEP 3', title:'화면을 다시 그리게 합니다',
-     body:'<b>$.ui.invalidate(\'ui.render\')</b>로 화면을 다시 그리게 하면, Spinner를 그리는 <b>ui.render</b> 핸들러가 불립니다.',
-     zones:Z, nodes:ALL, hot:['h1','iv','rd'],
-     edges:[{f:'h1',t:'iv',c:'accent',o:0},{f:'iv',t:'rd',c:'accent',l:'다시 그리기',o:1}],
-     snip:snip([5,8],'mod가 바깥에 하는 일은 모두 <b>$ API</b>를 거칩니다. 그래서 validate로 볼 수 있습니다.')},
-    {kicker:'STEP 4', title:'props를 바꿔 스피너 옆에 표시',
-     body:'ui.render 핸들러는 <b>props에 suffix를 더한 이벤트</b>를 next로 넘깁니다. 이것이 <b>변경</b>입니다. 스피너 옆에 호출 수가 붙습니다.',
-     zones:Z, nodes:ALL, hot:['rd','sp'],
-     edges:[{f:'rd',t:'sp',c:'success',l:'suffix 추가',o:0}],
-     snip:snip([8,9,10],'Super Lab TASK 05에서 이 mod에 <code>/tally-reset</code> 커맨드를 Claude에게 추가시킵니다.')},
-    {kicker:'FILES', title:'세 파일과 두 원칙',
-     body:'mod는 <b>.claude-plugin/plugin.json</b>, 코드 위치를 적은 <b>hooks/hooks.json</b>, 그리고 <b>hooks/register.js</b> 세 파일로 된 플러그인입니다. 원칙은 두 가지, <b>관찰, 변경, 대신 처리</b>와 <b>바깥 작업은 $ API로만</b>입니다.',
-     facts:['원칙 1: 관찰, 변경, 대신 처리','원칙 2: 바깥 작업은 $ API로만','배포와 통제는 일반 플러그인과 같음'],
-     zones:Z, nodes:ALL,
-     edges:[{f:'ev',t:'h1',c:'info',o:0},{f:'h1',t:'nx',c:'success',o:1},{f:'h1',t:'iv',c:'accent',o:2},{f:'iv',t:'rd',c:'accent',o:3},{f:'rd',t:'sp',c:'success',o:4}],
-     loop:true, stagger:0.6,
-     snip:{hd:'세 파일',path:'mod 플러그인',lines:['.claude-plugin/plugin.json','hooks/hooks.json      # 코드 위치','hooks/register.js'],hl:[1,2,3],note:'그래서 mod도 <b>Part 2의 배포와 통제를 그대로</b> 받습니다.'}}
-  ], {legend:[['info','이벤트'],['accent','핸들러 동작'],['success','결과']]});
+  var mock = document.querySelector('.slide-deck #c5m-mock') || document.getElementById('c5m-mock');
+  F.pick('c5m-screen', { onShow: function (key) { mock.classList.toggle('themed', key === 'theme'); } });
 });
 :::
 
 :::notes
-{timing: 3min}
-[요약]
-• mod는 register(on)을 내보내고 on으로 이벤트 핸들러를 등록
-• tool.call: calls를 세고 next(e)로 도구는 그대로 실행 (관찰)
-• $.ui.invalidate로 다시 그리기, ui.render에서 Spinner props에 suffix 추가 (변경)
-• 파일은 plugin.json, hooks.json, register.js 세 개, 바깥 작업은 $ API로만
-
+{timing: 2.5min}
 {cue: demo}
-가장 작은 mod부터 하나씩 볼게요. 도구 호출 수를 스피너 옆에 띄우는 예시입니다.
-첫 번째로, mod는 register 함수를 내보내고, 넘겨받은 on으로 이벤트에 핸들러를 겁니다.↓
-두 번째, tool.call 이벤트에서는 calls를 하나 올리고 next(e)로 원래 이벤트를 넘겨요. 그러니까 도구는 그대로 실행되는 거죠. 이게 관찰입니다.↓
-세 번째, $.ui.invalidate로 화면을 다시 그리게 하면 ui.render 핸들러가 불려요. 바깥에 하는 일은 모두 $ API를 거칩니다.↓
-네 번째, ui.render에서는 Spinner의 props에 suffix를 더해서 넘깁니다. 이게 변경이에요.↓
-파일은 세 개고, 원칙은 두 가지예요. 관찰, 변경, 대신 처리를 하고, 바깥 작업은 $ API로만 합니다. 배포는 일반 플러그인과 같고요.
+[요약]
+• 패널: 채팅 옆에서 계속 갱신
+• 도구 호출 줄: 위아래에 내용 덧붙이기
+• 프롬프트 위 띠: 한 줄, 버튼 가능
+• 상태 줄과 토스트: 가장 간단한 표시와 알림
+• 권한 프롬프트 화면은 바꿀 수 없음
+
+이 그림은 Claude Code 화면을 단순하게 그린 거예요. 점선으로 표시한 곳이 mod가 그릴 수 있는 자리입니다. 아래 화살표로 하나씩 볼게요. 한 가지, 권한을 묻는 화면은 mod가 건드릴 수 없습니다.
 :::
 
 ---
-<!-- Slide 17: Mod vs other extensions (PDF p17) -->
+<!-- Slide 18: Official sample mod: token-weather -->
 @type: content
 @fit: off
 
-## mod는 최후의 수단
-mod와 다른 확장 비교, 바꿀 수 있는 것과 작성 언어
+## 공식 샘플 ① token-weather
+화면을 바꾸는 mod, 컨텍스트 창 일기예보
+
+:::html
+<div class="fsi c5m-shot" id="c5m-tw">
+  <p class="what">프롬프트 위에 <b>컨텍스트 사용량을 날씨로</b> 보여 줍니다. 세 샘플 중 가장 작은 mod입니다.</p>
+  <figure class="frame">
+      <img data-shot="clear" src="./image/ch4-mods/token-weather-clear.png" alt="Token Weather가 18%에서 Clear를 표시한 화면">
+      <img data-shot="showers" src="./image/ch4-mods/token-weather-showers.png" alt="Token Weather가 67%에서 Showers를 표시한 화면">
+      <img data-shot="storm" src="./image/ch4-mods/token-weather-storm.png" alt="Token Weather가 81%에서 Storm을 표시한 화면">
+  </figure>
+  <div class="foot">
+    <div class="scenes" data-pick="c5m-tw">
+      <button class="pick" data-key="clear"><span class="k">01</span><span class="t">맑음, 18%</span></button>
+      <button class="pick" data-key="showers"><span class="k">02</span><span class="t">소나기, 67%</span></button>
+      <button class="pick" data-key="storm"><span class="k">03</span><span class="t">폭풍, 81%</span></button>
+    </div>
+    <div class="panel" data-pick-panel="c5m-tw">
+      <div data-for="clear"><p>첫 턴이 끝난 직후. 사용량, 토큰 수, 지난 턴들의 막대 그래프가 <b>프롬프트 바로 위 한 줄</b>에 나옵니다.</p></div>
+      <div data-for="showers"><p>파일을 많이 읽은 뒤. 날씨가 <b>Showers</b>로 바뀌고, 지난 턴에 98.3k가 늘었다고 알려 줍니다.</p></div>
+      <div data-for="storm"><p>75%를 넘으면 <b>Storm</b>, 90%부터는 Compact soon. 정리할 때를 화면이 먼저 알려 줍니다.</p><p>쓰인 것: <code>turn.complete</code>, <code>AbovePrompt</code></p></div>
+    </div>
+  </div>
+  <p class="cap">화면 출처: github.com/anthropics/claude-code-playground (Apache-2.0). 공식 지원 대상은 아닌 샘플입니다.</p>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var root = document.querySelector('.slide-deck #c5m-tw') || document.getElementById('c5m-tw');
+  var imgs = root.querySelectorAll('.frame img');
+  F.pick('c5m-tw', { start: 0, onShow: function (key) {
+    [].forEach.call(imgs, function (im) { im.classList.toggle('on', im.dataset.shot === key); });
+  } });
+});
+:::
+
+:::notes
+{timing: 1.5min}
+{cue: demo}
+[요약]
+• 공식 샘플 저장소 claude-code-playground의 mod 세 개 중 가장 작은 것
+• 프롬프트 위 띠에 컨텍스트 사용량을 날씨로: 25% 미만 Clear, 50~74% Showers, 75~89% Storm, 90%부터 Compact soon
+• 실제 사용량 수치, 턴이 끝날 때마다 갱신
+
+이제 실제 화면을 보겠습니다. Anthropic이 공개한 샘플 mod 세 개예요. 첫 번째는 token-weather, 컨텍스트 창이 얼마나 찼는지를 날씨로 보여 줍니다. 아래 화살표로 장면을 넘기면 맑음에서 소나기, 폭풍으로 바뀌는 게 보이실 거예요. 방금 본 화면 지도에서 프롬프트 위 띠 자리입니다.
+:::
+
+---
+<!-- Slide 19: Official sample mod: blast-radius -->
+@type: content
+@fit: off
+
+## 공식 샘플 ② blast-radius
+동작에 끼어드는 mod, 위험한 명령 붙잡기
+
+:::html
+<div class="fsi c5m-shot" id="c5m-br">
+  <p class="what"><code>rm -rf</code>, <code>git reset --hard</code>, force push 같은 명령을 <b>실행 전에 멈추고</b> 영향 범위를 보여 줍니다.</p>
+  <figure class="frame">
+      <img data-shot="pane" src="./image/ch4-mods/blast-radius-pane.png" alt="Blast Radius가 rm -rf build를 붙잡고 패널에 지워질 파일을 보여 주는 화면">
+      <img data-shot="cancelled" src="./image/ch4-mods/blast-radius-cancelled.png" alt="취소 후 Claude가 삭제되지 않았다고 답하는 화면">
+      <img data-shot="proceeded" src="./image/ch4-mods/blast-radius-proceeded.png" alt="Proceed 후 Claude가 폴더를 삭제했다고 답하는 화면">
+  </figure>
+  <div class="foot">
+    <div class="scenes" data-pick="c5m-br">
+      <button class="pick" data-key="pane"><span class="k">01</span><span class="t">붙잡기</span></button>
+      <button class="pick" data-key="cancelled"><span class="k">02</span><span class="t">Cancel</span></button>
+      <button class="pick" data-key="proceeded"><span class="k">03</span><span class="t">Proceed</span></button>
+    </div>
+    <div class="panel" data-pick-panel="c5m-br">
+      <div data-for="pane"><p><code>rm -rf build</code>가 멈췄습니다. 옆 패널에 <b>지워질 파일 9개, 1.1MB</b>와 Proceed, Cancel 버튼이 뜹니다.</p></div>
+      <div data-for="cancelled"><p>취소하면 명령은 실행되지 않고, <b>Claude도 거절된 이유를 전달받아</b> 지우지 않았다고 답합니다.</p></div>
+      <div data-for="proceeded"><p>다시 시도해 Proceed를 누르면 그대로 실행됩니다.</p><p>쓰인 것: <code>tool.call</code>을 붙잡고 <code>{ deny }</code> 또는 <code>next(e)</code>, <code>Pane</code></p></div>
+    </div>
+  </div>
+  <p class="cap">화면 출처: github.com/anthropics/claude-code-playground (Apache-2.0). 공식 지원 대상은 아닌 샘플입니다.</p>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var root = document.querySelector('.slide-deck #c5m-br') || document.getElementById('c5m-br');
+  var imgs = root.querySelectorAll('.frame img');
+  F.pick('c5m-br', { start: 0, onShow: function (key) {
+    [].forEach.call(imgs, function (im) { im.classList.toggle('on', im.dataset.shot === key); });
+  } });
+});
+:::
+
+:::notes
+{timing: 2min}
+{cue: demo}
+[요약]
+• rm -rf, git reset --hard, force push, migrate 같은 명령을 실행 전에 붙잡음
+• 패널에 영향 범위(지워질 파일 9개, 1.1MB)와 Proceed, Cancel 버튼
+• Cancel하면 Claude가 거절 이유를 전달받음
+
+두 번째는 blast-radius예요. Claude가 rm -rf를 실행하려는 순간 mod가 붙잡습니다. 옆 패널에 뭐가 지워지는지 보여 주고 버튼 두 개를 띄워요. 취소를 누르면 Claude도 그 사실을 알고 지우지 않았다고 답합니다. 화면만이 아니라 동작에 끼어드는 예시입니다.
+:::
+
+---
+<!-- Slide 20: Official sample mod: replay-theater -->
+@type: content
+@fit: off
+
+## 공식 샘플 ③ replay-theater
+커맨드와 패널을 만드는 mod, 지난 턴 다시 보기
+
+:::html
+<div class="fsi c5m-shot" id="c5m-rt">
+  <p class="what">지난 턴에 Claude가 고친 파일을 <b>한 번에 하나씩</b> 넘겨 봅니다. 지켜보기만 하고 편집은 건드리지 않습니다.</p>
+  <figure class="frame">
+      <img data-shot="hint" src="./image/ch4-mods/replay-theater-hint.png" alt="턴이 끝난 뒤 프롬프트 위에 Replay 안내가 나타난 화면">
+      <img data-shot="pane" src="./image/ch4-mods/replay-theater-pane.png" alt="Replay Theater 패널이 5단계 중 1단계를 보여 주는 화면">
+      <img data-shot="write" src="./image/ch4-mods/replay-theater-write.png" alt="새 파일을 만든 Write 단계를 보여 주는 화면">
+  </figure>
+  <div class="foot">
+    <div class="scenes" data-pick="c5m-rt">
+      <button class="pick" data-key="hint"><span class="k">01</span><span class="t">턴이 끝나면</span></button>
+      <button class="pick" data-key="pane"><span class="k">02</span><span class="t">패널 열기</span></button>
+      <button class="pick" data-key="write"><span class="k">03</span><span class="t">새 파일 단계</span></button>
+    </div>
+    <div class="panel" data-pick-panel="c5m-rt">
+      <div data-for="hint"><p>프롬프트 위에 <b>Replay: 5 edits</b> 안내와 버튼이 나타납니다. <code>/replay</code> 커맨드로도 엽니다.</p></div>
+      <div data-for="pane"><p>옆 패널에 <b>step 1 of 5</b>. 파일 이름, 더하고 뺀 줄 수, 짧은 diff와 Prev, Next, Close 버튼이 있습니다.</p></div>
+      <div data-for="write"><p>새로 만든 파일은 Write 단계로 나오고, 내용은 12줄까지만 보여 줍니다.</p><p>쓰인 것: <code>$.command.register</code>, <code>Pane</code>과 <code>Button</code></p></div>
+    </div>
+  </div>
+  <p class="cap">화면 출처: github.com/anthropics/claude-code-playground (Apache-2.0). 공식 지원 대상은 아닌 샘플입니다.</p>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var root = document.querySelector('.slide-deck #c5m-rt') || document.getElementById('c5m-rt');
+  var imgs = root.querySelectorAll('.frame img');
+  F.pick('c5m-rt', { start: 0, onShow: function (key) {
+    [].forEach.call(imgs, function (im) { im.classList.toggle('on', im.dataset.shot === key); });
+  } });
+});
+:::
+
+:::notes
+{timing: 1.5min}
+{cue: demo}
+[요약]
+• 지난 턴의 Edit, Write 호출을 기록만 하고 건드리지 않음
+• 턴이 끝나면 프롬프트 위에 안내, /replay 커맨드나 버튼으로 패널 열기
+• 패널에서 Prev, Next로 diff를 하나씩 확인
+
+세 번째는 replay-theater입니다. Claude가 파일 다섯 군데를 고쳤는데 뭘 고쳤는지 스크롤해서 찾기 번거롭잖아요. 이 mod는 고친 내용을 기록해 뒀다가 한 장씩 넘겨 보게 해 줍니다. 슬래시 커맨드와 패널, 버튼이 같이 쓰였어요. 그럼 이런 mod가 어떻게 동작하는지 보겠습니다.
+:::
+
+---
+<!-- Slide 21: Moments in a turn -->
+@type: content
+@fit: off
+
+## 한 턴 안에서 mod가 끼어드는 순간
+입력부터 답변까지, 일이 일어날 때마다 mod가 불립니다
+
+:::html
+<div class="fsi c5-pickrow c5m-flow">
+  <div class="row5" data-pick="c5m-flow">
+    <button class="pick" data-key="start"><span class="k">session.start</span><span class="t">세션 시작</span></button>
+    <button class="pick" data-key="submit"><span class="k">prompt.submit</span><span class="t">프롬프트 제출</span></button>
+    <button class="pick" data-key="tool"><span class="k">tool.call</span><span class="t">도구 호출</span></button>
+    <button class="pick" data-key="done"><span class="k">turn.complete</span><span class="t">턴 종료</span></button>
+    <button class="pick" data-key="render"><span class="k">ui.render</span><span class="t">화면 그리기</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5m-flow">
+    <p class="hint">mod는 <b>정해진 순간에 불리는 코드</b>입니다. 순간을 하나씩 눌러, 그때 mod가 무엇을 할 수 있는지 봅니다. 슬래시 커맨드를 입력하는 순간(<code>command.run</code>)도 같은 방식입니다.</p>
+    <div data-for="start"><dl class="kv"><dt>언제</dt><dd>Claude Code를 켜서 세션이 시작될 때</dd><dt>mod가 하는 일</dt><dd>커맨드 등록, 상태 줄 표시, 패널 열기 같은 준비</dd><dt>샘플에서는</dt><dd>replay-theater가 <code>/replay</code>를 등록, token-weather가 첫 측정</dd></dl></div>
+    <div data-for="submit"><dl class="kv"><dt>언제</dt><dd>사용자가 프롬프트를 입력하고 Enter를 누를 때</dd><dt>mod가 하는 일</dt><dd>프롬프트를 읽거나, 문구를 고쳐서 Claude에게 넘기기</dd><dt>예</dt><dd>턴 시간 재기 시작, 자주 빠뜨리는 지시를 자동으로 덧붙이기</dd></dl></div>
+    <div data-for="tool"><dl class="kv"><dt>언제</dt><dd>Claude가 Bash, Edit, Read 같은 도구를 쓰려는 순간</dd><dt>mod가 하는 일</dt><dd>지켜보기, 입력 고치기, 실행 막기</dd><dt>샘플에서는</dt><dd>blast-radius가 <code>rm -rf</code>를 붙잡고, replay-theater가 편집을 기록</dd></dl></div>
+    <div data-for="done"><dl class="kv"><dt>언제</dt><dd>Claude가 답을 마치고 턴이 끝날 때</dd><dt>mod가 하는 일</dt><dd>결과 정리, 사용량 읽기, 알림 띄우기</dd><dt>샘플에서는</dt><dd>token-weather가 컨텍스트 사용량을 다시 측정, replay-theater가 안내를 표시</dd></dl></div>
+    <div data-for="render"><dl class="kv"><dt>언제</dt><dd>Claude Code가 화면의 한 부분을 그릴 때</dd><dt>mod가 하는 일</dt><dd>패널, 프롬프트 위 띠, 도구 호출 줄에 내 내용 그리기</dd><dt>샘플에서는</dt><dd>세 샘플 모두. 띠(token-weather), 패널(blast-radius, replay-theater)</dd></dl></div>
+  </div>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5m-flow'); });
+:::
+
+:::notes
+{timing: 2min}
+{cue: demo}
+[요약]
+• mod는 정해진 순간에 불리는 코드
+• 세션 시작, 프롬프트 제출, 도구 호출, 턴 종료, 화면 그리기
+• 슬래시 커맨드 입력(command.run)도 같은 방식
+
+샘플 세 개를 봤으니 원리를 정리해 볼게요. mod는 정해진 순간에 불리는 코드입니다. 한 턴을 따라가 보면, 세션이 시작될 때, 프롬프트를 제출할 때, Claude가 도구를 쓸 때, 턴이 끝날 때, 그리고 화면을 그릴 때 불려요. 방금 본 샘플들이 각각 어느 순간을 쓰는지 하나씩 눌러 보겠습니다.
+:::
+
+---
+<!-- Slide 22: Three ways to act -->
+@type: content
+@fit: off
+
+## 지켜보기, 바꾸기, 막기
+불린 순간에 mod가 고를 수 있는 세 가지 행동
+
+:::html
+<div class="fsi c5-pickrow">
+  <div class="row3" data-pick="c5m-act">
+    <button class="pick" data-key="watch"><span class="k">OBSERVE</span><span class="t">지켜보기</span><span class="d">그대로 흘려보내고 기록만</span></button>
+    <button class="pick" data-key="change"><span class="k">CHANGE</span><span class="t">바꾸기</span><span class="d">내용을 고쳐서 넘기기</span></button>
+    <button class="pick" data-key="block"><span class="k">BLOCK</span><span class="t">막기, 대신하기</span><span class="d">원래 동작을 멈추고 mod가 답하기</span></button>
+  </div>
+  <div class="panel" data-pick-panel="c5m-act">
+    <p class="hint">같은 순간이라도 mod마다 하는 일이 다릅니다. 하나씩 눌러 공식 샘플이 어느 쪽인지 봅니다.</p>
+    <div data-for="watch"><dl class="kv"><dt>무엇을</dt><dd>일어난 일을 읽기만 하고 원래대로 진행시킵니다</dd><dt>영향</dt><dd>도구 실행과 답변에는 아무 영향이 없습니다</dd><dt>샘플</dt><dd>replay-theater. 편집을 기록만 하고 막거나 늦추지 않습니다</dd></dl></div>
+    <div data-for="change"><dl class="kv"><dt>무엇을</dt><dd>프롬프트, 도구 입력, 화면 요소를 고친 뒤 진행시킵니다</dd><dt>예</dt><dd>프롬프트에 문구 덧붙이기, 도구 호출 줄 아래에 설명 추가</dd><dt>샘플</dt><dd>token-weather. 프롬프트 위 영역에 예보 한 줄을 더합니다</dd></dl></div>
+    <div data-for="block"><dl class="kv"><dt>무엇을</dt><dd>원래 동작을 실행하지 않고 mod가 결과를 정합니다</dd><dt>영향</dt><dd>Claude에게 거절 이유가 전달되어 다음 행동을 바꿉니다</dd><dt>샘플</dt><dd>blast-radius. Cancel을 누르면 명령이 실행되지 않습니다</dd></dl></div>
+  </div>
+  <p class="note">조직의 managed 정책(deny 규칙, PreToolUse 차단)과 권한 프롬프트 화면은 mod가 넘거나 바꿀 수 없습니다.</p>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5m-act'); });
+:::
+
+:::notes
+{timing: 1.5min}
+{cue: demo}
+[요약]
+• 지켜보기: 그대로 흘려보내고 기록만 (replay-theater)
+• 바꾸기: 내용을 고쳐서 넘기기 (token-weather가 프롬프트 위에 한 줄 추가)
+• 막기, 대신하기: 원래 동작을 멈춤 (blast-radius)
+• managed 정책과 권한 프롬프트 화면은 mod가 넘을 수 없음
+
+불린 순간에 mod가 할 수 있는 행동은 세 가지예요. 지켜보기만 하거나, 내용을 고쳐서 넘기거나, 아예 막는 겁니다. 한 가지 안심하실 점은, 조직에서 건 managed 정책과 권한을 묻는 화면은 mod가 건드릴 수 없다는 거예요.
+:::
+
+---
+<!-- Slide 23: Idea gallery -->
+@type: content
+@fit: off
+
+## 이런 mod도 만들 수 있습니다
+여섯 가지 예시를 실제로 만들어 실행한 화면
+
+:::html
+<div class="fsi c5m-gallery" id="c5m-ideas">
+  <div class="side">
+    <div class="list" data-pick="c5m-ideas">
+      <button class="pick" data-key="files"><span class="k">SCREEN</span><span class="t">바뀐 파일 패널</span></button>
+      <button class="pick" data-key="guard"><span class="k">BEHAVIOR</span><span class="t">민감 파일 보호</span></button>
+      <button class="pick" data-key="long"><span class="k">SCREEN</span><span class="t">긴 턴 알림</span></button>
+      <button class="pick" data-key="rules"><span class="k">BEHAVIOR</span><span class="t">팀 규칙 덧붙이기</span></button>
+      <button class="pick" data-key="cmd"><span class="k">COMMAND</span><span class="t">즉시 커맨드</span></button>
+      <button class="pick" data-key="band"><span class="k">SCREEN</span><span class="t">지난 턴 요약 띠</span></button>
+    </div>
+    <div class="panel" data-pick-panel="c5m-ideas">
+      <div data-for="files"><p>도구 호출이 끝날 때마다 폴더를 다시 훑어, <b>생성되거나 수정된 파일</b>을 옆 패널의 트리에 표시합니다. <code>/files</code>로 패널을 고정합니다.</p><p class="eg">file-radar · tool.call 지켜보기 + 패널</p></div>
+      <div data-for="guard"><p>Claude가 <code>.env</code>를 고치려 하면 <b>막고 이유를 전달</b>합니다. Claude는 우회하지 않고 사람에게 요청하라고 답합니다.</p><p class="eg">env-guard · tool.call 막기</p></div>
+      <div data-for="long"><p>턴이 끝날 때 걸린 시간을 보고, 오래 걸렸으면 <b>토스트</b>로 알립니다. 데모는 10초 기준입니다.</p><p class="eg">long-turn · turn.complete + 토스트</p></div>
+      <div data-for="rules"><p>사용자가 보낸 프롬프트 끝에 <b>팀 규칙을 자동으로 덧붙여</b> Claude에게 넘깁니다. 금액 표기와 마지막 줄이 규칙대로 나왔습니다.</p><p class="eg">team-rules · prompt.submit 바꾸기</p></div>
+      <div data-for="cmd"><p><code>/tool-calls</code>를 입력하면 Claude를 거치지 않고 <b>바로 패널이 열려</b> 이번 세션의 도구 호출 기록을 보여 줍니다.</p><p class="eg">tool-calls · 커맨드 등록 + command.run + 패널</p></div>
+      <div data-for="band"><p>턴이 끝나면 <b>걸린 시간과 도구 호출 수</b>를 프롬프트 위에 표시합니다. 숨기기 버튼이 달려 있습니다.</p><p class="eg">turn-band · turn.complete + 프롬프트 위 띠</p></div>
+    </div>
+  </div>
+  <div class="shot">
+    <figure class="frame">
+      <img data-shot="files" src="./image/ch4-demo/file-radar.png" alt="file-radar mod를 실행한 Claude Code 화면">
+      <img data-shot="guard" src="./image/ch4-demo/env-guard.png" alt="env-guard mod를 실행한 Claude Code 화면">
+      <img data-shot="long" src="./image/ch4-demo/long-turn.png" alt="long-turn mod를 실행한 Claude Code 화면">
+      <img data-shot="rules" src="./image/ch4-demo/team-rules.png" alt="team-rules mod를 실행한 Claude Code 화면">
+      <img data-shot="cmd" src="./image/ch4-demo/tool-calls-pane.png" alt="tool-calls mod를 실행한 Claude Code 화면">
+      <img data-shot="band" src="./image/ch4-demo/turn-band.png" alt="turn-band mod를 실행한 Claude Code 화면">
+    </figure>
+    <p class="cap">이 장표를 위해 직접 만들어 Claude Code v2.1.325에서 실행한 mod의 실제 화면입니다.</p>
+  </div>
+</div>
+:::
+
+:::script
+(window.__fsiq = window.__fsiq || []).push(function (F) {
+  var root = document.querySelector('.slide-deck #c5m-ideas') || document.getElementById('c5m-ideas');
+  var imgs = root.querySelectorAll('.frame img');
+  F.pick('c5m-ideas', { start: 0, onShow: function (key) {
+    [].forEach.call(imgs, function (im) { im.classList.toggle('on', im.dataset.shot === key); });
+  } });
+});
+:::
+
+:::notes
+{timing: 2min}
+{cue: demo}
+[요약]
+• 바뀐 파일 패널, 민감 파일 보호, 긴 턴 알림
+• 팀 규칙 덧붙이기, 즉시 커맨드, 지난 턴 요약 띠
+• 여섯 개 모두 실제로 만들어 실행한 화면, 순간과 행동의 조합
+
+그러면 우리 팀에서는 뭘 만들 수 있을까요. 여섯 가지를 실제로 만들어서 돌려 본 화면을 가져왔어요. 전부 앞에서 본 순간과 행동을 조합한 겁니다. 예를 들어 민감 파일 보호는 도구 호출 순간에 막기를 쓴 거고, 긴 턴 알림은 턴 종료 순간에 토스트를 띄우는 거예요. 여러분 팀에 필요한 건 어떤 건지 떠올려 보세요.
+:::
+
+---
+<!-- Slide 24: Mod vs other extensions -->
+@type: content
+@fit: off
+
+## 언제 mod를 고를까
+다른 확장 방법과 비교, 바꿀 수 있는 것과 작성 방법
 
 :::html
 <div class="fsi c5-pickrow">
@@ -748,7 +1088,7 @@ mod와 다른 확장 비교, 바꿀 수 있는 것과 작성 언어
     <button class="pick" data-key="mcp"><span class="k">아무 언어</span><span class="t">MCP</span></button>
   </div>
   <div class="panel" data-pick-panel="c5-cmp">
-    <p class="hint">네 가지를 눌러 비교합니다. 원칙은 하나, <b>이미 다른 수단으로 되면 mod를 쓰지 않습니다</b>.</p>
+    <p class="hint">네 가지를 눌러 비교합니다. <b>화면, 즉시 커맨드, 이벤트 자체</b>를 바꿔야 할 때 mod를 고르고, 다른 수단으로 되는 일은 그쪽이 더 간단합니다.</p>
     <div data-for="mod"><dl class="kv"><dt>바꿀 수 있는 것</dt><dd>도구 호출, 프롬프트, 커맨드, 턴, 화면</dd><dt>작성</dt><dd>JS/TS (JavaScript, TypeScript)</dd><dt>고를 때</dt><dd>패널, 즉시 커맨드, 이벤트 재작성</dd></dl></div>
     <div data-for="hook"><dl class="kv"><dt>바꿀 수 있는 것</dt><dd>허용/차단, 입력과 결과 수정</dd><dt>작성</dt><dd>스크립트</dd><dt>고를 때</dt><dd>기존 스크립트로 막거나 기록</dd></dl></div>
     <div data-for="skill"><dl class="kv"><dt>바꿀 수 있는 것</dt><dd>Claude가 아는 것</dd><dt>작성</dt><dd>Markdown</dd><dt>고를 때</dt><dd>반복 지시</dd></dl></div>
@@ -762,272 +1102,51 @@ mod와 다른 확장 비교, 바꿀 수 있는 것과 작성 언어
 :::
 
 :::notes
-{timing: 2min}
-[요약]
-• mod: 도구 호출, 프롬프트, 커맨드, 턴, 화면을 JS/TS로, 패널과 즉시 커맨드, 이벤트 재작성에
-• Settings 훅: 허용/차단과 입력, 결과 수정을 스크립트로
-• Skill: Claude가 아는 것을 Markdown으로, MCP: 쓰는 도구를 아무 언어로
-• 이미 다른 수단으로 되면 mod를 쓰지 않음
-
-mod는 강력하죠. 그래도 이미 다른 수단으로 되는 일이라면 mod를 쓰지 않는 게 원칙입니다.↓
+{timing: 1.5min}
 {cue: demo}
-mod는 도구 호출부터 화면까지 바꿀 수 있고, JS나 TS로 써요. 패널, 즉시 실행되는 커맨드, 이벤트 재작성이 필요할 때 고릅니다.↓
-막거나 기록하는 건 Settings 훅으로 충분해요.↓ Claude가 알아야 할 건 Skill이에요.↓ 써야 할 도구는 MCP고요.
-그래서 화면이나 이벤트 자체를 바꿔야 할 때만 mod를 고르시면 됩니다.
+[요약]
+• mod: 도구 호출, 프롬프트, 커맨드, 턴, 화면을 JS/TS로
+• Settings 훅: 허용과 차단, 입력과 결과 수정을 스크립트로
+• Skill: Claude가 아는 것을 Markdown으로
+• MCP: Claude가 쓰는 도구를 아무 언어로
 
-[약어]
-• JS/TS: JavaScript, TypeScript
+그럼 언제 mod를 고르느냐. 반복 지시는 스킬, 외부 시스템 연결은 MCP, 스크립트로 막거나 기록하는 건 훅으로 충분합니다. 화면을 바꾸거나, 즉시 실행되는 커맨드가 필요하거나, 이벤트 자체를 고쳐야 할 때 mod를 고르시면 됩니다.
 :::
 
 ---
-<!-- Slide 18: Official sample mods (PDF p18) -->
+<!-- Slide 25: Try the samples -->
 @type: content
 @fit: off
 
-## 공식 샘플 셋으로 감 잡기
-claude-code-playground 저장소, 공식 지원 대상은 아님
+## 공식 샘플, 직접 써 보기
+저장소를 받아 한 세션만 실어 보거나, 설치해서 계속 쓰기
 
 :::html
-<div class="fsi c5-pickrow">
-  <div class="row3" data-pick="c5-samples">
-    <button class="pick" data-key="tw"><span class="k">CONTEXT</span><span class="t">token-weather</span></button>
-    <button class="pick" data-key="br"><span class="k">SAFETY</span><span class="t">blast-radius</span></button>
-    <button class="pick" data-key="rt"><span class="k">REVIEW</span><span class="t">replay-theater</span></button>
-  </div>
-  <div class="panel" data-pick-panel="c5-samples">
-    <p class="hint">샘플 하나를 누르면 무엇을 하는 mod인지 보여 줍니다.</p>
-    <div data-for="tw"><h4>token-weather</h4><p>컨텍스트 창 사용량을 <b>예보처럼</b> 프롬프트 위에 표시합니다.</p></div>
-    <div data-for="br"><h4>blast-radius</h4><p>rm -rf, force push 같은 <b>위험 명령을 붙잡고</b> 영향 범위를 보여 준 뒤, 진행이나 취소 버튼을 띄웁니다.</p></div>
-    <div data-for="rt"><h4>replay-theater</h4><p><code>/replay</code>로 지난 턴의 파일 편집을 <b>단계별로 재생</b>합니다.</p></div>
-  </div>
-  <p class="note">샘플은 claude-code-playground 저장소에 있으며 공식 지원 대상이 아닙니다. 도입 전에 더 알아보기의 mod 리뷰 절차를 거칩니다.</p>
+<div class="fsi fsi-lab c5m-how">
+  <ol class="steps">
+    <li><b>01 준비</b><span>Claude Code 2.1.287 이상. 이 버전부터 mod가 기본으로 로드됩니다</span><em>버전</em></li>
+    <li><b>02 받기</b><span><code>git clone https://github.com/anthropics/claude-code-playground.git</code></span><em>저장소</em></li>
+    <li><b>03 한 세션만</b><span><code>cd claude-code-playground/claude-code/mods</code><br><code>claude --plugin-dir ./token-weather</code></span><em>체험</em></li>
+    <li><b>04 계속 쓰기</b><span><code>claude plugin marketplace add ./</code><br><code>claude plugin install token-weather@claude-code-playground-mods --scope user</code></span><em>설치</em></li>
+  </ol>
+  <p class="where"><b>설치는 곧 신뢰.</b> mod는 내 권한으로 실행되는 코드입니다. 조직 PC에서는 Part 2의 정책(사이드로드 금지, 조직 mod만 허용)으로 막혀 있을 수 있습니다.</p>
 </div>
-:::
-
-:::script
-(window.__fsiq = window.__fsiq || []).push(function (F) { F.pick('c5-samples'); });
+  </div>
 :::
 
 :::notes
 {timing: 1.5min}
-[요약]
-• claude-code-playground 저장소의 공식 샘플 mod 세 가지, 공식 지원 대상은 아님
-• token-weather: 컨텍스트 사용량을 예보처럼 표시
-• blast-radius: 위험 명령을 붙잡고 영향 범위를 보여 준 뒤 진행 또는 취소
-• replay-theater: /replay로 지난 턴의 편집을 단계별 재생
-
-mod로 무엇을 할 수 있는지 공식 샘플 세 개로 감을 잡아볼게요. claude-code-playground 저장소에 있고, 공식 지원 대상은 아닙니다.↓
-{cue: demo}
-token-weather는 컨텍스트 사용량을 날씨 예보처럼 보여 줘요.↓ blast-radius는 rm -rf나 force push 같은 위험 명령을 붙잡아서 영향 범위를 보여 주고, 그다음 진행할지 묻습니다.↓ replay-theater는 지난 턴의 파일 편집을 단계별로 재생하고요.
-:::
-
----
-<!-- Slide 19: Trust model (PDF p19) -->
-@type: content
-@fit: off
-
-## mod의 범위 = 사용자 권한 전부
-설치 전에 알아야 할 신뢰 모델, 닿는 것과 막히는 것
-
-:::html
-<div id="c5-sv-trust"></div>
-:::
-
-:::script
-(window.__fsiq = window.__fsiq || []).push(function (F) {
-  var Z = [{x:20,y:40,w:560,h:410,l:'닿는 것 (사용자 권한으로)',tone:'danger'},{x:620,y:40,w:540,h:410,l:'막히는 것',tone:'success'}];
-  var MD = {id:'md',x:330,y:200,w:220,h:90,t:'mod',s:'사용자 권한',c:'warning'};
-  var R1 = {id:'r1',x:40,y:70,w:270,h:76,t:'파일, 프로세스, 네트워크',s:'읽기, 쓰기, 실행',c:'danger'};
-  var R2 = {id:'r2',x:40,y:165,w:270,h:76,t:'비밀값',s:'환경변수, 설정 속',c:'danger'};
-  var R3 = {id:'r3',x:40,y:260,w:270,h:76,t:'프롬프트, 도구 호출',s:'모든 것',c:'danger'};
-  var R4 = {id:'r4',x:40,y:355,w:270,h:76,t:'모델 사용량',s:'사용자의 것',c:'danger'};
-  var B1 = {id:'b1',x:660,y:80,w:460,h:84,t:'managed deny 규칙',s:'managed PreToolUse 차단',c:'success'};
-  var B2 = {id:'b2',x:660,y:200,w:460,h:84,t:'권한 프롬프트 화면',s:'mod가 바꿀 수 없음',c:'success'};
-  var B3 = {id:'b3',x:660,y:320,w:460,h:84,t:'로드 자체를 정책으로 통제',s:'validate, allowManagedModsOnly',c:'accent'};
-  var ALL = [MD, R1, R2, R3, R4, B1, B2, B3];
-  F.stepviz('#c5-sv-trust', [
-    {kicker:'STEP 1', title:'사용자가 닿는 곳엔 mod도 닿습니다',
-     body:'mod는 <b>사용자 권한으로</b> 돕니다. 파일 읽기와 쓰기, 프로세스 실행, 네트워크, 환경변수와 설정 속 비밀값, 모든 프롬프트와 도구 호출, 모델 사용량까지 닿습니다.',
-     facts:['mod에는 샌드박스가 없음','비밀값과 모든 프롬프트에 접근','설치는 곧 신뢰'],
-     zones:Z, nodes:ALL, hot:['md','r1','r2','r3','r4'],
-     edges:[{f:'md',t:'r1',c:'danger',o:0},{f:'md',t:'r2',c:'danger',o:1},{f:'md',t:'r3',c:'danger',o:2},{f:'md',t:'r4',c:'danger',o:3}],
-     stagger:0.3,
-     snip:{hd:'닿는 것',path:'사용자 권한으로',lines:['파일 읽기, 쓰기','프로세스 실행','네트워크','환경변수, 설정 속 비밀값','모든 프롬프트와 도구 호출','사용자의 모델 사용량'],hl:[1,2,3,4,5,6],note:'그래서 <b>남이 만든 mod</b>는 플러그인보다 더 엄격하게 검토합니다.'}},
-    {kicker:'STEP 2', title:'조직의 차단과 권한 화면은 못 넘습니다',
-     body:'<b>managed deny 규칙과 managed PreToolUse 차단</b>은 mod가 우회하지 못합니다. <b>권한 프롬프트 화면</b>도 mod가 바꿀 수 없습니다.',
-     facts:['managed deny 규칙','managed PreToolUse 차단','권한 프롬프트 화면은 고정'],
-     zones:Z, nodes:ALL, hot:['md','b1','b2'],
-     edges:[{f:'md',t:'b1',c:'success',dash:true},{f:'md',t:'b2',c:'success',dash:true}],
-     snip:{hd:'막히는 것',path:'조직 정책이 이기는 곳',lines:['managed deny 규칙','managed PreToolUse 차단','권한 프롬프트 화면'],hl:[1,2,3],note:'Ch2에서 건 managed 통제는 mod가 있어도 그대로입니다.'}},
-    {kicker:'STEP 3', title:'그래서 로드 자체를 통제합니다',
-     body:'mod가 띄운 프로세스는 <b>샌드박스 밖</b>입니다. 그래서 정책으로 <b>로드 자체</b>를 통제하고, 설치 전 <b>claude plugin validate</b>로 hooks와 calls를 확인합니다.',
-     facts:['mod가 띄운 프로세스는 샌드박스 밖','정책으로 로드 자체를 통제','설치 전 claude plugin validate'],
-     zones:Z, nodes:ALL, hot:['md','b3'],
-     edges:[{f:'b3',t:'md',c:'accent',l:'로드 통제',o:0}],
-     snip:{hd:'설치 전',path:'shell',lines:['claude plugin validate ./some-mod','','# hooks: 언제 끼어드는가','# calls: 바깥에 하는 일'],hl:[1],note:'다음 장에서 정책 키와 validate 출력 읽는 법을 봅니다.'}}
-  ], {legend:[['danger','mod가 닿는 것'],['success','mod가 못 넘는 것'],['accent','로드 통제']]});
-});
-:::
-
-:::notes
-{timing: 2min}
-[요약]
-• mod는 사용자 권한으로 파일, 프로세스, 네트워크, 비밀값, 모든 프롬프트, 모델 사용량에 닿음
-• managed deny, managed PreToolUse 차단, 권한 프롬프트 화면은 못 넘음
-• mod가 띄운 프로세스는 샌드박스 밖이라 정책으로 로드 자체를 통제, 설치 전 validate
-
-{cue: demo}
-설치 전에 이 신뢰 모델은 꼭 알고 가셔야 해요.
-첫 번째, mod는 사용자 권한으로 돌아요. 사용자가 닿는 곳이면 mod도 닿습니다. 비밀값이랑 모든 프롬프트까지요. mod에는 샌드박스가 없거든요.↓
-두 번째, 그래도 조직의 managed deny 규칙과 managed PreToolUse 차단, 그리고 권한 프롬프트 화면은 mod가 넘지 못합니다.↓
-세 번째, mod가 띄운 프로세스는 샌드박스 밖이에요. 그래서 결국 로드 자체를 막아야 통제할 수 있습니다. 설치 전에는 claude plugin validate로 무엇에 끼어들고 무엇을 호출하는지 확인하세요.
-:::
-
----
-<!-- Slide 20: Mod org control (PDF p20) -->
-@type: content
-@fit: off
-
-## 사용자 mod는 막고, 조직 mod는 검토
-allowManagedModsOnly와 claude plugin validate 읽는 법
-
-:::html
-<div id="c5-sv-ctrl"></div>
-:::
-
-:::script
-(window.__fsiq = window.__fsiq || []).push(function (F) {
-  var Z = [{x:20,y:40,w:300,h:410,l:'관리자'},{x:360,y:40,w:800,h:410,l:'사용자 PC'}];
-  var MS = {id:'ms',x:40,y:110,w:260,h:90,t:'managed-settings.json',s:'allowManagedModsOnly',c:'accent'};
-  var VA = {id:'va',x:40,y:300,w:260,h:90,t:'plugin validate',s:'설치 전 보안 리뷰',c:'warning'};
-  var OM = {id:'om',x:420,y:110,w:330,h:90,t:'조직 mod',s:'로컬 디렉터리 마켓플레이스',c:'success'};
-  var UM = {id:'um',x:800,y:110,w:330,h:90,t:'사용자 mod',s:'로드되지 않음',c:'danger'};
-  var CC = {id:'cc',x:420,y:300,w:710,h:90,t:'Claude Code',s:'파일, MDM 정책이면 Bedrock에서도 같게',c:'info'};
-  var ALL = [MS, VA, OM, UM, CC];
-  var POL = ['{','  "pluginConfigs": {','    "cc-plugin-sec-default@builtin": {','      "options": { "allowManagedModsOnly": true }','    }','  }','}'];
-  var VAL = ['$ claude plugin validate ./some-mod','','❯ ./register.js hooks: session.start, tool.call,','   ui.render{component=Pane}','❯ ./register.js calls: $.fs.read, $.http.fetch,','   $.store.set, $.ui.open'];
-  F.stepviz('#c5-sv-ctrl', [
-    {kicker:'STEP 1', title:'allowManagedModsOnly: 조직 mod만 로드',
-     body:'내장 보안 플러그인 <code>cc-plugin-sec-default@builtin</code>의 옵션 <b>allowManagedModsOnly</b>를 켜면 <b>조직이 배포한 mod만</b> 로드됩니다.',
-     facts:['managed-settings.json의 pluginConfigs','사용자가 설치한 mod는 로드 안 됨','사이드로드는 disableSideloadFlags와 함께'],
-     zones:Z, nodes:ALL, hot:['ms','om','um','cc'],
-     edges:[{f:'ms',t:'om',c:'success',l:'허용',o:0},{f:'um',t:'cc',c:'danger',dash:true},{f:'om',t:'cc',c:'success',o:1}],
-     snip:{hd:'사용자 mod 차단',path:'managed-settings.json',lines:POL,hl:[3,4],note:'Super Lab TASK 07에서 이 설정으로 사용자 mod가 막히는지 확인한 뒤 원복합니다.'}},
-    {kicker:'STEP 2', title:'조직 mod는 로컬 마켓플레이스로',
-     body:'조직 mod는 <b>로컬 디렉터리 마켓플레이스</b>에 두고 <b>prependPlugins</b>로 싣습니다.',
-     facts:['로컬 디렉터리 마켓플레이스','prependPlugins','검토한 버전만 올림'],
-     zones:Z, nodes:ALL, hot:['ms','om','cc'],
-     edges:[{f:'ms',t:'om',c:'success',l:'prependPlugins',o:0},{f:'om',t:'cc',c:'success',o:1}],
-     snip:{hd:'조직 mod 배포',path:'요약',lines:['조직 mod','  로컬 디렉터리 마켓플레이스','  + prependPlugins'],hl:[2,3],note:'배포 경로를 <b>managed 마켓플레이스로만</b> 두는 것이 리뷰 체크리스트의 한 항목입니다.'}},
-    {kicker:'STEP 3', title:'validate 출력은 두 줄을 읽습니다',
-     body:'<b>hooks</b> 줄은 언제 끼어드는지, <b>calls</b> 줄은 바깥에 무엇을 하는지입니다. calls에 <b>$.process.run, $.http.fetch</b>가 있으면 정밀 검토합니다.',
-     facts:['hooks: 언제 끼어드는가','calls: 바깥에 하는 일','$.process.run, $.http.fetch는 정밀 검토'],
-     zones:Z, nodes:ALL, hot:['va','om'],
-     edges:[{f:'va',t:'om',c:'warning',l:'검토 후 배포',o:0,side:'h'}],
-     snip:{hd:'설치 전 검토',path:'shell (예시 출력)',lines:VAL,hl:[3,5,6],note:'이 예시는 <b>$.http.fetch</b>가 있으니 네트워크 호출 대상을 확인해야 합니다.'}},
-    {kicker:'STEP 4', title:'파일과 MDM 정책은 Bedrock에서도 같습니다',
-     body:'이 통제는 파일이나 <b>MDM(단말 관리 도구)</b>으로 배포한 managed settings라서 <b>Bedrock 사용자에게도 똑같이</b> 적용됩니다.',
-     facts:['파일, MDM 정책','Bedrock에서도 똑같이 적용','서버 관리 설정에 기대지 않음'],
-     zones:Z, nodes:ALL,
-     edges:[{f:'ms',t:'cc',c:'accent',l:'파일, MDM',o:0,side:'h'},{f:'om',t:'cc',c:'success',o:1},{f:'um',t:'cc',c:'danger',dash:true}],
-     snip:{hd:'사용자 mod 차단',path:'managed-settings.json',lines:POL,hl:[4],note:'다음 퀴즈는 managed settings가 <b>없는</b> 경우입니다.'}}
-  ], {legend:[['accent','관리자 정책'],['warning','검토'],['success','허용된 mod'],['danger','막힌 mod']]});
-});
-:::
-
-:::notes
-{timing: 2.5min}
-[요약]
-• cc-plugin-sec-default@builtin의 allowManagedModsOnly: 조직 mod만 로드
-• 조직 mod는 로컬 디렉터리 마켓플레이스 + prependPlugins
-• claude plugin validate의 hooks 줄과 calls 줄, $.process.run과 $.http.fetch가 있으면 정밀 검토
-• 파일, MDM 정책이면 Bedrock에서도 똑같이 적용
-
-{cue: demo}
-그럼 조직에서 mod를 어떻게 통제할까요?
-첫 번째, managed-settings.json에서 내장 보안 플러그인의 allowManagedModsOnly를 켜세요. 그러면 조직이 배포한 mod만 로드되고, 사용자가 설치한 mod는 로드되지 않습니다.↓
-두 번째, 조직 mod는 로컬 디렉터리 마켓플레이스에 두고 prependPlugins로 싣습니다.↓
-세 번째, 설치 전에 claude plugin validate를 돌려서 두 줄을 읽어요. hooks는 언제 끼어드는지, calls는 바깥에 무엇을 하는지 보여 줍니다. calls에 프로세스 실행이나 http fetch가 보이면 정밀 검토 대상이에요.↓
-네 번째, 파일이나 MDM으로 배포한 정책이니까 Bedrock 사용자에게도 똑같이 적용됩니다.
-
-[약어]
-• MDM: Mobile Device Management, 회사 단말에 설정과 파일을 배포하는 관리 도구
-:::
-
----
-<!-- Slide 21: Quick check 2 (PDF p21) -->
-@type: content
-@fit: off
-
-## managed settings 없으면 guard는?
-QUICK CHECK, 손을 들어 답해 주세요
-
-:::html
-<div class="fsi qc" id="c5-qc-2">
-  <p class="q">Bedrock 사용자 PC에 managed settings가 없다면, 내장 guard(sec-default)는?</p>
-  <div class="opts three">
-    <button class="opt"><b>A</b>항상 로드된다</button>
-    <button class="opt right"><b>B</b>로드되지 않는다</button>
-    <button class="opt"><b>C</b>Bedrock이면 자동 로드</button>
-  </div>
-  <p class="ans">정답 B. Bedrock, API 키 사용자는 managed settings가 있는 머신에서만 guard가 로드됩니다.</p>
-</div>
-:::
-
-:::script
-(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c5-qc-2'); });
-:::
-
-:::notes
-{timing: 1min}
-{cue: poll}
-[요약]
-• 정답 B, managed settings가 없으면 내장 guard(sec-default)는 로드되지 않음
-• Bedrock, API 키 사용자는 managed settings가 있는 머신에서만 guard 로드
-
-퀴즈입니다. Bedrock 사용자 PC에 managed settings가 없다면, 방금 본 내장 guard, sec-default는 어떻게 될까요?↓
 {cue: pause}
-정답은 B예요. 로드되지 않습니다. Bedrock이나 API 키 사용자는 managed settings가 있는 머신에서만 guard가 로드되거든요. 그래서 Ch2에서 managed settings를 배포하는 게 모든 통제의 전제입니다.
-:::
-
----
-<!-- Slide 22: Quick check 3 (PDF p22) -->
-@type: content
-@fit: off
-
-## --plugin-dir로 실은 mod를 막으려면?
-QUICK CHECK, 손을 들어 답해 주세요
-
-:::html
-<div class="fsi qc" id="c5-qc-3">
-  <p class="q">사용자가 <code>--plugin-dir</code>로 mod를 실어도 로드되지 않게 하려면?</p>
-  <div class="opts three">
-    <button class="opt"><b>A</b>CLAUDE.md에 금지 문구</button>
-    <button class="opt right"><b>B</b>managed settings의 disableSideloadFlags와 allowManagedModsOnly</button>
-    <button class="opt"><b>C</b>사용자 settings.json에 enabledPlugins false</button>
-  </div>
-  <p class="ans">정답 B. 사용자 설정은 정책을 이기지 못합니다.</p>
-</div>
-:::
-
-:::script
-(window.__fsiq = window.__fsiq || []).push(function (F) { F.quickCheck('#c5-qc-3'); });
-:::
-
-:::notes
-{timing: 0.5min}
-{cue: poll}
 [요약]
-• 정답 B, managed settings의 disableSideloadFlags와 allowManagedModsOnly
-• CLAUDE.md 문구나 사용자 설정은 정책을 이기지 못함
+• Claude Code 2.1.287 이상
+• git clone 후 claude --plugin-dir ./token-weather 로 한 세션만 체험
+• 계속 쓰려면 로컬 마켓플레이스로 등록하고 plugin install
+• mod는 내 권한으로 실행되는 코드, 조직 PC에서는 정책으로 막혀 있을 수 있음
 
-이번 Part 마지막 퀴즈예요. 사용자가 --plugin-dir로 mod를 실어도 로드되지 않게 하려면 무엇을 해야 할까요?↓
-{cue: pause}
-정답은 B입니다. managed settings에 disableSideloadFlags와 allowManagedModsOnly를 함께 걸어야 해요. CLAUDE.md의 금지 문구는 지침일 뿐이고, 사용자 설정은 정책을 이기지 못합니다.
+직접 써 보고 싶으시면 이렇게 하시면 됩니다. 저장소를 받고, plugin-dir 옵션으로 한 세션만 실어 보는 게 가장 간단해요. 마음에 들면 마켓플레이스로 등록해서 설치합니다. 다만 mod는 내 권한으로 도는 코드라서 설치는 곧 신뢰예요. 그리고 회사 PC에서는 Part 2에서 본 정책으로 막혀 있을 수 있습니다.
 :::
-
 ---
-<!-- Slide 23: Super Lab (PDF p23) -->
+<!-- Slide 26: Super Lab (PDF p23) -->
 @type: content
 @fit: off
 
@@ -1068,7 +1187,7 @@ TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를
 :::
 
 ---
-<!-- Slide 24: Pre-deploy checklist (PDF p24) -->
+<!-- Slide 27: Pre-deploy checklist (PDF p24) -->
 @type: content
 @fit: off
 
@@ -1120,7 +1239,7 @@ TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를
 :::
 
 ---
-<!-- Slide 25: Deep dive divider (PDF p25, p26 merged into slide 7) -->
+<!-- Slide 28: Deep dive divider (PDF p25, p26 merged into slide 7) -->
 @type: content
 @fit: off
 
@@ -1150,7 +1269,7 @@ TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를
 :::
 
 ---
-<!-- Slide 26: Marketplace sources (PDF p27) -->
+<!-- Slide 29: Marketplace sources (PDF p27) -->
 @type: content
 @fit: off
 
@@ -1193,7 +1312,7 @@ TASK 05는 공식 first-mod를 만들고, Claude한테 /tally-reset 커맨드를
 :::
 
 ---
-<!-- Slide 27: Org deploy settings (PDF p28) -->
+<!-- Slide 30: Org deploy settings (PDF p28) -->
 @type: content
 @fit: off
 
@@ -1237,7 +1356,7 @@ Part 2에서는 GitHub 예시를 봤잖아요. 사내 git으로 등록하면 이
 :::
 
 ---
-<!-- Slide 28: Mod events and reviewing others' mods (PDF p29, p30) -->
+<!-- Slide 31: Mod events and reviewing others' mods (PDF p29, p30) -->
 @type: content
 @fit: off
 
@@ -1293,7 +1412,7 @@ Part 2에서는 GitHub 예시를 봤잖아요. 사내 git으로 등록하면 이
 :::
 
 ---
-<!-- Slide 29: Plugin ops metrics (PDF p31) -->
+<!-- Slide 32: Plugin ops metrics (PDF p31) -->
 @type: content
 @fit: off
 
@@ -1322,7 +1441,7 @@ plugin_installed로 누가 설치했는지, plugin_loaded로 실제로 쓰이는
 :::
 
 ---
-<!-- Slide 30: Recap (PDF p32) -->
+<!-- Slide 33: Recap (PDF p32) -->
 @type: content
 @fit: off
 
@@ -1358,7 +1477,7 @@ mod는 Claude Code 안에서 도는 JS 핸들러라 화면까지 바꿔요. 다�
 :::
 
 ---
-<!-- Slide 31: Thank you (PDF p33) -->
+<!-- Slide 34: Thank you (PDF p33) -->
 @type: thankyou
 @toc: toc.html
 @next: 05-ch5-cost-efficient.html
