@@ -114,7 +114,7 @@ ${document.documentElement.outerHTML}`,Fa=700;async function La(){await Promise.
 <script>(function(){var root=document.documentElement,btn=document.getElementById('theme-btn');
 function label(){var light=root.dataset.theme==='light';btn.textContent=light?'다크 모드':'화이트 모드';btn.setAttribute('aria-pressed',String(light));btn.setAttribute('aria-label',light?'다크 모드로 전환':'화이트 모드(라이트)로 전환')}
 function toggle(){root.dataset.theme=root.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('fsi-theme',root.dataset.theme)}catch(e){}label()}
-label();btn.addEventListener('click',toggle);
+label();btn.addEventListener('click',function(e){toggle();if(e.detail>0)btn.blur()});
 addEventListener('keydown',function(e){if(e.metaKey||e.ctrlKey||e.altKey)return;if((e.key==='t'||e.key==='T')&&!(e.target instanceof HTMLElement&&e.target.closest('input')))toggle()});
 addEventListener('storage',function(e){if(e.key==='fsi-theme'&&(e.newValue==='light'||e.newValue==='dark')){root.dataset.theme=e.newValue;label()}});
 var credit=document.getElementById('credit'),counter=document.getElementById('counter');
