@@ -33,7 +33,14 @@ html[data-still] #theme-btn{display:none}
 html[data-theme="light"],html[data-theme="light"] body{background:#F2F4F7}
 html[data-theme="light"] #frame{filter:invert(1) hue-rotate(180deg)}
 html[data-theme="light"] #theme-btn{color:#0F141A;background:rgba(255,255,255,.9);border-color:#8A95A3}
-@media (prefers-reduced-motion:reduce){#theme-btn{transition:none}}</style>
+/* Presenter credit on the title slide: an overlay matched to the 16:9 frame, outside the light-mode filter. */
+#credit-box{position:fixed;left:50%;top:50%;width:min(100vw,177.78vh);aspect-ratio:16/9;transform:translate(-50%,-50%);pointer-events:none;container-type:inline-size;z-index:5}
+#credit{position:absolute;left:23%;bottom:10%;font-family:Inter,"Noto Sans CJK KR",system-ui,-apple-system,"Segoe UI",sans-serif;color:#F2F5F7;opacity:0;transition:opacity .5s}
+#credit.show{opacity:1}
+#credit b{display:block;font-size:1.9cqw;font-weight:700;line-height:1.3}
+#credit span{display:block;font-size:1.25cqw;line-height:1.5;color:#BFCAD2}
+html[data-theme="light"] #credit{color:#0F141A}html[data-theme="light"] #credit span{color:#3D4654}
+@media (prefers-reduced-motion:reduce){#theme-btn{transition:none}#credit{transition:none}}</style>
 <script>/* Dark by default; light is the projector mode, shared site-wide via fsi-theme. */(function(){var q=null;try{q=new URLSearchParams(location.search).get('theme')}catch(e){}var t;if(q==='light'||q==='dark'){t=q;try{localStorage.setItem('fsi-theme',q)}catch(e){}}else{try{t=localStorage.getItem('fsi-theme')}catch(e){}}document.documentElement.dataset.theme=t==='light'?'light':'dark'})();</script>
 </head>
 <body>
@@ -52,6 +59,7 @@ html[data-theme="light"] #theme-btn{color:#0F141A;background:rgba(255,255,255,.9
 <button id="fs" type="button" title="Full screen (F)" aria-label="Full screen">⛶</button>
 <button id="download" type="button" title="Download this presentation (D): one HTML file that runs offline" aria-label="Download presentation">⤓</button>
 </nav>
+<div id="credit-box"><div id="credit"><b>Youngjin Kim</b><span>Principal Solutions Architect</span><span>AWS Korea</span></div></div>
 <button id="theme-btn" type="button" title="화이트 모드 전환 (T)"></button>
 <aside id="notes" aria-label="Speaker notes"><h2>Speaker notes</h2><div class="n-body"></div><div class="n-next"></div>
 <div class="n-keys">→ / Space / PageDown next · ← / PageUp back<br>Home / End first, last · R replay · L loop slide · P play through<br>D download · N notes · F full screen · T white mode · click the right of the slide for next</div></aside>
@@ -109,5 +117,8 @@ function toggle(){root.dataset.theme=root.dataset.theme==='light'?'dark':'light'
 label();btn.addEventListener('click',toggle);
 addEventListener('keydown',function(e){if(e.metaKey||e.ctrlKey||e.altKey)return;if((e.key==='t'||e.key==='T')&&!(e.target instanceof HTMLElement&&e.target.closest('input')))toggle()});
 addEventListener('storage',function(e){if(e.key==='fsi-theme'&&(e.newValue==='light'||e.newValue==='dark')){root.dataset.theme=e.newValue;label()}});
+var credit=document.getElementById('credit'),counter=document.getElementById('counter');
+function showCredit(){credit.classList.toggle('show',/^\s*1\s*\//.test(counter.textContent))}
+showCredit();new MutationObserver(showCredit).observe(counter,{childList:true,characterData:true,subtree:true});
 })();</script>
 </body></html>
