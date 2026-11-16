@@ -1,8 +1,9 @@
 /* FSI decks: a "1분 미리보기" button on each chapter cover.
  * The first slide of every block (data-block="0N-…") is its cover. The button opens
  * the chapter's one-minute preview video (../media/chapters/chN-preview.mp4, the
- * landscape Short) in an in-deck player. While the player is open the deck gets no
- * keys (the video's own controls still do), Tab stays inside the player, and Esc,
+ * landscape Short) in an in-deck player, where it repeats until closed. While the
+ * player is open the deck gets no keys (the video's own controls still do), Tab stays
+ * inside the player, and Esc,
  * the backdrop, ✕ or any slide change (e.g. from the presenter view) closes it; Esc,
  * the backdrop and ✕ return focus to the cover button (a slide change leaves focus alone).
  * Loaded once by assets/stepviz.js.
@@ -62,7 +63,7 @@
       '<div class="fsi-cv-bar"><span class="fsi-cv-title"></span>' +
       '<a class="fsi-cv-open" target="_blank" rel="noopener">새 탭에서 열기</a>' +
       '<button type="button" class="fsi-cv-close" aria-label="닫기 (Esc)">✕</button></div>' +
-      '<video class="fsi-cv-video" controls playsinline preload="none"></video>' +
+      '<video class="fsi-cv-video" controls loop playsinline preload="none"></video>' +
       '</div>';
     document.body.appendChild(modal);
     video = modal.querySelector('video');
