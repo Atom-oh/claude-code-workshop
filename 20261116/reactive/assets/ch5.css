@@ -116,3 +116,84 @@
 .c5-tree .tree .root { margin-bottom: var(--space-1); }
 .c5-tree .tree .leaf { padding-top: 0; padding-bottom: 0; }
 .c5-tree .tree .leaf { display: flex; flex-direction: column; gap: 0; }
+
+/* ---- Part 03 (Mods): screen map, sample screenshots, turn flow, idea gallery ---- */
+/* Screen map: Claude Code 화면 목업 위의 영역을 눌러 mod가 바꾸는 곳을 본다 */
+.c5m-screen { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: var(--space-6); }
+.c5m-screen .mock {
+  --m-bg: var(--surface-1); --m-bg2: var(--surface-2); --m-fg: var(--text-primary); --m-dim: var(--text-muted);
+  --m-line: var(--border); --m-accent: var(--accent);
+  position: relative; display: flex; flex-direction: column; min-height: 0;
+  background: var(--m-bg); border: 1px solid var(--m-line); border-radius: var(--radius-lg); overflow: hidden;
+  font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--m-fg);
+  transition: background var(--duration-normal), color var(--duration-normal);
+}
+.c5m-screen .mock.themed { --m-bg: #1f1a15; --m-bg2: #28221b; --m-fg: #f0e7d7; --m-dim: #aca08d; --m-line: #4a4033; --m-accent: #e0a458; }
+.c5m-screen .bar { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); background: var(--m-bg2); border-bottom: 1px solid var(--m-line); }
+.c5m-screen .bar i { width: 12px; height: 12px; border-radius: 50%; background: var(--m-dim); display: block; }
+.c5m-screen .bar .ttl { margin-left: var(--space-3); color: var(--m-dim); }
+.c5m-screen .body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: var(--space-4); padding: var(--space-4); }
+.c5m-screen .chat { order: 1; display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.c5m-screen .ln { display: block; margin: 0; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--m-fg); line-height: 1.5; }
+.c5m-screen .ln.dim, .c5m-screen .ln .dim { color: var(--m-dim); }
+.c5m-screen .gap { flex: 1; }
+.c5m-screen .prompt { border: 1px solid var(--m-line); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); color: var(--m-dim); }
+/* 누를 수 있는 영역 */
+.c5m-screen .rg {
+  position: relative; display: block; width: 100%; font: inherit; text-align: left; color: inherit; cursor: pointer;
+  background: transparent; border: 1.5px dashed color-mix(in srgb, var(--m-accent) 55%, transparent); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  transition: border-color var(--duration-fast), background var(--duration-fast), opacity var(--duration-fast);
+}
+.c5m-screen .rg::after {
+  content: attr(data-tag); position: absolute; top: -0.75em; right: var(--space-3); padding: 0 var(--space-2);
+  background: var(--m-bg); color: var(--m-accent); font-size: 0.75rem; letter-spacing: var(--tracking-wide); line-height: 1.5;
+}
+.c5m-screen .rg:hover, .c5m-screen .rg:focus-visible { border-style: solid; border-color: var(--m-accent); outline: none; }
+.c5m-screen .rg.on { border-style: solid; border-color: var(--m-accent); background: color-mix(in srgb, var(--m-accent) 14%, transparent); }
+.c5m-screen .has-pick .rg:not(.on) { opacity: .4; }
+.c5m-screen .rg b { color: var(--m-accent); font-weight: var(--weight-bold); }
+.c5m-screen .pane { order: 2; display: flex; flex-direction: column; gap: var(--space-2); }
+.c5m-screen .pane .pt { display: block; color: var(--m-dim); border-bottom: 1px solid var(--m-line); padding-bottom: var(--space-2); margin-bottom: var(--space-1); }
+.c5m-screen .toast { align-self: flex-end; width: auto; background: var(--m-bg2); }
+.c5m-screen .gap { min-height: var(--space-2); }
+.c5m-screen .chip { position: absolute; top: 0.45rem; right: var(--space-4); width: auto; padding: var(--space-1) var(--space-4); }
+.c5m-screen .chip::after { content: none; }
+.c5m-screen .side { display: flex; flex-direction: column; gap: var(--space-4); min-height: 0; }
+.c5m-screen .panel { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.c5m-screen .panel .eg { color: var(--text-muted); }
+.c5m-screen .cap { font-size: var(--fs-caption); color: var(--text-muted); margin: 0; }
+/* 공식 샘플 mod: 실제 스크린샷 + 장면 고르기 */
+.c5m-shot { display: flex; flex-direction: column; gap: var(--space-3); }
+.c5m-shot .what { margin: 0; font-size: var(--fs-card); color: var(--text-primary); }
+.c5m-shot .what b { color: var(--accent); }
+.c5m-shot .frame { position: relative; flex: 1; margin: 0; min-height: 0; background: #18181a; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.c5m-shot .frame img { position: absolute; inset: var(--space-3); width: calc(100% - 2 * var(--space-3)); height: calc(100% - 2 * var(--space-3)); object-fit: contain; object-position: left center; opacity: 0; transition: opacity var(--duration-normal) var(--ease-out); }
+.c5m-shot .frame img.on { opacity: 1; }
+.c5m-shot .foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: var(--space-5); }
+.c5m-shot .scenes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.c5m-shot .scenes .pick { display: flex; flex-direction: column; justify-content: center; }
+.c5m-shot .panel { display: flex; flex-direction: column; justify-content: center; padding: var(--space-3) var(--space-5); min-height: 5.6rem; }
+.c5m-shot .panel p { font-size: var(--fs-caption); margin: 0; }
+.c5m-shot .cap { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+/* 턴 흐름: 다섯 순간을 화살표로 잇는다 */
+.c5m-flow .row5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-6); }
+.c5m-flow .row5 .pick { position: relative; min-height: 9rem; display: flex; flex-direction: column; justify-content: flex-end; }
+.c5m-flow .row5 .pick .t { font-size: var(--fs-subtitle); }
+.c5m-flow .row5 .pick:not(:last-child)::after { content: '→'; position: absolute; right: calc(-1 * var(--space-6)); width: var(--space-6); top: 50%; transform: translateY(-50%); text-align: center; color: var(--text-muted); font-size: var(--fs-card); }
+/* 예시 갤러리: 왼쪽에서 고르고 오른쪽에 실제 화면 */
+.c5m-gallery { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.3fr); gap: var(--space-5); }
+.c5m-gallery .side { display: flex; flex-direction: column; gap: var(--space-3); min-height: 0; }
+.c5m-gallery .list { display: flex; flex-direction: column; gap: var(--space-2); }
+.c5m-gallery .list .pick { padding: var(--space-2) var(--space-4); display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); align-items: baseline; }
+.c5m-gallery .list .pick .k { font-size: 0.75rem; }
+.c5m-gallery .list .pick .t { margin: 0; }
+.c5m-gallery .panel { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: var(--space-3) var(--space-4); }
+.c5m-gallery .panel p { font-size: var(--fs-caption); margin: 0 0 var(--space-2); }
+.c5m-gallery .panel .eg { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.75rem; margin: 0; }
+.c5m-gallery .shot { display: flex; flex-direction: column; gap: var(--space-2); min-height: 0; }
+.c5m-gallery .frame { position: relative; flex: 1; margin: 0; min-height: 0; background: #18181a; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.c5m-gallery .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center top; opacity: 0; transition: opacity var(--duration-normal) var(--ease-out); }
+.c5m-gallery .frame img.on { opacity: 1; }
+.c5m-gallery .cap { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+.c5m-how .steps code { word-break: break-all; }
