@@ -636,7 +636,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   </p>
   <div class="hero-meta">
     <span>환경 <strong>Claude Code on EC2 + Admin 계정</strong></span>
-    <span>리전 <strong>ap-northeast-2</strong></span>
+    <span>리전 <strong>us-east-1</strong></span>
     <span>모델 <strong>Sonnet 4.6 (Global CRIS)</strong></span>
     <span>Update <strong>2026.07</strong></span>
   </div>
@@ -722,28 +722,13 @@ node -v &amp;&amp; git --version &amp;&amp; jq --version
 npx cdk --version</code></pre>
   </div>
 
-  <p class="body">Bedrock 호출은 <strong>다른 계정에서 발급받은 Bedrock API 키(Bearer 토큰)</strong>로 인증합니다.
-  SigV4 자격증명 없이 환경변수 하나면 됩니다. 세 단계로 스모크 테스트합니다.</p>
+  <p class="body">Bedrock 호출은 <strong>워크샵 계정의 IAM 역할</strong>로 인증합니다. 실습 환경의 역할이 us-east-1에서 Bedrock을 호출할 수 있어,
+  키를 받거나 <code class="inline">.env</code>에 넣을 것이 없습니다. 스모크 테스트 한 번으로 확인합니다.</p>
 
   <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 1/3, .env에 Bearer 토큰 저장</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>mkdir -p ~/capstone
-cat &gt; ~/capstone/.env &lt;&lt; 'ENVEOF'
-AWS_BEARER_TOKEN_BEDROCK=&lt;발급받은 Bedrock API 키&gt;
-ENVEOF</code></pre>
-  </div>
-  <p class="body">저장 후 파일을 열어 <code class="inline">&lt;발급받은 Bedrock API 키&gt;</code> 자리를 실제 키로 바꾸세요.
-  <strong>리포 바깥(~/capstone/.env)에 두므로</strong> git add -A에 딸려 커밋될 일이 원천적으로 없습니다.</p>
-
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 2/3, 셸에 로드 (값 노출 없이)</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>set -a; source ~/capstone/.env; set +a</code></pre>
-  </div>
-
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 3/3, Converse API 스모크</span><button class="copy-btn" type="button">복사</button></div>
+    <div class="code-head"><span class="code-label">Terminal, Converse API 스모크</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>aws bedrock-runtime converse \
-  --region ap-northeast-2 \
+  --region us-east-1 \
   --model-id global.anthropic.claude-sonnet-4-6 \
   --messages '[{"role":"user","content":[{"text":"ping"}]}]' \
   --inference-config '{"maxTokens":30}' \
@@ -751,11 +736,10 @@ ENVEOF</code></pre>
   </div>
   <div class="callout warn">
     <span class="co-title">smoke가 실패한다면</span>
-    401 또는 <code class="inline">UnrecognizedClientException</code>은 키 오탈자나 만료입니다, ~/capstone/.env를 고치고
-    2/3 로드를 다시 실행하세요. <code class="inline">AccessDeniedException</code>은 발급 계정의 모델 액세스 미승인,
+    <code class="inline">AccessDeniedException</code>은 역할에 Bedrock 호출 권한이 없거나 모델 액세스가 승인되지 않은 경우이니 진행자에게 알려 주세요.
     <code class="inline">ValidationException</code>(on-demand 미지원)은 베이스 모델 ID를 쓴 경우입니다.
     신형 모델은 반드시 <strong>global. 프로파일 ID</strong>로 호출합니다.
-    Bearer 키는 <strong>Bedrock 호출 전용</strong>이고, CDK 배포는 기존 EC2 롤(SigV4)을 그대로 씁니다. 여기서 막히면 부록 트러블슈팅의 모델 항목을 확인하세요. 이 관문만 넘으면 M3는 순항입니다.
+    이 스모크와 CDK 배포는 <strong>같은 인스턴스 역할(SigV4)</strong>을 쓰고, 배포된 Lambda는 자기 실행 역할로 호출합니다. 여기서 막히면 부록 트러블슈팅의 모델 항목을 확인하세요. 이 관문만 넘으면 M3는 순항입니다.
   </div>
 
   <div class="step-title"><span class="step-no">2</span>프로젝트 스캐폴드와 bootstrap (백그라운드)</div>
@@ -797,9 +781,9 @@ echo "bootstrap은 백그라운드 진행 중. tail -f /tmp/bootstrap.log 로 �
 2) HTTP API(API Gateway v2) + Lambda(Node 22) + DynamoDB 단일 테이블(pk/sk): POST/GET /events
 3) POST /ask: Lambda가 Bedrock Converse API로 Global Inference Profile 호출
    (기본 global.anthropic.claude-sonnet-4-6, CDK context askModelId로 교체 가능), maxTokens 600, CORS 허용.
-   Bedrock 인증은 IAM이 아니라 다른 계정에서 발급한 API 키를 쓴다: 배포 셸의 AWS_BEARER_TOKEN_BEDROCK 값을
-   CDK가 Lambda 환경변수로 주입하고, Bedrock용 IAM 정책은 만들지 않는다
-4) 인프라는 CDK TypeScript 단일 스택, 리전 ap-northeast-2, 리소스는 삭제 가능(DESTROY)
+   Bedrock 인증은 Lambda 실행 역할(IAM)로 한다: 역할에 bedrock:InvokeModel을 주고 리소스는
+   foundation-model과 inference-profile 2종으로 좁힌다. API 키와 .env는 쓰지 않는다
+4) 인프라는 CDK TypeScript 단일 스택, 리전 us-east-1, 리소스는 삭제 가능(DESTROY)
 5) 구현 순서는 Phase 1(events API) → Phase 2(frontend) → Phase 3(/ask) → Phase 4(관측 hook, ship 스킬)
 6) 시간 제약 2시간: 단위 테스트는 생략하고 각 Phase의 smoke curl로 검증을 갈음한다
 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
@@ -864,8 +848,7 @@ echo "bootstrap은 백그라운드 진행 중. tail -f /tmp/bootstrap.log 로 �
   <div class="step-title"><span class="step-no">2</span>배포</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, worktree에서</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>set -a; source ~/capstone/.env; set +a   # Bearer 키 로드
-npx cdk deploy --require-approval never --outputs-file cdk-outputs.json</code></pre>
+    <pre><code>npx cdk deploy --require-approval never --outputs-file cdk-outputs.json</code></pre>
   </div>
   <p class="body">
     첫 배포는 몇 분 걸립니다. <strong>기다리지 말고 지금 바로 M2의 Step 1(프론트 병렬 빌드)을 시작하세요.</strong>
@@ -950,14 +933,18 @@ export class OpsCenterStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_22_X,
       handler: "ask.handler",
       code: lambda.Code.fromAsset("lambda"),
-      environment: {
-        ASK_MODEL_ID: askModelId,
-        // 다른 계정 발급 Bedrock API 키, 배포 셸에서 주입 (IAM 정책 불필요)
-        AWS_BEARER_TOKEN_BEDROCK: process.env.AWS_BEARER_TOKEN_BEDROCK ?? "",
-      },
+      environment: { ASK_MODEL_ID: askModelId },
       timeout: cdk.Duration.seconds(29),
       memorySize: 512,
     });
+    // Bedrock 호출은 Lambda 실행 역할로 인증 (리소스 2종: foundation-model + inference-profile)
+    askFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["bedrock:InvokeModel"],
+      resources: [
+        "arn:aws:bedrock:*::foundation-model/anthropic.claude-*",
+        `arn:aws:bedrock:${this.region}:${this.account}:inference-profile/global.anthropic.claude-*`,
+      ],
+    }));
     api.addRoutes({
       path: "/ask",
       methods: [apigwv2.HttpMethod.POST],
@@ -1000,7 +987,7 @@ import { OpsCenterStack } from "./ops-center-stack";
 
 const app = new cdk.App();
 new OpsCenterStack(app, "OpsCenterStack", {
-  env: { region: process.env.CDK_DEFAULT_REGION ?? "ap-northeast-2" },
+  env: { region: process.env.CDK_DEFAULT_REGION ?? "us-east-1" },
   tags: { project: "capstone-ops-center" },
 });</code></pre>
   </div>
@@ -1096,7 +1083,6 @@ export const handler = async (event) =&gt; {
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>sed -i "s|PASTE_API_URL|$API|" frontend/index.html
-set -a; source ~/capstone/.env; set +a   # Bearer 키 로드
 npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
 SITE=$(jq -r '.OpsCenterStack.SiteUrl' cdk-outputs.json) &amp;&amp; echo "대시보드: $SITE"</code></pre>
   </div>
@@ -1178,7 +1164,7 @@ SITE=$(jq -r '.OpsCenterStack.SiteUrl' cdk-outputs.json) &amp;&amp; echo "대시
 
 &lt;script&gt;
 "use strict";
-var API_BASE = "PASTE_API_URL"; // 예: https://abc123.execute-api.ap-northeast-2.amazonaws.com
+var API_BASE = "PASTE_API_URL"; // 예: https://abc123.execute-api.us-east-1.amazonaws.com
 
 function fmt(n, d) { return Number(n || 0).toFixed(d); }
 
@@ -1274,24 +1260,17 @@ setInterval(refresh, 5000);
     <div class="code-head"><span class="code-label">Claude 세션 입력, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 3을 구현해줘. 조건:
 - lambda/ask.mjs: @aws-sdk/client-bedrock-runtime 의 ConverseCommand 사용, 환경변수 ASK_MODEL_ID(기본 global.anthropic.claude-sonnet-4-6), maxTokens 600, CORS 헤더, 오류는 502 JSON
-- 스택: /ask POST 라우트 추가, Lambda timeout 29초. Bedrock IAM 정책은 만들지 말 것.
-  대신 Lambda environment에 AWS_BEARER_TOKEN_BEDROCK: process.env.AWS_BEARER_TOKEN_BEDROCK ?? "" 를 주입
-  (SDK가 이 환경변수를 자동 인식해 API 키로 인증한다)</code></pre>
+- 스택: /ask POST 라우트 추가, Lambda timeout 29초. Lambda 역할에 bedrock:InvokeModel 정책 추가,
+  리소스는 foundation-model(anthropic.claude-*)과 이 계정의 inference-profile(global.anthropic.claude-*) 2종.
+  API 키 환경변수는 넣지 말 것 (SDK가 Lambda 역할 자격을 자동으로 쓴다)</code></pre>
   </div>
 
   <div class="step-title"><span class="step-no">2</span>배포와 검증</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>set -a; source ~/capstone/.env; set +a   # Bearer 키를 배포 셸에 로드
-npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
+    <pre><code>npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
 curl -s -X POST "$API/ask" -H 'Content-Type: application/json' \
   -d '{"question":"HTTP API와 REST API의 차이를 한 문장으로"}' | jq '{answer, model, usage}'</code></pre>
-  </div>
-  <div class="callout warn">
-    <span class="co-title">이후의 모든 deploy는 .env 로드가 선행</span>
-    스택이 배포 셸의 <code class="inline">AWS_BEARER_TOKEN_BEDROCK</code>을 읽어 Lambda에 넣으므로,
-    새 터미널에서 deploy할 때는 항상 <code class="inline">set -a; source ~/capstone/.env; set +a</code>를 먼저 실행하세요.
-    빈 값으로 배포되면 /ask가 401을 반환합니다, 로드 후 재배포가 처방입니다.
   </div>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">출력 예시</span></div>
@@ -1469,7 +1448,7 @@ allowed-tools: Bash(npx cdk *) Bash(curl *) Bash(aws cloudformation *)
 캡스톤 스택을 출항시키세요. 참가자 이름: $ARGUMENTS
 
 1. `npx cdk synth --quiet` 로 합성 검증. 실패하면 원인만 보고하고 멈추세요.
-2. `set -a; source ~/capstone/.env; set +a &amp;&amp; npx cdk deploy --require-approval never --outputs-file cdk-outputs.json` 실행 (Bearer 키 로드 포함).
+2. `npx cdk deploy --require-approval never --outputs-file cdk-outputs.json` 실행.
 3. cdk-outputs.json에서 ApiUrl과 SiteUrl을 읽으세요.
 4. Smoke 테스트: `curl -s $ApiUrl/events` 가 JSON을 반환하고, `curl -s -X POST $ApiUrl/events -H "Content-Type: application/json" -d '{"kind":"ship","detail":"smoke"}'` 가 201을 반환해야 합니다.
 5. 최종 보고: SiteUrl, ApiUrl, smoke 결과를 표로 출력하고, 셀프 방문에 쓸 두 URL(SiteUrl, ApiUrl)을 한 줄로 안내하세요.
@@ -1509,7 +1488,7 @@ echo "스킬 설치됨. 새 세션에서 /ship 사용 가능"</code></pre>
     <div class="code-head"><span class="code-label">기대 결과</span></div>
     <pre><code>| 항목 | 값 |
 | SiteUrl | https://dxxxx.cloudfront.net |
-| ApiUrl | https://xxxx.execute-api.ap-northeast-2.amazonaws.com |
+| ApiUrl | https://xxxx.execute-api.us-east-1.amazonaws.com |
 | Smoke | GET 200 / POST 201 |
 셀프 방문용: https://dxxxx.cloudfront.net + ApiUrl</code></pre>
   </div>

@@ -164,6 +164,11 @@ missions stay in the repository as an archive of earlier examples ("예전 예�
 and are no longer linked from the invitation except Playbook Foundry in the
 self-paced list.
 
+Since 2026-11-17 the portal shows these earlier missions in an open section
+(`#capstone-archive`) instead of a collapsed one, and they no longer use a
+Bedrock API key: Bedrock calls go through the workshop IAM role in
+`us-east-1`.
+
 ## Intro Video
 
 `eDM.html` shows a 93-second intro video above the workshop introduction. It
