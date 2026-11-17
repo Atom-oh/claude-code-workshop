@@ -115,9 +115,10 @@ Session mapping:
   and demo 13:00–13:20, lab TASK 01–04 13:20–14:00),
   Capstone Round 2 14:00–16:40 (160 minutes, no break before it), break
   16:40–16:50, Ch6 16:50–17:40 (lecture and demo in one 50-minute block since
-  2026-11-15: the instructor demos the dashboard, the telemetry path, the
-  gateway spend limit and modelPricing; the Ch6 lab page TASK 01–04 stays as
-  a self-paced lab), Showcase 2 17:40–18:00. Ch4 + Ch5 + R2 = 310 minutes (90 + 60 +
+  2026-11-15; since 2026-11-17 the instructor demos only the ccdash dashboard,
+  and the telemetry path, gateway spend limit and modelPricing are
+  self-paced in the Ch6 lab page TASK 01–04. The sent eDM still lists the
+  three demos), Showcase 2 17:40–18:00. Ch4 + Ch5 + R2 = 310 minutes (90 + 60 +
   160), against 320 before (80 + 60 + 180) with a 70-minute lunch; the R2 cut
   of 20 minutes pays for the 10 longer Ch4 and the 10 longer lunch.
 - Ch4 (90 minutes) is a 35-minute lecture (10:10–10:45) and a 55-minute Super
