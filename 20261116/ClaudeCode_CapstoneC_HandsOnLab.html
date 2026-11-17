@@ -636,7 +636,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   </p>
   <div class="hero-meta">
     <span>환경 <strong>Claude Code on EC2 + Admin 계정</strong></span>
-    <span>리전 <strong>ap-northeast-2</strong></span>
+    <span>리전 <strong>us-east-1</strong></span>
     <span>모델 <strong>Sonnet 4.6 (Global CRIS)</strong></span>
     <span>Update <strong>2026.07</strong></span>
   </div>
@@ -719,24 +719,13 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
 node -v &amp;&amp; jq --version &amp;&amp; npx cdk --version</code></pre>
   </div>
 
-  <p class="body">Bedrock 호출(주문 접수원)은 <strong>다른 계정에서 발급받은 API 키(Bearer)</strong>로 인증합니다.
-  CapstoneA를 거쳤다면 <code class="inline">~/capstone/.env</code>가 이미 있으니 1/3은 건너뛰고 2/3부터 하세요.</p>
+  <p class="body">Bedrock 호출(주문 접수원)은 <strong>워크샵 계정의 IAM 역할</strong>로 인증합니다.
+  키를 받거나 <code class="inline">.env</code>에 넣을 것이 없으니, 스모크 테스트 한 번으로 확인합니다.</p>
 
   <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 1/3, .env에 Bearer 토큰 저장</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>mkdir -p ~/capstone
-cat &gt; ~/capstone/.env &lt;&lt; 'ENVEOF'
-AWS_BEARER_TOKEN_BEDROCK=&lt;발급받은 Bedrock API 키&gt;
-ENVEOF</code></pre>
-  </div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 2/3, 셸에 로드</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>set -a; source ~/capstone/.env; set +a</code></pre>
-  </div>
-  <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 3/3, Converse 스모크</span><button class="copy-btn" type="button">복사</button></div>
+    <div class="code-head"><span class="code-label">Terminal, Converse 스모크</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>aws bedrock-runtime converse \
-  --region ap-northeast-2 \
+  --region us-east-1 \
   --model-id global.anthropic.claude-sonnet-4-6 \
   --messages '[{"role":"user","content":[{"text":"ping"}]}]' \
   --inference-config '{"maxTokens":30}' \
@@ -772,13 +761,13 @@ git add -A &amp;&amp; git commit -m "chore: cdk scaffold" 2&gt;/dev/null || true
    - board: GET /orders(최근 30건+매출 합계), POST /status(NEW/MAKING/DONE 전이), GET /menu
 3) 프론트 2뷰(S3+CloudFront): index.html 고객 주문(메뉴판, 자연어 입력, 영수증 렌더),
    kitchen.html 주방 보드(3열 상태 컬럼, 3초 폴링, 상태 전이 버튼, 매출 표시)
-4) CDK TypeScript 단일 스택(CafeStack), ap-northeast-2, DESTROY,
+4) CDK TypeScript 단일 스택(CafeStack), us-east-1, DESTROY,
    Outputs: ApiUrl/SiteUrl/KitchenUrl/TableName
 5) 구현 순서 Phase 1(DB+백엔드, 직접 주문 경로까지) → Phase 2(프론트 2뷰) →
    Phase 3(AI 자연어 접수) → Phase 4(러시 시뮬레이터와 개점 스킬)
 6) 시간 제약 2시간: 단위 테스트는 receipt 모듈만, 나머지는 smoke curl로 갈음
-7) Bedrock 인증은 IAM이 아니라 발급받은 API 키를 쓴다: 배포 셸의 AWS_BEARER_TOKEN_BEDROCK 값을
-   CDK가 Lambda 환경변수로 주입하고, Bedrock용 IAM 정책은 만들지 않는다
+7) Bedrock 인증은 주문 Lambda 실행 역할(IAM)로 한다: 역할에 bedrock:InvokeModel을 주고 리소스는
+   foundation-model과 inference-profile 2종으로 좁힌다. API 키와 .env는 쓰지 않는다
 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
   </div>
   <div class="callout tip">
@@ -822,8 +811,7 @@ git add -A &amp;&amp; git commit -m "chore: cdk scaffold" 2&gt;/dev/null || true
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, worktree에서</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>set -a; source ~/capstone/.env; set +a   # Bearer 키 로드
-npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
+    <pre><code>npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
 API=$(jq -r '.CafeStack.ApiUrl' cdk-outputs.json) &amp;&amp; export CAFE_API="$API" OPS_OUTPUTS="$PWD/cdk-outputs.json"</code></pre>
   </div>
 
@@ -917,12 +905,18 @@ export class CafeStack extends cdk.Stack {
       environment: {
         TABLE_NAME: table.tableName,
         ORDER_MODEL_ID: orderModelId,
-        // 발급 API 키 인증, 배포 셸에서 주입 (Bedrock IAM 정책 불필요)
-        AWS_BEARER_TOKEN_BEDROCK: process.env.AWS_BEARER_TOKEN_BEDROCK ?? "",
       },
       timeout: cdk.Duration.seconds(29),
       memorySize: 512,
     });
+    // Bedrock 호출은 Lambda 실행 역할로 인증 (리소스 2종: foundation-model + inference-profile)
+    orderFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["bedrock:InvokeModel"],
+      resources: [
+        "arn:aws:bedrock:*::foundation-model/anthropic.claude-*",
+        `arn:aws:bedrock:${this.region}:${this.account}:inference-profile/global.anthropic.claude-*`,
+      ],
+    }));
     table.grantReadWriteData(orderFn);
 
     const boardFn = new lambda.Function(this, "BoardFn", {
@@ -982,7 +976,7 @@ import { CafeStack } from "./cafe-stack";
 
 const app = new cdk.App();
 new CafeStack(app, "CafeStack", {
-  env: { region: process.env.CDK_DEFAULT_REGION ?? "ap-northeast-2" },
+  env: { region: process.env.CDK_DEFAULT_REGION ?? "us-east-1" },
   tags: { project: "capstone-ai-cafe" },
 });</code></pre>
   </div>
@@ -1238,7 +1232,6 @@ NEW에는 "제조 시작", MAKING에는 "완성" 버튼으로 POST /status 전�
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>sed -i "s|PASTE_API_URL|$API|" frontend/index.html frontend/kitchen.html
-set -a; source ~/capstone/.env; set +a   # Bearer 키 로드
 npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
 jq -r '.CafeStack | "고객: \(.SiteUrl)\n주방: \(.KitchenUrl)"' cdk-outputs.json</code></pre>
   </div>
@@ -1475,24 +1468,17 @@ setInterval(refresh, 3000);
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>/superpowers:executing-plans Phase 3(자연어 접수)을 구현해줘. 요구사항 2)의 toolConfig 스펙 그대로: place_order 도구 하나, toolChoice로 그 도구 강제, 시스템 프롬프트에 메뉴판 JSON을 넣고 "메뉴에 없는 건 items에 넣지 말고 reply로 안내"를 명시해.
-스택은 Bedrock IAM 정책 없이, 주문 Lambda environment에
-AWS_BEARER_TOKEN_BEDROCK: process.env.AWS_BEARER_TOKEN_BEDROCK ?? "" 를 주입해.</code></pre>
+스택은 주문 Lambda 역할에 bedrock:InvokeModel 정책을 추가해
+(리소스는 foundation-model과 inference-profile 2종, API 키 환경변수는 넣지 말 것).</code></pre>
   </div>
 
   <div class="step-title"><span class="step-no">2</span>배포와 자연어 주문</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>set -a; source ~/capstone/.env; set +a   # Bearer 키를 배포 셸에 로드
-npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
+    <pre><code>npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
 curl -s -X POST "$API/order" -H 'Content-Type: application/json' \
   -d '{"text":"아이스 아메리카노 두 잔인데 한 잔은 샷 추가요, 크루아상도 하나 주세요","customer":"first-guest"}' \
   | jq '{reply, lines: .receipt.lines, total: .receipt.total}'</code></pre>
-  </div>
-  <div class="callout warn">
-    <span class="co-title">이후의 모든 deploy는 .env 로드가 선행</span>
-    스택이 배포 셸의 <code class="inline">AWS_BEARER_TOKEN_BEDROCK</code>을 읽어 Lambda에 넣으므로,
-    새 터미널에서 deploy할 때는 항상 <code class="inline">set -a; source ~/capstone/.env; set +a</code>를 먼저 실행하세요.
-    빈 값으로 배포되면 접수원이 401을 반환합니다.
   </div>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">출력 예시</span></div>
@@ -1576,7 +1562,7 @@ curl -s -X POST "$API/order" -H 'Content-Type: application/json' \
   <div class="callout warn">
     <span class="co-title">이 미션의 3대 함정 (A와 동일 계보)</span>
     ① ValidationException(on-demand 미지원) = 베이스 모델 ID, global. 프로파일로.
-    ② AccessDeniedException = 발급 계정의 모델 액세스 미승인. ②-1 401/UnrecognizedClientException = 키 오탈자, 만료, 또는 .env 미로드 배포(로드 후 재배포).
+    ② AccessDeniedException = 주문 Lambda 역할의 Bedrock 정책 리소스 2종(foundation-model + inference-profile) 중 하나 누락이거나 모델 액세스 미승인.
     ③ 29초 부근 타임아웃 = HTTP API 상한, maxTokens 700 유지. "no toolUse in response"가 뜨면
     toolChoice 블록이 빠졌거나 모델 ID가 도구 미지원 구모델인 경우입니다.
   </div>

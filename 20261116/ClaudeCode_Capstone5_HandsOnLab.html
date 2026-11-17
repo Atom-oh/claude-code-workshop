@@ -675,7 +675,7 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
     <tr><td>수집</td><td>USGS 2.5_day.geojson을 60초 폴링</td><td>키 없음, 피드 하나가 전체 상류. 비정상 필드는 다듬고 계속</td></tr>
     <tr><td>저장</td><td>이벤트 id 멱등 딕셔너리(최대 500건)</td><td>같은 지진은 한 번만, 신규 진입을 사이클마다 기록</td></tr>
     <tr><td>화면</td><td>등장방형 세계지도 SVG + 필터 + 테이블</td><td>좌표 변환 두 줄이 지도의 전부, 라이브러리 없음</td></tr>
-    <tr><td>AI와 개장</td><td>REST 직접 브리핑, CDK로 CF → ALB → Fargate</td><td>Bearer는 Secrets로 기동 주입, 이미지에 비밀 없음</td></tr>
+    <tr><td>AI와 개장</td><td>REST 직접 브리핑, CDK로 CF → ALB → Fargate</td><td>Bedrock은 태스크 역할(IAM)로 인증, 이미지에 비밀 없음</td></tr>
   </table>
 
   <p class="body"><strong>1. 워치 (메인 화면)</strong></p>
@@ -709,7 +709,7 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
   <table class="tbl">
     <tr><th>챕터</th><th>이 캡스톤에서 재등장하는 곳</th></tr>
     <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 Claude Code는 어떻게 동작하는가</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
-    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: Bearer 자격과 Secrets 주입이 도는 통제선의 배경</td></tr>
+    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: IAM 역할 자격이 도는 통제선의 배경</td></tr>
     <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Subagent로 일 나눠 맡기기</a></td><td>M2~M3: 수집기 리뷰를 code-reviewer에게, 지도와 테이블 병행</td></tr>
     <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Headless 통합과 CI</a></td><td>확장 방향: 수집 상태 점검을 헤드리스 파이프라인으로</td></tr>
     <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Claude Code 확장하기</a></td><td>OPT: 하네스 성숙화, 훅과 스킬의 프로젝트 자산화</td></tr>
@@ -748,7 +748,7 @@ Browser ── fetch ──> FastAPI: /api/quakes?hours=&min_mag= ──> 필터
 
 [출고 경로]  개장
 docker build ──> ECR push ──> CDK: CloudFront ──> (VPC origin) 내부 ALB ──> Fargate
-                                                    Secrets Manager ──(기동 주입)──> AWS_BEARER_TOKEN_BEDROCK</code></pre>
+                                                    ECS 태스크 역할 ──(IAM)──> bedrock:InvokeModel</code></pre>
   </div>
 
   <div class="step-title"><span class="step-no">1</span>상류 계약 (USGS 피드 실물)</div>
@@ -766,24 +766,25 @@ docker build ──> ECR push ──> CDK: CloudFront ──> (VPC origin) 내�
     <tr><th>선택</th><th>이유</th></tr>
     <tr><td>이벤트 id 멱등 스토어</td><td>피드는 24h 창이라 매 폴링 대부분이 재등장, 키 기반 upsert가 시계열을 오염에서 지킨다</td></tr>
     <tr><td>등장방형 투영</td><td>두 줄짜리 수학으로 충분히 정확한 세계지도, 라이브러리는 과잉</td></tr>
-    <tr><td>Bedrock REST 직접</td><td>SDK 없이 Authorization 헤더 + JSON, "LLM 호출은 결국 HTTP"</td></tr>
+    <tr><td>Bedrock REST 직접</td><td>SDK 클라이언트 없이 서명한 Authorization 헤더 + JSON, "LLM 호출은 결국 HTTP"</td></tr>
     <tr><td>CF → ALB → Fargate 개장 형식</td><td>ALB를 인터넷에 열지 않고 CloudFront VPC origin으로만 잇는, 공개 URL까지 가는 표준 경로</td></tr>
   </table>
 </section>
 
 <section class="task" id="m0">
   <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비</h2></div>
-  <p class="task-goal">이 트랙은 <strong>외부 키 발급이 없습니다</strong>. Bedrock Bearer와 AWS 자격만 확인하면 출발입니다.</p>
+  <p class="task-goal">이 트랙은 <strong>외부 키 발급이 없습니다</strong>. Bedrock 스모크와 AWS 자격만 확인하면 출발입니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/capstone/capstone-5 &amp;&amp; cd ~/capstone/capstone-5
-set -a; source ~/capstone/.env; set +a          # AWS_BEARER_TOKEN_BEDROCK 로드
-python3 -c "import os; print('Bearer:', 'OK' if os.environ.get('AWS_BEARER_TOKEN_BEDROCK') else 'MISSING')"
+aws bedrock-runtime converse --region us-east-1 --model-id global.anthropic.claude-sonnet-5-5 \
+  --messages '[{"role":"user","content":[{"text":"ping"}]}]' --inference-config '{"maxTokens":30}' \
+  --query 'output.message.content[0].text' --output text    # Bedrock 스모크 (IAM 역할, 키 없음)
 aws sts get-caller-identity --query Account --output text   # 배포용 자격 확인</code></pre>
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox" data-cp="m0"><span>Bearer OK와 AWS 계정 ID가 출력되었습니다</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m0"><span>Bedrock 스모크 응답과 AWS 계정 ID가 출력되었습니다</span></label>
   </div>
 </section>
 
@@ -815,13 +816,14 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
    색은 깊이(얕음 주황 → 깊음 보라), 최근 1시간 이벤트는 펄스 애니메이션. 좌표 변환은
    x=(경도+180)/360*폭, y=(90-위도)/180*높이. 하단에 최근 이벤트 테이블(시각 KST 변환, 규모, 지역, 깊이)과
    규모 필터 슬라이더(2.5~6.0)
-6) 브리핑(LLM): Bedrock Converse를 SDK 없이 httpx 직접 REST로.
-   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
-   Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), maxTokens 700.
+6) 브리핑(LLM): Bedrock Converse를 boto3 클라이언트 없이 httpx 직접 REST로.
+   POST https://bedrock-runtime.us-east-1.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
+   인증은 IAM 역할 자격으로 만든 SigV4 서명 헤더(botocore의 SigV4Auth, 서비스 이름 bedrock, 리전 us-east-1),
+   API 키는 쓰지 않는다. maxTokens 700.
    입력은 최근 24h 요약 통계와 상위 이벤트 목록, 출력은 한국어 "지난 24시간, 지구는" 브리핑:
    전체 흐름 한 문단, 주목 이벤트 2~3개 해설, 활동 급증 지역. 같은 10분 버킷 동안 결과 캐시
-7) 키의 거처: AWS_BEARER_TOKEN_BEDROCK은 환경변수로만. USGS는 키가 없다, 화면은 우리 API만 본다
-8) 배포: CDK로 CloudFront → VPC origin → 내부(internal) ALB → ECS Fargate 를 구성해 배포한다. ALB는 인터넷에 열지 않고 보안 그룹은 CloudFront origin-facing prefix list에서 오는 80번 포트만 허용, VPC에는 인터넷 게이트웨이를 붙이고, us-east-1이면 VPC origin이 지원하지 않는 AZ(use1-az3)는 서브넷에서 뺀다. Secrets Manager가 Bearer를 기동 시 주입, 이미지에 비밀 없음
+7) 자격의 거처: Bedrock은 키 없이 IAM 역할로(로컬은 실습 환경의 역할, 배포 후는 ECS 태스크 역할). USGS는 키가 없다, 화면은 우리 API만 본다
+8) 배포: CDK로 CloudFront → VPC origin → 내부(internal) ALB → ECS Fargate 를 구성해 배포한다. ALB는 인터넷에 열지 않고 보안 그룹은 CloudFront origin-facing prefix list에서 오는 80번 포트만 허용, VPC에는 인터넷 게이트웨이를 붙이고, us-east-1이면 VPC origin이 지원하지 않는 AZ(use1-az3)는 서브넷에서 뺀다. ECS 태스크 역할에 bedrock:InvokeModel(리소스는 foundation-model과 inference-profile 2종)을 주고, 이미지와 환경변수에 비밀 없음
 9) 구현 순서: Phase 1(수집기 + 스토어 + /api/quakes, curl 검증) → Phase 2(지도 SVG + 테이블 + 필터)
    → Phase 3(브리핑 + 캐시) → Phase 4(cdk deploy와 CloudFront 개장). 시간 제약 2시간:
    테스트 생략, curl과 브라우저로 검증. 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
@@ -856,7 +858,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 1만 구현하고 멈춰줘. backend venv + requirements(fastapi, uvicorn, httpx, apscheduler), USGS 수집기(60초, 정규화, 부분 실패 격리), 이벤트 id 멱등 스토어(최대 500), /api/quakes(hours, min_mag 필터 + 통계)와 /healthz. Dockerfile과 infra(CDK: CloudFront + VPC origin + 내부 ALB + Fargate + Secrets)까지 골격 생성. uvicorn 실행과 curl 검증 방법 포함.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 1만 구현하고 멈춰줘. backend venv + requirements(fastapi, uvicorn, httpx, apscheduler), USGS 수집기(60초, 정규화, 부분 실패 격리), 이벤트 id 멱등 스토어(최대 500), /api/quakes(hours, min_mag 필터 + 통계)와 /healthz. Dockerfile과 infra(CDK: CloudFront + VPC origin + 내부 ALB + Fargate + 태스크 역할의 Bedrock 정책)까지 골격 생성. uvicorn 실행과 curl 검증 방법 포함.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 스모크</span><button class="copy-btn" type="button">복사</button></div>
@@ -913,14 +915,14 @@ curl -s "localhost:8000/api/quakes?hours=24&amp;min_mag=2.5" | python3 -c "impor
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 3 + 4, 브리핑과 개장</h2></div>
   <p class="task-goal">숫자가 <strong>읽고 싶은 해설</strong>이 되고, 내 CloudFront URL이 열리면 미션 완료입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 자격과 Secrets 주입의 배경, 그 위에서 도는 REST 계약.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 자격(IAM 역할)의 배경, 그 위에서 도는 REST 계약.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 브리핑</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 3(브리핑)을 구현해줘. llm 모듈: httpx POST converse(Bearer, maxTokens 700, 타임아웃 504/파싱 502 매핑), POST /api/brief - 입력은 24h 통계와 상위 이벤트, 출력은 요구 6의 한국어 브리핑, 10분 버킷 캐시. 화면 브리핑 카드와 버튼까지.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 3(브리핑)을 구현해줘. llm 모듈: httpx POST converse(botocore의 SigV4Auth로 IAM 역할 자격에 서명, 서비스 bedrock, 리전 us-east-1, requirements에 botocore 추가, API 키 사용 금지, maxTokens 700, 타임아웃 504/파싱 502 매핑), POST /api/brief - 입력은 24h 통계와 상위 이벤트, 출력은 요구 6의 한국어 브리핑, 10분 버킷 캐시. 화면 브리핑 카드와 버튼까지.</code></pre>
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 개장</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. ALB가 internal이고 Secrets 주입이 살아 있는지 확인 절차 포함.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. ALB가 internal이고 태스크 역할에 Bedrock 정책이 붙어 있는지 확인 절차 포함.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 개장 확인</span><button class="copy-btn" type="button">복사</button></div>
@@ -937,12 +939,12 @@ curl -s "https://$DOMAIN/healthz" &amp;&amp; echo " &lt;- 열렸습니다, 이 U
   <div class="callout warn">
     <span class="co-title">개장이 막힐 때</span>
     ① ALB 주소로 직접 접속이 안 됨 = 정상입니다. 내부 ALB라 인터넷에서 닿지 않고, CloudFront VPC origin으로만 들어옵니다.
-    ② 502 = 컨테이너 헬스체크 경로(/healthz)와 포트 매핑을 확인. 504 = ALB 보안 그룹이 CloudFront prefix list를 허용하는지 확인. VPC origin 생성이 실패하면 VPC에 인터넷 게이트웨이가 붙어 있는지 확인. ③ 브리핑만 실패 = Secrets의 Bearer가
-    태스크에 주입되는지 (aws ecs describe-task-definition에서 secrets 블록) 확인하세요.
+    ② 502 = 컨테이너 헬스체크 경로(/healthz)와 포트 매핑을 확인. 504 = ALB 보안 그룹이 CloudFront prefix list를 허용하는지 확인. VPC origin 생성이 실패하면 VPC에 인터넷 게이트웨이가 붙어 있는지 확인. ③ 브리핑만 실패 = 태스크 역할에 Bedrock 정책이
+    붙어 있는지 (aws ecs describe-task-definition의 taskRoleArn과 그 역할의 정책) 확인하세요.
   </div>
   <div class="checkpoint">
     <div class="cp-title">DEFINITION OF DONE</div>
-    <label class="cp-item"><input type="checkbox" data-cp="m4a"><span>브리핑이 절제된 한국어 해설로 도착합니다 (Bearer 인증, 10분 캐시)</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m4a"><span>브리핑이 절제된 한국어 해설로 도착합니다 (IAM 역할 인증, 10분 캐시)</span></label>
     <label class="cp-item"><input type="checkbox" data-cp="m4b"><span>내 CloudFront URL을 Slack에 공유했습니다</span></label>
   </div>
 </section>

@@ -953,7 +953,7 @@ XXXX...XXXXX...XXXXXXXXXXXXXX...XXXXXXXX..XXXXXXXXXX</code></pre>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 검증 루프가 배포 스모크(curl 200)로 확장됩니다. 자동화가 궁금하면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴이 다음입니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(배포)를 구현해줘. CDK 단일 스택: S3 버킷(비공개) + CloudFront(OAC) + BucketDeployment로 frontend/를 서빙, 리전 ap-northeast-2, RemovalPolicy DESTROY, 출력에 CloudFront URL.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(배포)를 구현해줘. CDK 단일 스택: S3 버킷(비공개) + CloudFront(OAC) + BucketDeployment로 frontend/를 서빙, 리전 us-east-1, RemovalPolicy DESTROY, 출력에 CloudFront URL.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 배포와 스모크</span><button class="copy-btn" type="button">복사</button></div>
@@ -1154,8 +1154,8 @@ claude plugin list</code></pre>
     <tr><td>같은 배포 패턴</td><td>S3 + CloudFront + BucketDeployment는 정적 배포의 표준 패턴, 이제 눈 감고도</td></tr>
   </table>
   <div class="callout tip">
-    <span class="co-title">OPTION, Bedrock 레벨 생성기 (선택, API 키 필요)</span>
-    CapstoneA의 <code class="inline">~/capstone/.env</code> 방식으로 Bearer 키를 로드했다면,
+    <span class="co-title">OPTION, Bedrock 레벨 생성기 (선택)</span>
+    실습 환경의 IAM 역할로 us-east-1의 Bedrock을 바로 호출할 수 있으니(API 키 불필요),
     Converse 호출로 "난이도 상승 곡선을 가진 60타일 폭 레벨 문자열"을 생성해 맵으로 붙여 넣는 확장을 시도해 보세요.
     프롬프트에 타일 규칙(X, C, ^, F)과 폭을 명시하는 것이 요령입니다.
   </div>

@@ -636,7 +636,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   </p>
   <div class="hero-meta">
     <span>환경 <strong>Claude Code on EC2 + Admin 계정</strong></span>
-    <span>리전 <strong>ap-northeast-2</strong></span>
+    <span>리전 <strong>us-east-1</strong></span>
     <span>핵심 <strong>Headless 메딕 + 안전 인터록</strong></span>
     <span>Update <strong>2026.07</strong></span>
   </div>
@@ -747,7 +747,7 @@ git add -A &amp;&amp; git commit -m "chore: cdk scaffold" 2&gt;/dev/null || true
 1) 대상 서비스: CDK TypeScript 단일 스택(PatientStack), HTTP API + Lambda(Node 22) + DynamoDB 단일 테이블(pk/sk)
    - GET /health: flags 항목(pk=flags, sk=flags)의 force_error가 true이거나 테이블 접근 실패면 500, 정상이면 200 {"ok":true}
    - GET /order: 정상일 때 주문 항목을 기록하고 order_id 반환
-   - Outputs: ApiUrl, TableName, ShopFnName. 리전 ap-northeast-2, 리소스는 DESTROY
+   - Outputs: ApiUrl, TableName, ShopFnName. 리전 us-east-1, 리소스는 DESTROY
 2) 운영 도구는 별도 셸 스크립트: chaos.sh(장애 주입 3종), medic.sh(헤드리스 진단과 복구), RUNBOOK.md(감별 진단표)
 3) 안전장치: PreToolUse 인터록 훅으로 파괴적 aws 명령 차단, 메딕은 --allowed-tools로 손발 제한
 4) 구현 순서 Phase 1(대상 서비스 스택) → Phase 2(런북+카오스) → Phase 3(메딕) → Phase 4(인터록+데몬+드릴 스킬)
@@ -867,7 +867,7 @@ import { PatientStack } from "./patient-stack";
 
 const app = new cdk.App();
 new PatientStack(app, "PatientStack", {
-  env: { region: process.env.CDK_DEFAULT_REGION ?? "ap-northeast-2" },
+  env: { region: process.env.CDK_DEFAULT_REGION ?? "us-east-1" },
   tags: { project: "capstone-self-heal" },
 });</code></pre>
   </div>

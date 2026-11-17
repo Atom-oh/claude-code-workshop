@@ -676,7 +676,7 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
     <tr><td>수집</td><td>BBC / Guardian / NHK World / 연합뉴스 RSS를 120초 폴링</td><td>소스별 실패 격리, 피드 하나가 죽어도 뉴스룸은 산다</td></tr>
     <tr><td>저장</td><td>기사 link 멱등 딕셔너리(소스별 50건)</td><td>본문은 저장하지 않는다, 헤드라인 + 요약 + 링크만</td></tr>
     <tr><td>렌즈</td><td>공통 토픽 클러스터 + 매체별 프레임을 <strong>JSON 계약</strong>으로</td><td>LLM 출력이 곧 화면 데이터, 계약이 무너지면 화면도 무너진다</td></tr>
-    <tr><td>개장</td><td>CDK로 CF → VPC origin → 내부 ALB → Fargate</td><td>Bearer는 Secrets 기동 주입, 이미지에 비밀 없음</td></tr>
+    <tr><td>개장</td><td>CDK로 CF → VPC origin → 내부 ALB → Fargate</td><td>Bedrock은 태스크 역할(IAM)로 인증, 이미지에 비밀 없음</td></tr>
   </table>
 
   <p class="body"><strong>1. 뉴스룸 (기본 뷰)</strong></p>
@@ -708,7 +708,7 @@ html[data-theme="light"] .checkpoint.dod .cp-title{color:#6b46c1}
   <div class="step-title"><span class="step-no">R</span>챕터 연결 지도, 배운 내용이 재등장하는 곳</div>
   <table class="tbl">
     <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 Claude Code는 어떻게 동작하는가</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
-    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: Bearer 자격과 Secrets 주입이 도는 통제선의 배경</td></tr>
+    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: IAM 역할 자격이 도는 통제선의 배경</td></tr>
     <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Subagent로 일 나눠 맡기기</a></td><td>M2~M3: 수집기 리뷰를 code-reviewer에게, 그리드와 상태 바 병행</td></tr>
     <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Headless 통합과 CI</a></td><td>확장 방향: 아침 렌즈를 헤드리스로 뽑아 Slack에 배달하는 파이프라인</td></tr>
     <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Claude Code 확장하기</a></td><td>OPT: 하네스 성숙화, 훅과 스킬의 프로젝트 자산화</td></tr>
@@ -737,7 +737,7 @@ Scheduler ──> Collector: BBC / Guardian / NHK / 연합 RSS ──> 정규화
 Browser ── fetch ──> FastAPI: /api/articles ──> 4열 그리드 + 소스 상태 바
 
 [렌즈 경로]  버튼 눌렀을 때만, 이 캡스톤의 심장
-FastAPI ── 4소스 헤드라인 묶음 ──> httpx POST converse(Bearer) ──> JSON만:
+FastAPI ── 4소스 헤드라인 묶음 ──> httpx POST converse(SigV4) ───> JSON만:
    clusters[{topic, summary, frames{bbc/guardian/nhk/yna}, sources}] + overview
    │
    +── 10분 버킷 캐시 ──> 클러스터 뷰(프레임 나란히, 미보도 회색, 근거 링크)</code></pre>
@@ -786,17 +786,18 @@ FastAPI ── 4소스 헤드라인 묶음 ──> httpx POST converse(Bearer) �
 
 <section class="task" id="m0">
   <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비</h2></div>
-  <p class="task-goal">이 트랙은 <strong>외부 키 발급이 없습니다</strong>. Bedrock Bearer와 AWS 자격만 확인하면 출발입니다.</p>
+  <p class="task-goal">이 트랙은 <strong>외부 키 발급이 없습니다</strong>. Bedrock 스모크와 AWS 자격만 확인하면 출발입니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/capstone/capstone-6 &amp;&amp; cd ~/capstone/capstone-6
-set -a; source ~/capstone/.env; set +a
-python3 -c "import os; print('Bearer:', 'OK' if os.environ.get('AWS_BEARER_TOKEN_BEDROCK') else 'MISSING')"
+aws bedrock-runtime converse --region us-east-1 --model-id global.anthropic.claude-sonnet-5-5 \
+  --messages '[{"role":"user","content":[{"text":"ping"}]}]' --inference-config '{"maxTokens":30}' \
+  --query 'output.message.content[0].text' --output text    # Bedrock 스모크 (IAM 역할, 키 없음)
 aws sts get-caller-identity --query Account --output text</code></pre>
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox" data-cp="m0"><span>Bearer OK와 AWS 계정 ID가 출력되었습니다</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m0"><span>Bedrock 스모크 응답과 AWS 계정 ID가 출력되었습니다</span></label>
   </div>
 </section>
 
@@ -823,9 +824,10 @@ aws sts get-caller-identity --query Account --output text</code></pre>
 4) 스토어: link를 멱등 키로 하는 인메모리 딕셔너리(소스별 최대 50건). 같은 기사는 published만 갱신
 5) API 계약: GET /healthz, GET /api/articles(소스별 최신 목록 + 소스 상태),
    POST /api/lens (아래 6, 같은 10분 버킷 캐시)
-6) 렌즈(LLM, 이 캡스톤의 심장): Bedrock Converse를 SDK 없이 httpx 직접 REST로.
-   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
-   Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), maxTokens 1500.
+6) 렌즈(LLM, 이 캡스톤의 심장): Bedrock Converse를 boto3 클라이언트 없이 httpx 직접 REST로.
+   POST https://bedrock-runtime.us-east-1.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
+   인증은 IAM 역할 자격으로 만든 SigV4 서명 헤더(botocore의 SigV4Auth, 서비스 이름 bedrock, 리전 us-east-1),
+   API 키는 쓰지 않는다. maxTokens 1500.
    입력은 4개 소스의 최신 헤드라인+요약 묶음. 출력은 반드시 JSON만:
    {"clusters":[{"topic":"한국어 토픽명","summary":"공통 사실 2문장",
      "frames":{"bbc":"이 매체의 프레임 1문장","guardian":"...","nhk":"...","yna":"..."},
@@ -836,10 +838,10 @@ aws sts get-caller-identity --query Account --output text</code></pre>
    기본 뷰는 4열 카드 그리드(매체별 최신 헤드라인, 원문 링크 새 탭, 상대 시각).
    "렌즈" 버튼 → 클러스터 뷰: 토픽 카드마다 공통 요약 + 4개 매체 프레임을 나란히,
    미보도는 회색 처리, 근거 기사 링크 칩. 뷰 전환 토글
-8) 키와 윤리: Bearer는 환경변수로만. 기사 본문을 저장하지 않는다(헤드라인+요약+링크만),
+8) 자격과 윤리: Bedrock은 키 없이 IAM 역할로(로컬은 실습 환경의 역할, 배포 후는 ECS 태스크 역할). 기사 본문을 저장하지 않는다(헤드라인+요약+링크만),
    화면 모든 카드에 원문 출처 링크 필수
 9) 배포와 순서: CDK로 CloudFront → VPC origin → 내부(internal) ALB → Fargate 를 구성(ALB 보안 그룹은 CloudFront origin-facing prefix list에서 오는 80번 포트만 허용, VPC에 인터넷 게이트웨이, us-east-1이면 use1-az3 서브넷 제외),
-   Secrets 기동 주입. Phase 1(수집 + 스토어 + /api/articles) → Phase 2(4열 그리드)
+   ECS 태스크 역할에 bedrock:InvokeModel(리소스는 foundation-model과 inference-profile 2종). Phase 1(수집 + 스토어 + /api/articles) → Phase 2(4열 그리드)
    → Phase 3(렌즈 JSON + 클러스터 뷰) → Phase 4(cdk deploy 개장). 2시간 제약: 테스트 생략,
    curl과 브라우저로 검증. 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
   </div>
@@ -923,10 +925,10 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 3 + 4, 렌즈와 개장</h2></div>
   <p class="task-goal"><strong>LLM의 JSON이 그대로 화면이 되고</strong>, 내 CloudFront URL이 열리면 미션 완료입니다.</p>
-  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 자격과 Secrets 주입의 배경, 그 위에서 도는 REST 계약.</p>
+  <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 자격(IAM 역할)의 배경, 그 위에서 도는 REST 계약.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 렌즈</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 3(렌즈)을 구현해줘. llm 모듈: httpx POST converse(Bearer, maxTokens 1500, 타임아웃 504/파싱 502), 시스템 프롬프트에 요구 6의 JSON 스키마와 "JSON 외 출력 금지, 코드펜스 금지"를 명시, 응답은 json.loads 전에 백틱/여백 방어적 제거. POST /api/lens(10분 버킷 캐시). 화면 렌즈 뷰: 토픽 카드에 공통 요약 + 4개 프레임 나란히, 미보도 회색, sources 인덱스로 근거 기사 링크 칩, 뷰 전환 토글.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 3(렌즈)을 구현해줘. llm 모듈: httpx POST converse(botocore의 SigV4Auth로 IAM 역할 자격에 서명, 서비스 bedrock, 리전 us-east-1, requirements에 botocore 추가, API 키 사용 금지, maxTokens 1500, 타임아웃 504/파싱 502), 시스템 프롬프트에 요구 6의 JSON 스키마와 "JSON 외 출력 금지, 코드펜스 금지"를 명시, 응답은 json.loads 전에 백틱/여백 방어적 제거. POST /api/lens(10분 버킷 캐시). 화면 렌즈 뷰: 토픽 카드에 공통 요약 + 4개 프레임 나란히, 미보도 회색, sources 인덱스로 근거 기사 링크 칩, 뷰 전환 토글.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 렌즈 스모크</span><button class="copy-btn" type="button">복사</button></div>
@@ -934,7 +936,7 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
   </div>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력, 개장</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. ALB가 internal인지와 Secrets 주입 확인 절차 포함.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(개장)를 진행해줘. 선배포한 인프라에 앱 이미지를 빌드/푸시하고 서비스 갱신, CloudFront 도메인 출력. ALB가 internal인지와 태스크 역할의 Bedrock 정책 확인 절차 포함.</code></pre>
   </div>
   <div class="callout tip">
     <span class="co-title">개념 짚기 (Level 200), 관점을 묻는 프롬프트</span>
@@ -948,7 +950,7 @@ curl -s localhost:8000/api/articles | head -c 500; echo</code></pre>
     <span class="co-title">렌즈나 개장이 막힐 때</span>
     ① JSON 파싱 실패 = 응답 앞뒤의 코드펜스가 남은 것, 방어적 제거를 확인하세요.
     ② 클러스터가 1개뿐 = 정상일 수 있습니다, 조용한 뉴스 시간대엔 공통 토픽이 적습니다.
-    ③ ALB 주소로 직접 접속이 안 됨 = 정상(내부 ALB, CloudFront로만 들어옴). 504면 ALB 보안 그룹의 CloudFront prefix list 허용을, VPC origin 생성이 실패하면 VPC의 인터넷 게이트웨이를 확인, ④ 브리핑만 실패 = 태스크 정의의 secrets 블록에서 Bearer 주입 확인.
+    ③ ALB 주소로 직접 접속이 안 됨 = 정상(내부 ALB, CloudFront로만 들어옴). 504면 ALB 보안 그룹의 CloudFront prefix list 허용을, VPC origin 생성이 실패하면 VPC의 인터넷 게이트웨이를 확인, ④ 브리핑만 실패 = 태스크 정의의 taskRoleArn 역할에 Bedrock 정책이 있는지 확인.
   </div>
   <div class="checkpoint">
     <div class="cp-title">DEFINITION OF DONE</div>

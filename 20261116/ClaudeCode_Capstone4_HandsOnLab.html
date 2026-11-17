@@ -683,7 +683,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     <tr><td>수집</td><td>httpx로 YouTube videos.list 주기 호출(워크샵 60초, 원작 1시간)</td><td>부분 실패 격리, 카드 한 장의 오염이 사이클을 못 죽인다</td></tr>
     <tr><td>저장</td><td>스냅샷 링버퍼(최근 48개), 같은 시각 버킷은 한 번만</td><td>멱등 쓰기, 원작은 같은 인터페이스로 DynamoDB</td></tr>
     <tr><td>파생</td><td>delta(▲▼), NEW, 이탈 수, 카테고리 점유율</td><td>급상승은 스냅샷이 아니라 흐름, 기준선과의 비교가 정보다</td></tr>
-    <tr><td>AI와 화면</td><td>Bedrock Converse를 REST 직접 호출, 듀얼 테마 SPA</td><td>키 2개는 환경변수에만, 화면은 우리 API만 본다</td></tr>
+    <tr><td>AI와 화면</td><td>Bedrock Converse를 REST 직접 호출, 듀얼 테마 SPA</td><td>유튜브 키는 환경변수에만, Bedrock은 IAM 역할로, 화면은 우리 API만 본다</td></tr>
   </table>
 
   <p class="body"><strong>1. 레이더 (메인 화면)</strong></p>
@@ -709,8 +709,8 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     <tr><th>목표</th><th>검증되는 순간</th></tr>
     <tr><td>주기 수집 파이프라인과 멱등 스냅샷 저장을 설계하는 법</td><td>M2에서 60초마다 스냅샷이 쌓이되 같은 버킷은 한 번만 저장될 때</td></tr>
     <tr><td>기준선 비교로 변화(델타)를 파생하는 법</td><td>M3에서 ▲▼/NEW 배지가 직전 스냅샷과의 비교로 정확히 붙을 때</td></tr>
-    <tr><td>외부 SDK 없이 REST 계약만으로 LLM을 부르는 법</td><td>M4에서 httpx 한 장으로 Bedrock Converse가 응답할 때</td></tr>
-    <tr><td>서드파티 키를 서버에 격리하는 프록시 패턴</td><td>브라우저 개발자 도구 어디에도 두 키가 보이지 않을 때</td></tr>
+    <tr><td>SDK 클라이언트 없이 REST 계약으로 LLM을 부르는 법</td><td>M4에서 서명한 httpx 요청 한 장으로 Bedrock Converse가 응답할 때</td></tr>
+    <tr><td>서드파티 키를 서버에 격리하는 프록시 패턴</td><td>브라우저 개발자 도구 어디에도 유튜브 키가 보이지 않을 때</td></tr>
   </table>
 
   <div class="step-title"><span class="step-no">R</span>챕터 연결 지도, 배운 내용이 재등장하는 곳</div>
@@ -718,7 +718,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
   <table class="tbl">
     <tr><th>챕터</th><th>이 캡스톤에서 재등장하는 곳</th></tr>
     <tr><td><a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1 Claude Code는 어떻게 동작하는가</a></td><td>M0~전체: 세션 운용, 지시 → 실행 → 검증 루프</td></tr>
-    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: Bedrock 라우팅과 자격의 배경, Bearer 키가 조직 통제선 안에서 도는 이유</td></tr>
+    <tr><td><a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2 Bedrock 위에서 안전하게 쓰기</a></td><td>M4: Bedrock 라우팅과 자격의 배경, IAM 역할 자격이 조직 통제선 안에서 도는 이유</td></tr>
     <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Subagent로 일 나눠 맡기기</a></td><td>M2~M3: code-reviewer 서브에이전트로 수집기/파생 로직 리뷰, 백엔드와 화면 병행</td></tr>
     <tr><td><a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3 Headless 통합과 CI</a></td><td>확장 방향: 헤드리스 패턴으로 수집 사이클 상태를 점검하는 파이프라인</td></tr>
     <tr><td><a href="ClaudeCode_Ch4_HandsOnLab.html" style="color:#c9a2ff">Ch4 Claude Code 확장하기</a></td><td>OPT: 하네스 성숙화. 원작 youtube-trend의 .claude/(커맨드 3, 스킬 4)가 도달점의 표본입니다</td></tr>
@@ -753,7 +753,7 @@ Browser ── fetch ──> FastAPI: /api/trending ──> 최신 스냅샷 + �
    +── 30장 + ▲▼/NEW + 카테고리 + 점유율 ─────────+   (YouTube를 직접 치지 않는다)
 
 [브리핑 경로]  버튼 눌렀을 때만
-FastAPI ── httpx POST(REST 직접, Authorization: Bearer) ──> bedrock-runtime .../converse
+FastAPI ── httpx POST(REST 직접, Authorization: SigV4) ───> bedrock-runtime .../converse
    │                                                              │
    +── 시각 버킷 캐시 <── 한국어 브리핑(now | daily) ──────────────+</code></pre>
   </div>
@@ -788,14 +788,14 @@ FastAPI ── httpx POST(REST 직접, Authorization: Bearer) ──> bedrock-ru
     <tr><th>선택</th><th>이유</th></tr>
     <tr><td>수집과 조회의 분리</td><td>화면 트래픽이 유튜브 쿼터를 건드리지 못한다, 스냅샷이 완충재</td></tr>
     <tr><td>멱등 스냅샷</td><td>스케줄러가 겹쳐 돌아도, 재시작해도 같은 버킷은 한 번, 시계열이 오염되지 않는다</td></tr>
-    <tr><td>Bedrock REST 직접</td><td>SDK 없이 Authorization 헤더 + JSON 한 장, "LLM 호출은 결국 HTTP"를 체득</td></tr>
+    <tr><td>Bedrock REST 직접</td><td>SDK 클라이언트 없이 서명한 Authorization 헤더 + JSON 한 장, "LLM 호출은 결국 HTTP"를 체득</td></tr>
     <tr><td>인라인 SVG 차트</td><td>점유율 막대에 차트 라이브러리는 과잉, 데이터가 곧 rect의 높이</td></tr>
   </table>
 </section>
 
 <section class="task" id="m0">
-  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비, 두 개의 키</h2></div>
-  <p class="task-goal">이 캡스톤은 키가 둘입니다: <strong>YouTube API 키</strong>(급상승 데이터)와 <strong>Bedrock Bearer 키</strong>(브리핑).
+  <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비, 유튜브 키와 Bedrock 스모크</h2></div>
+  <p class="task-goal">이 캡스톤에 필요한 키는 <strong>YouTube API 키</strong>(급상승 데이터) 하나입니다. 브리핑의 Bedrock 호출은 실습 환경의 <strong>IAM 역할</strong>로 인증하므로 키가 없습니다.
   발급부터 스모크까지 여기서 끝냅니다.</p>
 
   <div class="step-title"><span class="step-no">1</span>YouTube API 키 발급, 4단계</div>
@@ -819,28 +819,34 @@ FastAPI ── httpx POST(REST 직접, Authorization: Bearer) ──> bedrock-ru
 
   <div class="step-title"><span class="step-no">2</span>키 보관과 스모크</div>
   <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 1/3, 두 키를 .env에 (리포 밖)</span><button class="copy-btn" type="button">복사</button></div>
+    <div class="code-head"><span class="code-label">Terminal 1/4, 유튜브 키를 .env에 (리포 밖)</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>mkdir -p ~/capstone
 grep -q YT_API_KEY ~/capstone/.env 2&gt;/dev/null || cat &gt;&gt; ~/capstone/.env &lt;&lt; 'YTEOF'
 YT_API_KEY=&lt;발급받은 YouTube API 키&gt;
-YTEOF
-grep -q AWS_BEARER_TOKEN_BEDROCK ~/capstone/.env 2&gt;/dev/null || cat &gt;&gt; ~/capstone/.env &lt;&lt; 'BREOF'
-AWS_BEARER_TOKEN_BEDROCK=&lt;발급받은 Bedrock API 키&gt;
-BREOF</code></pre>
+YTEOF</code></pre>
   </div>
-  <p class="body">저장 후 파일을 열어 placeholder를 실제 키로 바꾸세요. 다른 캡스톤에서 Bearer를 이미 넣었다면 그대로 유지됩니다(중복 방지 가드).</p>
+  <p class="body">저장 후 파일을 열어 placeholder를 실제 키로 바꾸세요. 이미 넣었다면 그대로 유지됩니다(중복 방지 가드).</p>
   <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 2/3, 로드</span><button class="copy-btn" type="button">복사</button></div>
+    <div class="code-head"><span class="code-label">Terminal 2/4, 로드</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>set -a; source ~/capstone/.env; set +a</code></pre>
   </div>
   <div class="code-wrap">
-    <div class="code-head"><span class="code-label">Terminal 3/3, 유튜브 스모크 (급상승 1위 제목)</span><button class="copy-btn" type="button">복사</button></div>
+    <div class="code-head"><span class="code-label">Terminal 3/4, 유튜브 스모크 (급상승 1위 제목)</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>curl -s "https://www.googleapis.com/youtube/v3/videos?part=snippet&amp;chart=mostPopular&amp;regionCode=KR&amp;maxResults=1&amp;key=$YT_API_KEY" \
   | jq -r '.items[0].snippet.title'</code></pre>
   </div>
   <div class="code-wrap output">
     <div class="code-head"><span class="code-label">출력 예시</span></div>
     <pre><code>(지금 한국 급상승 1위 영상의 제목이 한 줄로)</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal 4/4, Bedrock 스모크 (IAM 역할, 키 없음)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>aws bedrock-runtime converse \
+  --region us-east-1 \
+  --model-id global.anthropic.claude-sonnet-5-5 \
+  --messages '[{"role":"user","content":[{"text":"ping"}]}]' \
+  --inference-config '{"maxTokens":30}' \
+  --query 'output.message.content[0].text' --output text</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 스캐폴드 (재실행 안전)</span><button class="copy-btn" type="button">복사</button></div>
@@ -855,7 +861,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox" data-cp="m0a"><span>유튜브 스모크가 급상승 1위 제목을 반환했습니다</span></label>
-    <label class="cp-item"><input type="checkbox" data-cp="m0b"><span>스캐폴드가 완료되었고, 두 키가 ~/capstone/.env에 준비되어 있습니다</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m0b"><span>스캐폴드가 완료되었고, 유튜브 키가 ~/capstone/.env에 준비되어 있으며 Bedrock 스모크가 응답했습니다</span></label>
   </div>
 </section>
 
@@ -888,9 +894,10 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
    News&amp;Politics/Sports/Film&amp;Animation/Science&amp;Tech/Comedy), GET /api/trends?hours=N
    (시계열: 시각별 카테고리 점유율과 진입/이탈 수), POST /api/brief?mode=now|daily
    (now=현재 스냅샷 요약, daily=기준선과의 비교 브리핑)
-6) 브리핑(LLM): Bedrock Converse를 SDK 없이 httpx 직접 REST로 호출한다.
-   POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
-   Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), body는 system + messages + inferenceConfig
+6) 브리핑(LLM): Bedrock Converse를 boto3 클라이언트 없이 httpx 직접 REST로 호출한다.
+   POST https://bedrock-runtime.us-east-1.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse
+   인증은 IAM 역할 자격으로 만든 SigV4 서명 헤더(botocore의 SigV4Auth, 서비스 이름 bedrock, 리전 us-east-1),
+   API 키는 쓰지 않는다. body는 system + messages + inferenceConfig
    (maxTokens 800). 타임아웃/파싱 실패는 상태 코드만 담은 에러로. 결과는 같은 시각 버킷 동안 캐시.
    브리핑 내용: 주제 클러스터 3~4개와 왜 뜨는지, 카테고리 분포에서 읽히는 흐름,
    제작/시청 관점 인사이트 2~3줄, 한국어
@@ -900,7 +907,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
    16:9 썸네일, 제목 2줄 말줄임, 채널, 조회수/좋아요 축약, 클릭 시 유튜브 새 탭),
    시계열 영역(최근 N시간 카테고리 점유율 누적 막대, 외부 차트 라이브러리 없이 인라인 SVG),
    브리핑 카드(now/daily 모드 버튼)
-8) 키의 거처: 두 키(YT_API_KEY, AWS_BEARER_TOKEN_BEDROCK)는 환경변수로만, 코드/응답/로그에 노출 금지.
+8) 키의 거처: YT_API_KEY는 환경변수로만, 코드/응답/로그에 노출 금지. Bedrock은 키 없이 IAM 역할 자격으로 서명한다.
    화면은 우리 API만 호출한다
 9) 구현 순서는 Phase 1(수집기 + 스냅샷 스토어 + trending API, uvicorn과 curl 검증) →
    Phase 2(카드 그리드 + 카테고리 필터 + delta/NEW 배지) → Phase 3(시계열 API + SVG 차트) →
@@ -933,7 +940,7 @@ git add -A &amp;&amp; git commit -m "chore: scaffold" 2&gt;/dev/null || true</co
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 실행과 스모크</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>set -a; source ~/capstone/.env; set +a   # 두 키 로드
+    <pre><code>set -a; source ~/capstone/.env; set +a   # 유튜브 키 로드
 cd backend &amp;&amp; .venv/bin/uvicorn app.main:app --port 8000 &amp;
 sleep 65   # 수집 한 사이클
 curl -s localhost:8000/api/trending | head -c 400; echo</code></pre>
@@ -1019,11 +1026,11 @@ class SnapshotStore:
 
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 4, 브리핑과 개장</h2></div>
-  <p class="task-goal">SDK 없이 <strong>REST 한 장으로 Bedrock을 불러</strong> now/daily 브리핑이 뜨면, 레이더가 말을 시작합니다.</p>
+  <p class="task-goal">boto3 클라이언트 없이 <strong>서명한 REST 한 장으로 Bedrock을 불러</strong> now/daily 브리핑이 뜨면, 레이더가 말을 시작합니다.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch2_HandsOnLab.html" style="color:#c9a2ff">Ch2</a>에서 본 Bedrock 라우팅과 자격의 배경, 그 위에서 도는 REST 계약.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
-    <pre><code>/superpowers:executing-plans Phase 4(브리핑)를 구현해줘. llm 모듈: httpx로 POST https://bedrock-runtime.ap-northeast-2.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse, Authorization: Bearer(환경변수 AWS_BEARER_TOKEN_BEDROCK), body는 system+messages+inferenceConfig(maxTokens 800), 타임아웃은 504/파싱 실패는 502로. POST /api/brief?mode=now|daily(요구 6의 내용 구성), 같은 시각 버킷 캐시. 화면 브리핑 카드에 now/daily 버튼과 결과 렌더까지.</code></pre>
+    <pre><code>/superpowers:executing-plans Phase 4(브리핑)를 구현해줘. llm 모듈: httpx로 POST https://bedrock-runtime.us-east-1.amazonaws.com/model/global.anthropic.claude-sonnet-5-5/converse, 인증은 botocore의 SigV4Auth로 IAM 역할 자격에 서명(서비스 bedrock, 리전 us-east-1, requirements에 botocore 추가, API 키 사용 금지), body는 system+messages+inferenceConfig(maxTokens 800), 타임아웃은 504/파싱 실패는 502로. POST /api/brief?mode=now|daily(요구 6의 내용 구성), 같은 시각 버킷 캐시. 화면 브리핑 카드에 now/daily 버튼과 결과 렌더까지.</code></pre>
   </div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 브리핑 스모크</span><button class="copy-btn" type="button">복사</button></div>
@@ -1032,14 +1039,14 @@ curl -s -X POST "localhost:8000/api/brief?mode=daily" | head -c 300; echo</code>
   </div>
   <div class="callout tip">
     <span class="co-title">개념 짚기 (Level 200), LLM 호출은 결국 HTTP</span>
-    boto3가 하는 일을 벗겨 보면 서명된 HTTP 요청입니다. Bearer 키를 쓰면 서명(SigV4)마저 사라져
+    boto3가 하는 일을 벗겨 보면 서명된 HTTP 요청입니다. 그 서명(SigV4)만 botocore에 맡기면
     <strong>Authorization 헤더 + JSON body</strong>만 남습니다. 원작 bedrock.py가 55줄인 이유입니다.
     이 감각이 있으면 어떤 언어, 어떤 런타임에서도 LLM을 부를 수 있습니다. 단, 실패 매핑은 남습니다:
     타임아웃은 504, 이상한 응답은 502, 그리고 에러에 상류 본문을 그대로 싣지 않기(정보 격리).
   </div>
   <div class="callout warn">
     <span class="co-title">브리핑이 침묵하거나 인증 에러라면</span>
-    ① uvicorn을 띄운 셸에 Bearer가 로드됐는지(M0의 로드 라인 후 재실행) ② 403/401이면 키 오탈자 또는 만료
+    ① 터미널에서 M0의 Bedrock 스모크가 응답하는지(IAM 역할 자격) ② 403이면 서명에 쓴 서비스 이름과 리전(bedrock, us-east-1) 또는 역할의 Bedrock 권한 확인
     ③ 매번 새로 생성된다면 시각 버킷 캐시가 안 걸린 것, 같은 버킷이면 같은 답이어야 LLM 비용이 지켜집니다.
   </div>
   <p class="body">레이더 → 필터 → 시계열 → 브리핑(now/daily)까지 한 바퀴 돌리고, <strong>화면 스크린샷을 Slack에 공유</strong>하세요.
@@ -1048,7 +1055,7 @@ curl -s -X POST "localhost:8000/api/brief?mode=daily" | head -c 300; echo</code>
   <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴으로 수집 상태 점검을 파이프라인화하는 것도 좋은 확장입니다.</p>
   <div class="checkpoint">
     <div class="cp-title">DEFINITION OF DONE</div>
-    <label class="cp-item"><input type="checkbox" data-cp="m4a"><span>now/daily 브리핑이 주제 클러스터와 추가 인사이트가 담긴 한국어 분석으로 도착합니다 (Bearer 인증)</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m4a"><span>now/daily 브리핑이 주제 클러스터와 추가 인사이트가 담긴 한국어 분석으로 도착합니다 (IAM 역할 인증)</span></label>
     <label class="cp-item"><input type="checkbox" data-cp="m4b"><span>레이더 화면의 스크린샷을 Slack에 공유했습니다</span></label>
   </div>
 </section>
