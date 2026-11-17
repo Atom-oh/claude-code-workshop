@@ -847,15 +847,15 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <div class="gl-list"></div>
 
 <div class="r21-map" id="r21-map">
-  <p class="body"><strong>무엇을 만드나요?</strong> R2 공통 단계에서 설치한 <code class="inline">my-kit</code> plugin의 <code class="inline">periodic-report</code> skill로 같은 형식의 리포트를 두 번 만들고, 그동안 agent와 skill을 하나도 새로 짜지 않았음을 지문으로 보입니다. 아래 첫 그림은 00~04가 이어지는 순서와 각 구성 요소가 맡는 일, 둘째 그림은 만든 웹 리포트를 여는 두 길(나만 보는 주소, 선택 단계의 공개 주소)입니다. 단계 번호를 눌러 넘겨 보세요.</p>
+  <p class="body"><strong>무엇을 만드나요?</strong> R2 공통 단계에서 설치한 <code class="inline">my-kit</code> plugin의 <code class="inline">periodic-report</code> skill로 같은 형식의 리포트를 두 번 만들고, 그동안 agent와 skill을 하나도 새로 짜지 않았음을 해시값으로 보입니다. 아래 첫 그림은 00~04가 이어지는 순서와 각 구성 요소가 맡는 일, 둘째 그림은 만든 웹 리포트를 여는 두 길(나만 보는 주소, 선택 단계의 공개 주소)입니다. 단계 번호를 눌러 넘겨 보세요.</p>
   <div class="viz" data-viz="r21-build"></div>
   <div class="viz" data-viz="r21-view"></div>
 </div>
 
 <section class="task" id="task-00" data-min="5">
   <div class="task-head"><span class="task-num">00</span><h2>시작 전 확인</h2></div>
-  <p class="task-goal">동료 폴더에 plugin이 설치돼 있고, 설치할 때 남긴 agent와 skill 지문이 그대로인지 봅니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> <code class="inline">kit.sha</code>는 설치할 때 남긴 agent와 skill의 지문입니다. 시작할 때 맞아야 03에서 "다시 짜지 않았다"를 이 파일로 보일 수 있습니다.</p>
+  <p class="task-goal">동료 폴더에 plugin이 설치돼 있고, 설치할 때 남긴 agent와 skill 해시값이 그대로인지 봅니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> <code class="inline">kit.sha</code>는 설치할 때 남긴 agent와 skill의 해시값입니다. 시작할 때 맞아야 03에서 "다시 짜지 않았다"를 이 파일로 보일 수 있습니다.</p>
   <div class="viz" data-viz="copy-r21-check"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -867,7 +867,7 @@ ls -A .claude</code></pre>
   <p class="body">켜진 plugin 목록에 <code class="inline">my-kit@capstone-local local</code> 한 줄만 보이고, <code class="inline">sha256sum -c</code>의 줄이 모두 <code class="inline">OK</code>, <code class="inline">.claude/</code>에는 <code class="inline">settings.json</code>과 <code class="inline">settings.local.json</code>만 있으면 됩니다. 다른 plugin이 함께 보이면 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-04">R2 공통 04</a>의 3번 블록으로 이 폴더에서 끕니다. <code class="inline">kit.sha</code>가 없으면 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-04">R2 공통 04</a>의 4번 블록을 먼저 실행합니다.</p>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>이 폴더에서 켜진 plugin이 my-kit 하나(local 범위)이고 지문이 모두 <code>OK</code>다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>이 폴더에서 켜진 plugin이 my-kit 하나(local 범위)이고 해시값이 모두 <code>OK</code>다</span></label>
   </div>
 </section>
 
@@ -945,7 +945,7 @@ python3 -m http.server 8000</code></pre>
 <section class="task" id="task-03" data-min="10">
   <div class="task-head"><span class="task-num">03</span><h2>재사용 확인</h2></div>
   <p class="task-goal">두 리포트를 만드는 동안 agent와 skill을 하나도 새로 짜지 않았고, 쓴 것이 모두 설치한 plugin에서 왔음을 보입니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 이 미션의 핵심은 "새로 짜지 않고 설치한 plugin으로" 해 냈다는 것입니다. 지문 검사가 그 기준이고, 세션의 답은 보조 증거입니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 이 미션의 핵심은 "새로 짜지 않고 설치한 plugin으로" 해 냈다는 것입니다. 해시값 검사가 그 기준이고, 세션의 답은 보조 증거입니다.</p>
   <div class="viz" data-viz="copy-r21-reuse"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -962,14 +962,14 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>이번 세션에서 쓴 skill과 subagent의 이름을 모두 적고, 각각 어디서 왔는지(plugin 이름, 또는 이 폴더) 알려 주세요.</code></pre>
   </div>
-  <p class="body">답에 <code class="inline">my-kit:periodic-report</code>와 <code class="inline">my-kit:</code>이 붙은 agent만 나오면 됩니다. 이 답은 모델의 설명이라 보조 증거이고, 지문 검사가 기준입니다.</p>
+  <p class="body">답에 <code class="inline">my-kit:periodic-report</code>와 <code class="inline">my-kit:</code>이 붙은 agent만 나오면 됩니다. 이 답은 모델의 설명이라 보조 증거이고, 해시값 검사가 기준입니다.</p>
   <div class="callout warn">
     <span class="co-title">skill을 고치고 싶어졌다면</span>
     두 번 돌려 보니 형식을 바꾸고 싶을 수 있습니다. 그때는 이 폴더에 새 skill을 만들지 말고, <code class="inline">~/claude-lab/capstone/my-kit/</code> 원본을 고친 뒤 버전을 올리고 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-03">R2 공통 03</a>으로 다시 배포합니다. 그다음 R2 공통 04의 4번 블록으로 <code class="inline">kit.sha</code>를 다시 만들고, 바꾼 내용을 출품에 적습니다. 업무마다 agent와 skill을 새로 짜는 것이 아니라, 하나의 plugin을 고쳐 가며 쓰는 것이 재사용입니다.
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>지문 검사가 모두 <code>OK</code>고, 이 폴더와 사용자 수준에 이번 R2 동안 새로 만든 agent와 skill이 없다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>해시값 검사가 모두 <code>OK</code>고, 이 폴더와 사용자 수준에 이번 R2 동안 새로 만든 agent와 skill이 없다</span></label>
     <label class="cp-item"><input type="checkbox"><span>세션의 답에 <code>my-kit:</code>이 붙은 skill과 agent만 나왔다</span></label>
   </div>
 </section>
@@ -1010,7 +1010,7 @@ jq -r '.. | objects | (.SEOUL_API_KEY?, .ALPHA_VANTAGE_API_KEY?, .Authorization?
 echo "올릴 파일:"; ls "$S"</code></pre>
   </div>
   <p class="body">이 블록은 올릴 폴더 <code class="inline">~/claude-lab/r21-share/site</code>를 매번 비우고 새로 만듭니다. 개인정보 패턴이 있는 리포트는 <code class="inline">건너뜀</code>으로 알리고 복사하지 않습니다. R1에서 등록한 키가 든 리포트는 <code class="inline">지움(키 포함)</code>으로 알리고 <code class="inline">site/</code>에서 지웁니다. 건너뛰거나 지운 리포트를 올리고 싶으면 리포트를 고친 뒤 이 블록을 다시 실행합니다. <code class="inline">올릴 파일:</code> 아래에 보이는 <code class="inline">.html</code>만 올라갑니다. 원본 <code class="inline">.md</code>, <code class="inline">kit.sha</code>, 설정 파일은 올라가지 않습니다.</p>
-  <p class="body">배포 코드는 <code class="inline">capstone-try</code> 밖의 <code class="inline">~/claude-lab/r21-share</code>에 둡니다. 03의 지문 검사를 하는 폴더를 깨끗하게 두기 위해서입니다. 01부터 열어 둔 Claude 세션을 <code class="inline">/exit</code>로 닫고, 같은 터미널에서 아래 명령으로 그 폴더에서 새로 엽니다. 처음 여는 폴더라 이 폴더를 신뢰하겠냐고 물으면, 기본 선택이 <code class="inline">No, exit</code>이므로 <code class="inline">↓</code>로 <strong>Yes, I trust this folder</strong>를 고른 뒤 <code class="inline">Enter</code>를 누릅니다.</p>
+  <p class="body">배포 코드는 <code class="inline">capstone-try</code> 밖의 <code class="inline">~/claude-lab/r21-share</code>에 둡니다. 03의 해시값 검사를 하는 폴더를 깨끗하게 두기 위해서입니다. 01부터 열어 둔 Claude 세션을 <code class="inline">/exit</code>로 닫고, 같은 터미널에서 아래 명령으로 그 폴더에서 새로 엽니다. 처음 여는 폴더라 이 폴더를 신뢰하겠냐고 물으면, 기본 선택이 <code class="inline">No, exit</code>이므로 <code class="inline">↓</code>로 <strong>Yes, I trust this folder</strong>를 고른 뒤 <code class="inline">Enter</code>를 누릅니다.</p>
   <div class="viz" data-viz="copy-r21-cdk"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 세션을 닫은 뒤</span><button class="copy-btn" type="button">복사</button></div>
@@ -1201,7 +1201,7 @@ done</code></pre>
     "id": "sha",
     "ic": "lock",
     "lb": "kit.sha",
-    "sb": "설치 때 남긴 agent, skill 지문"
+    "sb": "설치 때 남긴 agent, skill 해시값"
    }
   ],
   "steps": [
@@ -1293,7 +1293,7 @@ done</code></pre>
     "id": "n00",
     "ic": "lock",
     "lb": "00 확인",
-    "sb": "지문 OK"
+    "sb": "해시값 OK"
    },
    {
     "id": "n01",
@@ -1321,7 +1321,7 @@ done</code></pre>
    }
   ],
   "edges": [
-   "지문 OK",
+   "해시값 OK",
    "같은 형식",
    "두 리포트",
    "출품 준비"
@@ -1349,7 +1349,7 @@ done</code></pre>
     "id": "s-sha",
     "ic": "lock",
     "lb": "kit.sha",
-    "sb": "설치 때 남긴 agent, skill 지문"
+    "sb": "설치 때 남긴 agent, skill 해시값"
    },
    {
     "id": "s-out",
@@ -1372,7 +1372,7 @@ done</code></pre>
      "s-sha"
     ],
     "edge": 0,
-    "cap": "동료 폴더 `~/claude-lab/capstone-try/`에서 켜진 plugin이 `my-kit` 하나인지, `kit.sha` 지문이 모두 `OK`인지 봅니다. 설치한 그대로에서 시작해야 03에서 \"다시 짜지 않았다\"를 보일 수 있습니다."
+    "cap": "동료 폴더 `~/claude-lab/capstone-try/`에서 켜진 plugin이 `my-kit` 하나인지, `kit.sha` 해시값이 모두 `OK`인지 봅니다. 설치한 그대로에서 시작해야 03에서 \"다시 짜지 않았다\"를 보일 수 있습니다."
    },
    {
     "t": "01 첫 리포트",
@@ -1409,7 +1409,7 @@ done</code></pre>
      "s-rev"
     ],
     "edge": 3,
-    "cap": "지문 검사, `find`, `claude plugin details`로 agent와 skill을 하나도 새로 짜거나 고치지 않았음을 보입니다. 세션에 물어본 답은 보조 증거입니다."
+    "cap": "해시값 검사, `find`, `claude plugin details`로 agent와 skill을 하나도 새로 짜거나 고치지 않았음을 보입니다. 세션에 물어본 답은 보조 증거입니다."
    },
    {
     "t": "04 정리 (선택: 공유)",
@@ -1551,7 +1551,7 @@ done</code></pre>
   ]
  },
  "copy-r21-check": {
-  "title": "00 붙여 넣으면: 켜진 plugin과 지문을 보기만 한다",
+  "title": "00 붙여 넣으면: 켜진 plugin과 해시값을 보기만 한다",
   "nodes": [
    {
     "id": "term",
@@ -1568,7 +1568,7 @@ done</code></pre>
    {
     "id": "sha",
     "ic": "lock",
-    "lb": "kit.sha 지문",
+    "lb": "kit.sha 해시값",
     "sb": "sha256sum -c"
    },
    {
@@ -1580,7 +1580,7 @@ done</code></pre>
   ],
   "edges": [
    "plugin list",
-   "지문 대조",
+   "해시값 대조",
    "ls -A"
   ],
   "steps": [
@@ -1600,7 +1600,7 @@ done</code></pre>
     "cap": "켜진 plugin이 `my-kit@capstone-local local` 한 줄만 보여야 합니다. 다른 plugin이 함께 보이면 R2 공통 04의 3번 블록으로 이 폴더에서 끕니다."
    },
    {
-    "t": "지문 대조",
+    "t": "해시값 대조",
     "on": [
      "sha"
     ],
@@ -1802,7 +1802,7 @@ done</code></pre>
    {
     "id": "sha",
     "ic": "lock",
-    "lb": "지문 검사",
+    "lb": "해시값 검사",
     "sb": "sha256sum -c"
    },
    {
@@ -1832,7 +1832,7 @@ done</code></pre>
   ],
   "steps": [
    {
-    "t": "지문 검사",
+    "t": "해시값 검사",
     "on": [
      "term",
      "sha"
@@ -1872,7 +1872,7 @@ done</code></pre>
      "find",
      "det"
     ],
-    "cap": "지문이 모두 `OK`, `find`가 빈 출력, 수가 설치 때와 같으면 두 리포트를 설치한 plugin만으로 만든 것입니다."
+    "cap": "해시값이 모두 `OK`, `find`가 빈 출력, 수가 설치 때와 같으면 두 리포트를 설치한 plugin만으로 만든 것입니다."
    }
   ]
  },
@@ -1943,7 +1943,7 @@ done</code></pre>
     "on": [
      "res"
     ],
-    "cap": "이 답은 모델의 설명이라 보조 증거입니다. 판정 기준은 위 블록의 지문 검사입니다."
+    "cap": "이 답은 모델의 설명이라 보조 증거입니다. 판정 기준은 위 블록의 해시값 검사입니다."
    }
   ]
  },

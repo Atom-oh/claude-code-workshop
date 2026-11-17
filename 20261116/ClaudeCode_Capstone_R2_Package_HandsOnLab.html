@@ -1315,7 +1315,7 @@ claude plugin list --json | jq -r '.[] | select(.enabled) | .id'</code></pre>
   </div>
   <p class="body">마지막 줄에 <code class="inline">my-kit@capstone-local</code> 한 줄만 나와야 합니다. Setup에서 설치한 plugin(superpowers 등)도 이 폴더에서는 꺼집니다. 다시 켜려면 <code class="inline">claude plugin enable 이름@마켓플레이스 --scope local</code>을 씁니다. 열려 있는 세션에는 <code class="inline">/reload-plugins</code>로 반영합니다.</p>
   <div class="step-title"><span class="step-no">4</span>무엇이 설치됐는지 기록하기</div>
-  <p class="body">두 번째 터미널에서 실행합니다. 마지막 두 줄은 설치된 plugin의 agent와 skill 파일 지문(sha256)을 <code class="inline">kit.sha</code>에 남깁니다. R2 미션 페이지에서 "agent와 skill을 다시 짜지 않았다"를 이 파일로 확인합니다.</p>
+  <p class="body">두 번째 터미널에서 실행합니다. 마지막 두 줄은 설치된 plugin의 agent와 skill 파일 해시값(sha256)을 <code class="inline">kit.sha</code>에 남깁니다. R2 미션 페이지에서 "agent와 skill을 다시 짜지 않았다"를 이 파일로 확인합니다.</p>
   <div class="viz" data-viz="copy-p-record"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1651,7 +1651,7 @@ git push -u origin HEAD</code></pre>
      "conf"
     ],
     "edge": 3,
-    "cap": "`@my-kit`에 agent가, `/my-kit`에 `/my-kit:periodic-report`가 보이고, 막혀야 하는 요청은 `DLP:`, `RAW:`, `KEY:`, `NET:`(plugin 훅)이나 권한 거부(폴더 설정)로 막힙니다. 스크립트를 치워도 `onFailure`로 막히면 끝이고, 설치된 agent와 skill의 지문을 `kit.sha`에 남깁니다."
+    "cap": "`@my-kit`에 agent가, `/my-kit`에 `/my-kit:periodic-report`가 보이고, 막혀야 하는 요청은 `DLP:`, `RAW:`, `KEY:`, `NET:`(plugin 훅)이나 권한 거부(폴더 설정)로 막힙니다. 스크립트를 치워도 `onFailure`로 막히면 끝이고, 설치된 agent와 skill의 해시값을 `kit.sha`에 남깁니다."
    }
   ]
  },
@@ -1868,7 +1868,7 @@ git push -u origin HEAD</code></pre>
      "s-try",
      "s-sha"
     ],
-    "cap": "plugin 원본 `my-kit/`, 마켓플레이스, 설치를 마친 동료 폴더 `capstone-try`, 지문 `kit.sha`가 남습니다. R2 미션 페이지가 이것을 그대로 씁니다."
+    "cap": "plugin 원본 `my-kit/`, 마켓플레이스, 설치를 마친 동료 폴더 `capstone-try`, 해시값 `kit.sha`가 남습니다. R2 미션 페이지가 이것을 그대로 씁니다."
    }
   ]
  },
@@ -3020,7 +3020,7 @@ git push -u origin HEAD</code></pre>
   ]
  },
  "copy-p-record": {
-  "title": "04 Step 4 붙여 넣으면: 무엇이 설치됐는지 보고 kit.sha 지문을 남긴다",
+  "title": "04 Step 4 붙여 넣으면: 무엇이 설치됐는지 보고 kit.sha 해시값을 남긴다",
   "nodes": [
    {
     "id": "list",
@@ -3078,7 +3078,7 @@ git push -u origin HEAD</code></pre>
     "cap": "`cat .claude/settings.local.json`이 이 폴더에만 남은 plugin 설정 기록을 보여 줍니다."
    },
    {
-    "t": "지문 남기기",
+    "t": "해시값 남기기",
     "on": [
      "sha"
     ],
@@ -3087,7 +3087,7 @@ git push -u origin HEAD</code></pre>
     ],
     "edge": 2,
     "chip": "kit.sha",
-    "cap": "마켓플레이스 안 my-kit의 `agents/`, `skills/` 파일마다 sha256 지문을 `kit.sha`에 남기고 `wc -l`로 줄 수를 봅니다. R2 미션 페이지에서 \"agent와 skill을 다시 짜지 않았다\"를 이 파일로 확인합니다."
+    "cap": "마켓플레이스 안 my-kit의 `agents/`, `skills/` 파일마다 sha256 해시값을 `kit.sha`에 남기고 `wc -l`로 줄 수를 봅니다. R2 미션 페이지에서 \"agent와 skill을 다시 짜지 않았다\"를 이 파일로 확인합니다."
    }
   ]
  },

@@ -853,7 +853,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 
 <section class="task" id="task-00" data-min="5">
   <div class="task-head"><span class="task-num">00</span><h2>시작 전 확인</h2></div>
-  <p class="task-goal">plugin이 설치돼 있고 지문이 그대로인지, 근거로 쓸 리포트가 있는지 봅니다.</p>
+  <p class="task-goal">plugin이 설치돼 있고 해시값이 그대로인지, 근거로 쓸 리포트가 있는지 봅니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> <code class="inline">proposal-draft</code> skill의 입력은 근거 리포트 파일입니다. 리포트가 있어야 기획안의 수치가 그 파일을 출처로 삼습니다.</p>
   <div class="viz" data-viz="copy-r22-check"></div>
   <div class="code-wrap">
@@ -863,7 +863,7 @@ claude plugin list --json | jq -r '.[] | select(.enabled) | "\(.id) \(.scope)"'
 (cd ~/claude-lab/capstone/marketplace/plugins/$KIT &amp;&amp; sha256sum -c ~/claude-lab/capstone-try/kit.sha)
 ls -A .claude</code></pre>
   </div>
-  <p class="body">켜진 plugin 목록에 <code class="inline">my-kit@capstone-local local</code> 한 줄만 보이고(다른 plugin이 보이면 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-04">R2 공통 04</a>의 3번 블록), 지문이 모두 <code class="inline">OK</code>여야 합니다. 이어서 근거 리포트를 봅니다.</p>
+  <p class="body">켜진 plugin 목록에 <code class="inline">my-kit@capstone-local local</code> 한 줄만 보이고(다른 plugin이 보이면 <a href="ClaudeCode_Capstone_R2_Package_HandsOnLab.html#task-04">R2 공통 04</a>의 3번 블록), 해시값이 모두 <code class="inline">OK</code>여야 합니다. 이어서 근거 리포트를 봅니다.</p>
   <div class="viz" data-viz="copy-r22-reports"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
@@ -872,7 +872,7 @@ ls -A .claude</code></pre>
   <p class="body">R2-1을 했다면 리포트가 이미 있습니다. R2-1 대신 R2-3을 고른 사람은 세션에서 <a href="ClaudeCode_Capstone_R2_1_HandsOnLab.html#task-01">R2-1 01 표</a>의 첫 번째 명령 하나만 먼저 보내 근거 리포트를 만듭니다. 그 리포트도 같은 plugin의 skill로 만든 것입니다.</p>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>지문이 모두 <code>OK</code>고, <code>reports/</code>에 근거 리포트가 하나 이상 있다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>해시값이 모두 <code>OK</code>고, <code>reports/</code>에 근거 리포트가 하나 이상 있다</span></label>
   </div>
 </section>
 
@@ -918,7 +918,7 @@ for f in proposals/*.md; do echo "== $f"; grep -E '^#|^[0-9]\.' "$f" | head -14;
   <div class="task-head"><span class="task-num">02</span><h2>검토 반영</h2></div>
   <p class="task-goal">검토 agent가 낸 WARN이나 FAIL을 프롬프트로 고치고 다시 검토받습니다. skill과 agent 파일은 그대로 둡니다.</p>
   <p class="body">기획안 끝의 검토 결과가 PASS면 이 단계는 건너뜁니다. WARN이나 FAIL이면 아래처럼 고칠 부분만 요청합니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 이번 기획안 하나의 문제를 프롬프트로 고치면 skill과 agent 파일이 그대로 남아, 03의 지문 검사가 통과합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 이번 기획안 하나의 문제를 프롬프트로 고치면 skill과 agent 파일이 그대로 남아, 03의 해시값 검사가 통과합니다.</p>
   <div class="viz" data-viz="copy-r22-fix"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
@@ -942,7 +942,7 @@ for f in proposals/*.md; do echo "== $f"; grep -E '^#|^[0-9]\.' "$f" | head -14;
 <section class="task" id="task-03" data-min="10">
   <div class="task-head"><span class="task-num">03</span><h2>재사용 확인</h2></div>
   <p class="task-goal">리포트와 기획안, 두 업무를 같은 plugin 하나로 해 냈고 그동안 agent와 skill을 새로 짜지 않았음을 보입니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 리포트와 기획안 두 업무를 같은 plugin으로 해 냈다는 것이 완주 체크리스트 6번입니다. 지문 검사가 그 기준입니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 리포트와 기획안 두 업무를 같은 plugin으로 해 냈다는 것이 완주 체크리스트 6번입니다. 해시값 검사가 그 기준입니다.</p>
   <div class="viz" data-viz="copy-r22-reuse"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal 2, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -968,7 +968,7 @@ claude plugin details $KIT@capstone-local | grep -E 'Skills|Agents|Hooks|MCP ser
   </tbody></table>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>지문 검사가 모두 <code>OK</code>고, 이 폴더와 사용자 수준에 이번 R2 동안 새로 만든 agent와 skill이 없다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>해시값 검사가 모두 <code>OK</code>고, 이 폴더와 사용자 수준에 이번 R2 동안 새로 만든 agent와 skill이 없다</span></label>
     <label class="cp-item"><input type="checkbox"><span><code>reports/</code>와 <code>proposals/</code>의 결과가 같은 plugin에서 나왔다고 표로 정리했다</span></label>
   </div>
 </section>
@@ -1156,7 +1156,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
     "id": "sha",
     "ic": "lock",
     "lb": "kit.sha",
-    "sb": "설치 때 남긴 agent, skill 지문"
+    "sb": "설치 때 남긴 agent, skill 해시값"
    }
   ],
   "steps": [
@@ -1166,7 +1166,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
      "sha",
      "rep"
     ],
-    "cap": "지문이 모두 `OK`고 `reports/`에 근거 리포트가 있으면 시작합니다. 리포트가 없으면 R2-1 01의 첫 번째 명령으로 같은 plugin의 skill이 먼저 만듭니다."
+    "cap": "해시값이 모두 `OK`고 `reports/`에 근거 리포트가 있으면 시작합니다. 리포트가 없으면 R2-1 01의 첫 번째 명령으로 같은 plugin의 skill이 먼저 만듭니다."
    },
    {
     "t": "skill 부르기 (01)",
@@ -1238,7 +1238,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
      "col",
      "rev"
     ],
-    "cap": "지문 검사가 모두 `OK`고 새로 짠 agent와 skill이 없으면, 리포트와 기획안 두 업무를 같은 plugin 하나로 해 낸 것입니다."
+    "cap": "해시값 검사가 모두 `OK`고 새로 짠 agent와 skill이 없으면, 리포트와 기획안 두 업무를 같은 plugin 하나로 해 낸 것입니다."
    }
   ]
  },
@@ -1249,7 +1249,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
     "id": "n00",
     "ic": "lock",
     "lb": "00 확인",
-    "sb": "지문 · 근거 리포트"
+    "sb": "해시값 · 근거 리포트"
    },
    {
     "id": "n01",
@@ -1328,7 +1328,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
      "s-rep"
     ],
     "edge": 0,
-    "cap": "켜진 plugin이 `my-kit` 하나이고 지문이 모두 `OK`인지, `reports/`에 근거로 쓸 리포트가 있는지 봅니다. 리포트가 없으면 R2-1 01 표의 첫 번째 명령으로 먼저 만듭니다."
+    "cap": "켜진 plugin이 `my-kit` 하나이고 해시값이 모두 `OK`인지, `reports/`에 근거로 쓸 리포트가 있는지 봅니다. 리포트가 없으면 R2-1 01 표의 첫 번째 명령으로 먼저 만듭니다."
    },
    {
     "t": "01 기획안 초안",
@@ -1372,7 +1372,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
      "s-rev"
     ],
     "edge": 3,
-    "cap": "지문 검사, `find`, `claude plugin details`로 리포트와 기획안 두 업무를 같은 plugin 하나로 해 냈고 새로 짠 것이 없음을 보입니다."
+    "cap": "해시값 검사, `find`, `claude plugin details`로 리포트와 기획안 두 업무를 같은 plugin 하나로 해 냈고 새로 짠 것이 없음을 보입니다."
    },
    {
     "t": "04 정리와 출품",
@@ -1502,7 +1502,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
   ]
  },
  "copy-r22-check": {
-  "title": "00 붙여 넣으면: 켜진 plugin과 지문을 보기만 한다",
+  "title": "00 붙여 넣으면: 켜진 plugin과 해시값을 보기만 한다",
   "nodes": [
    {
     "id": "term",
@@ -1519,7 +1519,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
    {
     "id": "sha",
     "ic": "lock",
-    "lb": "kit.sha 지문",
+    "lb": "kit.sha 해시값",
     "sb": "sha256sum -c"
    },
    {
@@ -1531,7 +1531,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
   ],
   "edges": [
    "plugin list",
-   "지문 대조",
+   "해시값 대조",
    "폴더 설정"
   ],
   "steps": [
@@ -1551,7 +1551,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
     "cap": "켜진 plugin이 `my-kit@capstone-local local` 한 줄만 보여야 합니다. 다른 plugin이 보이면 R2 공통 04의 3번 블록으로 이 폴더에서 끕니다."
    },
    {
-    "t": "지문 대조",
+    "t": "해시값 대조",
     "on": [
      "sha"
     ],
@@ -1569,7 +1569,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
      "dir"
     ],
     "edge": 2,
-    "cap": "마지막 줄은 이 폴더의 `.claude/` 안 파일을 보여 줍니다. plugin이 하나, 지문이 모두 `OK`면 다음 블록에서 근거 리포트를 봅니다."
+    "cap": "마지막 줄은 이 폴더의 `.claude/` 안 파일을 보여 줍니다. plugin이 하나, 해시값이 모두 `OK`면 다음 블록에서 근거 리포트를 봅니다."
    }
   ]
  },
@@ -1804,7 +1804,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
     "ok": [
      "keep"
     ],
-    "cap": "skill과 agent 파일은 고치지 않았으므로 03의 지문 검사가 통과합니다. 모든 기획안에서 반복되는 문제일 때만 skill을 고쳐 다시 배포합니다."
+    "cap": "skill과 agent 파일은 고치지 않았으므로 03의 해시값 검사가 통과합니다. 모든 기획안에서 반복되는 문제일 때만 skill을 고쳐 다시 배포합니다."
    }
   ]
  },
@@ -1820,7 +1820,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
    {
     "id": "sha",
     "ic": "lock",
-    "lb": "지문 검사",
+    "lb": "해시값 검사",
     "sb": "sha256sum -c"
    },
    {
@@ -1850,7 +1850,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
   ],
   "steps": [
    {
-    "t": "지문 검사",
+    "t": "해시값 검사",
     "on": [
      "term",
      "sha"
@@ -1943,7 +1943,7 @@ echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키나 토
      "res"
     ],
     "edge": 1,
-    "cap": "이름에 `my-kit:`이 붙어 있으면 plugin에서 온 것입니다. 이 답은 모델의 설명이라 보조 증거이고, 판정 기준은 위 블록의 지문 검사입니다."
+    "cap": "이름에 `my-kit:`이 붙어 있으면 plugin에서 온 것입니다. 이 답은 모델의 설명이라 보조 증거이고, 판정 기준은 위 블록의 해시값 검사입니다."
    },
    {
     "t": "표 채우기",
