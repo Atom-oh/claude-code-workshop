@@ -7,6 +7,7 @@ for the current layout. English is the maintenance documentation language.
 
 ### Added
 
+- Add a "▶ 소개영상" button to the capstone card in `20261116/reactive/toc.html`, linking to the capstone introduction video on YouTube (`https://youtu.be/_H8-Oiy8VlY`) in a new tab.
 - Add visual explainers to the November labs: a shared dependency-free component (`20261116/assets/labviz.js`, `labviz.css`) with 19 step-through figures across 8 pages (Preflight, Ch1, Ch2, Ch2 Guardrails, Ch3-Ch6) using unmodified AWS Architecture Icons (07312025), per-block `cmd-explain` explainers with line highlighting, paste-target badges, a guard (`tools/mydata/check_viz.py`) and a browser copy-safety test. Lab commands, ids and the kit are unchanged.
 - Add `tools/mydata/`, stdlib Python tooling for the November labs: a seeded synthetic MyData generator (raw and pseudonymized), a validator against `dlp_pattern.txt`, a `mydata-kit.zip` builder with per-chapter checkpoints, a lab-page guard (`check_labs.py`), and a segment reference. Nothing under it is published.
 - Add one-minute chapter preview videos (`20261116/media/chapters/ch1..6-preview.mp4`, about 4.4–5.5 MB each, with posters) and a "▶ 1분 미리보기" button on every reactive deck cover that plays the chapter's video in an in-deck player (`reactive/assets/chapter-video.js`, loaded by `stepviz.js`; deck HTML unchanged).
