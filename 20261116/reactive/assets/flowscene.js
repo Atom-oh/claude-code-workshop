@@ -148,6 +148,14 @@ export function mount(sel, S) {
     const nearArm = limb(g, 3.6);
     const walk = gait({ kind: 'walk' }), raise = spring(30, 7);
     const typing = curve([[0, 0], [0.15, -2], [0.3, 0], [0.5, -1.5], [0.65, 0], [0.82, -2.2]], 1);
+    // busy: a hard-working typist (both hands drumming, head nodding, speed lines, a sweat drop)
+    const fx = f.busy ? el('g', {}, g) : null;
+    const zips = fx ? [0, 1, 2].map(() => pen(fx, 1.1)) : [];
+    const sweat = fx ? el('path', { fill: 'var(--info)', stroke: 'currentColor', 'stroke-width': 0.8 }, fx) : null;
+    const sparks = fx ? [0, 1, 2].map(() => pen(fx, 1)) : [];
+    const txt7 = (s, size) => { const n = el('text', { 'font-size': size, fill: 'currentColor', 'text-anchor': 'middle', 'font-weight': 700 }, fx); n.textContent = s; return n; };
+    const tak = fx ? txt7('타닥타닥', 6.5) : null;
+    const glyphs = fx ? ['{ }', '</>', '$_'].map(s => { const n = txt7(s, 7); n.setAttribute('font-family', 'ui-monospace, monospace'); n.setAttribute('fill', 'var(--accent)'); return n; }) : [];
     let x = f.at[0], phase = 0;
     return {
       f, draw(t, dt, ph, act) {
@@ -161,12 +169,26 @@ export function mount(sel, S) {
         g.insertBefore(legs[p.front].g, body); g.insertBefore(shoes[p.front], body);
         const b = p.bob;
         body.setAttribute('d', `M35 ${42 + b} Q41 ${38.4 + b} 47 ${42 + b} L47.5 ${73 + b} Q40 ${76 + b} 32.5 ${73 + b}Z`);
-        head.setAttribute('cx', 43); head.setAttribute('cy', 31.4 + b);
-        const tp = act === 'type' ? typing(t * 2.2) : 0;
+        // busy figures keep working between their active phases, just less frantically
+        const k = f.busy ? (act === 'type' ? 1 : 0.5) : 0;
+        const lean = 2 * k, nod = k ? Math.sin(t * 7.5) * 0.9 * k : 0;
+        head.setAttribute('cx', 43 + lean); head.setAttribute('cy', 31.4 + b + nod);
+        const tp = k ? typing(t * (2.4 + 2.6 * k)) * 1.4 : act === 'type' ? typing(t * 2.2) : 0;
+        const tq = k ? typing(t * (2.4 + 2.6 * k) + 0.41) * 1.4 : tp;
         const r = raise.step(act === 'raise' ? 1 : 0, dt);
-        farArm.draw([[40, 43 + b], [50, 60 + b], [60, 66 + tp + b]], [0.2, 0.5]);
-        const hand = act === 'type' || f.pose === 'type' ? [63, 65 - tp + b] : [52 - 2 * r, 70 - 40 * r + b];
-        nearArm.draw([[43, 44 + b], [53 - 4 * r, 61 - 16 * r + b], hand], [0.2, 0.4]);
+        farArm.draw([[40 + lean * 0.5, 43 + b], [50 + lean, 60 + b], [60 + lean, 66 + tp + b]], [0.2, 0.5]);
+        const hand = act === 'type' || f.pose === 'type' ? [63 + lean, 65 - tq + b] : [52 - 2 * r, 70 - 40 * r + b];
+        nearArm.draw([[43 + lean * 0.5, 44 + b], [53 + lean - 4 * r, 61 - 16 * r + b], hand], [0.2, 0.4]);
+        if (fx) {
+          const fl = i => (0.25 + 0.75 * Math.abs(Math.sin(t * 9 + i * 1.3))) * k;
+          zips.forEach((z, i) => { z.setAttribute('d', `M${70 + lean} ${58 + i * 5 + b} l${5 + (i % 2) * 2} ${(i - 1) * 1.6}`); z.setAttribute('opacity', fl(i).toFixed(2)); });
+          const s = (t * 0.85) % 1, sx = 50 + lean, sy = 21 + s * 9 + b;
+          sweat.setAttribute('d', `M${sx} ${sy - 2.6} Q${sx + 1.9} ${sy + 0.4} ${sx} ${sy + 1.4} Q${sx - 1.9} ${sy + 0.4} ${sx} ${sy - 2.6}Z`);
+          sweat.setAttribute('opacity', (k * (1 - s)).toFixed(2));
+          tak.setAttribute('x', 70 + lean); tak.setAttribute('y', 47 + b + Math.sin(t * 14) * 0.8); tak.setAttribute('opacity', (k * (0.35 + 0.65 * Math.max(0, Math.sin(t * 5)))).toFixed(2));
+          glyphs.forEach((n, i) => { const s = (t * 0.55 + i / 3) % 1; n.setAttribute('x', (86 + lean + i * 5 + Math.sin(t * 2 + i) * 1.5).toFixed(1)); n.setAttribute('y', (44 + b - s * 26).toFixed(1)); n.setAttribute('opacity', (k * (s < 0.15 ? s / 0.15 : 1 - s)).toFixed(2)); });
+          sparks.forEach((p, i) => { const a = -0.9 + i * 0.9; p.setAttribute('d', `M${62 + lean + Math.cos(a) * 4} ${60 + b + Math.sin(a) * 4} l${(Math.cos(a) * 2.6).toFixed(2)} ${(Math.sin(a) * 2.6).toFixed(2)}`); p.setAttribute('opacity', (k * Math.max(0, Math.sin(t * 12 + i * 2.1))).toFixed(2)); });
+        }
       },
     };
   }
