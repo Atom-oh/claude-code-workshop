@@ -766,7 +766,7 @@ docker build ──> ECR push ──> CDK: CloudFront ──> (VPC origin) 내�
     <tr><th>선택</th><th>이유</th></tr>
     <tr><td>이벤트 id 멱등 스토어</td><td>피드는 24h 창이라 매 폴링 대부분이 재등장, 키 기반 upsert가 시계열을 오염에서 지킨다</td></tr>
     <tr><td>등장방형 투영</td><td>두 줄짜리 수학으로 충분히 정확한 세계지도, 라이브러리는 과잉</td></tr>
-    <tr><td>Bedrock REST 직접</td><td>SDK 클라이언트 없이 서명한 Authorization 헤더 + JSON, "LLM 호출은 결국 HTTP"</td></tr>
+    <tr><td>Bedrock REST 직접</td><td>boto3 클라이언트 없이 서명한 Authorization 헤더 + JSON, "LLM 호출은 결국 HTTP"</td></tr>
     <tr><td>CF → ALB → Fargate 개장 형식</td><td>ALB를 인터넷에 열지 않고 CloudFront VPC origin으로만 잇는, 공개 URL까지 가는 표준 경로</td></tr>
   </table>
 </section>
@@ -823,7 +823,7 @@ aws sts get-caller-identity --query Account --output text   # 배포용 자격 �
    입력은 최근 24h 요약 통계와 상위 이벤트 목록, 출력은 한국어 "지난 24시간, 지구는" 브리핑:
    전체 흐름 한 문단, 주목 이벤트 2~3개 해설, 활동 급증 지역. 같은 10분 버킷 동안 결과 캐시
 7) 자격의 거처: Bedrock은 키 없이 IAM 역할로(로컬은 실습 환경의 역할, 배포 후는 ECS 태스크 역할). USGS는 키가 없다, 화면은 우리 API만 본다
-8) 배포: CDK로 CloudFront → VPC origin → 내부(internal) ALB → ECS Fargate 를 구성해 배포한다. ALB는 인터넷에 열지 않고 보안 그룹은 CloudFront origin-facing prefix list에서 오는 80번 포트만 허용, VPC에는 인터넷 게이트웨이를 붙이고, us-east-1이면 VPC origin이 지원하지 않는 AZ(use1-az3)는 서브넷에서 뺀다. ECS 태스크 역할에 bedrock:InvokeModel(리소스는 foundation-model과 inference-profile 2종)을 주고, 이미지와 환경변수에 비밀 없음
+8) 배포: CDK로 CloudFront → VPC origin → 내부(internal) ALB → ECS Fargate 를 구성해 배포한다. ALB는 인터넷에 열지 않고 보안 그룹은 CloudFront origin-facing prefix list에서 오는 80번 포트만 허용, VPC에는 인터넷 게이트웨이를 붙이고, us-east-1이면 VPC origin이 지원하지 않는 AZ(use1-az3)는 서브넷에서 뺀다. ECS 태스크 역할에 bedrock:InvokeModel(리소스는 arn:aws:bedrock:*::foundation-model/anthropic.claude-* 와 이 계정 us-east-1의 inference-profile/global.anthropic.claude-* 2종, foundation-model의 리전은 * 로 둔다)을 주고, 이미지와 환경변수에 비밀 없음
 9) 구현 순서: Phase 1(수집기 + 스토어 + /api/quakes, curl 검증) → Phase 2(지도 SVG + 테이블 + 필터)
    → Phase 3(브리핑 + 캐시) → Phase 4(cdk deploy와 CloudFront 개장). 시간 제약 2시간:
    테스트 생략, curl과 브라우저로 검증. 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>

@@ -709,7 +709,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     <tr><th>목표</th><th>검증되는 순간</th></tr>
     <tr><td>주기 수집 파이프라인과 멱등 스냅샷 저장을 설계하는 법</td><td>M2에서 60초마다 스냅샷이 쌓이되 같은 버킷은 한 번만 저장될 때</td></tr>
     <tr><td>기준선 비교로 변화(델타)를 파생하는 법</td><td>M3에서 ▲▼/NEW 배지가 직전 스냅샷과의 비교로 정확히 붙을 때</td></tr>
-    <tr><td>SDK 클라이언트 없이 REST 계약으로 LLM을 부르는 법</td><td>M4에서 서명한 httpx 요청 한 장으로 Bedrock Converse가 응답할 때</td></tr>
+    <tr><td>boto3 클라이언트 없이 REST 계약으로 LLM을 부르는 법</td><td>M4에서 서명한 httpx 요청 한 장으로 Bedrock Converse가 응답할 때</td></tr>
     <tr><td>서드파티 키를 서버에 격리하는 프록시 패턴</td><td>브라우저 개발자 도구 어디에도 유튜브 키가 보이지 않을 때</td></tr>
   </table>
 
@@ -788,7 +788,7 @@ FastAPI ── httpx POST(REST 직접, Authorization: SigV4) ───> bedrock-
     <tr><th>선택</th><th>이유</th></tr>
     <tr><td>수집과 조회의 분리</td><td>화면 트래픽이 유튜브 쿼터를 건드리지 못한다, 스냅샷이 완충재</td></tr>
     <tr><td>멱등 스냅샷</td><td>스케줄러가 겹쳐 돌아도, 재시작해도 같은 버킷은 한 번, 시계열이 오염되지 않는다</td></tr>
-    <tr><td>Bedrock REST 직접</td><td>SDK 클라이언트 없이 서명한 Authorization 헤더 + JSON 한 장, "LLM 호출은 결국 HTTP"를 체득</td></tr>
+    <tr><td>Bedrock REST 직접</td><td>boto3 클라이언트 없이 서명한 Authorization 헤더 + JSON 한 장, "LLM 호출은 결국 HTTP"를 체득</td></tr>
     <tr><td>인라인 SVG 차트</td><td>점유율 막대에 차트 라이브러리는 과잉, 데이터가 곧 rect의 높이</td></tr>
   </table>
 </section>
@@ -1039,8 +1039,8 @@ curl -s -X POST "localhost:8000/api/brief?mode=daily" | head -c 300; echo</code>
   </div>
   <div class="callout tip">
     <span class="co-title">개념 짚기 (Level 200), LLM 호출은 결국 HTTP</span>
-    boto3가 하는 일을 벗겨 보면 서명된 HTTP 요청입니다. 그 서명(SigV4)만 botocore에 맡기면
-    <strong>Authorization 헤더 + JSON body</strong>만 남습니다. 원작 bedrock.py가 55줄인 이유입니다.
+    boto3가 하는 일을 벗겨 보면 서명된 HTTP 요청입니다. 서명(SigV4)은 botocore의 SigV4Auth에 맡기고,
+    나머지는 httpx 요청 한 장, <strong>서명 헤더 + JSON body</strong>입니다.
     이 감각이 있으면 어떤 언어, 어떤 런타임에서도 LLM을 부를 수 있습니다. 단, 실패 매핑은 남습니다:
     타임아웃은 504, 이상한 응답은 502, 그리고 에러에 상류 본문을 그대로 싣지 않기(정보 격리).
   </div>
@@ -1216,7 +1216,7 @@ claude plugin list</code></pre>
     <tr><th>가져가는 것</th><th>내용</th></tr>
     <tr><td>스냅샷이 완충재</td><td>화면 트래픽과 수집을 분리하면 쿼터, 비용, 응답 속도가 한 번에 잡힌다</td></tr>
     <tr><td>기준선의 힘</td><td>목록은 사진, 비교가 정보. ▲▼/NEW/이탈은 전부 "직전과의 차이"에서 나온다</td></tr>
-    <tr><td>REST 감각</td><td>SDK를 벗기면 Authorization 헤더와 JSON, LLM 호출의 본질은 HTTP 한 장</td></tr>
+    <tr><td>REST 감각</td><td>boto3 클라이언트를 벗기면 SigV4 서명 헤더와 JSON, LLM 호출의 본질은 HTTP 한 장</td></tr>
   </table>
   <div class="next-box">
     <div>

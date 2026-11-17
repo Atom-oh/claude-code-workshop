@@ -631,7 +631,7 @@ html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0
     요구사항이 <strong>눈에 보이는</strong> 프로젝트만큼 에이전틱 코딩 훈련에 좋은 것이 없습니다.
     점프가 뜨는지, 충돌이 새는지, 화면이 즉시 답을 줍니다. superpowers 워크플로로
     게임 엔진부터 레벨, 배포까지 밀어붙이고, 마지막에 CloudFront URL을 Slack에 올려 서로 플레이합니다.
-    이 캡스톤은 <strong>Bedrock을 쓰지 않으므로 API 키가 필요 없습니다</strong>.
+    이 캡스톤은 <strong>Bedrock을 쓰지 않습니다</strong>.
   </p>
   <div class="hero-meta">
     <span>미션 <strong>5개 + DoD</strong></span>
@@ -773,7 +773,7 @@ index.html ──> S3(비공개 버킷) <── OAC ── CloudFront ──> �
 
 <section class="task" id="m0">
   <div class="task-head"><span class="task-num">MISSION 00</span><h2>사전 준비</h2></div>
-  <p class="task-goal">프로젝트 폴더와 배포용 CDK 뼈대, 그리고 <strong>로컬 미리보기 방법</strong>을 준비합니다. Bedrock 키는 필요 없습니다.</p>
+  <p class="task-goal">프로젝트 폴더와 배포용 CDK 뼈대, 그리고 <strong>로컬 미리보기 방법</strong>을 준비합니다. Bedrock은 쓰지 않습니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>aws sts get-caller-identity --query Account --output text
@@ -949,7 +949,7 @@ XXXX...XXXXX...XXXXXXXXXXXXXX...XXXXXXXX..XXXXXXXXXX</code></pre>
 
 <section class="task" id="m4">
   <div class="task-head"><span class="task-num">MISSION 04</span><h2>Phase 4, 배포와 개장</h2></div>
-  <p class="task-goal">S3 + CloudFront로 세상에 공개합니다. 이 캡스톤의 deploy는 <strong>.env 로드가 필요 없습니다</strong>(Bedrock 미사용).</p>
+  <p class="task-goal">S3 + CloudFront로 세상에 공개합니다. 이 캡스톤은 <strong>Bedrock을 쓰지 않습니다</strong>.</p>
   <p class="body" style="color:#A6ABBE">이 미션의 바탕 학습: <a href="ClaudeCode_Ch1_HandsOnLab.html" style="color:#c9a2ff">Ch1</a>의 검증 루프가 배포 스모크(curl 200)로 확장됩니다. 자동화가 궁금하면 <a href="ClaudeCode_Ch3_HandsOnLab.html" style="color:#c9a2ff">Ch3</a>의 헤드리스 패턴이 다음입니다.</p>
   <div class="code-wrap prompt">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>

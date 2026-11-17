@@ -739,7 +739,7 @@ npx cdk --version</code></pre>
     <code class="inline">AccessDeniedException</code>은 역할에 Bedrock 호출 권한이 없거나 모델 액세스가 승인되지 않은 경우이니 진행자에게 알려 주세요.
     <code class="inline">ValidationException</code>(on-demand 미지원)은 베이스 모델 ID를 쓴 경우입니다.
     신형 모델은 반드시 <strong>global. 프로파일 ID</strong>로 호출합니다.
-    Bedrock 호출과 CDK 배포 모두 <strong>같은 역할(SigV4)</strong>을 씁니다. 여기서 막히면 부록 트러블슈팅의 모델 항목을 확인하세요. 이 관문만 넘으면 M3는 순항입니다.
+    이 스모크와 CDK 배포는 <strong>같은 인스턴스 역할(SigV4)</strong>을 쓰고, 배포된 Lambda는 자기 실행 역할로 호출합니다. 여기서 막히면 부록 트러블슈팅의 모델 항목을 확인하세요. 이 관문만 넘으면 M3는 순항입니다.
   </div>
 
   <div class="step-title"><span class="step-no">2</span>프로젝트 스캐폴드와 bootstrap (백그라운드)</div>

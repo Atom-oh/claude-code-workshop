@@ -841,7 +841,7 @@ aws sts get-caller-identity --query Account --output text</code></pre>
 8) 자격과 윤리: Bedrock은 키 없이 IAM 역할로(로컬은 실습 환경의 역할, 배포 후는 ECS 태스크 역할). 기사 본문을 저장하지 않는다(헤드라인+요약+링크만),
    화면 모든 카드에 원문 출처 링크 필수
 9) 배포와 순서: CDK로 CloudFront → VPC origin → 내부(internal) ALB → Fargate 를 구성(ALB 보안 그룹은 CloudFront origin-facing prefix list에서 오는 80번 포트만 허용, VPC에 인터넷 게이트웨이, us-east-1이면 use1-az3 서브넷 제외),
-   ECS 태스크 역할에 bedrock:InvokeModel(리소스는 foundation-model과 inference-profile 2종). Phase 1(수집 + 스토어 + /api/articles) → Phase 2(4열 그리드)
+   ECS 태스크 역할에 bedrock:InvokeModel(리소스는 arn:aws:bedrock:*::foundation-model/anthropic.claude-* 와 이 계정 us-east-1의 inference-profile/global.anthropic.claude-* 2종, foundation-model의 리전은 * 로 둔다). Phase 1(수집 + 스토어 + /api/articles) → Phase 2(4열 그리드)
    → Phase 3(렌즈 JSON + 클러스터 뷰) → Phase 4(cdk deploy 개장). 2시간 제약: 테스트 생략,
    curl과 브라우저로 검증. 결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
   </div>
