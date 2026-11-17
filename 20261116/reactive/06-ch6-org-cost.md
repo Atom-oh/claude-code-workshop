@@ -140,7 +140,7 @@ Chapter 5에서는 개인이 덜 쓰는 방법을 봤어요. 이제 조직이 �
     <button class="pick" data-key="anthropic"><span class="k">비교</span><span class="t">Anthropic과 직접 계약</span></button>
   </div>
   <div class="panel" data-pick-panel="c6-setup">
-    <div data-for="bedrock"><h4>Amazon Bedrock</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">AWS 청구 콘솔</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">AWS 예산 도구</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">직접 설치한 계측(OTel)</span></div><p>콘솔은 계정 전체 금액만 보여 줘요. 사람별로 보려면 계측을 직접 설치해야 해요.</p></div>
+    <div data-for="bedrock"><h4>Amazon Bedrock</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">AWS 청구 콘솔</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">AWS 예산 도구</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">직접 설치한 계측(OTel)</span></div><p>콘솔은 계정이나 태그 단위 금액까지만 보여 줘요. 사람별로 보려면 계측을 직접 설치해야 해요.</p></div>
     <div data-for="anthropic"><h4>Anthropic과 직접 계약</h4><div class="kv"><span class="lb">지출 보기</span><span class="vl">사용량 화면 기본 제공</span></div><div class="kv"><span class="lb">지출 한도</span><span class="vl">관리 화면에서 설정</span></div><div class="kv"><span class="lb">사용자별</span><span class="vl">기본 제공</span></div><p>구독(Team, Enterprise)이든 API(Claude Console)든, 화면과 한도가 제품에 들어 있어요.</p></div>
   </div>
 </div>
@@ -156,7 +156,7 @@ Chapter 5에서는 개인이 덜 쓰는 방법을 봤어요. 이제 조직이 �
 • Amazon Bedrock(이 워크숍): 총액은 AWS 청구 콘솔, 한도 알림은 AWS 예산 도구(AWS Budgets), 사람별은 직접 계측(오픈텔레메트리)
 • 비교: Anthropic과 직접 계약하면 구독(Team, Enterprise)이든 API(Claude Console)든 사용량 화면과 한도가 제품에 포함
 
-비용을 어떻게 보는지는 Claude를 어디서 계약했느냐에 따라 달라요. 이번 워크숍처럼 Amazon Bedrock으로 쓰면 비용이 AWS 청구서에 함께 나와요. AWS 청구 콘솔에서 Bedrock 사용 총액을 보고, AWS 예산 도구인 AWS Budgets로 금액이 넘을 때 알림을 걸 수 있어요. 그런데 콘솔은 계정 전체 금액을 보여 줄 뿐, 개발자 누가 얼마나 썼는지는 보여 주지 않아요. 그래서 사람별로 보려면 각 PC의 Claude Code가 사용량을 보내도록 계측을 직접 설치해야 해요.↓
+비용을 어떻게 보는지는 Claude를 어디서 계약했느냐에 따라 달라요. 이번 워크숍처럼 Amazon Bedrock으로 쓰면 비용이 AWS 청구서에 함께 나와요. AWS 청구 콘솔에서 Bedrock 사용 총액을 보고, AWS 예산 도구인 AWS Budgets로 금액이 넘을 때 알림을 걸 수 있어요. 그런데 콘솔은 계정이나 태그 단위 금액까지만 보여 줄 뿐, 개발자 누가 얼마나 썼는지는 보여 주지 않아요. 그래서 사람별로 보려면 각 PC의 Claude Code가 사용량을 보내도록 계측을 직접 설치해야 해요.↓
 비교를 위해 Anthropic과 직접 계약한 경우도 볼게요. 팀 단위 구독인 Team, Enterprise든, 쓴 만큼 내는 API 방식인 Claude Console이든, 사용량 화면과 한도 설정이 제품 안에 들어 있어요. 관리자가 화면에서 바로 사람별 사용량을 보고 한도를 정할 수 있죠. Bedrock에는 이런 화면이 없다는 점을 다음 장에서 이어 볼게요.
 :::
 ---
@@ -510,7 +510,7 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
 • 답하기: Ask Claude, Bedrock의 Claude가 읽기 전용 SQL로 조회. 숫자는 관측값이고 사람 평가 근거가 아님
 
 {cue: demo}
-이번 워크숍에서 쓰는 대시보드는 클로드 코드 대시보드, 줄여서 ccdash예요. 이번 워크숍을 위해 만든 오픈소스 도구예요. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓
+이번 워크숍에서 쓰는 대시보드는 클로드 코드 대시보드, 줄여서 ccdash예요. 이번 워크숍을 위해 만들고 소스를 공개한 도구예요. 받고, 쌓고, 보여 주고, 답하는 네 단계로 볼게요.↓
 먼저 받기예요. Claude Code는 같은 PC 안의 수집기로만 보내요. 수집기는 Claude Code의 지표 여덟 개만 통과시키고 나머지는 버려요. 로그에서는 본문을 지운 뒤 내보내요. 네트워크가 끊기면 디스크에 모아 두었다가 다시 보내요.↓
 다음은 쌓기예요. 분석용 데이터베이스인 ClickHouse에 저장해요. 원본 기록과 시간 단위로 미리 합쳐 둔 요약을 따로 두어서, 한 달 치처럼 긴 기간도 빠르게 그려요. 화면은 기본으로 최근 이틀을 보여 주고, 최대 90일까지 볼 수 있어요.↓
 보여 주기는 웹 화면이에요. AWS의 콘텐츠 전송 서비스인 CloudFront를 거쳐 접속해요. 회사 로그인을 연결하면 조회만 하는 사람, 분석하는 사람, 관리자로 권한을 나눠서 볼 수 있는 범위를 정할 수 있어요.↓
@@ -531,7 +531,7 @@ OTel을 받아 쌓고, 화면과 질문으로 보여 주는 구조
 LIVE DEMO, 강사 화면의 ccdash (URL은 현장 안내)
 
 :::html
-<div class="fsi fsi-lab c6-lab c6-demo">
+<div class="fsi fsi-lab c6-lab">
   <div class="head"><span class="tag">LIVE DEMO</span></div>
   <ol class="steps">
     <li><b>1</b><span><b>Overview</b>: 그래프가 솟은 곳이 실습 구간, 비용은 모델별로 갈려요</span></li>
@@ -633,7 +633,7 @@ LIVE DEMO, 강사 화면의 ccdash (URL은 현장 안내)
 
 /usage 화면이나 대시보드에 나오는 비용은 공개 목록가로 계산한 추정치예요. 회사가 AWS와 할인 계약을 맺었다면 실제 청구서와 차이가 나요. 그 차이를 줄이는 설정이 modelPricing, 모델 단가 설정이에요.
 {cue: demo}
-가장 간단한 방법은 배율, multiplier예요. 예를 들어 목록가로 0.55달러가 나온 세션에 배율 0.9를 넣으면 0.50달러로 표시돼요. 1보다 작으면 할인, 1보다 크면 할증을 반영해요. 모델마다 계약 단가가 다르면 overrides로 모델별 단가를 따로 적을 수 있어요. 이 설정은 관리 정책 파일에서만 동작해요. 개인이 자기 비용을 낮춰 보이게 바꿀 수 없도록 한 거예요. 그리고 어디까지나 표시만 바꿔요. 실제로 내는 돈은 그대로라서, 정산은 AWS 청구서와 맞춰 보셔야 해요. 실제 설정 방법은 Ch6 랩 페이지 선택 TASK 04에 있어요.
+가장 간단한 방법은 배율, multiplier예요. 예를 들어 목록가로 0.55달러가 나온 세션에 배율 0.9를 넣으면 0.50달러로 표시돼요. 1보다 작으면 할인, 1보다 크면 할증을 반영해요. 모델마다 계약 단가가 다르면 overrides로 모델별 단가를 따로 적을 수 있어요. 이 설정은 관리 정책 파일에서만 동작해요. 개인 설정 파일에 넣으면 적용되지 않아요. 그리고 어디까지나 표시만 바꿔요. 실제로 내는 돈은 그대로라서, 정산은 AWS 청구서와 맞춰 보셔야 해요. 실제 설정 방법은 Ch6 랩 페이지 선택 TASK 04에 있어요.
 :::
 ---
 <!-- Slide 13: AWS side tools -->
@@ -973,7 +973,7 @@ standard-users 그룹의 하루 기본 한도는 50달러예요. 이 그룹의 b
 자주 받는 질문을 모아 뒀어요. 시간이 없으면 넘어가고, 질문이 나오면 해당 칸을 펼쳐 답할게요.
 {cue: demo}
 첫째, 어떤 지표를 보면 되느냐는 질문이에요. 토큰 사용량 지표에는 종류 속성이 있어서 일반 입력, 출력, 캐시 읽기, 캐시 쓰기로 나눠 볼 수 있어요. 캐시 효율은 여기서 보고, 추정 비용은 비용 지표로 확인해요.↓
-둘째, 이상 징후를 어떻게 읽느냐는 질문이에요. 캐시 읽기 비율이 낮으면 긴 휴식 뒤에 세션을 이어 쓰거나 프롬프트 앞부분이 자주 바뀌는지 보고, 세션 쓰는 습관을 점검해요. 특정 사람의 사용량이 갑자기 늘면 자동화 루프나 병렬 실행을 의심해 보고, 게이트웨이 사용자 한도로 막을 수 있어요. 비싼 Opus 비중이 높으면 기본 모델 설정을 확인해요. 자동 승인 모드의 분류기 호출이 많으면 Ch2 Lab 2처럼 분류기 모델을 따로 지정해요.↓
+둘째, 이상 징후를 어떻게 읽느냐는 질문이에요. 캐시 읽기 비율이 낮으면 긴 휴식 뒤에 세션을 이어 쓰거나 프롬프트 앞부분이 자주 바뀌는지 보고, 세션 쓰는 습관을 점검해요. 특정 사람의 사용량이 갑자기 늘면 자동화 루프나 병렬 실행을 의심해 보고, 게이트웨이 사용자 한도로 막을 수 있어요. 비싼 Opus 비중이 높으면 기본 모델 설정을 확인해요. auto mode(자동 승인 모드)의 분류기 호출이 많으면 Ch2 Lab 2처럼 분류기 모델을 따로 지정해요.↓
 셋째, 관리자 API로 한도를 어떻게 거느냐는 질문이에요. 그룹 기본값을 먼저 정하고, 필요한 사람에게만 사용자 예외를 둬요. 금액은 미국 센트 단위의 문자열로 적어요. 하루 50달러는 "5000"이에요. 한도를 바꾸는 쓰기 권한 키는 꼭 필요한 몇 사람에게만 주세요.
 :::
 ---
