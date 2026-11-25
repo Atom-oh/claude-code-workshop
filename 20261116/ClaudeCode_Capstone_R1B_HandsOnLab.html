@@ -801,7 +801,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   <p class="lede">
     서울시 부동산 실거래가 정보를 다루는 <strong><span class="gl" data-gl="mcp">MCP</span> 서버</strong>(서울부동산), 시세를 정리하고 이상 거래를 찾는 <strong>자기 Subagent 2개</strong>,
     API 키가 파일이나 커밋에 들어가지 않게 하고 호출 대상을 <code class="inline">openapi.seoul.go.kr</code>로 묶는 <strong>가드레일</strong>을 <code class="inline">~/claude-lab/capstone/</code>에 만듭니다.
-    키는 직접 신청하고, 나오기 전까지는 합성 샘플 데이터(mock 모드)로 끝까지 진행할 수 있습니다.
+    키는 직접 신청하고, 키가 나오지 않아도 합성 샘플 데이터(mock 모드)로 끝까지 진행할 수 있습니다.
   </p>
   <div class="backlinks">
     <a href="ClaudeCode_Capstone_Overview.html">캡스톤 개요</a>
@@ -825,7 +825,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
       <button class="seg" data-task="task-01" style="flex:15" title="골격 받기와 mock 연결"><span class="fill"></span><span class="seg-txt">01 골격과 mock 연결</span></button>
       <button class="seg" data-task="task-02" style="flex:20" title="자기 agent 2개"><span class="fill"></span><span class="seg-txt">02 자기 agent 2개</span></button>
       <button class="seg" data-task="task-03" style="flex:25" title="가드레일"><span class="fill"></span><span class="seg-txt">03 가드레일</span></button>
-      <button class="seg" data-task="task-04" style="flex:15" title="막히는 것 확인"><span class="fill"></span><span class="seg-txt">04 막히는 것 확인</span></button>
+      <button class="seg" data-task="task-04" style="flex:15" title="막히는지 확인"><span class="fill"></span><span class="seg-txt">04 막히는지 확인</span></button>
       <button class="seg" data-task="task-05" style="flex:5" title="실호출로 전환"><span class="fill"></span><span class="seg-txt">05 실호출</span></button>
       <button class="seg" data-task="task-06" style="flex:10" title="R1 정리"><span class="fill"></span><span class="seg-txt">06 R1 정리</span></button>
     </div>
@@ -840,7 +840,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 골격 받기와 mock 연결<span class="nav-time"></span></a>
   <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 자기 agent 2개<span class="nav-time"></span></a>
   <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 가드레일<span class="nav-time"></span></a>
-  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 막히는 것 확인<span class="nav-time"></span></a>
+  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 막히는지 확인<span class="nav-time"></span></a>
   <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 실호출로 전환<span class="nav-time"></span></a>
   <a href="#task-06" data-nav="task-06"><span class="dot"></span>06 R1 정리<span class="nav-time"></span></a>
 </aside>
@@ -851,7 +851,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <div class="gl-list"></div>
 
 <div class="r1b-map" id="r1b-map">
-  <p class="body"><strong>무엇을 만드나요?</strong> 서울시 부동산 실거래가 API를 감싼 내 MCP 서버 <code class="inline">seoul-realestate</code>(서울부동산)를 연결하고, 그 도구로 시세를 정리하는 <code class="inline">price-summarizer</code>와 이상 거래 후보를 고르는 <code class="inline">anomaly-checker</code>를 만듭니다. 그다음 API 키가 새는 것과 다른 호스트 호출을 막는 훅을 붙이고, 막히는지 직접 확인합니다. 키가 나오기 전까지는 합성 샘플(mock)로 진행하고 05에서 실호출로 바꿉니다. 아래 첫 그림은 00~06이 이어지는 순서와 남는 결과물, 둘째 그림은 두 subagent가 MCP 도구로 하는 일입니다. 단계 번호를 눌러 넘겨 보세요.</p>
+  <p class="body"><strong>무엇을 만드나요?</strong> 서울시 부동산 실거래가 API를 감싼 내 MCP 서버 <code class="inline">seoul-realestate</code>(서울부동산)를 연결하고, 그 도구로 시세를 정리하는 <code class="inline">price-summarizer</code>와 이상 거래 후보를 고르는 <code class="inline">anomaly-checker</code>를 만듭니다. 그다음 API 키가 새는 것과 다른 호스트 호출을 막는 훅을 붙이고, 막히는지 직접 확인합니다. 키가 나오기 전까지는 합성 샘플(mock)로 진행하고 05에서 실호출로 바꿉니다. 아래 첫째 그림은 00~06이 이어지는 순서와 끝에 남는 결과물을, 둘째 그림은 두 subagent가 MCP 도구로 하는 일을 보여 줍니다. 단계 번호를 눌러 차례로 넘겨 보세요.</p>
   <div class="viz" data-viz="r1b-build"></div>
   <div class="viz" data-viz="r1b-roles"></div>
 </div>
@@ -859,8 +859,8 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <section class="task" id="task-00" data-min="5">
   <div class="task-head"><span class="task-num">00</span><h2>키 발급 신청</h2></div>
   <p class="task-goal">서울 열린데이터광장에서 일반 인증키를 신청합니다. 기다리는 동안 01로 넘어갑니다.</p>
-  <p class="body">키는 각자 직접 받습니다. 신청만 해 두고 바로 다음 단계로 갑니다. 이 페이지의 01부터 04까지는 키 없이 합성 샘플 데이터로 진행되고, 키가 나오면 05에서 실호출로 바꿉니다. 먼저 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 키가 나오기를 기다리는 동안 01부터 04까지를 mock으로 진행하려고, 가장 먼저 신청만 해 둡니다.</p>
+  <p class="body">키는 각자 직접 발급받습니다. 신청만 해 두고 바로 다음 단계로 갑니다. 이 페이지의 01부터 04까지는 키 없이 합성 샘플 데이터로 진행되고, 키가 나오면 05에서 실호출로 바꿉니다. 시작하기 전에 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 키가 나오기를 기다리는 동안 01부터 04까지를 mock으로 진행할 수 있도록, 신청부터 가장 먼저 해 둡니다.</p>
   <div class="step-title"><span class="step-no">1</span>일반 인증키 신청</div>
   <table class="tbl"><thead><tr><th>순서</th><th>할 일</th></tr></thead><tbody>
     <tr><td>1</td><td><a href="https://data.seoul.go.kr">data.seoul.go.kr</a>에 로그인합니다 (계정이 없으면 회원가입)</td></tr>
@@ -880,9 +880,9 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <section class="task" id="task-01" data-min="15">
   <div class="task-head"><span class="task-num">01</span><h2>골격 받기와 mock 연결</h2></div>
   <p class="task-goal">MCP 서버 골격 세 파일을 받고, 가상환경에 <code class="inline">mcp</code>를 설치한 뒤 mock 모드로 Claude Code에 연결합니다.</p>
-  <p class="body">골격은 <code class="inline">server.py</code>(MCP 서버, 도구 <code class="inline">search_trades</code> 하나), <code class="inline">sample.json</code>(합성 데이터 90행, 자치구 5개, 2026년 9월과 10월), <code class="inline">README.md</code>(API 명세 요약과 출처)입니다. 샘플의 필드 이름은 실제 API 응답과 같으므로 mock에서 만든 agent가 실호출에서도 그대로 동작합니다. 금액은 지어낸 값이고 건물명은 모두 "샘플"로 시작합니다.</p>
+  <p class="body">골격은 <code class="inline">server.py</code>(MCP 서버, 도구 <code class="inline">search_trades</code> 하나), <code class="inline">sample.json</code>(합성 데이터 90행, 자치구 5개, 2026년 9월과 10월), <code class="inline">README.md</code>(API 명세 요약과 출처) 세 파일입니다. 샘플의 필드 이름은 실제 API 응답과 같으므로 mock에서 만든 agent가 실호출에서도 그대로 동작합니다. 금액은 지어낸 값이고 건물명은 모두 "샘플"로 시작합니다.</p>
   <div class="step-title"><span class="step-no">1</span>골격 받기</div>
-  <p class="body"><strong>이 단계에서 하는 일:</strong> 내 MCP 서버의 재료 세 파일을 내 EC2로 받습니다. <strong>왜:</strong> 서버 코드를 처음부터 쓰지 않고, 받은 골격을 등록해 agent와 가드레일 만들기에 시간을 씁니다.</p>
+  <p class="body"><strong>이 단계에서 하는 일:</strong> 내 MCP 서버의 재료가 되는 세 파일을 내 EC2로 내려받습니다. <strong>왜 필요한가요:</strong> 서버 코드를 처음부터 작성하지 않고 받은 골격을 그대로 등록해야, agent와 가드레일을 만드는 데 시간을 쓸 수 있기 때문입니다.</p>
   <div class="viz" data-viz="skeleton-download"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -893,7 +893,7 @@ for f in server.py sample.json README.md; do curl -fsSL "$BASE/$f" -o "$f" || ec
 ls -l</code></pre>
   </div>
   <div class="step-title"><span class="step-no">2</span>가상환경과 mcp 설치, mock 시험</div>
-  <p class="body"><code class="inline">mcp</code> 패키지는 Python 3.10 이상이 필요합니다. 시스템 <code class="inline">python3</code>가 더 낮거나 가상환경을 만들지 못하면 두 번째 줄이 uv를 설치하고 Python 3.12 가상환경을 대신 만듭니다. 이 블록도 인터넷에서 내려받는 단계라 그림으로 먼저 봅니다.</p>
+  <p class="body"><code class="inline">mcp</code> 패키지는 Python 3.10 이상이 필요합니다. 시스템 <code class="inline">python3</code>의 버전이 그보다 낮거나 가상환경을 만들지 못하면, 둘째 줄에서 이어지는 셋째 줄이 uv를 설치하고 Python 3.12 가상환경을 대신 만듭니다. 이 블록도 인터넷에서 파일을 내려받는 단계이므로, 그림으로 먼저 살펴봅니다.</p>
   <div class="viz" data-viz="venv-install"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -911,7 +911,7 @@ SEOUL_MOCK=1 .venv/bin/python -c 'import server, json; print(json.dumps(server.s
     <tr><td>키 있음</td><td><code class="inline">openapi.seoul.go.kr</code> 실호출. 1000건씩 최대 5번(호출 횟수 상한), 키는 반환값과 오류 메시지에 넣지 않는다</td></tr>
   </tbody></table>
   <div class="step-title"><span class="step-no">3</span>MCP 서버 등록 (mock)</div>
-  <p class="body">등록은 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더에서 합니다. 범위를 주지 않으면 <span class="gl" data-gl="local">local</span>(이 폴더에서만 쓰고 <code class="inline">~/.claude.json</code>에 저장)입니다. stdio 서버는 <code class="inline">--</code> 뒤에 실행 명령을 씁니다. <code class="inline">--env</code> 바로 뒤에 서버 이름을 두면 이름이 또 하나의 환경 변수로 읽힐 수 있어서 <code class="inline">--env</code>와 이름 사이에 <code class="inline">--transport stdio</code>를 둡니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
+  <p class="body">등록은 Claude 세션 <strong>밖의 터미널</strong>에서, 작업 폴더로 이동한 상태로 합니다. 범위를 지정하지 않으면 <span class="gl" data-gl="local">local</span>(이 폴더에서만 쓰고 <code class="inline">~/.claude.json</code>에 저장) 범위로 등록됩니다. stdio 서버는 <code class="inline">--</code> 뒤에 실행 명령을 씁니다. <code class="inline">--env</code> 바로 뒤에 서버 이름을 두면 이름이 또 하나의 환경 변수로 읽힐 수 있어서 <code class="inline">--env</code>와 이름 사이에 <code class="inline">--transport stdio</code>를 둡니다 (<a href="https://code.claude.com/docs/en/mcp">공식 MCP 문서</a>).</p>
   <div class="viz" data-viz="copy-mcp-add"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -919,7 +919,7 @@ SEOUL_MOCK=1 .venv/bin/python -c 'import server, json; print(json.dumps(server.s
 claude mcp add --env SEOUL_MOCK=1 --transport stdio seoul-realestate -- "$HOME/claude-lab/capstone/seoul-realestate/.venv/bin/python" "$HOME/claude-lab/capstone/seoul-realestate/server.py"
 claude mcp list</code></pre>
   </div>
-  <p class="body"><code class="inline">seoul-realestate</code> 줄에 연결됨 표시(<code class="inline">✔ Connected</code>)가 나와야 합니다. 이어서 세션에서 도구를 불러 봅니다.</p>
+  <p class="body"><code class="inline">seoul-realestate</code> 줄에 연결됨 표시(<code class="inline">✔ Connected</code>)가 나와야 합니다. 이어서 세션에서 도구를 호출해 봅니다.</p>
   <div class="viz" data-viz="copy-mcp-first-call"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
@@ -929,7 +929,7 @@ claude mcp list</code></pre>
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>seoul-realestate MCP의 search_trades로 강남구 202609 거래 5건을 표로 보여 주세요. 금액은 만원, 면적은 ㎡입니다.</code></pre>
   </div>
-  <p class="body">처음 부를 때 도구 사용 허락을 묻습니다.</p>
+  <p class="body">도구를 처음 호출할 때는 사용을 허용할지 묻습니다.</p>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox"><span><code>claude mcp list</code>에서 <code>seoul-realestate</code>가 연결됨으로 보인다</span></label>
@@ -939,9 +939,9 @@ claude mcp list</code></pre>
 
 <section class="task" id="task-02" data-min="20">
   <div class="task-head"><span class="task-num">02</span><h2>자기 agent 2개</h2></div>
-  <p class="task-goal">시세를 정리하는 agent와, 이상 거래 후보를 찾는 읽기 전용 검토 agent를 만듭니다. 두 agent 모두 도구를 MCP 도구와 읽기로 좁힙니다.</p>
-  <p class="body">agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일입니다. MCP 도구는 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code> 형식으로 <code class="inline">tools</code>에 적습니다. 이 서버라면 <code class="inline">mcp__seoul-realestate__search_trades</code>입니다. <code class="inline">tools</code>를 적으면 그 밖의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다. 아래 이름과 기준은 예시이고, 같은 틀 안에서 주제를 바꿔도 됩니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 시세 정리와 이상 거래 검토를 나누면 두 agent의 역할이 겹치지 않고, <code class="inline">tools</code>를 MCP 도구와 읽기로 좁히면 그 밖의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다.</p>
+  <p class="task-goal">시세를 정리하는 agent와, 이상 거래 후보를 찾는 읽기 전용 검토 agent를 만듭니다. 두 agent 모두 쓸 수 있는 도구를 MCP 도구와 읽기 도구로 좁힙니다.</p>
+  <p class="body">agent 정의는 Ch3에서 한 것처럼 <code class="inline">.claude/agents/</code> 아래에 마크다운 파일로 둡니다. MCP 도구는 <code class="inline">mcp__&lt;서버 이름&gt;__&lt;도구 이름&gt;</code> 형식으로 <code class="inline">tools</code>에 적습니다. 이 서버라면 <code class="inline">mcp__seoul-realestate__search_trades</code>입니다. <code class="inline">tools</code>를 적으면 거기에 적지 않은 도구(쓰기, Bash, 웹)는 쓸 수 없습니다. 아래 이름과 기준은 예시이므로, 같은 틀 안에서 주제를 바꿔도 됩니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 시세 정리와 이상 거래 검토를 나누면 두 agent의 역할이 겹치지 않고, <code class="inline">tools</code>를 MCP 도구와 읽기 도구로 좁혀 두면 그 밖의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다.</p>
   <div class="step-title"><span class="step-no">1</span>시세 정리: price-summarizer</div>
   <div class="viz" data-viz="copy-price-summarizer"></div>
   <div class="code-wrap">
@@ -975,7 +975,7 @@ model: sonnet
 EOF</code></pre>
   </div>
   <div class="step-title"><span class="step-no">2</span>이상 거래 검토: anomaly-checker (읽기 전용)</div>
-  <p class="body">시세 정리와 역할이 겹치지 않도록 이 agent는 <strong>평균이 아닌 튀는 거래</strong>만 봅니다. 파일을 고치거나 저장하지 않는 검토 역할입니다.</p>
+  <p class="body">시세 정리와 역할이 겹치지 않도록 이 agent는 <strong>평균적인 시세가 아니라 유난히 튀는 거래</strong>만 봅니다. 파일을 고치거나 저장하지 않는 검토 역할입니다.</p>
   <div class="viz" data-viz="copy-anomaly-checker"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1009,7 +1009,7 @@ model: sonnet
 EOF</code></pre>
   </div>
   <div class="step-title"><span class="step-no">3</span>등록 확인과 첫 호출</div>
-  <p class="body"><code class="inline">.claude/agents/</code>를 이번에 처음 만들었다면 세션을 다시 열어야 agent를 읽습니다(<code class="inline">/exit</code> 후 <code class="inline">claude</code>). 입력창에 <code class="inline">@</code>를 입력하면 agent 이름이 typeahead에 나타납니다.</p>
+  <p class="body"><code class="inline">.claude/agents/</code>를 이번에 처음 만들었다면 세션을 다시 열어야 Claude Code가 agent를 읽어 들입니다(<code class="inline">/exit</code> 후 <code class="inline">claude</code>). 입력창에 <code class="inline">@</code>를 입력하면 자동 완성 목록(typeahead)에 agent 이름이 나타납니다.</p>
   <div class="viz" data-viz="r1b-roles"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
@@ -1018,7 +1018,7 @@ EOF</code></pre>
   </div>
   <p class="body">샘플에는 이상 거래 실습용으로 눈에 띄는 행을 몇 개 일부러 넣어 두었습니다. 마포구 202609에서는 ㎡당 금액이 중앙값의 2배를 넘는 오피스텔 한 건이 후보로 나와야 합니다.</p>
   <table class="tbl"><thead><tr><th>agent</th><th>tools</th><th>이유</th></tr></thead><tbody>
-    <tr><td><code class="inline">price-summarizer</code></td><td><code class="inline">mcp__seoul-realestate__search_trades, Read</code></td><td>조회와 요약만 한다. 저장은 메인이 한다</td></tr>
+    <tr><td><code class="inline">price-summarizer</code></td><td><code class="inline">mcp__seoul-realestate__search_trades, Read</code></td><td>조회와 요약만 한다. 저장은 메인 Claude가 한다</td></tr>
     <tr><td><code class="inline">anomaly-checker</code></td><td><code class="inline">mcp__seoul-realestate__search_trades, Read, Grep</code></td><td>검토만 한다. 쓰기, Bash, 웹 도구가 없다</td></tr>
   </tbody></table>
   <div class="checkpoint">
@@ -1031,9 +1031,9 @@ EOF</code></pre>
 
 <section class="task" id="task-03" data-min="25">
   <div class="task-head"><span class="task-num">03</span><h2>가드레일</h2></div>
-  <p class="task-goal">API 키가 파일, 명령, 커밋, 프롬프트에 들어가는 것을 막는 <span class="gl" data-gl="hook">훅</span>과, Claude의 호출 대상을 <code class="inline">openapi.seoul.go.kr</code>로 묶는 훅을 <span class="gl" data-gl="failclosed">fail-closed</span>로 등록합니다.</p>
-  <p class="body">원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일과 DLP</a>와 같습니다. 훅에서 <strong>exit 2가 차단</strong>이고, 오류 경로(jq 없음, 입력 해석 실패, grep 오류)에서도 exit 2를 내야 fail-closed입니다. 키는 05 단계에서 <code class="inline">claude mcp add --env</code>로 사용자 설정(<code class="inline">~/.claude.json</code>, 작업 폴더 밖)에만 넣습니다. 그래서 키 훅은 그 파일에서 등록된 키 값을 읽어 와 같은 값이 보이면 막고, 그 파일 자체를 열려는 요청도 막습니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 이 폴더는 R2에서 plugin으로 묶여 새 폴더에 설치됩니다. 키가 파일이나 커밋에 남으면 그대로 따라가므로 지금 훅으로 막아 둡니다.</p>
+  <p class="task-goal">API 키가 파일, 명령, 커밋, 프롬프트에 들어가는 것을 막는 <span class="gl" data-gl="hook">훅</span>과, Claude의 호출 대상을 <code class="inline">openapi.seoul.go.kr</code>로 묶는 훅을 <span class="gl" data-gl="failclosed">fail-closed</span> 방식으로 등록합니다.</p>
+  <p class="body">원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일과 DLP</a>에서 다룬 것과 같습니다. 훅에서는 <strong>exit 2가 차단</strong>을 뜻하고, 검사 중 오류가 난 경우(jq 없음, 입력 해석 실패, grep 오류)에도 exit 2를 내야 fail-closed입니다. 키는 05 단계에서 <code class="inline">claude mcp add --env</code>로 사용자 설정(<code class="inline">~/.claude.json</code>, 작업 폴더 밖)에만 넣습니다. 그래서 키 훅은 그 파일에서 등록된 키 값을 읽어 와, 입력에 같은 값이 보이면 막고, 그 파일 자체를 열려는 요청도 막습니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 이 폴더는 R2에서 plugin으로 묶여 새 폴더에 설치됩니다. 키가 파일이나 커밋에 남아 있으면 plugin에 그대로 딸려 가므로, 지금 훅으로 막아 둡니다.</p>
   <p class="body">아래 그림은 01에서 연결한 MCP 서버, 05에서 넣을 키, 이 단계에서 만드는 두 훅이 어디에 있고 무엇을 막는지 한 장으로 보여 줍니다.</p>
   <div class="viz" data-viz="mcp-flow"></div>
   <div class="step-title"><span class="step-no">1</span>키 차단 훅: key-guard.sh</div>
@@ -1078,7 +1078,7 @@ chmod +x .claude/hooks/key-guard.sh</code></pre>
   </div>
   <p class="body">시험 키 <code class="inline">sample</code>(열린데이터광장의 공개 시험 키, 한 번에 5건)은 여덟 글자보다 짧아 이 패턴에 걸리지 않습니다. <code class="inline">/proc/…/environ</code>과 <code class="inline">ps e</code>, <code class="inline">ps eww</code>처럼 프로세스의 환경 변수(MCP 서버에 넘긴 키 포함)를 엿보는 명령도 막습니다.</p>
   <div class="step-title"><span class="step-no">2</span>호출 대상 훅: net-guard.sh</div>
-  <p class="body">Bash 명령과 WebFetch의 URL에서 호스트를 뽑아 <code class="inline">openapi.seoul.go.kr</code>이 아니면 막습니다. MCP 서버 자신은 <code class="inline">server.py</code>의 <code class="inline">BASE_URL</code> 한 곳만 부르도록 코드로 묶여 있습니다.</p>
+  <p class="body">Bash 명령과 WebFetch의 URL에서 호스트를 뽑아 <code class="inline">openapi.seoul.go.kr</code>이 아니면 막습니다. MCP 서버 자체는 <code class="inline">server.py</code>의 <code class="inline">BASE_URL</code> 한 곳만 호출하도록 코드에서 묶어 두었습니다.</p>
   <div class="viz" data-viz="copy-net-guard"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1111,9 +1111,9 @@ echo '{"tool_input":{"command":"curl -s https://example.com/"}}' | .claude/hooks
 echo '{"tool_input":{"content":"key = os.environ[\"SEOUL_API_KEY\"]"}}' | .claude/hooks/key-guard.sh; echo "exit=$?"
 echo '{"tool_input":{"command":"curl -s http://openapi.seoul.go.kr:8088/sample/json/tbLnOpendataRtmsV/1/5/"}}' | .claude/hooks/net-guard.sh; echo "exit=$?"</code></pre>
   </div>
-  <p class="body">앞의 네 줄(키를 값으로 적기, <code class="inline">~/.claude.json</code> 열기, 등록된 키 값과 같은 문자열, 다른 호스트 호출)은 <code class="inline">exit=2</code>, 뒤의 두 줄(환경 변수에서 키 읽기, 서울 API에 시험 키로 호출)은 <code class="inline">exit=0</code>이 나와야 합니다. 세 번째 줄의 <code class="inline">FAKEVALUE99</code>는 "등록된 키" 역할을 하는 가짜 값입니다.</p>
+  <p class="body">시험 여섯 줄 가운데 앞의 네 줄(키를 값으로 적기, <code class="inline">~/.claude.json</code> 열기, 등록된 키 값과 같은 문자열, 다른 호스트 호출)은 <code class="inline">exit=2</code>, 뒤의 두 줄(환경 변수에서 키 읽기, 서울 API에 시험 키로 호출)은 <code class="inline">exit=0</code>이 나와야 합니다. 세 번째 시험 줄의 <code class="inline">FAKEVALUE99</code>는 "등록된 키" 역할을 하는 가짜 값입니다.</p>
   <div class="step-title"><span class="step-no">4</span>프로젝트 설정에 훅과 deny 규칙 등록</div>
-  <p class="body">작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 키 훅은 프롬프트(<code class="inline">UserPromptSubmit</code>)와 도구 호출(<code class="inline">PreToolUse</code>)을 모두 봅니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(v2.1.295+, 어느 설정 파일의 command 훅에서나 쓸 수 있음, <a href="https://code.claude.com/docs/en/hooks">공식 훅 문서</a>, Ch2 Lab 2 TASK 02 Step 3). <code class="inline">permissions.deny</code>는 훅과 별개의 한 겹으로 키가 저장된 <code class="inline">~/.claude.json</code> 읽기와 웹 검색을 막습니다. 다른 트랙에서 만든 <code class="inline">settings.json</code>이 있으면 덮어쓰게 되니, 한 트랙만 진행합니다.</p>
+  <p class="body">훅과 deny 규칙을 작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 키 훅은 프롬프트(<code class="inline">UserPromptSubmit</code>)와 도구 호출(<code class="inline">PreToolUse</code>)을 모두 검사합니다. <code class="inline">onFailure</code>: <code class="inline">block</code>을 넣으면 스크립트가 없거나, 시작하지 못하거나, 시간이 초과된 경우에도 차단합니다(v2.1.295 이상, 어느 설정 파일의 command 훅에서나 쓸 수 있음. 참고: <a href="https://code.claude.com/docs/en/hooks">공식 훅 문서</a>, Ch2 Lab 2 TASK 02 Step 3). <code class="inline">permissions.deny</code>는 훅과는 별개로 키가 저장된 <code class="inline">~/.claude.json</code> 읽기와 웹 검색을 한 겹 더 막습니다. 다른 트랙에서 만든 <code class="inline">settings.json</code>이 있으면 덮어쓰게 되므로, 한 트랙만 진행합니다.</p>
   <div class="viz" data-viz="copy-settings"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1138,7 +1138,7 @@ cat &gt; .claude/settings.json &lt;&lt; 'EOF'
 EOF
 jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></pre>
   </div>
-  <p class="body">이 훅은 도구 입력의 <strong>문자열</strong>만 봅니다. 스킴 없이 쓴 호스트(<code class="inline">curl example.com</code>), 변수로 조립한 URL, 명령의 <strong>결과</strong>는 보지 못한다는 점은 Ch2 Lab 2에서 확인한 한계와 같습니다. 그래서 agent의 <code class="inline">tools</code>에서 Bash와 웹 도구를 빼 둔 것이 또 한 겹이 됩니다. MCP 서버가 실행 중에 보내는 요청도 훅이 보지 않으므로, 서버 쪽 호출 대상은 <code class="inline">server.py</code>의 <code class="inline">BASE_URL</code>로 묶어 둡니다.</p>
+  <p class="body">두 훅은 도구 입력의 <strong>문자열</strong>만 검사합니다. 스킴(http://) 없이 쓴 호스트(<code class="inline">curl example.com</code>), 변수로 조립한 URL, 명령의 <strong>결과</strong>는 검사하지 못합니다. Ch2 Lab 2에서 확인한 한계와 같습니다. 그래서 agent의 <code class="inline">tools</code>에서 Bash와 웹 도구를 빼 둔 것이 또 한 겹의 방어가 됩니다. MCP 서버가 실행 중에 보내는 요청도 훅이 검사하지 않으므로, 서버 쪽 호출 대상은 <code class="inline">server.py</code>의 <code class="inline">BASE_URL</code>로 묶어 둡니다.</p>
   <div class="callout warn">
     <span class="co-title">평문 HTTP</span>
     서울 열린데이터광장 Open API는 <code class="inline">http://openapi.seoul.go.kr:8088</code> 평문 HTTP로만 제공되고, 키가 URL 경로에 들어갑니다. 즉 키는 암호화되지 않은 채 오갑니다. 공용 와이파이 같은 믿을 수 없는 네트워크에서는 실호출하지 않고, 노출이 의심되면 인증키 관리에서 키를 새로 받습니다.
@@ -1149,15 +1149,15 @@ jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></p
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>직접 시험에서 차단 네 줄은 <code>exit=2</code>, 통과 두 줄은 <code>exit=0</code>이 나왔다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>스크립트를 직접 시험했을 때 막혀야 하는 네 줄은 <code>exit=2</code>, 통과해야 하는 두 줄은 <code>exit=0</code>이 나왔다</span></label>
     <label class="cp-item"><input type="checkbox"><span><code>settings OK</code>가 출력됐다</span></label>
   </div>
 </section>
 
 <section class="task" id="task-04" data-min="15">
-  <div class="task-head"><span class="task-num">04</span><h2>막히는 것 확인</h2></div>
-  <p class="task-goal">키를 파일에 쓰게 시키는 요청과 다른 호스트를 부르는 요청이 실제로 막히는지 직접 봅니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다. 시험에는 가짜 값만 씁니다.</p>
+  <div class="task-head"><span class="task-num">04</span><h2>막히는지 확인</h2></div>
+  <p class="task-goal">키를 파일에 쓰게 시키는 요청과 다른 호스트를 호출하는 요청이 실제로 막히는지 직접 확인합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 실제로 막히는 장면을 직접 확인해야 완성됩니다. 이 장면이 출품 양식의 "가드레일이 막은 장면"으로 쓰입니다. 시험에는 가짜 값만 씁니다.</p>
   <div class="viz" data-viz="check-matrix"></div>
   <div class="step-title"><span class="step-no">1</span>막혀야 하는 요청 두 가지</div>
   <div class="code-wrap">
@@ -1169,20 +1169,20 @@ jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></p
     <pre><code>seoul-realestate/config.py 파일을 만들고 다음 한 줄을 넣어 주세요.
 SEOUL_API_KEY = "TESTKEY0000TEST"</code></pre>
   </div>
-  <p class="body">프롬프트 단계에서 <code class="inline">KEY: 키를 파일, 명령, 커밋, 프롬프트에 적는 요청은 차단됩니다</code>가 나오고 요청이 모델에 가지 않아야 합니다. 프롬프트에 키 모양이 없게 바꿔 "환경 변수에서 읽지 말고 키 값을 파일에 직접 적어 달라"고 해도, 모델이 Write나 Bash로 키를 적으려는 순간 같은 메시지로 막힙니다.</p>
+  <p class="body">프롬프트 단계에서 <code class="inline">KEY: 키를 파일, 명령, 커밋, 프롬프트에 적는 요청은 차단됩니다</code>가 나오고, 요청이 모델로 전달되지 않아야 합니다. 프롬프트에 키 모양의 문자열이 없도록 "환경 변수에서 읽지 말고 키 값을 파일에 직접 적어 달라"고 바꿔 말해도, 모델이 Write나 Bash로 키를 적으려는 순간 같은 메시지로 막힙니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력 2/2, 다른 호스트 호출</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>curl로 https://example.com 의 첫 줄을 가져와 주세요</code></pre>
   </div>
-  <p class="body">도구 호출 단계에서 <code class="inline">NET: 허용되지 않은 호출 대상(example.com)</code>이 나와야 합니다. 어느 훅이 막았는지 메시지 앞머리(<code class="inline">KEY</code>, <code class="inline">NET</code>)로 구분해 적어 둡니다.</p>
+  <p class="body">도구 호출 단계에서 <code class="inline">NET: 허용되지 않은 호출 대상(example.com)</code>이 나와야 합니다. 메시지 앞머리(<code class="inline">KEY</code>, <code class="inline">NET</code>)를 보고 어느 훅이 막았는지 구분해 적어 둡니다.</p>
   <div class="step-title"><span class="step-no">2</span>통과해야 하는 요청</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>anomaly-checker 에이전트로 강남구 202609 이상 거래 후보를 찾아 주세요</code></pre>
   </div>
-  <p class="body">MCP 도구 호출과 agent 경로는 그대로 통과해야 합니다. 설정에 등록한 PreToolUse 훅은 subagent의 도구 호출에도 실행되므로(공식 훅 문서), 나중에 agent에 Bash나 WebFetch를 주더라도 같은 검사를 받습니다.</p>
-  <div class="step-title"><span class="step-no">3</span>고장 난 훅도 막는지 (fail-closed)</div>
-  <p class="body">세션을 <code class="inline">/exit</code>로 나온 뒤, key-guard.sh를 잠깐 치우고 <strong>도구 호출이 필요한</strong> 무해한 프롬프트를 보냅니다. 스크립트가 없는데도 도구 호출이 막히면 fail-closed입니다. 마지막 줄에서 반드시 되돌립니다.</p>
+  <p class="body">MCP 도구 호출과 agent를 거치는 요청은 그대로 통과해야 합니다. 설정에 등록한 PreToolUse 훅은 subagent의 도구 호출에도 실행되므로(공식 훅 문서 참고), 나중에 agent에 Bash나 WebFetch를 주더라도 같은 검사를 받습니다.</p>
+  <div class="step-title"><span class="step-no">3</span>훅이 고장 나도 막히는지 (fail-closed)</div>
+  <p class="body"><code class="inline">/exit</code>로 세션에서 나온 뒤, key-guard.sh를 잠시 다른 이름으로 치워 두고 <strong>도구 호출이 필요한</strong> 무해한 프롬프트를 보냅니다. 스크립트가 없는데도 도구 호출이 막히면 fail-closed가 동작하는 것입니다. 치워 둔 스크립트는 넷째 줄에서 반드시 원래 이름으로 되돌립니다.</p>
   <div class="viz" data-viz="copy-failclosed"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1192,18 +1192,18 @@ claude -p "seoul-realestate/README.md 첫 줄을 읽어줘"; echo "claude exit=$
 mv .claude/hooks/key-guard.sh.off .claude/hooks/key-guard.sh
 ls .claude/hooks</code></pre>
   </div>
-  <p class="body">key-guard.sh는 <code class="inline">UserPromptSubmit</code>에도 등록돼 있어서 프롬프트 단계에서 먼저 막힐 수 있습니다. 어느 단계든 README 첫 줄이 나오지 않고 훅 오류와 <code class="inline">onFailure</code> 차단을 알리는 메시지가 보이면 됩니다. 메시지 문구는 버전에 따라 다를 수 있으니 실제로 나온 문구를 기록해 둡니다. 첫 줄이 그대로 출력됐다면 <code class="inline">onFailure</code> 줄과 Claude Code 버전(<code class="inline">claude --version</code>)을 확인합니다.</p>
+  <p class="body">key-guard.sh는 <code class="inline">UserPromptSubmit</code>에도 등록돼 있어서 프롬프트 단계에서 먼저 막힐 수 있습니다. 어느 단계에서 막히든 README 첫 줄이 출력되지 않고 훅 오류와 <code class="inline">onFailure</code> 차단을 알리는 메시지가 보이면 됩니다. 메시지 문구는 버전에 따라 다를 수 있으니 실제로 나온 문구를 기록해 둡니다. 반대로 README 첫 줄이 그대로 출력됐다면 설정의 <code class="inline">onFailure</code> 줄과 Claude Code 버전(<code class="inline">claude --version</code>)을 확인합니다.</p>
   <table class="tbl"><thead><tr><th>증상</th><th>점검</th></tr></thead><tbody>
-    <tr><td><code class="inline">claude mcp list</code>에서 연결 실패</td><td>등록한 python 경로가 <code class="inline">.venv/bin/python</code>인지, <code class="inline">.venv/bin/python -c 'import mcp'</code>가 되는지. 등록을 고치려면 <code class="inline">claude mcp remove seoul-realestate</code> 후 다시 <code class="inline">add</code></td></tr>
-    <tr><td><code class="inline">pip install mcp</code>가 버전을 못 찾는다</td><td>가상환경의 Python이 3.10 미만입니다. <code class="inline">rm -rf .venv</code> 후 01의 두 번째 블록을 다시 실행해 uv 경로로 만듭니다</td></tr>
-    <tr><td>세션에 <code class="inline">seoul-realestate</code>가 없다</td><td>등록할 때의 폴더가 <code class="inline">~/claude-lab/capstone</code>이었는지 (local 범위는 등록한 폴더에서만 보입니다)</td></tr>
-    <tr><td>키 쓰기 요청이 통과한다</td><td><code class="inline">echo ... | .claude/hooks/key-guard.sh</code>로 직접 시험, <code class="inline">UserPromptSubmit</code>과 matcher에 <code class="inline">Write</code>가 있는지, 실행 권한(<code class="inline">chmod +x</code>)</td></tr>
-    <tr><td>정상 요청까지 막힌다</td><td>패턴이 너무 넓은지. 메시지 앞머리로 어느 훅인지 보고 <code class="inline">PAT</code>나 <code class="inline">ALLOW</code>를 시험 입력으로 좁힌다</td></tr>
-    <tr><td>훅이 아예 안 돈다</td><td>세션을 다시 열었는지, 폴더 신뢰(Yes, I trust this folder)를 눌렀는지. Ch2 Lab 2에서 managed 정책에 넣은 <code class="inline">allowManagedHooksOnly</code>가 남아 있으면 사용자, 프로젝트, 플러그인 훅이 모두 무시됩니다. <code class="inline">sudo jq '.allowManagedHooksOnly' /etc/claude-code/managed-settings.json</code>이 <code class="inline">true</code>면 Ch2 Lab 2 TASK 07(전체 원복)을 먼저 합니다</td></tr>
+    <tr><td><code class="inline">claude mcp list</code>에서 연결 실패</td><td>등록한 python 경로가 <code class="inline">.venv/bin/python</code>인지, <code class="inline">.venv/bin/python -c 'import mcp'</code>가 실행되는지 확인한다. 등록을 고치려면 <code class="inline">claude mcp remove seoul-realestate</code> 후 다시 <code class="inline">add</code>한다</td></tr>
+    <tr><td><code class="inline">pip install mcp</code>가 버전을 못 찾는다</td><td>가상환경의 Python이 3.10 미만이다. <code class="inline">rm -rf .venv</code> 후 01의 두 번째 블록을 다시 실행해 uv로 가상환경을 다시 만든다</td></tr>
+    <tr><td>세션에 <code class="inline">seoul-realestate</code>가 없다</td><td>등록할 때의 폴더가 <code class="inline">~/claude-lab/capstone</code>이었는지 확인한다 (local 범위는 등록한 폴더에서만 보인다)</td></tr>
+    <tr><td>키 쓰기 요청이 통과한다</td><td><code class="inline">echo ... | .claude/hooks/key-guard.sh</code>로 직접 시험해 보고, <code class="inline">UserPromptSubmit</code> 등록과 matcher에 <code class="inline">Write</code>가 있는지, 실행 권한(<code class="inline">chmod +x</code>)이 있는지 확인한다</td></tr>
+    <tr><td>정상 요청까지 막힌다</td><td>패턴이 너무 넓지 않은지 확인한다. 메시지 앞머리로 어느 훅인지 확인하고, 시험 입력을 넣어 보면서 <code class="inline">PAT</code>나 <code class="inline">ALLOW</code>를 조정한다</td></tr>
+    <tr><td>훅이 아예 실행되지 않는다</td><td>세션을 다시 열었는지, 폴더 신뢰(Yes, I trust this folder)를 선택했는지 확인한다. Ch2 Lab 2에서 managed 정책에 넣은 <code class="inline">allowManagedHooksOnly</code>가 남아 있으면 사용자, 프로젝트, 플러그인 훅이 모두 무시된다. <code class="inline">sudo jq '.allowManagedHooksOnly' /etc/claude-code/managed-settings.json</code>이 <code class="inline">true</code>면 Ch2 Lab 2 TASK 07(전체 원복)을 먼저 한다</td></tr>
   </tbody></table>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>키를 파일에 쓰게 시키는 요청이 막혔고 어느 메시지인지 안다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>키를 파일에 쓰게 시키는 요청이 막혔고, 어떤 메시지로 막혔는지 확인했다</span></label>
     <label class="cp-item"><input type="checkbox"><span>다른 호스트 호출이 막혔다</span></label>
     <label class="cp-item"><input type="checkbox"><span>MCP 도구와 agent를 거치는 정상 요청은 통과했다</span></label>
     <label class="cp-item"><input type="checkbox"><span>스크립트를 치웠을 때도 막혔고, 스크립트를 되돌렸다</span></label>
@@ -1213,8 +1213,8 @@ ls .claude/hooks</code></pre>
 <section class="task" id="task-05" data-min="5">
   <div class="task-head"><span class="task-num">05</span><h2>실호출로 전환</h2></div>
   <p class="task-goal">키가 나오면 MCP 등록만 바꿔 실데이터로 전환합니다. agent와 훅은 그대로입니다.</p>
-  <p class="body">키는 명령에 직접 쓰지 않고 <code class="inline">read -rs</code>로 받습니다(화면에 보이지 않고 셸 기록에 남지 않음). 붙여 넣고 Enter를 누릅니다. 등록이 끝나면 변수를 지우고, 키는 <code class="inline">~/.claude.json</code>에만 남습니다. Claude 세션 밖의 터미널에서 합니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 01부터 04까지는 합성 샘플이었으니, 같은 agent가 실제 서울시 실거래 데이터에서도 그대로 동작하는지 확인합니다.</p>
+  <p class="body">키는 명령에 직접 쓰지 않고 <code class="inline">read -rs</code>로 받습니다(화면에 보이지 않고 셸 기록에 남지 않음). 키를 붙여 넣고 Enter를 누릅니다. 등록이 끝나면 변수를 지우므로, 키는 <code class="inline">~/.claude.json</code>에만 남습니다. 이 작업은 Claude 세션 밖의 터미널에서 합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 01부터 04까지는 합성 샘플로 진행했으니, 같은 agent가 실제 서울시 실거래 데이터에서도 그대로 동작하는지 확인합니다.</p>
   <div class="viz" data-viz="copy-key-switch"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1229,10 +1229,10 @@ claude mcp list</code></pre>
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>price-summarizer 에이전트로 강남구 202611 시세를 정리해 주세요</code></pre>
   </div>
-  <p class="body">첫 줄이 실호출로 나오고 건물명이 "샘플"로 시작하지 않으면 전환된 것입니다. 실데이터는 최근 계약부터 오므로 지난달보다 오래된 달은 호출 상한(1000건씩 5번) 안에 다 못 받을 수 있습니다. <code class="inline">서울 열린데이터광장 오류 INFO-100</code>은 키가 유효하지 않다는 뜻이니 키를 다시 확인합니다.</p>
+  <p class="body">결과 첫 줄에 실호출이라고 나오고 건물명이 "샘플"로 시작하지 않으면 전환된 것입니다. 실데이터는 최근 계약부터 차례로 오기 때문에, 지난달보다 오래된 달은 호출 상한(1000건씩 5번) 안에 다 받지 못할 수 있습니다. <code class="inline">서울 열린데이터광장 오류 INFO-100</code>은 키가 유효하지 않다는 뜻이니 키를 다시 확인합니다.</p>
   <div class="callout tip">
     <span class="co-title">키가 아직 안 나왔으면</span>
-    열린데이터광장의 공개 시험 키 <code class="inline">sample</code>로 실호출 경로만 먼저 확인할 수 있습니다. 위 블록에서 <code class="inline">read -rs</code> 줄 대신 <code class="inline">SEOUL_API_KEY=sample</code>을 쓰면 됩니다. 이 키는 한 번에 최근 5건만 주므로 시세 정리에는 부족하고, 연결 확인용입니다.
+    열린데이터광장의 공개 시험 키 <code class="inline">sample</code>로 실호출 경로만 먼저 확인할 수 있습니다. 위 블록에서 <code class="inline">read -rs</code> 줄 대신 <code class="inline">SEOUL_API_KEY=sample</code>을 쓰면 됩니다. 이 키는 한 번에 최근 5건만 주므로 시세 정리에는 부족하며, 연결 확인용으로만 씁니다.
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
@@ -1244,7 +1244,7 @@ claude mcp list</code></pre>
 <section class="task" id="task-06" data-min="10">
   <div class="task-head"><span class="task-num">06</span><h2>R1 정리</h2></div>
   <p class="task-goal">CLAUDE.md를 짧게 정리하고, 작업 폴더에 키가 없는지 확인한 뒤 쇼케이스 1 공유 문구를 준비합니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> R2에서 이 폴더를 plugin으로 묶기 전에 키가 어떤 파일에도 남아 있지 않은지 확인해야, 키가 plugin에 따라 들어가지 않습니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> R2에서 이 폴더를 plugin으로 묶기 전에 키가 어떤 파일에도 남아 있지 않은지 확인해 두어야, 키가 plugin에 딸려 들어가지 않습니다.</p>
   <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게, 그리고 키 검사</div>
   <div class="viz" data-viz="copy-claudemd"></div>
   <div class="code-wrap">
@@ -1263,9 +1263,9 @@ KEYVAL=$(jq -r '[.. | objects | .SEOUL_API_KEY? | strings] | first // empty' ~/.
 [ -n "$KEYVAL" ] &amp;&amp; grep -rlF --exclude-dir=.venv -- "$KEYVAL" . ; unset KEYVAL; echo "키 검사 끝 (위에 파일 이름이 나오면 그 파일에 키가 있습니다)"
 find . -type f -not -path './seoul-realestate/.venv/*' | sort</code></pre>
   </div>
-  <p class="body">키 검사에서 파일 이름이 나오지 않고, 목록에 <code class="inline">.claude/agents/</code> 2개, <code class="inline">.claude/hooks/</code> 2개, <code class="inline">.claude/settings.json</code>, <code class="inline">CLAUDE.md</code>, <code class="inline">seoul-realestate/</code>의 세 파일이 보이면 R2의 재료가 갖춰진 것입니다.</p>
+  <p class="body">키 검사에서 파일 이름이 나오지 않고, 목록에 <code class="inline">.claude/agents/</code>의 파일 2개, <code class="inline">.claude/hooks/</code>의 파일 2개, <code class="inline">.claude/settings.json</code>, <code class="inline">CLAUDE.md</code>, <code class="inline">seoul-realestate/</code>의 세 파일이 보이면 R2에 쓸 재료가 모두 갖춰진 것입니다.</p>
   <div class="step-title"><span class="step-no">2</span>쇼케이스 1 공유 문구</div>
-  <p class="body">쇼케이스 1에서는 Slack 워크숍 채널에 아래 네 줄을 올리면 됩니다. 정식 출품은 R2 끝에 <a href="ClaudeCode_Capstone_Overview.html#submit">캡스톤 개요의 출품 양식</a>으로 하고, R1에서 받은 "가드레일이 막은 장면"이 그 양식의 4번이 됩니다.</p>
+  <p class="body">쇼케이스 1에서는 Slack 워크숍 채널에 아래 네 줄을 올리면 됩니다. 정식 출품은 R2 마지막에 <a href="ClaudeCode_Capstone_Overview.html#submit">캡스톤 개요의 출품 양식</a>으로 하고, R1에서 캡처해 둔 "가드레일이 막은 장면"이 그 양식의 4번에 들어갑니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Slack 공유 문구, 예시</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>[R1-B 서울 부동산 시세]
@@ -1282,7 +1282,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     <label class="cp-item"><input type="checkbox"><span>작업 폴더에 MCP 서버, agent, 훅, 설정, <code>CLAUDE.md</code>가 갖춰져 있고 키는 없다</span></label>
     <label class="cp-item"><input type="checkbox"><span>공유 문구와 막힌 장면 캡처를 준비했다</span></label>
   </div>
-  <p class="body">R1이 끝났으면 <a href="ClaudeCode_Capstone_Overview.html#checklist">캡스톤 개요의 완주 체크리스트</a> 1번과 4번이 채워졌는지 봅니다. 나머지는 R2에서 채웁니다.</p>
+  <p class="body">R1을 마쳤으면 <a href="ClaudeCode_Capstone_Overview.html#checklist">캡스톤 개요의 완주 체크리스트</a> 1번과 4번이 채워졌는지 확인합니다. 나머지는 R2에서 채웁니다.</p>
 </section>
 
 </main>
@@ -1459,7 +1459,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "README.md",
-    "cap": "`README.md`에는 API 명세 요약과 출처가 있습니다. 받기에 실패한 파일이 있으면 `받기 실패: 파일이름`이 출력되니 그 줄만 다시 실행합니다."
+    "cap": "`README.md`에는 API 명세 요약과 출처가 있습니다. 받기에 실패한 파일이 있으면 `받기 실패: 파일이름`이 출력되니 `for` 줄만 다시 실행합니다."
    },
    {
     "t": "확인",
@@ -1544,7 +1544,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "srv"
     ],
     "edge": 1,
-    "cap": "`SEOUL_MOCK=1`로 `server.search_trades(\"강남구\", \"202609\", 2)`를 직접 불러 `sample.json`의 거래 2건이 나오는지 봅니다. 아직 Claude Code는 끼지 않았습니다. Step 3에서 이 서버를 Claude Code에 등록합니다."
+    "cap": "`SEOUL_MOCK=1`로 `server.search_trades(\"강남구\", \"202609\", 2)`를 직접 호출해 `sample.json`의 거래 2건이 나오는지 확인합니다. 아직 Claude Code를 거치지 않은 시험입니다. Step 3에서 이 서버를 Claude Code에 등록합니다."
    }
   ]
  },
@@ -1614,7 +1614,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      1
     ],
     "chip": "search_trades",
-    "cap": "agent가 `search_trades`를 부르면 Claude Code가 등록된 MCP 서버(`server.py`)에 요청을 넘깁니다. 키가 없거나 `SEOUL_MOCK=1`이면 서버는 `sample.json`에서 찾습니다(01 단계)."
+    "cap": "agent가 `search_trades`를 호출하면 Claude Code가 등록된 MCP 서버(`server.py`)에 요청을 넘깁니다. 키가 없거나 `SEOUL_MOCK=1`이면 서버는 `sample.json`에서 거래를 찾습니다(01 단계)."
    },
    {
     "t": "결과가 돌아옴",
@@ -1625,7 +1625,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 2,
     "chip": "거래 목록",
-    "cap": "찾은 거래가 서버를 거쳐 Claude에게 돌아오고, agent가 시세 표나 이상 거래 후보로 정리합니다. 샘플과 실제 API의 필드 이름이 같아서 실호출로 바꿔도 agent는 그대로입니다."
+    "cap": "찾은 거래가 서버를 거쳐 Claude에게 돌아오고, agent가 시세 표나 이상 거래 후보로 정리합니다. 샘플과 실제 API의 필드 이름이 같아서 실호출로 바꿔도 agent는 그대로 쓸 수 있습니다."
    },
    {
     "t": "키는 어디에?",
@@ -1652,7 +1652,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
       "sb": "http://openapi.seoul.go.kr:8088"
      }
     },
-    "cap": "키가 있으면 서버가 `BASE_URL` 한 곳(`openapi.seoul.go.kr`)만 부릅니다. 이 API는 평문 HTTP이고 키가 URL 경로에 들어가므로 믿을 수 없는 네트워크에서는 실호출하지 않습니다. 서버는 키를 반환값과 오류 메시지에 넣지 않습니다."
+    "cap": "키가 있으면 서버가 `BASE_URL` 한 곳(`openapi.seoul.go.kr`)만 호출합니다. 이 API는 평문 HTTP이고 키가 URL 경로에 들어가므로 믿을 수 없는 네트워크에서는 실호출하지 않습니다. 서버는 키를 반환값과 오류 메시지에 넣지 않습니다."
    },
    {
     "t": "키를 새게 하려는 요청",
@@ -1686,7 +1686,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
       "sb": "NET: 허용되지 않은 호출 대상"
      }
     },
-    "cap": "Bash나 WebFetch로 `openapi.seoul.go.kr`이 아닌 곳을 부르면 `net-guard.sh`가 막습니다. MCP 서버가 직접 보내는 요청은 훅이 보지 않아서 `server.py`의 `BASE_URL`로 따로 묶어 둡니다."
+    "cap": "Bash나 WebFetch로 `openapi.seoul.go.kr`이 아닌 곳을 호출하면 `net-guard.sh`가 막습니다. MCP 서버가 직접 보내는 요청은 훅이 검사하지 않으므로 `server.py`의 `BASE_URL`로 따로 묶어 둡니다."
    }
   ]
  },
@@ -1720,7 +1720,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
    {
     "id": "check",
     "ic": "result",
-    "lb": "04 막히는 것 확인",
+    "lb": "04 막히는지 확인",
     "sb": "막힘 2 · 통과 1 · fail-closed"
    }
   ],
@@ -1784,7 +1784,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "server.py",
-    "cap": "골격 세 파일(`server.py`, `sample.json`, `README.md`)을 받고 `.venv`에 `mcp`를 설치한 뒤 `claude mcp add`로 이 폴더에 등록합니다. 키가 없으니 서버는 `sample.json`에서 찾습니다."
+    "cap": "골격 세 파일(`server.py`, `sample.json`, `README.md`)을 받고 `.venv`에 `mcp`를 설치한 뒤 `claude mcp add`로 이 폴더에 등록합니다. 키가 없으니 서버는 `sample.json`에서 거래를 찾습니다."
    },
    {
     "t": "02 자기 agent 2개",
@@ -1805,10 +1805,10 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 2,
     "chip": "settings.json",
-    "cap": "`key-guard.sh`는 키가 파일, 명령, 커밋, 프롬프트에 들어가는 것을, `net-guard.sh`는 `openapi.seoul.go.kr` 밖 호출을 `exit 2`로 막습니다. `.claude/settings.json`에 `onFailure: block`으로 등록하고 deny 규칙을 더합니다."
+    "cap": "`key-guard.sh`는 키가 파일, 명령, 커밋, 프롬프트에 들어가는 것을, `net-guard.sh`는 `openapi.seoul.go.kr` 이외의 호출을 `exit 2`로 막습니다. 두 훅을 `.claude/settings.json`에 `onFailure: block`과 함께 등록하고 deny 규칙을 추가합니다."
    },
    {
-    "t": "04 막히는 것 확인",
+    "t": "04 막히는지 확인",
     "on": [
      "check",
      "guard"
@@ -1904,7 +1904,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "마포구 202609",
-    "cap": "TASK 02 Step 3의 입력입니다. 메인 Claude가 요청에 적힌 agent 이름을 보고 `price-summarizer`부터 부릅니다."
+    "cap": "TASK 02 Step 3의 입력입니다. 메인 Claude가 요청에 적힌 agent 이름을 보고 `price-summarizer`부터 호출합니다."
    },
    {
     "t": "price-summarizer가 조회",
@@ -1926,7 +1926,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
       "sb": "시세 정리"
      }
     },
-    "cap": "`price-summarizer`는 `search_trades`를 limit 100으로 부릅니다. 키가 없으니 MCP 서버가 `sample.json`에서 마포구 202609 거래를 찾아 돌려줍니다."
+    "cap": "`price-summarizer`는 `search_trades`를 limit 100으로 호출합니다. 키가 없으니 MCP 서버가 `sample.json`에서 마포구 202609 거래를 찾아 돌려줍니다."
    },
    {
     "t": "시세 표",
@@ -1987,7 +1987,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "bad": [
      "s-no"
     ],
-    "cap": "두 agent의 `tools`에는 MCP 도구와 `Read`(검토자는 `Grep`도)만 있어 파일 쓰기, Bash, 웹 도구는 쓸 수 없습니다. 저장이 필요하면 메인이 합니다."
+    "cap": "두 agent의 `tools`에는 MCP 도구와 `Read`(검토자는 `Grep`도)만 있어 파일 쓰기, Bash, 웹 도구는 쓸 수 없습니다. 저장이 필요하면 메인 Claude가 합니다."
    }
   ]
  },
@@ -2044,7 +2044,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "on": [
      "term"
     ],
-    "cap": "`cd ~/claude-lab/capstone`. 범위를 주지 않으면 local 범위라 등록한 폴더에서만 보이므로 작업 폴더에서 실행합니다. Claude 세션 밖의 터미널입니다."
+    "cap": "첫 줄 `cd ~/claude-lab/capstone`으로 작업 폴더로 이동합니다. 범위를 지정하지 않으면 local 범위로 등록되어 등록한 폴더에서만 보이므로, 반드시 작업 폴더에서 실행합니다. Claude 세션 밖의 터미널에서 합니다."
    },
    {
     "t": "등록",
@@ -2071,12 +2071,12 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      1,
      2
     ],
-    "cap": "`claude mcp list`에서 `seoul-realestate` 줄에 `✔ Connected`가 나오면 됩니다. 연결에 실패하면 04 점검표의 첫 줄을 봅니다."
+    "cap": "`claude mcp list`에서 `seoul-realestate` 줄에 `✔ Connected`가 나오면 됩니다. 연결에 실패하면 04의 점검표 첫 줄을 참고합니다."
    }
   ]
  },
  "copy-mcp-first-call": {
-  "title": "01 Step 3 이어서 붙여 넣으면: 세션에서 search_trades가 처음 불린다",
+  "title": "01 Step 3 이어서 붙여 넣으면: 세션에서 search_trades가 처음 호출된다",
   "nodes": [
    {
     "id": "you",
@@ -2130,17 +2130,17 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "cl"
     ],
     "edge": 0,
-    "cap": "붙여 넣은 문장은 셸 명령이 아니라 Claude에게 보내는 요청입니다. Claude는 `seoul-realestate`의 `search_trades`를 부르기로 합니다."
+    "cap": "붙여 넣은 문장은 셸 명령이 아니라 Claude에게 보내는 요청입니다. Claude는 `seoul-realestate`의 `search_trades`를 호출하기로 합니다."
    },
    {
-    "t": "허락하고 호출",
+    "t": "허용하고 호출",
     "on": [
      "cl",
      "srv"
     ],
     "edge": 1,
     "chip": "search_trades",
-    "cap": "처음 부를 때 도구 사용 허락을 묻습니다. 허락하면 Claude Code가 MCP 서버에 자치구와 연월을 넘깁니다."
+    "cap": "도구를 처음 호출할 때는 사용을 허용할지 묻습니다. 허용하면 Claude Code가 MCP 서버에 자치구와 연월을 넘깁니다."
    },
    {
     "t": "mock에서 찾기",
@@ -2149,7 +2149,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "src"
     ],
     "edge": 2,
-    "cap": "`SEOUL_MOCK=1`로 등록했으니 서버는 인터넷에 나가지 않고 `sample.json`에서 찾습니다."
+    "cap": "`SEOUL_MOCK=1`로 등록했으니 서버는 인터넷으로 나가지 않고 `sample.json`에서 거래를 찾습니다."
    },
    {
     "t": "결과",
@@ -2210,28 +2210,28 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "price-summarizer.md",
-    "cap": "`cat > .claude/agents/price-summarizer.md << 'EOF'`부터 `EOF`까지가 파일 내용입니다. 붙여 넣고 Enter를 누르면 화면에는 아무것도 나오지 않고 파일만 생깁니다."
+    "cap": "`cat > .claude/agents/price-summarizer.md << 'EOF'` 다음 줄부터 마지막 `EOF` 앞 줄까지가 파일 내용입니다. 붙여 넣고 Enter를 누르면 화면에는 아무것도 출력되지 않고 파일만 만들어집니다."
    },
    {
     "t": "description",
     "on": [
      "front"
     ],
-    "cap": "`description`은 메인 Claude가 이 agent를 고를 때 읽는 문장입니다. 사용 시점을 \"OO구 YYYYMM 시세 정리\"처럼 지역과 기간이 정해진 경우로 적었습니다."
+    "cap": "`description`은 메인 Claude가 이 agent를 고를지 판단할 때 읽는 설명입니다. 사용 시점은 \"OO구 YYYYMM 시세 정리\"처럼 지역과 기간이 정해진 경우로 적었습니다."
    },
    {
     "t": "tools와 model",
     "on": [
      "front"
     ],
-    "cap": "`tools: mcp__seoul-realestate__search_trades, Read`. MCP 도구는 `mcp__<서버 이름>__<도구 이름>` 모양으로 적습니다. 이 두 가지 밖의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다. `model: sonnet`."
+    "cap": "`tools: mcp__seoul-realestate__search_trades, Read`로 도구를 두 가지로 좁혔습니다. MCP 도구는 `mcp__<서버 이름>__<도구 이름>` 형식으로 적습니다. 이 두 가지 외의 도구(쓰기, Bash, 웹)는 쓸 수 없습니다. 모델은 `model: sonnet`으로 지정했습니다."
    },
    {
     "t": "본문 = 이 agent의 시스템 프롬프트",
     "on": [
      "body"
     ],
-    "cap": "`search_trades`만 쓰고, 취소된 거래는 빼고, 건물용도별 ㎡당 금액의 중앙값, 최저, 최고와 거래가 많은 법정동 세 곳을 냅니다. 본번과 부번, 건물명은 쓰지 않습니다."
+    "cap": "본문에는 `search_trades`만 쓰고, 취소된 거래는 빼고, 건물용도별 ㎡당 금액의 중앙값, 최저, 최고와 거래가 많은 법정동 세 곳을 내라고 적었습니다. 본번과 부번, 건물명은 쓰지 않게 했습니다."
    },
    {
     "t": "등록",
@@ -2239,7 +2239,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "ready"
     ],
     "edge": 3,
-    "cap": "Step 3에서 세션을 다시 열면(`/exit` 후 `claude`) 입력창의 `@` typeahead에 `price-summarizer`가 보입니다."
+    "cap": "Step 3에서 세션을 다시 열면(`/exit` 후 `claude`) 입력창에 `@`를 입력했을 때 자동 완성 목록에 `price-summarizer`가 보입니다."
    }
   ]
  },
@@ -2293,7 +2293,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "anomaly-checker.md",
-    "cap": "`cat > .claude/agents/anomaly-checker.md << 'EOF'`부터 `EOF`까지가 파일 내용입니다. 화면에는 아무것도 나오지 않고 파일만 생깁니다."
+    "cap": "`cat > .claude/agents/anomaly-checker.md << 'EOF'` 다음 줄부터 마지막 `EOF` 앞 줄까지가 파일 내용입니다. 화면에는 아무것도 출력되지 않고 파일만 만들어집니다."
    },
    {
     "t": "읽기 전용 tools",
@@ -2303,7 +2303,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "bad": [
      "tl"
     ],
-    "cap": "`tools: mcp__seoul-realestate__search_trades, Read, Grep`. 쓰기, Bash, 웹 도구가 없어 파일을 만들거나 고칠 수 없습니다. 검토만 하는 역할입니다."
+    "cap": "`tools: mcp__seoul-realestate__search_trades, Read, Grep`으로 지정했습니다. 쓰기, Bash, 웹 도구가 없어 파일을 만들거나 고칠 수 없습니다. 검토만 하는 역할입니다."
    },
    {
     "t": "비교 기준",
@@ -2311,7 +2311,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "rules"
     ],
     "edge": 1,
-    "cap": "㎡당 금액(`THING_AMT` / `ARCH_AREA`)을 같은 자치구, 같은 달, 같은 건물용도끼리 비교합니다. 중앙값보다 50% 이상 낮음, 중앙값의 2배 이상, 취소일 있음, 직거래이면서 1번 해당이 후보 기준입니다."
+    "cap": "㎡당 금액(`THING_AMT` / `ARCH_AREA`)을 같은 자치구, 같은 달, 같은 건물용도끼리 비교합니다. 후보 기준은 네 가지입니다. 1) 중앙값보다 50% 이상 낮음 2) 중앙값의 2배 이상 3) 취소일 있음 4) 직거래이면서 1번에도 해당."
    },
    {
     "t": "출력",
@@ -2324,7 +2324,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
   ]
  },
  "copy-key-guard": {
-  "title": "03 Step 1 붙여 넣으면: key-guard.sh가 키가 새는 입력을 막는다",
+  "title": "03 Step 1 붙여 넣으면: key-guard.sh가 키를 새게 하는 입력을 막는다",
   "nodes": [
    {
     "id": "in",
@@ -2387,7 +2387,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "on": [
      "kg"
     ],
-    "cap": "`cat > .claude/hooks/key-guard.sh << 'EOF'`로 스크립트를 쓰고 `chmod +x`로 실행 권한을 줍니다. 등록은 Step 4에서 하므로 아직 Claude Code가 부르지 않습니다."
+    "cap": "`cat > .claude/hooks/key-guard.sh << 'EOF'`로 스크립트를 만들고 `chmod +x`로 실행 권한을 줍니다. 등록은 Step 4에서 하므로 아직 Claude Code가 이 스크립트를 실행하지는 않습니다."
    },
    {
     "t": "입력 읽기",
@@ -2396,21 +2396,21 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "kg"
     ],
     "edge": 0,
-    "cap": "훅은 프롬프트나 도구 입력을 JSON으로 받아 `jq`로 문자열만 모읍니다. `jq`가 없거나 입력을 해석하지 못하면 통과가 아니라 `exit 2`(차단)입니다."
+    "cap": "훅은 프롬프트나 도구 입력을 JSON으로 받아 `jq`로 문자열만 모읍니다. `jq`가 없거나 입력을 해석하지 못하면 통과시키지 않고 `exit 2`(차단)로 끝냅니다."
    },
    {
     "t": "커밋도 본다",
     "on": [
      "c5"
     ],
-    "cap": "명령에 `git … commit`이 있고 git 저장소 안이면, 커밋에 들어갈 staged diff까지 검사 대상에 더합니다."
+    "cap": "명령에 `git … commit`이 있고 git 저장소 안이면, 커밋에 들어갈 staged diff까지 검사 대상에 추가합니다."
    },
    {
     "t": "등록된 키 값",
     "bad": [
      "c1"
     ],
-    "cap": "`~/.claude.json`(또는 환경 변수)에서 등록된 키 값을 읽어 와, 8자 이상이고 입력에 그대로 들어 있으면 `KEY: 서울 API 키 값이 들어 있어 차단합니다`로 막습니다. 05에서 키를 넣기 전에는 이 검사를 건너뜁니다."
+    "cap": "`~/.claude.json`(또는 환경 변수)에서 등록된 키 값을 읽어 옵니다. 그 값이 8자 이상이고 입력에 그대로 들어 있으면 `KEY: 서울 API 키 값이 들어 있어 차단합니다`로 막습니다. 05에서 키를 넣기 전에는 이 검사를 건너뜁니다."
    },
    {
     "t": "키가 새는 모양",
@@ -2419,7 +2419,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "c3",
      "c4"
     ],
-    "cap": "키를 값으로 적는 모양, URL 경로에 든 키, `.claude.json`이라는 글자, `/proc/…/environ`과 `ps e`가 보이면 `KEY: 키를 파일, 명령, 커밋, 프롬프트에 적는 요청은 차단됩니다`로 막습니다."
+    "cap": "키를 값으로 적는 모양, URL 경로에 든 키, `.claude.json`이라는 문자열, `/proc/…/environ`과 `ps e`가 보이면 `KEY: 키를 파일, 명령, 커밋, 프롬프트에 적는 요청은 차단됩니다`로 막습니다."
    },
    {
     "t": "나머지는 통과",
@@ -2430,12 +2430,12 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "res"
     ],
     "edge": 1,
-    "cap": "어느 것에도 걸리지 않으면 `exit 0`입니다. grep이 오류를 내면 그때도 `exit 2`입니다. 시험 키 `sample`은 8자보다 짧아 걸리지 않습니다."
+    "cap": "어느 것에도 걸리지 않으면 `exit 0`으로 통과시킵니다. grep이 오류를 내는 경우에도 `exit 2`로 막습니다. 시험 키 `sample`은 8자보다 짧아 걸리지 않습니다."
    }
   ]
  },
  "copy-net-guard": {
-  "title": "03 Step 2 붙여 넣으면: net-guard.sh가 서울 API 밖 호출을 막는다",
+  "title": "03 Step 2 붙여 넣으면: net-guard.sh가 서울 API 이외의 호출을 막는다",
   "nodes": [
    {
     "id": "in",
@@ -2486,7 +2486,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "on": [
      "ng"
     ],
-    "cap": "`net-guard.sh`를 쓰고 실행 권한을 줍니다. Step 4에서 Bash와 WebFetch에만 등록합니다."
+    "cap": "`net-guard.sh`를 만들고 실행 권한을 줍니다. Step 4에서 Bash와 WebFetch 호출에만 등록합니다."
    },
    {
     "t": "호스트 뽑기",
@@ -2511,14 +2511,14 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "bad": [
      "b"
     ],
-    "cap": "하나라도 다른 호스트가 있으면 `NET: 허용되지 않은 호출 대상(…). openapi.seoul.go.kr 만 허용됩니다`로 `exit 2`입니다."
+    "cap": "하나라도 다른 호스트가 있으면 `NET: 허용되지 않은 호출 대상(…). openapi.seoul.go.kr 만 허용됩니다` 메시지를 내고 `exit 2`로 막습니다."
    },
    {
     "t": "URL 없는 명령",
     "ok": [
      "c"
     ],
-    "cap": "주소가 없는 명령은 검사할 호스트가 없어 통과합니다. 스킴 없이 쓴 호스트(`curl example.com`)는 보지 못하므로, agent의 `tools`에서 Bash와 웹 도구를 빼 둔 것이 또 한 겹입니다."
+    "cap": "주소가 없는 명령은 검사할 호스트가 없어 통과합니다. 스킴 없이 쓴 호스트(`curl example.com`)는 걸러 내지 못하므로, agent의 `tools`에서 Bash와 웹 도구를 빼 둔 것이 또 한 겹의 방어가 됩니다."
    }
   ]
  },
@@ -2594,7 +2594,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "hooks"
     ],
     "edge": 0,
-    "cap": "각 줄은 가짜 훅 입력(JSON)을 `echo`로 만들어 스크립트에 넣고, `echo \"exit=$?\"`로 끝 코드를 보여 줍니다. 스크립트만 시험하는 단계입니다."
+    "cap": "각 줄은 가짜 훅 입력(JSON)을 `echo`로 만들어 스크립트에 넣고, `echo \"exit=$?\"`로 종료 코드를 보여 줍니다. Claude Code를 거치지 않고 스크립트만 시험하는 단계입니다."
    },
    {
     "t": "막혀야 하는 4줄",
@@ -2608,7 +2608,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "t4"
     ],
     "edge": 1,
-    "cap": "키를 값으로 적기, `~/.claude.json` 열기, 등록된 키 값과 같은 문자열, 다른 호스트 호출은 `exit=2`가 나와야 합니다. 세 번째 줄은 `SEOUL_API_KEY=FAKEVALUE99`를 그 줄에만 주어 \"등록된 키\" 역할을 시킵니다."
+    "cap": "키를 값으로 적기, `~/.claude.json` 열기, 등록된 키 값과 같은 문자열, 다른 호스트 호출은 `exit=2`가 나와야 합니다. 세 번째 시험 줄은 `SEOUL_API_KEY=FAKEVALUE99`를 그 줄에만 지정해, 이 값이 \"등록된 키\" 역할을 하게 합니다."
    },
    {
     "t": "통과해야 하는 2줄",
@@ -2619,7 +2619,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "t5",
      "t6"
     ],
-    "cap": "환경 변수에서 키를 읽는 코드와 서울 API에 시험 키로 호출하는 명령은 `exit=0`이어야 합니다. 정상 업무를 막지 않는지 보는 줄입니다."
+    "cap": "환경 변수에서 키를 읽는 코드와 서울 API에 시험 키로 호출하는 명령은 `exit=0`이어야 합니다. 정상 업무를 막지 않는지 확인하는 줄입니다."
    }
   ]
  },
@@ -2690,14 +2690,14 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "settings.json",
-    "cap": "작업 폴더의 `.claude/settings.json`을 새로 씁니다. 다른 트랙에서 만든 파일이 있으면 덮어쓰니 한 트랙만 진행합니다."
+    "cap": "작업 폴더의 `.claude/settings.json`을 새로 만듭니다. 다른 트랙에서 만든 파일이 있으면 덮어쓰게 되므로 한 트랙만 진행합니다."
    },
    {
     "t": "프롬프트 검사",
     "on": [
      "ups"
     ],
-    "cap": "`UserPromptSubmit` 훅이 입력한 문장을 모델에 보내기 전에 `key-guard.sh`로 검사합니다. 04의 \"키를 파일에 쓰게 시키기\"가 여기서 막힙니다."
+    "cap": "`UserPromptSubmit` 훅은 내가 입력한 문장을 모델에 보내기 전에 `key-guard.sh`로 검사합니다. 04의 \"키를 파일에 쓰게 시키기\"가 바로 여기서 막힙니다."
    },
    {
     "t": "도구 호출 검사",
@@ -2705,7 +2705,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "pre1",
      "pre2"
     ],
-    "cap": "`PreToolUse` 훅 두 개가 도구 실행 직전에 입력을 봅니다. `key-guard.sh`는 Read, Bash, Write, Edit, WebFetch를, `net-guard.sh`는 Bash와 WebFetch를 맡습니다."
+    "cap": "`PreToolUse` 훅 두 개가 도구 실행 직전에 도구 입력을 검사합니다. `key-guard.sh`는 Read, Bash, Write, Edit, WebFetch를, `net-guard.sh`는 Bash와 WebFetch를 맡습니다."
    },
    {
     "t": "deny와 fail-closed",
@@ -2713,7 +2713,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "deny",
      "fail"
     ],
-    "cap": "`deny` 규칙은 키가 든 `~/.claude.json` 읽기와 웹 검색을 훅과 별개로 막습니다. 모든 훅의 `onFailure: block`은 스크립트가 없거나 시작하지 못해도 차단으로 끝냅니다(04 Step 3에서 확인)."
+    "cap": "`deny` 규칙은 키가 든 `~/.claude.json` 읽기와 웹 검색을 훅과 별개로 막습니다. 모든 훅에 넣은 `onFailure: block`은 스크립트가 없거나 시작하지 못하는 경우에도 차단으로 처리합니다(04 Step 3에서 확인)."
    },
    {
     "t": "문법 확인",
@@ -2721,12 +2721,12 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "ok"
     ],
     "edge": 1,
-    "cap": "`jq .`가 JSON을 읽을 수 있으면 `settings OK`가 나옵니다. 이 줄이 안 나오면 파일을 다시 붙여 넣습니다."
+    "cap": "`jq .`가 JSON을 문제없이 읽으면 `settings OK`가 출력됩니다. 이 줄이 나오지 않으면 블록을 다시 붙여 넣습니다."
    }
   ]
  },
  "check-matrix": {
-  "title": "04 붙여 넣는 요청 셋: 어디서 막히고 무엇이 통과하나",
+  "title": "04에서 붙여 넣는 요청 세 가지: 어디서 막히고 무엇이 통과하나",
   "nodes": [
    {
     "id": "q",
@@ -2769,7 +2769,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "SEOUL_API_KEY = …",
-    "cap": "`config.py`에 `SEOUL_API_KEY = \"TESTKEY0000TEST\"`를 넣어 달라는 요청은 프롬프트 단계에서 `KEY: 키를 파일, 명령, 커밋, 프롬프트에 적는 요청은 차단됩니다`로 막히고 모델에 가지 않습니다."
+    "cap": "`config.py`에 `SEOUL_API_KEY = \"TESTKEY0000TEST\"`를 넣어 달라는 요청은 프롬프트 단계에서 `KEY: 키를 파일, 명령, 커밋, 프롬프트에 적는 요청은 차단됩니다` 메시지와 함께 막히고, 모델로 전달되지 않습니다."
    },
    {
     "t": "돌려 말해도",
@@ -2785,7 +2785,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      1
     ],
     "chip": "Write config.py",
-    "cap": "프롬프트에 키 모양이 없게 바꿔 말해도, 모델이 Write나 Bash로 키를 적으려는 순간 `PreToolUse`의 `key-guard.sh`가 같은 메시지로 막습니다."
+    "cap": "프롬프트에 키 모양의 문자열이 없도록 바꿔 말해도, 모델이 Write나 Bash로 키를 적으려는 순간 `PreToolUse`의 `key-guard.sh`가 같은 메시지로 막습니다."
    },
    {
     "t": "다른 호스트 호출",
@@ -2801,7 +2801,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      1
     ],
     "chip": "curl https://example.com",
-    "cap": "`curl로 https://example.com …`은 프롬프트는 지나가지만 Bash 호출 직전에 `NET: 허용되지 않은 호출 대상(example.com)`으로 막힙니다. 메시지 앞머리(`KEY`, `NET`)로 어느 훅인지 적어 둡니다."
+    "cap": "`curl로 https://example.com …`은 프롬프트 검사는 통과하지만 Bash 호출 직전에 `NET: 허용되지 않은 호출 대상(example.com)`으로 막힙니다. 메시지 앞머리(`KEY`, `NET`)를 보고 어느 훅이 막았는지 적어 둡니다."
    },
    {
     "t": "정상 요청은 통과",
@@ -2861,7 +2861,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "on": [
      "off"
     ],
-    "cap": "둘째 줄이 `key-guard.sh`의 이름을 `.off`로 바꿉니다. 훅이 실행할 파일이 없는 고장 상황을 일부러 만듭니다. 세션 밖 터미널에서 합니다."
+    "cap": "둘째 줄이 `key-guard.sh`의 이름을 `key-guard.sh.off`로 바꿉니다. 훅이 실행할 파일이 없는 고장 상황을 일부러 만드는 것입니다. 세션 밖 터미널에서 합니다."
    },
    {
     "t": "무해한 요청",
@@ -2876,14 +2876,14 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     "bad": [
      "hook"
     ],
-    "cap": "`key-guard.sh`는 `UserPromptSubmit`에도 등록돼 있어 프롬프트 단계에서 먼저 막힐 수 있습니다. 어느 단계든 README 첫 줄이 나오지 않고 훅 오류와 차단 메시지가 보이면 fail-closed입니다. 문구는 버전마다 다를 수 있어 실제 문구를 적어 둡니다."
+    "cap": "`key-guard.sh`는 `UserPromptSubmit`에도 등록돼 있어 프롬프트 단계에서 먼저 막힐 수 있습니다. 어느 단계에서 막히든 README 첫 줄이 출력되지 않고 훅 오류와 차단 메시지가 보이면 fail-closed가 동작한 것입니다. 문구는 버전마다 다를 수 있으니 실제로 나온 문구를 적어 둡니다."
    },
    {
     "t": "되돌리기",
     "ok": [
      "back"
     ],
-    "cap": "넷째 줄이 이름을 되돌리고 `ls .claude/hooks`에 `key-guard.sh`가 다시 보여야 합니다. 되돌리지 않으면 이 폴더의 요청이 계속 막힙니다."
+    "cap": "넷째 줄이 이름을 되돌립니다. 다섯째 줄 `ls .claude/hooks`의 출력에 `key-guard.sh`가 다시 보여야 합니다. 되돌리지 않으면 이 폴더의 요청이 계속 막힙니다."
    }
   ]
  },
@@ -2975,7 +2975,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      2
     ],
     "chip": "키가 든 URL",
-    "cap": "세션에서 `price-summarizer`에게 강남구 202611 시세를 맡기면, 서버가 키를 환경 변수로 받아 `openapi.seoul.go.kr`만 부릅니다. 평문 HTTP라 믿을 수 없는 네트워크에서는 실호출하지 않습니다."
+    "cap": "세션에서 `price-summarizer`에게 강남구 202611 시세를 맡기면, 서버가 키를 환경 변수로 받아 `openapi.seoul.go.kr`만 호출합니다. 평문 HTTP라 믿을 수 없는 네트워크에서는 실호출하지 않습니다."
    },
    {
     "t": "확인",
@@ -2983,7 +2983,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "res"
     ],
     "edge": 3,
-    "cap": "결과 첫 줄이 실호출이고 건물명이 \"샘플\"로 시작하지 않으면 전환된 것입니다. `INFO-100` 오류는 키가 유효하지 않다는 뜻입니다."
+    "cap": "결과 첫 줄에 실호출이라고 나오고 건물명이 \"샘플\"로 시작하지 않으면 전환된 것입니다. `INFO-100` 오류는 키가 유효하지 않다는 뜻입니다."
    }
   ]
  },
@@ -3055,7 +3055,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
     ],
     "edge": 0,
     "chip": "CLAUDE.md",
-    "cap": "CLAUDE.md는 이 폴더에서 Claude를 열 때마다 읽히는 규칙입니다. 목표, 데이터, 키, 결과물 규칙, 역할, 가드레일을 짧게 적습니다."
+    "cap": "CLAUDE.md는 이 폴더에서 Claude를 열 때마다 읽히는 규칙 파일입니다. 목표, 데이터, 키, 결과물 규칙, 역할, 가드레일을 짧게 적습니다."
    },
    {
     "t": "키 검사",
@@ -3064,7 +3064,7 @@ agents: price-summarizer(시세 정리), anomaly-checker(이상 거래 검토, �
      "scan"
     ],
     "edge": 1,
-    "cap": "`~/.claude.json`에서 등록된 키 값을 꺼내 작업 폴더(`.venv` 제외)에서 같은 문자열을 찾고, 꺼낸 값은 바로 지웁니다. 파일 이름이 하나도 나오지 않아야 합니다. 키를 넣지 않았으면 찾을 것이 없습니다."
+    "cap": "`~/.claude.json`에서 등록된 키 값을 꺼내 작업 폴더(`.venv` 제외)에서 같은 문자열을 찾고, 꺼낸 값은 바로 지웁니다. 파일 이름이 하나도 나오지 않아야 합니다. 키를 아직 등록하지 않았다면 찾을 값이 없어 검사를 건너뜁니다."
    },
    {
     "t": "재료 확인",

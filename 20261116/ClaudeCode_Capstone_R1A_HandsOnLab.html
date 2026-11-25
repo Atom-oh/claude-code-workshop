@@ -797,9 +797,9 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   <span class="eyebrow">HANDS-ON LAB / CAPSTONE R1-A</span>
   <p class="round" data-round="R1">R1 · Day 1 (SETUP을 마친 뒤 이 페이지의 단계를 시작)</p>
   <h1>R1-A 고객 맞춤 서비스: 마이데이터로 에이전트와 가드레일 만들기</h1>
-  <div class="subtitle">Ch3 체크포인트에서 출발해 내 Subagent와, 실제로 막는 가드레일을 만든다</div>
+  <div class="subtitle">Ch3 체크포인트에서 출발해, 내 Subagent와 실제로 막아 주는 가드레일을 만든다</div>
   <p class="lede">
-    고객 한 명의 상담을 준비하는 반복 업무를 맡길 <strong>자기 Subagent</strong>(새로 만든 1개 이상 + 체크포인트에서 가져와 고친 것)와,
+    고객 한 명의 상담을 준비하는 반복 업무를 맡길 <strong>자기 Subagent</strong>(새로 만든 것 1개 이상 + 체크포인트에서 가져와 고친 것)와,
     개인정보 패턴과 원본 <code class="inline">raw/</code> 접근을 막는 <strong>가드레일</strong>을 <code class="inline">~/claude-lab/capstone/</code>에 만듭니다.
     이 폴더가 R2에서 <span class="gl" data-gl="plugin">plugin</span>으로 묶을 재료입니다.
   </p>
@@ -824,7 +824,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
       <button class="seg" data-task="task-01" style="flex:10" title="업무 정하기"><span class="fill"></span><span class="seg-txt">01 업무 정하기</span></button>
       <button class="seg" data-task="task-02" style="flex:25" title="자기 agent 만들기"><span class="fill"></span><span class="seg-txt">02 자기 agent 만들기</span></button>
       <button class="seg" data-task="task-03" style="flex:25" title="가드레일"><span class="fill"></span><span class="seg-txt">03 가드레일</span></button>
-      <button class="seg" data-task="task-04" style="flex:15" title="막히는 것 확인"><span class="fill"></span><span class="seg-txt">04 막히는 것 확인</span></button>
+      <button class="seg" data-task="task-04" style="flex:15" title="막히는지 확인"><span class="fill"></span><span class="seg-txt">04 막히는지 확인</span></button>
       <button class="seg" data-task="task-05" style="flex:10" title="R1 정리"><span class="fill"></span><span class="seg-txt">05 R1 정리</span></button>
     </div>
   </div>
@@ -838,7 +838,7 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
   <a href="#task-01" data-nav="task-01"><span class="dot"></span>01 업무 정하기<span class="nav-time"></span></a>
   <a href="#task-02" data-nav="task-02"><span class="dot"></span>02 자기 agent 만들기<span class="nav-time"></span></a>
   <a href="#task-03" data-nav="task-03"><span class="dot"></span>03 가드레일<span class="nav-time"></span></a>
-  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 막히는 것 확인<span class="nav-time"></span></a>
+  <a href="#task-04" data-nav="task-04"><span class="dot"></span>04 막히는지 확인<span class="nav-time"></span></a>
   <a href="#task-05" data-nav="task-05"><span class="dot"></span>05 R1 정리<span class="nav-time"></span></a>
 </aside>
 
@@ -848,16 +848,16 @@ html.light .viz-ctl .dots button[aria-current="step"] { color: #FFFFFF; }
 <div class="gl-list"></div>
 
 <div class="r1a-map" id="r1a-map">
-  <p class="body"><strong>무엇을 만드나요?</strong> Ch3 체크포인트의 agent 3종에서 출발해, 고객 한 명의 상담 준비를 맡을 <code class="inline">consult-prep</code>을 새로 만들고 <code class="inline">risk-reviewer</code>를 내 업무에 맞게 고칩니다. 그다음 개인정보 패턴과 원본 <code class="inline">raw/</code> 접근을 실제로 막는 훅과 deny 규칙을 붙이고, 막히는지 직접 확인합니다. 아래 첫 그림은 00~04가 이어지는 순서와 남는 결과물, 둘째 그림은 각 subagent가 맡는 일입니다. 단계 번호를 눌러 넘겨 보세요.</p>
+  <p class="body"><strong>무엇을 만드나요?</strong> Ch3 체크포인트의 agent 3종에서 출발해, 고객 한 명의 상담 준비를 맡을 <code class="inline">consult-prep</code>을 새로 만들고 <code class="inline">risk-reviewer</code>를 내 업무에 맞게 고칩니다. 그다음 개인정보 패턴과 원본 <code class="inline">raw/</code> 접근을 실제로 막는 훅과 deny 규칙을 붙이고, 막히는지 직접 확인합니다. 아래 첫째 그림은 00~04가 이어지는 순서와 끝에 남는 결과물을, 둘째 그림은 각 subagent가 맡는 일을 보여 줍니다. 단계 번호를 눌러 차례로 넘겨 보세요.</p>
   <div class="viz" data-viz="r1a-build"></div>
   <div class="viz" data-viz="r1a-roles"></div>
 </div>
 
 <section class="task" id="task-00" data-min="10">
   <div class="task-head"><span class="task-num">00</span><h2>준비와 복구</h2></div>
-  <p class="task-goal">키트가 없으면 받고, Ch3 체크포인트를 작업 폴더 <code class="inline">~/claude-lab/capstone/</code>로 가져옵니다.</p>
-  <p class="body">키트가 이미 있으면 내려받기 줄은 아무 일도 하지 않으므로 여러 번 실행해도 안전합니다. 작업 폴더는 모든 캡스톤 트랙이 같은 <code class="inline">~/claude-lab/capstone/</code>를 씁니다. R2에서 이 폴더를 plugin으로 묶습니다. 먼저 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다.</p>
-  <p class="body"><strong>이 단계에서 하는 일:</strong> 실습 데이터 키트를 내 EC2에 받고, 캡스톤 작업 폴더를 만듭니다. <strong>왜:</strong> 뒤 단계의 agent, 훅, 설정이 모두 이 폴더와 그 안의 <code class="inline">pseudo</code> 링크를 기준으로 동작합니다. 아래 그림의 단계를 넘기며 명령 한 줄 한 줄이 무엇을 옮기는지 먼저 봅니다.</p>
+  <p class="task-goal">실습 데이터 키트가 없으면 내려받고, Ch3 체크포인트를 작업 폴더 <code class="inline">~/claude-lab/capstone/</code>로 가져옵니다.</p>
+  <p class="body">키트가 이미 있으면 내려받기 줄은 아무 일도 하지 않으므로 여러 번 실행해도 안전합니다. 캡스톤 트랙은 모두 같은 작업 폴더 <code class="inline">~/claude-lab/capstone/</code>를 쓰며, R2에서 이 폴더를 plugin으로 묶습니다. 시작하기 전에 <a href="ClaudeCode_Capstone_Setup.html#required">Capstone Setup의 필수 묶음</a>이 설치돼 있어야 합니다.</p>
+  <p class="body"><strong>이 단계에서 하는 일:</strong> 실습 데이터 키트를 내 EC2에 받고, 캡스톤 작업 폴더를 만듭니다. <strong>왜 필요한가요:</strong> 이후 단계의 agent, 훅, 설정이 모두 이 폴더와 그 안의 <code class="inline">pseudo</code> 링크를 기준으로 동작하기 때문입니다. 아래 그림을 단계별로 넘기면서 명령 한 줄 한 줄이 무엇을 어디로 옮기는지 먼저 살펴봅니다.</p>
   <div class="viz" data-viz="kit-download"></div>
   <div class="step-title"><span class="step-no">1</span>키트 복구와 작업 폴더 만들기</div>
   <div class="code-wrap">
@@ -871,7 +871,7 @@ ln -sfn ~/claude-lab/mydata/pseudo pseudo
 ls ~/claude-lab/mydata
 ls pseudo</code></pre>
   </div>
-  <p class="body">첫 <code class="inline">ls</code>에는 <code class="inline">pseudo</code>(가명처리본), <code class="inline">raw</code>(원본, 이 실습 정책상 열지 않는 대상), <code class="inline">checkpoints</code>가 보여야 합니다. <code class="inline">use_bedrock_direct</code>는 랩 환경의 기본 모드 전환 명령입니다.</p>
+  <p class="body">첫 번째 <code class="inline">ls</code>의 출력에는 <code class="inline">pseudo</code>(가명처리본), <code class="inline">raw</code>(원본. 이 실습에서는 정책상 열지 않습니다), <code class="inline">checkpoints</code>가 보여야 합니다. 맨 위의 <code class="inline">use_bedrock_direct</code>는 랩 환경을 기본 모드(Bedrock 직접 연결)로 맞추는 명령입니다.</p>
   <div class="step-title"><span class="step-no">2</span>Ch3 체크포인트를 작업 폴더로 복사</div>
   <p class="body">Ch3 랩을 끝내지 못했어도 체크포인트에서 바로 출발할 수 있습니다. 에이전트 3종(<code class="inline">spending-analyst</code>, <code class="inline">portfolio-analyst</code>, <code class="inline">risk-reviewer</code>), Ch2의 DLP 훅 스크립트, 참고용 <code class="inline">segments.md</code>를 가져옵니다.</p>
   <div class="code-wrap">
@@ -883,14 +883,14 @@ chmod +x .claude/hooks/dlp-guard.sh
 cp ~/claude-lab/mydata/checkpoints/ch3/segments.md .
 find .claude -type f | sort</code></pre>
   </div>
-  <div class="step-title"><span class="step-no">3</span>Ch2 Lab 2의 managed 훅이 남아 있는지</div>
-  <p class="body">Ch2 Lab 2에서 managed 정책에 넣은 DLP <span class="gl" data-gl="hook">훅</span>이 남아 있으면, 04에서 주민번호 요청이 막혀도 이 폴더의 훅이 아니라 managed 훅이 막은 것일 수 있습니다. Ch2 Lab 2의 managed 훅(<code class="inline">/opt/dlp/dlp-guard.sh</code>)도 같은 <code class="inline">DLP:</code> 메시지를 내므로 화면만으로는 가릴 수 없습니다. 아래 한 줄로 먼저 확인합니다.</p>
+  <div class="step-title"><span class="step-no">3</span>Ch2 Lab 2의 managed 훅이 남아 있는지 확인</div>
+  <p class="body">Ch2 Lab 2에서 managed 정책에 넣은 DLP <span class="gl" data-gl="hook">훅</span>이 남아 있으면, 04에서 주민번호 요청이 막혀도 이 폴더의 훅이 아니라 managed 훅이 막은 것일 수 있습니다. 그 managed 훅(<code class="inline">/opt/dlp/dlp-guard.sh</code>)도 똑같은 <code class="inline">DLP:</code> 메시지를 내므로, 화면만 봐서는 어느 쪽이 막았는지 구분할 수 없습니다. 그래서 아래 한 줄로 먼저 확인합니다.</p>
   <div class="viz" data-viz="copy-managed-check"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>sudo jq '{allowManagedHooksOnly, hooks: ((.hooks // {}) | keys)}' /etc/claude-code/managed-settings.json 2&gt;/dev/null</code></pre>
   </div>
-  <p class="body"><code class="inline">"hooks": []</code>이고 <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">null</code>이나 <code class="inline">false</code>면 깨끗합니다. 아무것도 나오지 않으면 managed 설정 파일이 없는 것이니 그대로 진행합니다. <code class="inline">hooks</code> 목록에 <code class="inline">UserPromptSubmit</code>, <code class="inline">PreToolUse</code> 같은 이름이 보이면 managed 훅이 아직 돌고 있는 것이고, <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">true</code>면 이 폴더의 훅은 아예 돌지 않습니다. 어느 쪽이든 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2</a> TASK 07(전체 원복)을 먼저 하고 이 줄을 다시 실행합니다.</p>
+  <p class="body"><code class="inline">"hooks": []</code>이고 <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">null</code>이나 <code class="inline">false</code>면 남은 훅이 없는 깨끗한 상태입니다. 아무것도 출력되지 않으면 managed 설정 파일이 없는 것이니 그대로 진행합니다. <code class="inline">hooks</code> 목록에 <code class="inline">UserPromptSubmit</code>, <code class="inline">PreToolUse</code> 같은 이름이 보이면 managed 훅이 아직 실행되고 있는 것이고, <code class="inline">allowManagedHooksOnly</code>가 <code class="inline">true</code>면 이 폴더의 훅은 아예 실행되지 않습니다. 어느 쪽이든 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2</a> TASK 07(전체 원복)을 먼저 한 뒤 위 명령을 다시 실행해 확인합니다.</p>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
     <label class="cp-item"><input type="checkbox"><span><code>~/claude-lab/capstone/</code>에 <code>pseudo</code> 링크가 있다</span></label>
@@ -901,9 +901,9 @@ find .claude -type f | sort</code></pre>
 
 <section class="task" id="task-01" data-min="10">
   <div class="task-head"><span class="task-num">01</span><h2>업무 정하기</h2></div>
-  <p class="task-goal">고객 한 명의 상담 준비를 맡길 반복 업무로 정하고, 맡길 agents와 막을 것을 정합니다.</p>
-  <p class="body">고객 한 명을 만나기 전에 상담 담당자가 하는 준비를 반복 업무로 삼습니다. brainstorm의 주제는 "무슨 앱을 만들까"가 아니라 <strong>어떤 반복 업무를 맡길 agents와, 무엇을 막을 가드레일인가</strong>입니다. 이 단계에서 plan과 execute까지 길게 가지 않습니다. 결정 세 가지만 얻으면 됩니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 맡길 업무와 막을 것을 먼저 정해 두면 02의 agent와 03의 훅이 그 결정을 그대로 따릅니다.</p>
+  <p class="task-goal">고객 한 명의 상담 준비를 맡길 반복 업무로 삼고, 그 일을 맡을 agent와 막아야 할 것을 정합니다.</p>
+  <p class="body">상담 담당자가 고객 한 명을 만나기 전에 하는 준비를 반복 업무로 삼습니다. brainstorm의 주제는 "무슨 앱을 만들까"가 아니라 <strong>어떤 반복 업무를 agent에게 맡기고, 가드레일로 무엇을 막을 것인가</strong>입니다. 이 단계에서는 plan이나 execute까지 가지 않습니다. 결정 세 가지만 나오면 충분합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 맡길 업무와 막을 것을 먼저 정해 두면, 02의 agent와 03의 훅은 그 결정대로 만들기만 하면 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>brainstorm으로 업무와 막을 것 정하기</div>
   <div class="viz" data-viz="copy-brainstorm"></div>
   <div class="code-wrap">
@@ -919,12 +919,12 @@ find .claude -type f | sort</code></pre>
 2) 새로 만들 agent와 체크포인트에서 고칠 agent (역할이 겹치지 않게, 읽기 전용 검토 역할 하나 포함)
 3) 막을 것 두 가지와 막는 방법</code></pre>
   </div>
-  <p class="body">정리가 나오면 아래 초안과 비교합니다. 다르게 정해도 됩니다. 단, 02 단계 이후의 파일 이름과 명령은 이 초안을 기준으로 쓰여 있으니 바꿨다면 이름을 맞춰 읽습니다.</p>
+  <p class="body">정리가 나오면 아래 초안과 비교해 봅니다. 초안과 다르게 정해도 괜찮습니다. 다만 02부터의 파일 이름과 명령은 이 초안을 기준으로 적혀 있으니, 다르게 정했다면 해당 이름을 자신이 정한 이름으로 바꿔 읽습니다.</p>
   <table class="tbl"><thead><tr><th>항목</th><th>초안</th></tr></thead><tbody>
     <tr><td>반복 업무</td><td>고객 한 명의 소비와 자산을 보고 상담 준비 노트(고객 상황, 제안 후보, 확인할 질문)를 만든다</td></tr>
     <tr><td>새로 만들 agent</td><td><code class="inline">consult-prep</code>: 조건에 맞는 고객 한 명의 소비와 자산을 읽고 상담 준비 노트를 쓴다</td></tr>
-    <tr><td>고쳐서 쓸 agent</td><td><code class="inline">risk-reviewer</code>: 읽기 전용 검토자에게 상담 노트 점검 항목을 더한다. 필요하면 분석가 둘의 출력 형식도 손본다</td></tr>
-    <tr><td>막을 것</td><td>주민번호, 카드, 휴대폰, 계좌 패턴(DLP). 원본 <code class="inline">raw/</code> 접근</td></tr>
+    <tr><td>고쳐서 쓸 agent</td><td><code class="inline">risk-reviewer</code>: 읽기 전용 검토자에 상담 노트 점검 항목을 추가한다. 필요하면 분석가 둘의 출력 형식도 손본다</td></tr>
+    <tr><td>막을 것</td><td>주민번호·카드번호·휴대폰 번호·계좌번호 패턴(DLP)과 원본 <code class="inline">raw/</code> 접근</td></tr>
   </tbody></table>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
@@ -934,11 +934,11 @@ find .claude -type f | sort</code></pre>
 
 <section class="task" id="task-02" data-min="25">
   <div class="task-head"><span class="task-num">02</span><h2>자기 agent 만들기</h2></div>
-  <p class="task-goal">새 agent 1개 이상을 만들고 체크포인트 agent 하나를 내 업무에 맞게 고칩니다. 도구 권한은 역할에 맞게 좁힙니다.</p>
-  <p class="body">체크리스트 1번의 "자기 Subagent 2개 이상"은 이 트랙에서 <strong>새로 만든 1개 이상 + 체크포인트에서 가져와 고친 것</strong>으로 셉니다. 체크포인트 agent를 쓰는 것만으로는 채워지지 않습니다. agent 정의는 Ch3의 방식 그대로 <code class="inline">.claude/agents/</code> 아래 마크다운 파일이고, <code class="inline">tools</code>로 도구 권한을 좁힙니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> <code class="inline">tools</code>를 역할에 맞게 좁히면 각 agent는 그 밖의 도구를 쓸 수 없습니다. 이 agent들이 R2에서 plugin에 그대로 들어갑니다.</p>
+  <p class="task-goal">새 agent를 1개 이상 만들고, 체크포인트 agent 하나를 내 업무에 맞게 고칩니다. 도구 권한은 역할에 맞게 좁힙니다.</p>
+  <p class="body">완주 체크리스트 1번의 "자기 Subagent 2개 이상"은 이 트랙에서 <strong>새로 만든 것 1개 이상 + 체크포인트에서 가져와 고친 것</strong>을 합쳐서 셉니다. 체크포인트 agent를 그대로 쓰기만 해서는 이 항목이 채워지지 않습니다. agent 정의는 Ch3에서 한 것처럼 <code class="inline">.claude/agents/</code> 아래에 마크다운 파일로 두고, <code class="inline">tools</code> 항목으로 도구 권한을 좁힙니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> <code class="inline">tools</code>를 역할에 맞게 좁혀 두면 각 agent는 허용된 도구 말고는 쓸 수 없습니다. 이 agent들은 R2에서 plugin에 그대로 들어갑니다.</p>
   <div class="step-title"><span class="step-no">1</span>새 agent 만들기: consult-prep</div>
-  <p class="body">분석가 둘(<code class="inline">spending-analyst</code>, <code class="inline">portfolio-analyst</code>)은 고객 <strong>그룹의 집계</strong>를 봅니다. <code class="inline">consult-prep</code>은 고객 <strong>한 명</strong>의 상담 준비를 맡아 역할이 겹치지 않습니다. 파일을 저장하는 일은 메인이 하므로 쓰기 도구는 주지 않습니다.</p>
+  <p class="body">분석가 둘(<code class="inline">spending-analyst</code>, <code class="inline">portfolio-analyst</code>)은 고객 <strong>그룹의 집계</strong>를 봅니다. <code class="inline">consult-prep</code>은 고객 <strong>한 명</strong>의 상담 준비를 맡으므로 역할이 겹치지 않습니다. 파일 저장은 메인 Claude가 하므로 이 agent에는 쓰기 도구를 주지 않습니다.</p>
   <div class="viz" data-viz="copy-consult-prep"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -974,7 +974,7 @@ model: sonnet
 EOF</code></pre>
   </div>
   <div class="step-title"><span class="step-no">2</span>체크포인트 agent 고치기: risk-reviewer</div>
-  <p class="body">읽기 전용 검토자는 이미 도구가 <code class="inline">Read, Grep, Glob</code>로 좁혀져 있습니다. 여기에 이번 업무의 점검 항목을 더해 "내 업무에 맞게 고친 agent"로 만듭니다. 세션 안에서 Claude에게 요청해도 되고 파일을 직접 열어 고쳐도 됩니다.</p>
+  <p class="body">읽기 전용 검토자는 도구가 이미 <code class="inline">Read, Grep, Glob</code>으로 좁혀져 있습니다. 여기에 이번 업무에 맞는 점검 항목을 추가해 "내 업무에 맞게 고친 agent"로 만듭니다. 세션 안에서 Claude에게 요청해도 되고, 파일을 직접 열어 고쳐도 됩니다.</p>
   <div class="viz" data-viz="copy-risk-reviewer"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
@@ -983,7 +983,7 @@ EOF</code></pre>
 tools 줄과 나머지 내용은 바꾸지 말고, 수정한 뒤 diff를 보여 주세요.</code></pre>
   </div>
   <div class="step-title"><span class="step-no">3</span>등록 확인과 첫 호출</div>
-  <p class="body">세션을 다시 열어(<code class="inline">/exit</code> 후 <code class="inline">claude</code>) 입력창에 <code class="inline">@</code>를 입력해 <code class="inline">consult-prep</code>이 typeahead에 나타나는지 보고, 바로 첫 호출을 보냅니다. v2.1.198 이후에는 <code class="inline">/agents</code> 위저드가 없고 안내 문구만 나옵니다.</p>
+  <p class="body">세션을 다시 엽니다(<code class="inline">/exit</code> 후 <code class="inline">claude</code>). 입력창에 <code class="inline">@</code>를 입력했을 때 자동 완성 목록(typeahead)에 <code class="inline">consult-prep</code>이 나타나는지 확인하고, 이어서 첫 호출을 보냅니다. v2.1.198 이후에는 <code class="inline">/agents</code>를 입력해도 위저드 없이 안내 문구만 나옵니다.</p>
   <div class="viz" data-viz="r1a-roles"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
@@ -991,7 +991,7 @@ tools 줄과 나머지 내용은 바꾸지 말고, 수정한 뒤 diff를 보여 
 끝나면 risk-reviewer 에이전트로 그 노트를 점검하고 PASS, WARN, FAIL을 알려 주세요.</code></pre>
   </div>
   <table class="tbl"><thead><tr><th>agent</th><th>tools</th><th>이유</th></tr></thead><tbody>
-    <tr><td><code class="inline">consult-prep</code></td><td><code class="inline">Read, Grep, Glob, Bash(python3:*)</code></td><td>읽고 python3로 집계만 한다. 쓰기와 임의 명령은 주지 않는다 (새로 만듦)</td></tr>
+    <tr><td><code class="inline">consult-prep</code></td><td><code class="inline">Read, Grep, Glob, Bash(python3:*)</code></td><td>파일을 읽고 python3로 집계만 한다. 쓰기 도구와 임의 명령 실행은 허용하지 않는다 (새로 만듦)</td></tr>
     <tr><td><code class="inline">risk-reviewer</code></td><td><code class="inline">Read, Grep, Glob</code></td><td>점검만 한다. 수정 권한이 없다 (체크포인트에서 고침)</td></tr>
     <tr><td><code class="inline">spending-analyst</code>, <code class="inline">portfolio-analyst</code></td><td><code class="inline">Read, Grep, Glob, Bash(python3:*)</code></td><td>그룹 집계용. 이번에는 그대로 둬도 되고, 필요하면 출력 형식을 손본다</td></tr>
   </tbody></table>
@@ -1004,13 +1004,13 @@ tools 줄과 나머지 내용은 바꾸지 말고, 수정한 뒤 diff를 보여 
 
 <section class="task" id="task-03" data-min="25">
   <div class="task-head"><span class="task-num">03</span><h2>가드레일</h2></div>
-  <p class="task-goal">개인정보 패턴과 원본 <code class="inline">raw/</code> 접근을 막는 훅을 <span class="gl" data-gl="failclosed">fail-closed</span>로 등록합니다.</p>
-  <p class="body">가드레일을 두 겹으로 둡니다. 개인정보 패턴은 Ch2 Lab 2에서 만든 <code class="inline">dlp-guard.sh</code>를 가져와 쓰고, 원본 <code class="inline">raw/</code> 접근은 같은 방식의 훅을 새로 만듭니다. 원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일과 DLP</a>와 같습니다. 훅에서 <strong>exit 2가 차단</strong>이고, 오류 경로에서도 exit 2를 내야 fail-closed입니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 가드레일이 문서에만 있으면 아무것도 막지 못합니다. 훅과 deny 규칙은 요청이 실행되기 전에 실제로 막고, 이것이 완주 체크리스트 4번입니다.</p>
-  <p class="body">아래 그림은 이 단계에서 만드는 세 가지(UserPromptSubmit 훅, PreToolUse 훅, deny 규칙)가 요청 하나를 어디에서 검사하는지 보여 줍니다. 04에서 직접 확인할 장면과 같습니다.</p>
+  <p class="task-goal">개인정보 패턴과 원본 <code class="inline">raw/</code> 접근을 막는 훅을 <span class="gl" data-gl="failclosed">fail-closed</span> 방식으로 등록합니다.</p>
+  <p class="body">가드레일은 두 겹으로 둡니다. 개인정보 패턴은 Ch2 Lab 2에서 만든 <code class="inline">dlp-guard.sh</code>를 가져와 그대로 쓰고, 원본 <code class="inline">raw/</code> 접근은 같은 방식의 훅을 새로 만들어 막습니다. 원리는 <a href="ClaudeCode_Ch2_Guardrails_HandsOnLab.html">Ch2 Lab 2 가드레일과 DLP</a>에서 다룬 것과 같습니다. 훅에서는 <strong>exit 2가 차단</strong>을 뜻하고, 검사 중 오류가 난 경우에도 exit 2를 내야 fail-closed입니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 가드레일이 문서에만 적혀 있으면 아무것도 막지 못합니다. 훅과 deny 규칙은 요청이 실행되기 전에 실제로 막아 줍니다. 완주 체크리스트 4번이 바로 이 항목입니다.</p>
+  <p class="body">아래 그림은 이 단계에서 만드는 세 가지(UserPromptSubmit 훅, PreToolUse 훅, deny 규칙)가 요청 하나를 각각 어느 지점에서 검사하는지 보여 줍니다. 04에서 직접 확인할 장면이기도 합니다.</p>
   <div class="viz" data-viz="hook-flow"></div>
   <div class="step-title"><span class="step-no">1</span>raw/ 차단 훅 만들기</div>
-  <p class="body"><code class="inline">dlp-guard.sh</code>는 체크포인트에 있는 그대로 두고(jq 없음, 입력 해석 실패, grep 오류에서 모두 exit 2), <code class="inline">raw-guard.sh</code>는 같은 모양으로 씁니다. 도구 입력에 <code class="inline">mydata/raw</code> 또는 <code class="inline">raw/</code>가 들어 있으면 막습니다.</p>
+  <p class="body"><code class="inline">dlp-guard.sh</code>는 체크포인트에서 가져온 그대로 둡니다(jq가 없을 때, 입력을 해석하지 못할 때, grep이 오류를 낼 때 모두 exit 2). <code class="inline">raw-guard.sh</code>는 같은 구조로 새로 작성합니다. 도구 입력에 <code class="inline">mydata/raw</code> 또는 <code class="inline">raw/</code>가 들어 있으면 막습니다.</p>
   <div class="viz" data-viz="copy-raw-guard"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1038,9 +1038,9 @@ echo '{"tool_input":{"file_path":"/Users/me/claude-lab/capstone/pseudo/customers
 echo '{"prompt":"고객 900101-1234567 의 가입 이력"}' | .claude/hooks/dlp-guard.sh; echo "exit=$?"
 echo '{"prompt":"안녕하세요"}' | .claude/hooks/dlp-guard.sh; echo "exit=$?"</code></pre>
   </div>
-  <p class="body">다섯 줄 중 raw 두 줄과 주민번호 줄은 <code class="inline">exit=2</code>, <code class="inline">pseudo/</code> 경로와 "안녕하세요"는 <code class="inline">exit=0</code>이 나와야 합니다. 이 훅은 도구 입력의 <strong>문자열 패턴</strong>만 봅니다. 경로를 돌려 쓰는 명령(예: 글로브)이나 실행 <strong>결과</strong>는 보지 못한다는 점은 Ch2 Lab 2에서 확인한 한계와 같습니다.</p>
+  <p class="body">마지막 시험 다섯 줄 가운데 raw 경로 두 줄과 주민번호 줄은 <code class="inline">exit=2</code>가, <code class="inline">pseudo/</code> 경로 줄과 "안녕하세요" 줄은 <code class="inline">exit=0</code>이 나와야 합니다. 이 훅은 도구 입력의 <strong>문자열 패턴</strong>만 검사합니다. 경로를 우회해서 쓰는 명령(예: 글로브)이나 명령의 실행 <strong>결과</strong>는 검사하지 못합니다. Ch2 Lab 2에서 확인한 한계와 같습니다.</p>
   <div class="step-title"><span class="step-no">2</span>프로젝트 설정에 훅과 deny 규칙 등록</div>
-  <p class="body">작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 프롬프트는 <code class="inline">UserPromptSubmit</code>, 도구 호출은 <code class="inline">PreToolUse</code>가 검사합니다. <code class="inline">onFailure</code>: <code class="inline">block</code>은 스크립트가 없거나 시작하지 못하거나 시간 초과인 경우까지 막습니다(v2.1.295+, 어느 설정 파일의 command 훅에서나 쓸 수 있음, <a href="https://code.claude.com/docs/en/hooks">공식 훅 문서</a>, Ch2 Lab 2 TASK 02 Step 3). <code class="inline">permissions.deny</code>는 훅과 별개의 한 겹으로 <code class="inline">raw/</code> 읽기를 막습니다.</p>
+  <p class="body">훅과 deny 규칙을 작업 폴더의 <code class="inline">.claude/settings.json</code>에 등록합니다. 프롬프트는 <code class="inline">UserPromptSubmit</code> 훅이, 도구 호출은 <code class="inline">PreToolUse</code> 훅이 검사합니다. <code class="inline">onFailure</code>: <code class="inline">block</code>을 넣으면 스크립트가 없거나, 시작하지 못하거나, 시간이 초과된 경우에도 차단합니다(v2.1.295 이상, 어느 설정 파일의 command 훅에서나 쓸 수 있음. 참고: <a href="https://code.claude.com/docs/en/hooks">공식 훅 문서</a>, Ch2 Lab 2 TASK 02 Step 3). <code class="inline">permissions.deny</code>는 훅과는 별개로 <code class="inline">raw/</code> 읽기를 한 겹 더 막습니다.</p>
   <div class="viz" data-viz="copy-settings"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1071,15 +1071,15 @@ jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></p
   </div>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>스크립트 직접 시험에서 차단 세 줄은 <code>exit=2</code>, 통과 두 줄은 <code>exit=0</code>이 나왔다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>스크립트를 직접 시험했을 때 막혀야 하는 세 줄은 <code>exit=2</code>, 통과해야 하는 두 줄은 <code>exit=0</code>이 나왔다</span></label>
     <label class="cp-item"><input type="checkbox"><span><code>settings OK</code>가 출력됐다</span></label>
   </div>
 </section>
 
 <section class="task" id="task-04" data-min="15">
-  <div class="task-head"><span class="task-num">04</span><h2>막히는 것 확인</h2></div>
-  <p class="task-goal">주민번호가 든 요청과 <code class="inline">raw/</code> 읽기 시도가 실제로 막히는지 직접 봅니다.</p>
-  <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 막히는 장면을 직접 봐야 끝납니다. 이 장면 하나가 출품 양식의 "가드레일이 막은 장면"이 됩니다. 캡처할 때 실제 개인정보가 아닌 시험용 값만 보이는지 확인합니다.</p>
+  <div class="task-head"><span class="task-num">04</span><h2>막히는지 확인</h2></div>
+  <p class="task-goal">주민번호가 든 요청과 <code class="inline">raw/</code> 읽기 시도가 실제로 막히는지 직접 확인합니다.</p>
+  <p class="body"><strong>왜 필요한가요:</strong> 가드레일은 실제로 막히는 장면을 직접 확인해야 완성됩니다. 이 장면이 출품 양식의 "가드레일이 막은 장면"으로 쓰입니다. 캡처할 때는 실제 개인정보가 아니라 시험용 값만 보이는지 확인합니다.</p>
   <div class="viz" data-viz="check-matrix"></div>
   <div class="step-title"><span class="step-no">1</span>막혀야 하는 요청 두 가지</div>
   <div class="code-wrap">
@@ -1090,24 +1090,24 @@ jq . .claude/settings.json &gt;/dev/null &amp;&amp; echo "settings OK"</code></p
     <div class="code-head"><span class="code-label">Claude 세션 입력 1/2, 주민번호가 든 요청</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>고객 900101-1234567 의 가입 이력을 정리해줘</code></pre>
   </div>
-  <p class="body">프롬프트 단계에서 <code class="inline">DLP: 민감정보 패턴이 감지되어 차단했습니다</code>가 나오고 요청이 모델에 가지 않아야 합니다.</p>
+  <p class="body">프롬프트 단계에서 <code class="inline">DLP: 민감정보 패턴이 감지되어 차단했습니다</code>가 나오고, 요청이 모델로 전달되지 않아야 합니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력 2/2, raw/ 읽기 시도</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>~/claude-lab/mydata/raw 아래 고객 파일의 첫 3줄을 읽어줘</code></pre>
   </div>
-  <p class="body">도구 호출 단계에서 <code class="inline">RAW: 원본(raw/) 접근은 차단됩니다</code>(훅) 또는 deny 규칙의 거부 메시지가 나와야 합니다. 어느 쪽이 막았는지 메시지로 구분해 적어 둡니다.</p>
-  <div class="step-title"><span class="step-no">2</span>통과해야 하는 요청, 그리고 agent 경로</div>
+  <p class="body">도구 호출 단계에서 <code class="inline">RAW: 원본(raw/) 접근은 차단됩니다</code>(훅) 또는 deny 규칙의 거부 메시지가 나와야 합니다. 메시지를 보고 어느 쪽이 막았는지 구분해 적어 둡니다.</p>
+  <div class="step-title"><span class="step-no">2</span>통과해야 하는 요청과 agent를 거치는 경로</div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>pseudo/customers.csv 연령대 분포를 요약해줘</code></pre>
   </div>
-  <p class="body">정상 요청은 그대로 통과해야 합니다. 이어서 agent를 거치는 경로를 봅니다. 설정에 등록한 PreToolUse 훅은 subagent의 도구 호출에도 실행되므로(공식 훅 문서) 여기서도 막혀야 합니다. 막히지 않으면 03으로 돌아가 패턴을 고칩니다.</p>
+  <p class="body">정상 요청은 그대로 통과해야 합니다. 이어서 agent를 거쳐 원본에 접근하는 경로를 확인합니다. 설정에 등록한 PreToolUse 훅은 subagent의 도구 호출에도 실행되므로(공식 훅 문서 참고) 이 경우에도 막혀야 합니다. 막히지 않으면 03으로 돌아가 패턴을 고칩니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>consult-prep 에이전트로 ~/claude-lab/mydata/raw 아래 파일에서 고객 한 명의 상담 준비 노트를 만들어 줘</code></pre>
   </div>
-  <div class="step-title"><span class="step-no">3</span>고장 난 훅도 막는지 (fail-closed)</div>
-  <p class="body">세션을 <code class="inline">/exit</code>로 나온 뒤, raw-guard.sh를 잠깐 치우고, <strong>도구 호출이 필요한</strong> 무해한 프롬프트를 보냅니다. raw-guard.sh는 PreToolUse에만 등록돼 있어서 도구 호출이 없는 프롬프트에서는 실행되지 않기 때문입니다. 스크립트가 없는데도 도구 호출이 막히면 fail-closed입니다. 마지막 줄에서 반드시 되돌립니다.</p>
+  <div class="step-title"><span class="step-no">3</span>훅이 고장 나도 막히는지 (fail-closed)</div>
+  <p class="body"><code class="inline">/exit</code>로 세션에서 나온 뒤, raw-guard.sh를 잠시 다른 이름으로 치워 두고 <strong>도구 호출이 필요한</strong> 무해한 프롬프트를 보냅니다. 도구 호출이 필요한 이유는, raw-guard.sh가 PreToolUse에만 등록돼 있어 도구 호출이 없는 프롬프트에서는 실행되지 않기 때문입니다. 스크립트가 없는데도 도구 호출이 막히면 fail-closed가 동작하는 것입니다. 치워 둔 스크립트는 넷째 줄에서 반드시 원래 이름으로 되돌립니다.</p>
   <div class="viz" data-viz="copy-failclosed"></div>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
@@ -1117,16 +1117,16 @@ claude -p "pseudo/customers.csv 첫 줄을 읽어줘"; echo "claude exit=$?"
 mv .claude/hooks/raw-guard.sh.off .claude/hooks/raw-guard.sh
 ls .claude/hooks</code></pre>
   </div>
-  <p class="body">Read 도구 호출이 훅 오류로 차단되어 파일 내용이 나오지 않고, <code class="inline">PreToolUse:Read</code> 훅 오류와 <code class="inline">onFailure</code> 차단을 알리는 메시지가 보여야 합니다. 메시지 문구는 버전에 따라 다를 수 있으니 실제로 나온 문구를 기록해 둡니다. 첫 줄이 그대로 출력됐다면 <code class="inline">onFailure</code> 줄과 Claude Code 버전(<code class="inline">claude --version</code>)을 확인합니다.</p>
+  <p class="body">Read 도구 호출이 훅 오류로 차단되어 파일 내용은 출력되지 않고, <code class="inline">PreToolUse:Read</code> 훅 오류와 <code class="inline">onFailure</code> 차단을 알리는 메시지가 보여야 합니다. 메시지 문구는 버전에 따라 다를 수 있으니 실제로 나온 문구를 기록해 둡니다. 반대로 파일의 첫 줄이 그대로 출력됐다면 설정의 <code class="inline">onFailure</code> 줄과 Claude Code 버전(<code class="inline">claude --version</code>)을 확인합니다.</p>
   <table class="tbl"><thead><tr><th>증상</th><th>점검</th></tr></thead><tbody>
-    <tr><td>주민번호 요청이 통과한다</td><td><code class="inline">settings.json</code>의 <code class="inline">UserPromptSubmit</code> 등록과 <code class="inline">dlp-guard.sh</code> 실행 권한(<code class="inline">chmod +x</code>)</td></tr>
-    <tr><td>raw/ 읽기가 통과한다</td><td><code class="inline">raw-guard.sh</code>를 <code class="inline">echo ... | .claude/hooks/raw-guard.sh</code>로 직접 시험, matcher에 <code class="inline">Read</code>가 있는지</td></tr>
-    <tr><td>정상 요청까지 막힌다</td><td>패턴이 너무 넓은지. <code class="inline">PAT</code>를 시험 입력으로 좁힌다</td></tr>
-    <tr><td>훅이 아예 안 돈다</td><td>세션을 다시 열었는지, 폴더 신뢰(Yes, I trust this folder)를 눌렀는지. Ch2 Lab 2에서 managed 정책에 넣은 <code class="inline">allowManagedHooksOnly</code>가 남아 있으면 사용자, 프로젝트, 플러그인 훅이 모두 무시됩니다. <code class="inline">sudo jq '.allowManagedHooksOnly' /etc/claude-code/managed-settings.json</code>이 <code class="inline">true</code>면 Ch2 Lab 2 TASK 07(전체 원복)을 먼저 합니다</td></tr>
+    <tr><td>주민번호 요청이 통과한다</td><td><code class="inline">settings.json</code>의 <code class="inline">UserPromptSubmit</code> 등록과 <code class="inline">dlp-guard.sh</code> 실행 권한(<code class="inline">chmod +x</code>)을 확인한다</td></tr>
+    <tr><td>raw/ 읽기가 통과한다</td><td><code class="inline">raw-guard.sh</code>를 <code class="inline">echo ... | .claude/hooks/raw-guard.sh</code>로 직접 시험해 보고, matcher에 <code class="inline">Read</code>가 있는지 확인한다</td></tr>
+    <tr><td>정상 요청까지 막힌다</td><td>패턴이 너무 넓지 않은지 확인한다. 시험 입력을 넣어 보면서 <code class="inline">PAT</code>를 좁힌다</td></tr>
+    <tr><td>훅이 아예 실행되지 않는다</td><td>세션을 다시 열었는지, 폴더 신뢰(Yes, I trust this folder)를 선택했는지 확인한다. Ch2 Lab 2에서 managed 정책에 넣은 <code class="inline">allowManagedHooksOnly</code>가 남아 있으면 사용자, 프로젝트, 플러그인 훅이 모두 무시된다. <code class="inline">sudo jq '.allowManagedHooksOnly' /etc/claude-code/managed-settings.json</code>이 <code class="inline">true</code>면 Ch2 Lab 2 TASK 07(전체 원복)을 먼저 한다</td></tr>
   </tbody></table>
   <div class="checkpoint">
     <div class="cp-title">CHECKPOINT</div>
-    <label class="cp-item"><input type="checkbox"><span>주민번호 요청이 막혔고 어느 메시지인지 안다</span></label>
+    <label class="cp-item"><input type="checkbox"><span>주민번호 요청이 막혔고, 어떤 메시지로 막혔는지 확인했다</span></label>
     <label class="cp-item"><input type="checkbox"><span><code>raw/</code> 읽기 시도가 막혔다</span></label>
     <label class="cp-item"><input type="checkbox"><span>정상 요청은 통과했다</span></label>
     <label class="cp-item"><input type="checkbox"><span>스크립트를 치웠을 때도 도구 호출이 막혔고, 스크립트를 되돌렸다</span></label>
@@ -1136,7 +1136,7 @@ ls .claude/hooks</code></pre>
 <section class="task" id="task-05" data-min="10">
   <div class="task-head"><span class="task-num">05</span><h2>R1 정리</h2></div>
   <p class="task-goal">CLAUDE.md를 짧게 정리하고 쇼케이스 1에서 공유할 문구를 준비합니다.</p>
-  <p class="body">R2에서 plugin으로 묶을 재료를 정돈하고, 쇼케이스 1에서 공유할 문구를 만듭니다. 이 단계에서 새 기능을 더하지 않습니다.</p>
+  <p class="body">R2에서 plugin으로 묶을 재료를 정리하고, 쇼케이스 1에서 공유할 문구를 만듭니다. 이 단계에서는 새 기능을 추가하지 않습니다.</p>
   <p class="body"><strong>왜 필요한가요:</strong> R2는 이 폴더를 그대로 plugin으로 묶으므로, 지금 정리한 <code class="inline">CLAUDE.md</code>와 파일 목록이 plugin의 출발점이 됩니다.</p>
   <div class="step-title"><span class="step-no">1</span>CLAUDE.md는 짧게</div>
   <div class="viz" data-viz="copy-claudemd"></div>
@@ -1154,9 +1154,9 @@ cat &gt; CLAUDE.md &lt;&lt; 'EOF'
 EOF
 find . -type f -not -path './pseudo/*' | sort</code></pre>
   </div>
-  <p class="body">출력에 <code class="inline">.claude/agents/</code> 4개, <code class="inline">.claude/hooks/</code> 2개, <code class="inline">.claude/settings.json</code>, <code class="inline">CLAUDE.md</code>가 보이면 R2의 재료가 갖춰진 것입니다. 키와 개인정보가 파일에 들어 있지 않은지도 훑어봅니다.</p>
+  <p class="body">출력에 <code class="inline">.claude/agents/</code>의 파일 4개, <code class="inline">.claude/hooks/</code>의 파일 2개, <code class="inline">.claude/settings.json</code>, <code class="inline">CLAUDE.md</code>가 보이면 R2에 쓸 재료가 모두 갖춰진 것입니다. 파일에 키나 개인정보가 들어 있지 않은지도 훑어봅니다.</p>
   <div class="step-title"><span class="step-no">2</span>쇼케이스 1 공유 문구</div>
-  <p class="body">쇼케이스 1에서는 Slack 워크숍 채널에 아래 네 줄을 올리면 됩니다. 정식 출품은 R2 끝에 <a href="ClaudeCode_Capstone_Overview.html#submit">캡스톤 개요의 출품 양식</a>으로 하고, R1에서 받은 "가드레일이 막은 장면"이 그 양식의 4번이 됩니다.</p>
+  <p class="body">쇼케이스 1에서는 Slack 워크숍 채널에 아래 네 줄을 올리면 됩니다. 정식 출품은 R2 마지막에 <a href="ClaudeCode_Capstone_Overview.html#submit">캡스톤 개요의 출품 양식</a>으로 하고, R1에서 캡처해 둔 "가드레일이 막은 장면"이 그 양식의 4번에 들어갑니다.</p>
   <div class="code-wrap">
     <div class="code-head"><span class="code-label">Slack 공유 문구, 예시</span><button class="copy-btn" type="button">복사</button></div>
     <pre><code>[R1-A 고객 맞춤 서비스]
@@ -1173,7 +1173,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     <label class="cp-item"><input type="checkbox"><span>작업 폴더에 agent, 훅, 설정, <code>CLAUDE.md</code>가 갖춰져 있다</span></label>
     <label class="cp-item"><input type="checkbox"><span>공유 문구와 막힌 장면 캡처를 준비했다</span></label>
   </div>
-  <p class="body">R1이 끝났으면 <a href="ClaudeCode_Capstone_Overview.html#checklist">캡스톤 개요의 완주 체크리스트</a> 1번과 4번이 채워졌는지 봅니다. 나머지는 R2에서 채웁니다.</p>
+  <p class="body">R1을 마쳤으면 <a href="ClaudeCode_Capstone_Overview.html#checklist">캡스톤 개요의 완주 체크리스트</a> 1번과 4번이 채워졌는지 확인합니다. 나머지는 R2에서 채웁니다.</p>
 </section>
 
 </main>
@@ -1304,7 +1304,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "ec2",
      "mydata"
     ],
-    "cap": "첫 줄의 `[ -d ~/claude-lab/mydata/pseudo ]`가 키트 폴더가 이미 있는지 봅니다. 있으면 괄호 안의 내려받기를 건너뛰므로 여러 번 실행해도 안전합니다."
+    "cap": "셋째 줄 맨 앞의 `[ -d ~/claude-lab/mydata/pseudo ]`는 키트 폴더가 이미 있는지 확인합니다. 있으면 괄호 안의 내려받기와 압축 풀기를 건너뛰므로 여러 번 실행해도 안전합니다."
    },
    {
     "t": "S3에서 EC2로 복사",
@@ -1314,7 +1314,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "mydata-kit.zip",
-    "cap": "없으면 `aws s3 cp`가 이 이벤트의 S3 버킷(`WS_KIT`)에 있는 mydata-kit.zip을 내 EC2의 `/tmp/mydata-kit.zip`으로 복사합니다. 이 PC에 붙은 IAM 역할(인스턴스 역할)의 권한으로 받으므로 따로 로그인하지 않습니다."
+    "cap": "키트가 없으면 `aws s3 cp`가 이 이벤트의 S3 버킷(`WS_KIT`)에 있는 mydata-kit.zip을 내 EC2의 `/tmp/mydata-kit.zip`으로 복사합니다. 이 EC2에 연결된 IAM 역할(인스턴스 역할)의 권한으로 내려받으므로 따로 로그인할 필요가 없습니다."
    },
    {
     "t": "압축 풀기",
@@ -1324,7 +1324,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 1,
     "chip": "pseudo, raw, checkpoints",
-    "cap": "`unzip`이 zip을 `~/claude-lab/mydata` 아래에 풉니다. `pseudo`(가명처리본), `raw`(원본, 이 실습에서 열지 않는 대상), `checkpoints`(장별 체크포인트: ch2, ch3, ch4)가 생깁니다."
+    "cap": "`unzip`이 zip 파일을 `~/claude-lab/mydata` 아래에 풉니다. `pseudo`(가명처리본), `raw`(원본. 이 실습에서는 열지 않습니다), `checkpoints`(챕터별 체크포인트: ch2, ch3, ch4) 폴더가 생깁니다."
    },
    {
     "t": "작업 폴더와 pseudo 링크",
@@ -1334,7 +1334,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 2,
     "chip": "pseudo 링크",
-    "cap": "`mkdir -p`로 작업 폴더 `~/claude-lab/capstone`을 만들고, `ln -sfn`으로 그 안에 `pseudo` 링크를 겁니다. 데이터를 복사하지 않고 같은 폴더를 가리키는 바로가기입니다."
+    "cap": "`mkdir -p`로 작업 폴더 `~/claude-lab/capstone`을 만들고, `ln -sfn`으로 그 안에 `pseudo` 링크를 만듭니다. 이 링크는 데이터를 복사한 것이 아니라 같은 폴더를 가리키는 바로가기입니다."
    },
    {
     "t": "체크포인트 복사 (Step 2)",
@@ -1344,7 +1344,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 2,
     "chip": "agents/*.md",
-    "cap": "다음 블록의 `cp`가 `checkpoints/ch3/agents/`의 agent 3종, Ch2의 `dlp-guard.sh`, `segments.md`를 작업 폴더의 `.claude/agents/`, `.claude/hooks/`와 폴더 맨 위로 복사합니다. 이제부터 내 폴더의 사본을 고쳐 씁니다."
+    "cap": "다음 블록의 `cp`가 `checkpoints/ch3/agents/`의 agent 3종, Ch2의 `dlp-guard.sh`, `segments.md`를 작업 폴더의 `.claude/agents/`, `.claude/hooks/`, 그리고 작업 폴더 맨 위로 각각 복사합니다. 이제부터는 내 작업 폴더에 있는 이 사본을 고쳐 씁니다."
    }
   ]
  },
@@ -1414,7 +1414,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
       "sb": "모델에 가지 않음"
      }
     },
-    "cap": "프롬프트를 보내면 모델보다 먼저 `UserPromptSubmit` 훅(`dlp-guard.sh`)이 글자를 읽습니다. 주민번호 패턴이 있으면 `exit 2`로 끝나고, `DLP:` 메시지와 함께 요청은 모델에 가지 않습니다."
+    "cap": "프롬프트를 보내면 모델보다 먼저 `UserPromptSubmit` 훅(`dlp-guard.sh`)이 프롬프트 내용을 검사합니다. 주민번호 패턴이 있으면 훅이 `exit 2`로 끝나고, `DLP:` 메시지가 나오며 요청은 모델로 전달되지 않습니다."
    },
    {
     "t": "정상 요청은 통과",
@@ -1440,7 +1440,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
       "sb": "pseudo/ 파일 내용"
      }
     },
-    "cap": "`pseudo/customers.csv`처럼 문제없는 요청은 `UserPromptSubmit` 훅(`dlp-guard.sh`)과 `PreToolUse` 훅(`raw-guard.sh`)이 모두 `exit 0`을 내고 deny 규칙에도 걸리지 않아 Read 도구가 실행됩니다. PreToolUse의 `dlp-guard.sh`는 matcher가 `Bash|Write|Edit|WebFetch`라서 Read에서는 돌지 않습니다. subagent의 도구 호출도 같은 PreToolUse 훅을 지납니다."
+    "cap": "`pseudo/customers.csv`를 읽는 것처럼 문제없는 요청은 `UserPromptSubmit` 훅(`dlp-guard.sh`)과 `PreToolUse` 훅(`raw-guard.sh`)이 모두 `exit 0`을 내고 deny 규칙에도 걸리지 않아 Read 도구가 실행됩니다. PreToolUse의 `dlp-guard.sh`는 matcher가 `Bash|Write|Edit|WebFetch`라서 Read 호출에서는 실행되지 않습니다. subagent의 도구 호출도 같은 PreToolUse 훅을 거칩니다."
    },
    {
     "t": "raw/ 읽기 시도",
@@ -1461,7 +1461,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
       "sb": "RAW: 원본(raw/) 접근은 차단됩니다"
      }
     },
-    "cap": "Claude가 `raw/` 경로를 읽으려고 도구를 부르면, 실행 직전에 `PreToolUse` 훅(`raw-guard.sh`)이 도구 입력의 문자열을 봅니다. `mydata/raw`나 `raw/`가 있으면 `exit 2`로 막습니다."
+    "cap": "Claude가 `raw/` 경로를 읽으려고 도구를 호출하면, 실행 직전에 `PreToolUse` 훅(`raw-guard.sh`)이 도구 입력의 문자열을 검사합니다. `mydata/raw`나 `raw/`가 있으면 `exit 2`로 막습니다."
    },
    {
     "t": "deny 규칙, 또 한 겹",
@@ -1479,7 +1479,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
       "sb": "deny 규칙의 메시지"
      }
     },
-    "cap": "`permissions.deny`의 `Read(~/claude-lab/mydata/raw/**)`는 훅과 별개로 그 경로의 Read를 거부합니다. 04에서는 어느 쪽이 막았는지 메시지(`RAW:` 또는 거부 메시지)로 구분해 적습니다."
+    "cap": "`permissions.deny`의 `Read(~/claude-lab/mydata/raw/**)`는 훅과 별개로 그 경로의 Read를 거부합니다. 04에서는 어느 쪽이 막았는지 메시지(`RAW:` 또는 거부 메시지)로 구분해 적어 둡니다."
    },
    {
     "t": "스크립트가 없으면 (onFailure)",
@@ -1502,7 +1502,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
       "sb": "onFailure: block"
      }
     },
-    "cap": "04 Step 3처럼 `raw-guard.sh`를 치우면 훅이 시작조차 못 합니다. 스크립트 안의 `exit 2`로는 이 경우를 막을 수 없어서 `onFailure`: `block`이 훅 실패도 차단으로 처리합니다. 이 줄이 없으면 그대로 통과됩니다(Ch2 Lab 2). 이것이 fail-closed입니다."
+    "cap": "04 Step 3처럼 `raw-guard.sh`를 치우면 훅은 시작조차 하지 못합니다. 스크립트 안의 `exit 2`로는 이 경우를 막을 수 없으므로, `onFailure`: `block` 설정이 훅이 실패한 경우도 차단으로 처리합니다. 이 설정이 없으면 요청이 그대로 통과합니다(Ch2 Lab 2에서 확인). 이렇게 실패해도 막는 것이 fail-closed입니다."
    }
   ]
  },
@@ -1536,7 +1536,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
    {
     "id": "check",
     "ic": "result",
-    "lb": "04 막히는 것 확인",
+    "lb": "04 막히는지 확인",
     "sb": "막힘 3 · 통과 1"
    }
   ],
@@ -1581,7 +1581,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "agents/*.md, dlp-guard.sh",
-    "cap": "키트를 받고 Ch3 체크포인트(agent 3종, Ch2의 `dlp-guard.sh`, `segments.md`)를 작업 폴더 `~/claude-lab/capstone/`으로 복사합니다. 여기서 출발하므로 Ch3을 끝내지 못했어도 됩니다."
+    "cap": "키트를 받고 Ch3 체크포인트(agent 3종, Ch2의 `dlp-guard.sh`, `segments.md`)를 작업 폴더 `~/claude-lab/capstone/`으로 복사합니다. 체크포인트에서 출발하므로 Ch3 랩을 끝내지 못했어도 괜찮습니다."
    },
    {
     "t": "01 업무 정하기",
@@ -1590,7 +1590,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 1,
     "chip": "업무 · agent · 막을 것",
-    "cap": "brainstorm으로 세 가지만 정합니다. 맡길 반복 업무(고객 한 명의 상담 준비), 새로 만들 agent와 고칠 agent, 막을 것 두 가지(개인정보 패턴, 원본 `raw/`)."
+    "cap": "brainstorm으로 세 가지만 정합니다. ① 맡길 반복 업무(고객 한 명의 상담 준비) ② 새로 만들 agent와 고칠 agent ③ 막을 것 두 가지(개인정보 패턴, 원본 `raw/`)입니다."
    },
    {
     "t": "02 내 agent 만들기",
@@ -1601,7 +1601,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 2,
     "chip": "consult-prep.md",
-    "cap": "`consult-prep`을 새로 만들고 체크포인트의 `risk-reviewer`에 점검 항목을 더합니다. 각 agent의 `tools`를 역할만큼 좁혀, 상담 준비 담당은 읽고 집계만, 검토자는 읽기만 합니다."
+    "cap": "`consult-prep`을 새로 만들고 체크포인트의 `risk-reviewer`에 점검 항목을 더합니다. 각 agent의 `tools`를 역할에 필요한 만큼만 남겨, 상담 준비 담당은 읽기와 집계만, 검토자는 읽기만 할 수 있게 합니다."
    },
    {
     "t": "03 가드레일",
@@ -1614,14 +1614,14 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     "cap": "프롬프트는 `UserPromptSubmit`의 `dlp-guard.sh`가, 도구 호출은 `PreToolUse`의 `dlp-guard.sh`와 새로 만든 `raw-guard.sh`가 검사합니다. `deny` 규칙은 `raw/` 읽기를 한 번 더 막습니다. 모두 fail-closed입니다."
    },
    {
-    "t": "04 막히는 것 확인",
+    "t": "04 막히는지 확인",
     "on": [
      "check"
     ],
     "bad": [
      "guard"
     ],
-    "cap": "주민번호 프롬프트, `raw/` 읽기, agent를 거친 `raw/` 접근은 막히고, `pseudo/` 요약은 통과해야 합니다. 스크립트를 치워도 막히면(fail-closed) 끝입니다. 이 장면이 출품의 \"가드레일이 막은 장면\"입니다."
+    "cap": "주민번호 프롬프트, `raw/` 읽기, agent를 거친 `raw/` 접근은 막히고, `pseudo/` 요약은 통과해야 합니다. 스크립트를 치워도 막히는 것(fail-closed)까지 확인하면 끝입니다. 이때 막힌 장면이 출품 양식의 \"가드레일이 막은 장면\"이 됩니다."
    },
    {
     "t": "결과: R2 재료",
@@ -1697,7 +1697,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "40대 고소득 고객 한 명",
-    "cap": "TASK 02 Step 3의 입력입니다. 메인 Claude는 요청과 agent의 `description`을 맞춰 보고 `consult-prep`을 부릅니다."
+    "cap": "TASK 02 Step 3의 입력입니다. 메인 Claude는 요청 내용을 각 agent의 `description`과 비교해 보고 `consult-prep`을 호출합니다."
    },
    {
     "t": "consult-prep이 고객 한 명을 고름",
@@ -1708,7 +1708,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 1,
     "chip": "Agent(consult-prep)",
-    "cap": "`consult-prep`은 자기 컨텍스트 창에서 `pseudo/customers.csv`로 조건에 맞는 고객을 고르고, python3로 소비 상위 카테고리, 잔액, 연금 유형을 집계합니다. `tools`에 Write가 없어 파일은 쓰지 않습니다."
+    "cap": "`consult-prep`은 자신만의 컨텍스트 창에서 `pseudo/customers.csv`로 조건에 맞는 고객을 고르고, python3로 소비 상위 카테고리, 잔액, 연금 유형을 집계합니다. `tools`에 Write가 없으므로 파일을 쓰지는 못합니다."
    },
    {
     "t": "노트를 돌려줌",
@@ -1718,7 +1718,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 2,
     "chip": "고객 A",
-    "cap": "결과는 \"고객 A\"로 부르는 상담 준비 노트입니다. customer_id나 토큰 값은 쓰지 않고, 근거 파일과 열 이름을 적습니다."
+    "cap": "결과로 고객을 \"고객 A\"라고 부르는 상담 준비 노트가 돌아옵니다. customer_id나 토큰 값은 쓰지 않고, 근거가 된 파일과 열 이름을 적습니다."
    },
    {
     "t": "risk-reviewer가 점검",
@@ -1728,7 +1728,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 3,
     "chip": "PASS / WARN / FAIL",
-    "cap": "메인이 노트를 `risk-reviewer`에게 넘깁니다. Step 2에서 더한 4번 항목(고객 A 표기, 제안과 질문, 근거)까지 확인하고 항목별 PASS, WARN, FAIL을 냅니다. 읽기 전용이라 노트를 고치지 못합니다."
+    "cap": "메인이 노트를 `risk-reviewer`에게 넘깁니다. Step 2에서 더한 4번 항목(고객 A 표기, 제안과 질문, 근거)까지 확인하고 항목별로 PASS, WARN, FAIL을 판정합니다. 읽기 전용이라 노트를 직접 고치지는 못합니다."
    },
    {
     "t": "원본은 누구도 열지 않음",
@@ -1738,7 +1738,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     "ok": [
      "pseudo"
     ],
-    "cap": "`consult-prep`은 시스템 프롬프트로 `raw/`를 열지 않게 했고, `risk-reviewer`는 `pseudo/`의 근거만 확인합니다. 프롬프트만으로는 막지 못하므로, 03의 훅과 `deny` 규칙이 두 agent 모두의 도구 호출을 실제로 막습니다. 04에서 agent를 거쳐 `raw/`를 시도해 봅니다."
+    "cap": "`consult-prep`에는 시스템 프롬프트에서 `raw/`를 열지 말라고 지시했고, `risk-reviewer`는 `pseudo/`의 근거만 확인합니다. 하지만 프롬프트 지시만으로는 확실히 막을 수 없으므로, 03에서 만드는 훅과 `deny` 규칙이 두 agent의 도구 호출을 실제로 막습니다. 04에서 agent를 거쳐 `raw/`에 접근을 시도해 봅니다."
    }
   ]
  },
@@ -1791,28 +1791,28 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "consult-prep.md",
-    "cap": "`cat > .claude/agents/consult-prep.md << 'EOF'`부터 `EOF`까지가 파일 내용입니다. 붙여 넣고 Enter를 누르면 화면에는 아무것도 나오지 않고 파일만 생깁니다."
+    "cap": "`cat > .claude/agents/consult-prep.md << 'EOF'` 다음 줄부터 마지막 `EOF` 앞 줄까지가 파일 내용입니다. 붙여 넣고 Enter를 누르면 화면에는 아무것도 출력되지 않고 파일만 만들어집니다."
    },
    {
     "t": "name과 description",
     "on": [
      "front"
     ],
-    "cap": "`name: consult-prep`은 부를 이름, `description`은 메인 Claude가 \"이 일은 이 agent에게\"라고 고를 때 읽는 문장입니다. 사용 시점(고객 한 명을 만나기 전)을 적어 분석가 둘과 겹치지 않게 했습니다."
+    "cap": "`name: consult-prep`은 호출할 때 쓰는 이름이고, `description`은 메인 Claude가 \"이 일은 이 agent에게 맡기자\"라고 판단할 때 읽는 설명입니다. 사용 시점(고객 한 명을 만나기 전)을 적어 두어 분석가 둘과 역할이 겹치지 않게 했습니다."
    },
    {
     "t": "tools와 model",
     "on": [
      "front"
     ],
-    "cap": "`tools: Read, Grep, Glob, Bash(python3:*)`라서 읽기와 python3 집계만 할 수 있습니다. Write, Edit, 다른 명령은 시도 자체가 막힙니다. `model: sonnet`은 일상 분석의 표준입니다."
+    "cap": "`tools: Read, Grep, Glob, Bash(python3:*)`로 지정했으므로 읽기와 python3 집계만 할 수 있습니다. Write, Edit나 다른 명령은 시도조차 할 수 없습니다. `model: sonnet`은 일상적인 분석 업무에 표준으로 쓰는 모델입니다."
    },
    {
     "t": "본문 = 이 agent의 시스템 프롬프트",
     "on": [
      "body"
     ],
-    "cap": "쓸 파일(`pseudo/` 6개), 읽지 않을 파일(거래 원장, `raw/`), 준비 순서 3단계, 출력 형식(고객 A, 근거 파일과 열)을 적었습니다. agent는 매번 이 절차를 따릅니다."
+    "cap": "본문에는 사용할 파일(`pseudo/` 6개), 읽지 않을 파일(거래 원장, `raw/`), 준비 순서 3단계, 출력 형식(고객 A 표기, 근거 파일과 열 이름)을 적었습니다. agent는 호출될 때마다 이 절차를 따릅니다."
    },
    {
     "t": "등록",
@@ -1820,7 +1820,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "ready"
     ],
     "edge": 3,
-    "cap": "Step 3에서 세션을 다시 열면 입력창의 `@` typeahead에 `consult-prep (agent)`가 보입니다. 이것이 \"새로 만든 agent 1개\"입니다."
+    "cap": "Step 3에서 세션을 다시 열면 입력창에 `@`를 입력했을 때 자동 완성 목록에 `consult-prep (agent)`가 보입니다. 이 agent가 \"새로 만든 agent 1개\"에 해당합니다."
    }
   ]
  },
@@ -1865,7 +1865,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "main"
     ],
     "edge": 0,
-    "cap": "체크포인트의 `risk-reviewer`는 Ch3에서 만든 읽기 전용 검토자입니다. 이번 업무(상담 노트)에 맞는 4번 점검 항목만 더해 달라고 요청합니다."
+    "cap": "체크포인트의 `risk-reviewer`는 Ch3에서 만든 읽기 전용 검토자입니다. 이번 업무(상담 노트)에 맞는 점검 항목 4번만 추가해 달라고 요청합니다."
    },
    {
     "t": "파일 고치기",
@@ -1875,7 +1875,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 1,
     "chip": "+ 4. 상담 노트",
-    "cap": "메인 Claude가 Edit 도구로 점검 항목 아래에 4번을 넣습니다. `tools: Read, Grep, Glob` 줄은 그대로라 검토자는 여전히 읽기만 합니다. auto 모드면 확인 창 없이 진행됩니다."
+    "cap": "메인 Claude가 Edit 도구로 기존 점검 항목 아래에 4번을 추가합니다. `tools: Read, Grep, Glob` 줄은 그대로이므로 검토자는 여전히 읽기만 할 수 있습니다. auto 모드에서는 확인 창 없이 바로 진행됩니다."
    },
    {
     "t": "diff로 확인",
@@ -1883,7 +1883,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "diff"
     ],
     "edge": 2,
-    "cap": "diff에 4번 한 줄(고객 A 표기, 제안 후보와 질문, 근거 파일과 열)만 더해졌는지 봅니다. 이것이 \"체크포인트에서 가져와 고친 agent\"입니다."
+    "cap": "diff에 4번 한 줄(고객 A 표기, 제안 후보와 질문, 근거 파일과 열)만 추가됐는지 확인합니다. 이 agent가 \"체크포인트에서 가져와 고친 agent\"에 해당합니다."
    }
   ]
  },
@@ -1954,7 +1954,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "raw-guard.sh",
-    "cap": "`dlp-guard.sh`와 같은 모양으로 `raw-guard.sh`를 씁니다. jq가 없거나, 입력을 못 읽거나, grep이 오류를 내도 exit 2(차단)로 끝납니다. 이것이 fail-closed입니다. `chmod +x`로 실행 권한을 줍니다."
+    "cap": "`dlp-guard.sh`와 같은 구조로 `raw-guard.sh`를 작성합니다. jq가 없거나, 입력을 해석하지 못하거나, grep이 오류를 내는 경우에도 exit 2(차단)로 끝납니다. 이렇게 오류가 나도 막는 것이 fail-closed입니다. 이어서 `chmod +x`로 실행 권한을 줍니다."
    },
    {
     "t": "막혀야 하는 3줄",
@@ -1978,7 +1978,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "r3",
      "r5"
     ],
-    "cap": "`pseudo/` 경로와 \"안녕하세요\"는 `exit=0`이어야 합니다. 정상 업무를 막지 않는지 확인하는 줄입니다. 아직 Claude Code에 등록하지 않았으니 이 시험은 스크립트만 본 것입니다."
+    "cap": "`pseudo/` 경로와 \"안녕하세요\"는 `exit=0`이어야 합니다. 정상 업무를 막지 않는지 확인하는 줄입니다. 아직 Claude Code에 훅으로 등록하지 않았으므로, 이 시험은 스크립트 자체의 동작만 확인한 것입니다."
    }
   ]
  },
@@ -2049,14 +2049,14 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "settings.json",
-    "cap": "작업 폴더의 `.claude/settings.json`을 새로 씁니다. 이 폴더에서 연 Claude 세션에만 적용되고, R2에서 plugin 설정으로 옮겨집니다."
+    "cap": "작업 폴더의 `.claude/settings.json`을 새로 만듭니다. 이 설정은 이 폴더에서 연 Claude 세션에만 적용되며, R2에서 plugin 설정으로 옮겨집니다."
    },
    {
     "t": "프롬프트 검사",
     "on": [
      "ups"
     ],
-    "cap": "`UserPromptSubmit` 훅이 입력한 문장을 모델에 보내기 전에 `dlp-guard.sh`로 검사합니다. 04의 주민번호 요청이 여기서 막힙니다."
+    "cap": "`UserPromptSubmit` 훅은 내가 입력한 문장을 모델에 보내기 전에 `dlp-guard.sh`로 검사합니다. 04의 주민번호 요청이 바로 여기서 막힙니다."
    },
    {
     "t": "도구 호출 검사 두 겹",
@@ -2064,7 +2064,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "pre1",
      "pre2"
     ],
-    "cap": "`PreToolUse` 훅 두 개가 도구 실행 직전에 입력을 봅니다. 하나는 개인정보 패턴, 하나는 `raw/` 경로입니다. subagent의 도구 호출에도 똑같이 돕니다."
+    "cap": "`PreToolUse` 훅 두 개가 도구 실행 직전에 도구 입력을 검사합니다. 하나는 개인정보 패턴을, 다른 하나는 `raw/` 경로를 봅니다. subagent의 도구 호출에도 똑같이 실행됩니다."
    },
    {
     "t": "deny와 fail-closed",
@@ -2072,7 +2072,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "deny",
      "fail"
     ],
-    "cap": "`deny` 규칙은 Read 도구가 `raw/`를 읽는 것을 한 번 더 막습니다. 모든 훅의 `onFailure: block`은 스크립트를 치워도 통과시키지 않게 합니다(04 Step 3에서 확인)."
+    "cap": "`deny` 규칙은 Read 도구가 `raw/`를 읽는 것을 한 번 더 막습니다. 모든 훅에 넣은 `onFailure: block`은 스크립트가 없어져도 요청이 그대로 통과하지 않게 합니다(04 Step 3에서 확인)."
    },
    {
     "t": "문법 확인",
@@ -2080,12 +2080,12 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "ok"
     ],
     "edge": 1,
-    "cap": "`jq .`가 JSON을 읽을 수 있으면 `settings OK`가 나옵니다. 쉼표 하나만 틀려도 설정 전체가 무시되므로 이 줄을 꼭 봅니다."
+    "cap": "`jq .`가 JSON을 문제없이 읽으면 `settings OK`가 출력됩니다. 쉼표 하나만 틀려도 설정 전체가 무시되므로 이 출력을 꼭 확인합니다."
    }
   ]
  },
  "check-matrix": {
-  "title": "04 붙여 넣는 요청 넷: 어디서 막히고 무엇이 통과하나",
+  "title": "04에서 붙여 넣는 요청 네 가지: 어디서 막히고 무엇이 통과하나",
   "nodes": [
    {
     "id": "q",
@@ -2128,7 +2128,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "900101-1234567",
-    "cap": "`고객 900101-1234567 의 가입 이력…`은 모델에 가기 전에 `DLP: 민감정보 패턴이 감지되어 차단했습니다`로 막힙니다. 보낸 문장은 입력창으로 돌아옵니다."
+    "cap": "`고객 900101-1234567 의 가입 이력…`은 모델로 전달되기 전에 `DLP: 민감정보 패턴이 감지되어 차단했습니다` 메시지와 함께 막힙니다. 보낸 문장은 입력창으로 되돌아옵니다."
    },
    {
     "t": "raw/ 읽기 시도",
@@ -2144,7 +2144,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      1
     ],
     "chip": "Read raw/…",
-    "cap": "프롬프트에는 개인정보 패턴이 없어 통과하지만, Claude가 `raw/`를 읽으려는 도구 호출에서 `RAW: 원본(raw/) 접근은 차단됩니다` 또는 deny 거부가 나옵니다. 어느 쪽인지 메시지로 적어 둡니다."
+    "cap": "프롬프트에는 개인정보 패턴이 없으므로 프롬프트 검사는 통과합니다. 하지만 Claude가 `raw/`를 읽으려고 도구를 호출하는 단계에서 `RAW: 원본(raw/) 접근은 차단됩니다` 메시지나 deny 규칙의 거부 메시지가 나옵니다. 메시지를 보고 어느 쪽이 막았는지 적어 둡니다."
    },
    {
     "t": "pseudo/ 요약은 통과",
@@ -2161,7 +2161,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      1,
      2
     ],
-    "cap": "`pseudo/customers.csv 연령대 분포를 요약해줘`는 두 검사를 모두 지나 답이 나옵니다. 가드레일이 정상 업무를 막지 않는다는 확인입니다."
+    "cap": "`pseudo/customers.csv 연령대 분포를 요약해줘`는 두 검사를 모두 통과해 답이 나옵니다. 가드레일이 정상 업무는 막지 않는다는 것을 확인하는 단계입니다."
    },
    {
     "t": "agent를 거친 raw/",
@@ -2177,19 +2177,19 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      1
     ],
     "chip": "consult-prep → raw/",
-    "cap": "`consult-prep 에이전트로 … raw …`도 막혀야 합니다. 프로젝트 설정의 `PreToolUse` 훅은 subagent의 도구 호출에도 돌기 때문입니다."
+    "cap": "`consult-prep 에이전트로 … raw …`도 막혀야 합니다. 프로젝트 설정의 `PreToolUse` 훅은 subagent의 도구 호출에도 실행되기 때문입니다."
    },
    {
     "t": "스크립트를 치워도 막힘",
     "bad": [
      "pre"
     ],
-    "cap": "Step 3에서 `raw-guard.sh`를 잠시 `.off`로 바꾸고 도구 호출을 보내면 `onFailure: block`으로 막혀야 합니다(fail-closed). 넷째 줄에서 반드시 이름을 되돌립니다."
+    "cap": "Step 3에서 `raw-guard.sh`의 이름을 잠시 `.off`로 바꾼 뒤 도구 호출이 필요한 요청을 보내면 `onFailure: block`으로 막혀야 합니다(fail-closed). 넷째 줄에서 반드시 이름을 되돌립니다."
    }
   ]
  },
  "copy-managed-check": {
-  "title": "00 Step 3 붙여 넣으면: 앞 랩의 훅이 남아 있는지 본다",
+  "title": "00 Step 3 붙여 넣으면: 이전 랩의 훅이 남아 있는지 확인한다",
   "nodes": [
    {
     "id": "term",
@@ -2230,14 +2230,14 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "res"
     ],
     "edge": 1,
-    "cap": "`\"hooks\": []`이고 `allowManagedHooksOnly`가 `null`이나 `false`면 깨끗합니다. 04에서 막히는 장면은 이 폴더에 내가 만든 훅이 막은 것이 됩니다."
+    "cap": "`\"hooks\": []`이고 `allowManagedHooksOnly`가 `null`이나 `false`면 남은 훅이 없는 깨끗한 상태입니다. 이 상태라면 04에서 막히는 장면은 내가 이 폴더에 만든 훅이 막은 것입니다."
    },
    {
     "t": "남아 있으면",
     "bad": [
      "res"
     ],
-    "cap": "`UserPromptSubmit` 같은 이름이 보이면 앞 랩의 훅이 아직 돕니다. 그대로 두면 내 훅이 아닌 그 훅이 막아서 결과를 구분할 수 없으니, 본문 안내대로 먼저 정리합니다."
+    "cap": "`UserPromptSubmit` 같은 이름이 보이면 이전 랩의 훅이 아직 실행되고 있는 것입니다. 그대로 두면 내 훅이 아니라 그 훅이 막을 수 있어 결과를 구분할 수 없으니, 본문 안내대로 먼저 원복합니다."
    }
   ]
  },
@@ -2281,7 +2281,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "term"
     ],
     "edge": 0,
-    "cap": "첫 블록은 작업 폴더에서 Claude Code를 엽니다. 처음 여는 폴더면 신뢰 확인 창에서 ↓로 Yes, I trust this folder를 고릅니다."
+    "cap": "첫째 블록은 작업 폴더에서 Claude Code를 엽니다. 처음 여는 폴더라면 신뢰 확인 창이 뜨는데, ↓ 키로 Yes, I trust this folder를 고릅니다."
    },
    {
     "t": "brainstorm 시작",
@@ -2289,7 +2289,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "bs"
     ],
     "edge": 1,
-    "cap": "둘째 블록을 Claude 입력창에 붙여 넣습니다. brainstorming 스킬이 \"어떤 고객을 준비하나요?\"처럼 한 번에 질문 하나씩 묻습니다. 앱이나 화면은 만들지 않습니다."
+    "cap": "둘째 블록을 Claude 입력창에 붙여 넣습니다. brainstorming 스킬이 \"어떤 고객을 준비하나요?\"처럼 질문을 한 번에 하나씩 합니다. 앱이나 화면은 만들지 않습니다."
    },
    {
     "t": "답하기",
@@ -2297,14 +2297,14 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "you"
     ],
     "edge": 2,
-    "cap": "질문에 짧게 답합니다. 잘 모르겠으면 \"추천해 주신 대로\"라고 답해도 됩니다. 이 단계에서는 agent나 훅 파일을 만들지 않습니다. Claude가 정리를 파일로 저장하거나 plan으로 넘어가자고 하면 \"파일과 plan은 만들지 말고 화면에 정리만 해 주세요\"라고 답합니다."
+    "cap": "질문에 짧게 답합니다. 잘 모르겠으면 \"추천해 주신 대로\"라고 답해도 됩니다. 이 단계에서는 agent나 훅 파일을 만들지 않습니다. Claude가 정리한 내용을 파일로 저장하자고 하거나 plan 단계로 넘어가자고 하면 \"파일과 plan은 만들지 말고 화면에 정리만 해 주세요\"라고 답합니다."
    },
    {
     "t": "결정 세 가지",
     "ok": [
      "out"
     ],
-    "cap": "마지막에 ① 맡길 반복 업무 ② 새로 만들 agent와 고칠 agent ③ 막을 것 두 가지가 한 장으로 나옵니다. 아래 초안 표와 비교하고, 02부터는 초안의 이름(`consult-prep`, `risk-reviewer`)으로 진행합니다."
+    "cap": "마지막에 ① 맡길 반복 업무 ② 새로 만들 agent와 고칠 agent ③ 막을 것 두 가지가 한 장으로 정리되어 나옵니다. 아래 초안 표와 비교하고, 02부터는 초안의 이름(`consult-prep`, `risk-reviewer`)으로 진행합니다."
    }
   ]
  },
@@ -2347,7 +2347,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     "on": [
      "off"
     ],
-    "cap": "둘째 줄(`mv … .off`)이 `raw-guard.sh`의 이름을 `.off`로 바꿉니다. 훅이 실행할 파일이 없는 고장 상황을 일부러 만듭니다."
+    "cap": "둘째 줄(`mv … .off`)이 `raw-guard.sh`의 이름을 `raw-guard.sh.off`로 바꿉니다. 훅이 실행할 파일이 없는 고장 상황을 일부러 만드는 것입니다."
    },
    {
     "t": "무해한 요청",
@@ -2355,21 +2355,21 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "run"
     ],
     "edge": 1,
-    "cap": "`pseudo/` 첫 줄을 읽는 정상 요청을 보냅니다. Read 도구를 써야 하므로 `PreToolUse` 훅이 실행됩니다."
+    "cap": "`pseudo/` 파일의 첫 줄을 읽어 달라는 정상 요청을 보냅니다. 이 요청은 Read 도구를 써야 하므로 `PreToolUse` 훅이 실행됩니다."
    },
    {
     "t": "그래도 막힘",
     "bad": [
      "hook"
     ],
-    "cap": "스크립트가 없는데도 Read가 차단되면 fail-closed입니다. `onFailure: block` 덕분입니다. 내용이 그대로 나오면 03 Step 2의 `onFailure` 줄과 버전을 확인합니다."
+    "cap": "스크립트가 없는데도 Read가 차단되면 fail-closed가 동작한 것입니다. `onFailure: block` 덕분입니다. 반대로 파일 내용이 그대로 나오면 03 Step 2의 `onFailure` 줄과 Claude Code 버전을 확인합니다."
    },
    {
     "t": "되돌리기",
     "ok": [
      "back"
     ],
-    "cap": "넷째 줄이 이름을 되돌리고 `ls`로 `raw-guard.sh`가 다시 있는지 보여 줍니다. 되돌리지 않으면 이후 모든 도구 호출이 막힙니다."
+    "cap": "넷째 줄이 이름을 되돌리고, 다섯째 줄의 `ls`가 `raw-guard.sh`가 제자리에 돌아왔는지 보여 줍니다. 되돌리지 않으면 이후의 도구 호출이 모두 막힙니다."
    }
   ]
  },
@@ -2434,7 +2434,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
     ],
     "edge": 0,
     "chip": "CLAUDE.md",
-    "cap": "CLAUDE.md는 이 폴더에서 Claude를 열 때마다 읽히는 규칙입니다. 매 요청에 실리므로 7줄로 짧게 씁니다. 자세한 절차는 agent 파일에 이미 있습니다."
+    "cap": "CLAUDE.md는 이 폴더에서 Claude를 열 때마다 읽히는 규칙 파일입니다. 요청마다 함께 실리므로 7줄로 짧게 씁니다. 자세한 절차는 이미 agent 파일에 적혀 있습니다."
    },
    {
     "t": "재료 확인",
@@ -2448,7 +2448,7 @@ agents: consult-prep(새로 만듦), risk-reviewer(체크포인트에서 고침)
      "s",
      "c"
     ],
-    "cap": "`find` 결과에 이 네 가지가 보이면 R1 완성입니다. R2에서 이 폴더를 그대로 plugin 하나로 묶어 동료에게 설치 한 줄로 나눠 줍니다."
+    "cap": "`find` 결과에 이 네 가지가 보이면 R1은 완성입니다. R2에서는 이 폴더를 그대로 plugin 하나로 묶어, 동료가 명령 한 줄로 설치할 수 있게 나눠 줍니다."
    }
   ]
  }
